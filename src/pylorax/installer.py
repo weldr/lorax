@@ -134,7 +134,7 @@ class QEMUInstall(object):
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
                  kernel_args=None, memory=1024, vcpus=None, vnc=None, arch=None,
                  cancel_func=None, virtio_host="127.0.0.1", virtio_port=6080,
-                 image_type=None, boot_uefi=False, ovmf_path=None):
+                 image_type=None, boot_uefi=False, ovmf_path=None, extra_files=None):
         """
         Start the installation
 
@@ -156,7 +156,11 @@ class QEMUInstall(object):
         :param str image_type: Type of qemu-img disk to create, or None.
         :param bool boot_uefi: Use OVMF to boot the VM in UEFI mode
         :param str ovmf_path: Path to the OVMF firmware
+        :param list extra_files: Paths for extra files to add to the ks disk image
         """
+        if not extra_files:
+            extra_files = []
+
         # Lookup qemu-system- for arch if passed, or try to guess using host arch
         qemu_cmd = [self.QEMU_CMDS.get(arch or os.uname().machine, "qemu-system-"+os.uname().machine)]
         if not os.path.exists("/usr/bin/"+qemu_cmd[0]):
@@ -192,7 +196,7 @@ class QEMUInstall(object):
         qemu_cmd += ["-drive", drive_args]
 
         # Create a disk image for the kickstart file
-        ks_disk = make_ks_disk(ks_paths, "KS_DISK_IMG")
+        ks_disk = make_ks_disk(ks_paths + extra_files, "KS_DISK_IMG")
         qemu_cmd += ["-drive", "file=%s,cache=unsafe,discard=unmap,format=file" % ks_disk]
 
         # Setup the cmdline args
@@ -514,7 +518,7 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None, tar_img=None):
 
         os.unlink(disk_img)
 
-def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None, tar_img=None):
+def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None, tar_img=None, extra_files=None):
     """
     Use qemu to install to a disk image
 
@@ -526,10 +530,14 @@ def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None, tar_i
     :param cancel_func: Function that returns True to cancel build
     :type cancel_func: function
     :param str tar_img: For make_tar_disk, the path to final tarball to be created
+    :param list extra_files: Paths for extra files to add to the ks disk image
 
     This uses qemu with a boot.iso and a kickstart to create a disk
     image and then optionally, based on the opts passed, creates tarfile.
     """
+    if not extra_files:
+        extra_files = []
+
     iso_mount = IsoMountpoint(opts.iso, opts.location)
     if not iso_mount.stage2:
         iso_mount.umount()
@@ -567,7 +575,7 @@ def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None, tar_i
                     virtio_host = log_monitor.host,
                     virtio_port = log_monitor.port,
                     image_type=opts.image_type, boot_uefi=opts.virt_uefi,
-                    ovmf_path=opts.ovmf_path)
+                    ovmf_path=opts.ovmf_path, extra_files=extra_files)
         log_monitor.shutdown()
     except InstallError as e:
         log.error("VirtualInstall failed: %s", e)

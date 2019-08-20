@@ -39,7 +39,7 @@ from pylorax.base import DataHolder
 from pylorax.executils import execWithRedirect, runcmd
 from pylorax.imgutils import PartitionMount
 from pylorax.imgutils import mount, umount, Mount
-from pylorax.imgutils import mksquashfs, mkrootfsimg
+from pylorax.imgutils import mkcpio, mksquashfs, mkrootfsimg
 from pylorax.imgutils import copytree
 from pylorax.installer import novirt_install, virt_install, InstallError
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder
@@ -478,6 +478,7 @@ def make_image(opts, ks, cancel_func=None):
     else:
         tar_img = None
 
+    updates_img = []
     try:
         if opts.no_virt:
             novirt_install(opts, disk_img, disk_size, cancel_func=cancel_func, tar_img=tar_img)
@@ -485,7 +486,17 @@ def make_image(opts, ks, cancel_func=None):
             install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
             log.info("install_log = %s", install_log)
 
-            virt_install(opts, install_log, disk_img, disk_size, cancel_func=cancel_func, tar_img=tar_img)
+            # Examine the kickstart and make an updates.img with the sslcert files if needed
+            # and modify the kernel args to add the updates.img
+            updates_img = make_cert_img(opts.ks)
+            if updates_img:
+                if opts.kernel_args:
+                    opts.kernel_args += " inst.updates=hd:LABEL=KS_DISK_IMG:/updates.img"
+                else:
+                    opts.kernel_args = "inst.updates=hd:LABEL=KS_DISK_IMG:/updates.img"
+
+            virt_install(opts, install_log, disk_img, disk_size, cancel_func=cancel_func, tar_img=tar_img,
+                         extra_files=updates_img)
     except InstallError as e:
         log.error("Install failed: %s", e)
         if not opts.keep_image:
@@ -495,6 +506,9 @@ def make_image(opts, ks, cancel_func=None):
             if tar_img and os.path.exists(tar_img):
                 log.info("Removing bad tar file")
                 os.unlink(tar_img)
+            if updates_img and os.path.exists(updates_img[0]):
+                # Remove the temporary updates.img
+                shutil.rmtree(os.path.dirname(updates_img[0]))
         raise
 
     log.info("Disk Image install successful")
@@ -745,3 +759,41 @@ def run_creator(opts, cancel_func=None):
         result_dir = None
 
     return (result_dir, disk_img)
+
+def make_cert_img(ks_paths):
+    """Make an updates.img with ssl certs if the ks includes --ssl* arguments
+
+    :param list ks_paths: List of paths to kickstart files
+    :returns: list of temporary updates.img file
+    :rtype: list
+
+    This checks the kickstart url and repo commands for --ssl* arguments, and if found
+    copies the certificates into an updates.img for use with Anaconda's inst.updates= option
+    which will copy the files into the root filesystem when booting an Anaconda boot.iso
+    """
+    ks_version = makeVersion()
+    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+    ks.readKickstart(ks_paths[0])
+
+    ssl_args = ["sslcacert", "sslclientcert", "sslclientkey"]
+    def get_ssl_args(o):
+        return set(getattr(o, a) for a in ssl_args if hasattr(o, a) and getattr(o, a) is not None)
+
+    files = get_ssl_args(ks.handler.method)
+    for repo in ks.handler.repo.repoList:
+        files.update(get_ssl_args(repo))
+
+    if not files:
+        return []
+    log.debug("Creating updates.img with %s", files)
+
+    # Make an updates.img with these files in it
+    with tempfile.TemporaryDirectory(prefix="lmc-updatesdir-") as updates_dir:
+        for f in files:
+            # Use the same paths inside the updates.img
+            dest_dir = joinpaths(updates_dir, os.path.dirname(f))
+            os.makedirs(dest_dir, exist_ok=True)
+            shutil.copy2(f, dest_dir)
+        img_dir = tempfile.mkdtemp(prefix="lmc-imgdir-")
+        mkcpio(updates_dir, joinpaths(img_dir, "updates.img"))
+    return [joinpaths(img_dir, "updates.img")]
