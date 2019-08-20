@@ -202,6 +202,8 @@ def main():
         # TODO - Better API than passing in opts
         (result_dir, disk_img) = run_creator(opts)
     except Exception as e:                                  # pylint: disable=broad-except
+        import traceback
+        log.debug(traceback.format_exc())
         log.error(str(e))
         sys.exit(1)
 
