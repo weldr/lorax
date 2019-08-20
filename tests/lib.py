@@ -23,6 +23,8 @@ import shutil
 import subprocess
 import tempfile
 
+from pylorax.executils import runcmd_output
+
 @contextmanager
 def captured_output():
     new_out, new_err = StringIO(), StringIO()
@@ -128,3 +130,8 @@ def create_git_repo():
     os.chdir(oldcwd)
 
     return (repodir, test_results, first_commit)
+
+def list_cpio(file):
+    """List the contents of a compressed cpio file"""
+    unxz = subprocess.Popen(["unxz", "--stdout", file], stdout=subprocess.PIPE)
+    return runcmd_output(["cpio", "-t"], stdin=unxz.stdout)

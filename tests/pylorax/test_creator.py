@@ -23,12 +23,12 @@ import xml.etree.ElementTree as ET
 from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion
 
-from ..lib import get_file_magic
+from ..lib import get_file_magic, list_cpio
 from pylorax import find_templates
 from pylorax.base import DataHolder
 from pylorax.creator import FakeDNF, create_pxe_config, make_appliance, make_runtime, squashfs_args
 from pylorax.creator import calculate_disk_size
-from pylorax.creator import get_arch, find_ostree_root, check_kickstart
+from pylorax.creator import get_arch, find_ostree_root, check_kickstart, make_cert_img
 from pylorax.executils import runcmd_output
 from pylorax.sysutils import joinpaths
 
@@ -38,7 +38,6 @@ def mkFakeBoot(root_dir):
     os.makedirs(joinpaths(root_dir, "boot"))
     open(joinpaths(root_dir, "boot", "vmlinuz-4.18.13-200.fc28.x86_64"), "w").write("I AM A FAKE KERNEL")
     open(joinpaths(root_dir, "boot", "initramfs-4.18.13-200.fc28.x86_64.img"), "w").write("I AM A FAKE INITRD")
-
 
 class CreatorTest(unittest.TestCase):
     def fakednf_test(self):
@@ -360,8 +359,30 @@ class CreatorTest(unittest.TestCase):
                                    "shutdown\n")
         self.assertEqual(calculate_disk_size(opts, ks), 5120)
 
-    @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def boot_over_root_test(self):
-        """Test the mount_boot_part_over_root ostree function"""
-        # Make a fake disk image with a / and a /boot/loader.0
-        # Mount the / partition
+    def make_cert_img_test(self):
+        """Test making an updates.img with ssl certs"""
+        # These are not the right files, they are just used for testing
+        cert_files = ("/etc/pki/ca-trust/README",
+                      "/etc/pki/ca-trust/extracted/README",
+                      "/etc/pki/ca-trust/extracted/openssl/README")
+        cert_str="--sslcacert=%s --sslclientcert=%s --sslclientkey=%s" % cert_files
+        ks_str = "url --url=http://dl.fedoraproject.com %s\n" \
+                 "repo --name=private --baseurl=http://private.repo.none %s\n" \
+                 "network --bootproto=dhcp --activate\n" \
+                 "repo --name=other --baseurl=http://dl.fedoraproject.com\n" \
+                 "part / --size=4096\n" \
+                 "shutdown\n"
+        with tempfile.NamedTemporaryFile(mode="w+t", prefix="lmc-cert-test-") as ks_file:
+            ks_file.write(ks_str % (cert_str, cert_str))
+            ks_file.flush()
+            ks_file.seek(0)
+
+            updates_img = make_cert_img([ks_file.name])
+        self.assertTrue(len(updates_img), 1)
+        file_details = get_file_magic(updates_img[0])
+        self.assertTrue("XZ compressed" in file_details, file_details)
+        results = list_cpio(updates_img[0])
+        # Make sure the files are actually in the cpio archive
+        for f in cert_files:
+            # Files in the cpio have / removed from the start of them
+            self.assertTrue(f[1:] in results)
