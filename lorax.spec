@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.9
+Version:        31.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -254,6 +254,24 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Aug 20 2019 Brian C. Lane <bcl@redhat.com> 31.10-1
+- tests: Update gpg key to fedora 32 (bcl@redhat.com)
+- tests: Fix the order of liveimg-tar live-iso (bcl@redhat.com)
+- tests: Use server-2.repo instead of single.repo (bcl@redhat.com)
+- lorax-composer: Add support for dnf variables to repo sources (bcl@redhat.com)
+- Use smarter multipath detection logic. (dlehman@redhat.com)
+- tests: Expand test coverage of the v0 and v1 sources API (bcl@redhat.com)
+- tests: Temporarily work around rpm and pylint issues (bcl@redhat.com)
+- lorax-composer: Add v1 API for projects/source/ (bcl@redhat.com)
+- Add /api/v1/ handler with no routes (bcl@redhat.com)
+- Move common functions into pylorax.api.utils (bcl@redhat.com)
+- Document the release process steps (bcl@redhat.com)
+- lorax-composer: Add liveimg-tar image type (bcl@redhat.com)
+- livemedia-creator: Use --compress-arg in mksquashfs (bcl@redhat.com)
+- livemedia-creator: Remove unused --squashfs_args option (bcl@redhat.com)
+- Only use repos with valid urls for test_server.py (bcl@redhat.com)
+- lorax-composer: Clarify groups documentation (bcl@redhat.com)
+
 * Mon Jul 29 2019 Brian C. Lane <bcl@redhat.com> 31.9-1
 - New lorax documentation - 31.9 (bcl@redhat.com)
 - Remove .build-id from install media (riehecky@fnal.gov)
