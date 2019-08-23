@@ -17,4 +17,5 @@ if [ -n "$TEST_SCENARIO" ]; then
 else
   test/check-cli TestImages
   test/check-api
+  test/check-cli TestRepos
 fi
