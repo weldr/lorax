@@ -3,6 +3,8 @@
 
 set -eu
 
+. $(dirname $0)/cli/lib/lib.sh
+
 export BEAKERLIB_DIR=$(mktemp -d /tmp/composer-test.XXXXXX)
 CLI="${CLI:-}"
 
@@ -58,36 +60,24 @@ if [ -z "$CLI" ]; then
     export top_srcdir=`pwd`
     . ./tests/testenv.sh
 
-    BLUEPRINTS_DIR=`mktemp -d '/tmp/composer-blueprints.XXXXX'`
-    export BLUEPRINTS_DIR
+    export BLUEPRINTS_DIR=`mktemp -d '/tmp/composer-blueprints.XXXXX'`
     cp ./tests/pylorax/blueprints/*.toml $BLUEPRINTS_DIR
 
-    SHARE_DIR=`mktemp -d '/tmp/composer-share.XXXXX'`
+    export SHARE_DIR=`mktemp -d '/tmp/composer-share.XXXXX'`
     cp -R ./share/* $SHARE_DIR
     chmod a+rx -R $SHARE_DIR
 
     setup_tests $SHARE_DIR $BLUEPRINTS_DIR
     # start the lorax-composer daemon
-    ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
+    composer_start
 else
     export PACKAGE="composer-cli"
     export BLUEPRINTS_DIR="/var/lib/lorax/composer/blueprints"
-    systemctl stop lorax-composer
+    composer_stop
     setup_tests /usr/share/lorax /var/lib/lorax/composer/blueprints
-    systemctl start lorax-composer
+    composer_start
 fi
 
-
-# wait for the backend to become ready
-tries=0
-until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/status | grep 'db_supported.*true'; do
-    tries=$((tries + 1))
-    if [ $tries -gt 50 ]; then
-        exit 1
-    fi
-    sleep 5
-    echo "DEBUG: Waiting for backend API to become ready before testing ..."
-done;
 
 export BEAKERLIB_JOURNAL=0
 if [ -z "$*" ]; then
@@ -106,15 +96,14 @@ fi
 if [ -z "$CLI" ]; then
     # stop lorax-composer and remove /run/weldr/api.socket
     # only if running against source
-    pkill -9 lorax-composer
-    rm -f /run/weldr/api.socket
+    composer_stop
     teardown_tests $SHARE_DIR $BLUEPRINTS_DIR
 else
-    systemctl stop lorax-composer
+    composer_stop
     teardown_tests /usr/share/lorax /var/lib/lorax/composer/blueprints
     # start lorax-composer again so we can continue with manual or other kinds
     # of testing on the same system
-    systemctl start lorax-composer
+    composer_start
 fi
 
 . $BEAKERLIB_DIR/TestResults
