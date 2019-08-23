@@ -16,4 +16,5 @@ if [ -n "$TEST_SCENARIO" ]; then
   fi
 else
   test/check-cli TestImages
+  test/check-cli TestRepos
 fi
