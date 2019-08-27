@@ -1537,7 +1537,7 @@ def v0_compose_queue():
             ]
           }
     """
-    return jsonify(queue_status(api.config["COMPOSER_CFG"]))
+    return jsonify(queue_status(api.config["COMPOSER_CFG"], api=0))
 
 @v0_api.route("/compose/finished")
 def v0_compose_finished():
@@ -1572,7 +1572,7 @@ def v0_compose_finished():
             ]
           }
     """
-    return jsonify(finished=build_status(api.config["COMPOSER_CFG"], "FINISHED"))
+    return jsonify(finished=build_status(api.config["COMPOSER_CFG"], "FINISHED", api=0))
 
 @v0_api.route("/compose/failed")
 def v0_compose_failed():
@@ -1598,7 +1598,7 @@ def v0_compose_failed():
             ]
           }
     """
-    return jsonify(failed=build_status(api.config["COMPOSER_CFG"], "FAILED"))
+    return jsonify(failed=build_status(api.config["COMPOSER_CFG"], "FAILED", api=0))
 
 @v0_api.route("/compose/status", defaults={'uuids': ""})
 @v0_api.route("/compose/status/<uuids>")
@@ -1647,14 +1647,14 @@ def v0_compose_status(uuids):
     errors = []
 
     if uuids.strip() == '*':
-        queue_status_dict = queue_status(api.config["COMPOSER_CFG"])
+        queue_status_dict = queue_status(api.config["COMPOSER_CFG"], api=0)
         queue_new = queue_status_dict["new"]
         queue_running = queue_status_dict["run"]
-        candidates = queue_new + queue_running + build_status(api.config["COMPOSER_CFG"])
+        candidates = queue_new + queue_running + build_status(api.config["COMPOSER_CFG"], api=0)
     else:
         candidates = []
         for uuid in [n.strip().lower() for n in uuids.split(",")]:
-            details = uuid_status(api.config["COMPOSER_CFG"], uuid)
+            details = uuid_status(api.config["COMPOSER_CFG"], uuid, api=0)
             if details is None:
                 errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
             else:
@@ -1695,7 +1695,7 @@ def v0_compose_cancel(uuid):
     if VALID_API_STRING.match(uuid) is None:
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid, api=0)
     if status is None:
         return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
 
@@ -1737,7 +1737,7 @@ def v0_compose_delete(uuids):
     results = []
     errors = []
     for uuid in [n.strip().lower() for n in uuids.split(",")]:
-        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        status = uuid_status(api.config["COMPOSER_CFG"], uuid, api=0)
         if status is None:
             errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
@@ -1806,7 +1806,7 @@ def v0_compose_info(uuid):
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
     try:
-        info = uuid_info(api.config["COMPOSER_CFG"], uuid)
+        info = uuid_info(api.config["COMPOSER_CFG"], uuid, api=0)
     except Exception as e:
         return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
 
@@ -1835,7 +1835,7 @@ def v0_compose_metadata(uuid):
     if VALID_API_STRING.match(uuid) is None:
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid, api=0)
     if status is None:
         return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
     if status["queue_status"] not in ["FINISHED", "FAILED"]:
@@ -1865,7 +1865,7 @@ def v0_compose_results(uuid):
     if VALID_API_STRING.match(uuid) is None:
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid, api=0)
     if status is None:
         return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
     elif status["queue_status"] not in ["FINISHED", "FAILED"]:
@@ -1893,7 +1893,7 @@ def v0_compose_logs(uuid):
     if VALID_API_STRING.match(uuid) is None:
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid, api=0)
     if status is None:
         return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
     elif status["queue_status"] not in ["FINISHED", "FAILED"]:
@@ -1918,7 +1918,7 @@ def v0_compose_image(uuid):
     if VALID_API_STRING.match(uuid) is None:
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid, api=0)
     if status is None:
         return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
     elif status["queue_status"] not in ["FINISHED", "FAILED"]:
@@ -1975,7 +1975,7 @@ def v0_compose_log_tail(uuid):
     except ValueError as e:
         return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
 
-    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid, api=0)
     if status is None:
         return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
     elif status["queue_status"] == "WAITING":

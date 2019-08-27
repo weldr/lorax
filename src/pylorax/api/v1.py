@@ -29,8 +29,10 @@ from pylorax.api.checkparams import checkparams
 from pylorax.api.compose import start_build
 from pylorax.api.errors import BAD_COMPOSE_TYPE, BUILD_FAILED, INVALID_CHARS, MISSING_POST, PROJECTS_ERROR
 from pylorax.api.errors import SYSTEM_SOURCE, UNKNOWN_BLUEPRINT, UNKNOWN_SOURCE, UNKNOWN_UUID, UPLOAD_ERROR
+from pylorax.api.errors import COMPOSE_ERROR
 from pylorax.api.flask_blueprint import BlueprintSkip
-from pylorax.api.queue import uuid_status, uuid_schedule_upload, uuid_remove_upload
+from pylorax.api.queue import queue_status, build_status, uuid_status, uuid_schedule_upload, uuid_remove_upload
+from pylorax.api.queue import uuid_info
 from pylorax.api.projects import get_repo_sources, repo_to_source
 from pylorax.api.projects import new_repo_source
 from pylorax.api.regexes import VALID_API_STRING, VALID_BLUEPRINT_NAME
@@ -115,7 +117,7 @@ def v1_projects_source_info(source_ids):
 def v1_projects_source_new():
     """Add a new package source. Or change an existing one
 
-    **POST /api/v0/projects/source/new**
+    **POST /api/v1/projects/source/new**
 
       Add (or change) a source for use when depsolving blueprints and composing images.
 
@@ -184,7 +186,7 @@ def v1_compose_start():
       compose_type   - The type of output to create, from /compose/types
       branch         - Optional, defaults to master, selects the git branch to use for the blueprint.
 
-    **POST /api/v0/compose**
+    **POST /api/v1/compose**
 
       Start a compose. The content type should be 'application/json' and the body of the POST
       should look like this. The "upload" object is optional.
@@ -212,7 +214,7 @@ def v1_compose_start():
           }
 
       Pass it the name of the blueprint, the type of output (from
-      '/api/v0/compose/types'), and the blueprint branch to use. 'branch' is
+      '/api/v1/compose/types'), and the blueprint branch to use. 'branch' is
       optional and will default to master. It will create a new build and add
       it to the queue. It returns the build uuid and a status if it succeeds.
       If an "upload" is given, it will schedule an upload to run when the build
@@ -222,6 +224,7 @@ def v1_compose_start():
 
           {
             "build_id": "e6fa6db4-9c81-4b70-870f-a697ca405cdf",
+            "upload_uuid": "572eb0d0-5348-4600-9666-14526ba628bb",
             "status": true
           }
     """
@@ -294,8 +297,251 @@ def v1_compose_start():
             image_name,
             settings
         )
+    else:
+        upload_uuid = ""
 
-    return jsonify(status=True, build_id=build_id)
+    return jsonify(status=True, build_id=build_id, upload_id=upload_uuid)
+
+@v1_api.route("/compose/queue")
+def v1_compose_queue():
+    """Return the status of the new and running queues
+
+    **/api/v1/compose/queue**
+
+      Return the status of the build queue. It includes information about the builds waiting,
+      and the build that is running.
+
+      Example::
+
+          {
+            "new": [
+              {
+                "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
+                "blueprint": "glusterfs",
+                "queue_status": "WAITING",
+                "job_created": 1517362647.4570868,
+                "version": "0.0.6"
+              },
+              {
+                "id": "6d292bd0-bec7-4825-8d7d-41ef9c3e4b73",
+                "blueprint": "kubernetes",
+                "queue_status": "WAITING",
+                "job_created": 1517362659.0034983,
+                "version": "0.0.1"
+              }
+            ],
+            "run": [
+              {
+                "id": "745712b2-96db-44c0-8014-fe925c35e795",
+                "blueprint": "glusterfs",
+                "queue_status": "RUNNING",
+                "job_created": 1517362633.7965999,
+                "job_started": 1517362633.8001345,
+                "version": "0.0.6"
+              }
+            ]
+          }
+    """
+    return jsonify(queue_status(api.config["COMPOSER_CFG"], api=1))
+
+@v1_api.route("/compose/finished")
+def v1_compose_finished():
+    """Return the list of finished composes
+
+    **/api/v1/compose/finished**
+
+      Return the details on all of the finished composes on the system.
+
+      Example::
+
+          {
+            "finished": [
+              {
+                "id": "70b84195-9817-4b8a-af92-45e380f39894",
+                "blueprint": "glusterfs",
+                "queue_status": "FINISHED",
+                "job_created": 1517351003.8210032,
+                "job_started": 1517351003.8230415,
+                "job_finished": 1517359234.1003145,
+                "version": "0.0.6"
+              },
+              {
+                "id": "e695affd-397f-4af9-9022-add2636e7459",
+                "blueprint": "glusterfs",
+                "queue_status": "FINISHED",
+                "job_created": 1517362289.7193348,
+                "job_started": 1517362289.9751132,
+                "job_finished": 1517363500.1234567,
+                "version": "0.0.6"
+              }
+            ]
+          }
+    """
+    return jsonify(finished=build_status(api.config["COMPOSER_CFG"], "FINISHED", api=1))
+
+@v1_api.route("/compose/failed")
+def v1_compose_failed():
+    """Return the list of failed composes
+
+    **/api/v1/compose/failed**
+
+      Return the details on all of the failed composes on the system.
+
+      Example::
+
+          {
+            "failed": [
+               {
+                "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
+                "blueprint": "http-server",
+                "queue_status": "FAILED",
+                "job_created": 1517523249.9301329,
+                "job_started": 1517523249.9314211,
+                "job_finished": 1517523255.5623411,
+                "version": "0.0.2"
+              }
+            ]
+          }
+    """
+    return jsonify(failed=build_status(api.config["COMPOSER_CFG"], "FAILED", api=1))
+
+@v1_api.route("/compose/status", defaults={'uuids': ""})
+@v1_api.route("/compose/status/<uuids>")
+@checkparams([("uuids", "", "no UUIDs given")])
+def v1_compose_status(uuids):
+    """Return the status of the listed uuids
+
+    **/api/v1/compose/status/<uuids>[?blueprint=<blueprint_name>&status=<compose_status>&type=<compose_type>]**
+
+      Return the details for each of the comma-separated list of uuids. A uuid of '*' will return
+      details for all composes.
+
+      Example::
+
+          {
+            "uuids": [
+              {
+                "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
+                "blueprint": "http-server",
+                "queue_status": "FINISHED",
+                "job_created": 1517523644.2384307,
+                "job_started": 1517523644.2551234,
+                "job_finished": 1517523689.9864314,
+                "version": "0.0.2"
+              },
+              {
+                "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
+                "blueprint": "glusterfs",
+                "queue_status": "FINISHED",
+                "job_created": 1517363442.188399,
+                "job_started": 1517363442.325324,
+                "job_finished": 1517363451.653621,
+                "version": "0.0.6"
+              }
+            ]
+          }
+    """
+    if VALID_API_STRING.match(uuids) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    blueprint = request.args.get("blueprint", None)
+    status = request.args.get("status", None)
+    compose_type = request.args.get("type", None)
+
+    results = []
+    errors = []
+
+    if uuids.strip() == '*':
+        queue_status_dict = queue_status(api.config["COMPOSER_CFG"], api=1)
+        queue_new = queue_status_dict["new"]
+        queue_running = queue_status_dict["run"]
+        candidates = queue_new + queue_running + build_status(api.config["COMPOSER_CFG"], api=1)
+    else:
+        candidates = []
+        for uuid in [n.strip().lower() for n in uuids.split(",")]:
+            details = uuid_status(api.config["COMPOSER_CFG"], uuid, api=1)
+            if details is None:
+                errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
+            else:
+                candidates.append(details)
+
+    for details in candidates:
+        if blueprint is not None and details['blueprint'] != blueprint:
+            continue
+
+        if status is not None and details['queue_status'] != status:
+            continue
+
+        if compose_type is not None and details['compose_type'] != compose_type:
+            continue
+
+        results.append(details)
+
+    return jsonify(uuids=results, errors=errors)
+
+@v1_api.route("/compose/info", defaults={'uuid': ""})
+@v1_api.route("/compose/info/<uuid>")
+@checkparams([("uuid", "", "no UUID given")])
+def v1_compose_info(uuid):
+    """Return detailed info about a compose
+
+    **/api/v1/compose/info/<uuid>**
+
+      Get detailed information about the compose. The returned JSON string will
+      contain the following information:
+
+        * id - The uuid of the comoposition
+        * config - containing the configuration settings used to run Anaconda
+        * blueprint - The depsolved blueprint used to generate the kickstart
+        * commit - The (local) git commit hash for the blueprint used
+        * deps - The NEVRA of all of the dependencies used in the composition
+        * compose_type - The type of output generated (tar, iso, etc.)
+        * queue_status - The final status of the composition (FINISHED or FAILED)
+
+      Example::
+
+          {
+            "commit": "7078e521a54b12eae31c3fd028680da7a0815a4d",
+            "compose_type": "tar",
+            "config": {
+              "anaconda_args": "",
+              "armplatform": "",
+              "compress_args": [],
+              "compression": "xz",
+              "image_name": "root.tar.xz",
+              ...
+            },
+            "deps": {
+              "packages": [
+                {
+                  "arch": "x86_64",
+                  "epoch": "0",
+                  "name": "acl",
+                  "release": "14.el7",
+                  "version": "2.2.51"
+                }
+              ]
+            },
+            "id": "c30b7d80-523b-4a23-ad52-61b799739ce8",
+            "queue_status": "FINISHED",
+            "blueprint": {
+              "description": "An example kubernetes master",
+              ...
+            }
+          }
+    """
+    if VALID_API_STRING.match(uuid) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    try:
+        info = uuid_info(api.config["COMPOSER_CFG"], uuid, api=1)
+    except Exception as e:
+        return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
+
+    if info is None:
+        return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+    else:
+        return jsonify(**info)
 
 @v1_api.route("/compose/uploads/schedule", defaults={'compose_uuid': ""}, methods=["POST"])
 @v1_api.route("/compose/uploads/schedule/<compose_uuid>", methods=["POST"])

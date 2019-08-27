@@ -305,11 +305,15 @@ def get_compose_type(results_dir):
         raise RuntimeError("Cannot find ks template for build %s" % os.path.basename(results_dir))
     return t[0]
 
-def compose_detail(cfg, results_dir):
+def compose_detail(cfg, results_dir, api=1):
     """Return details about the build.
 
+    :param cfg: Configuration settings (required for api=1)
+    :type cfg: ComposerConfig
     :param results_dir: The directory containing the metadata and results for the build
     :type results_dir: str
+    :param api: Select which api version of the dict to return (default 1)
+    :type api: int
     :returns: A dictionary with details about the compose
     :rtype: dict
     :raises: IOError if it cannot read the directory, STATUS, or blueprint file.
@@ -322,6 +326,7 @@ def compose_detail(cfg, results_dir):
     * blueprint - Blueprint name
     * version - Blueprint version
     * image_size - Size of the image, if finished. 0 otherwise.
+    * uploads - For API v1 details about uploading the image are included
 
     Various timestamps are also included in the dict.  These are all Unix UTC timestamps.
     It is possible for these timestamps to not always exist, in which case they will be
@@ -345,26 +350,31 @@ def compose_detail(cfg, results_dir):
 
     times = timestamp_dict(results_dir)
 
-    upload_uuids = uuid_get_uploads(cfg, build_id)
-    summaries = [upload.summary() for upload in get_uploads(cfg["upload"], upload_uuids)]
+    detail = {"id":           build_id,
+              "queue_status": status,
+              "job_created":  times.get(TS_CREATED),
+              "job_started":  times.get(TS_STARTED),
+              "job_finished": times.get(TS_FINISHED),
+              "compose_type": compose_type,
+              "blueprint":    blueprint["name"],
+              "version":      blueprint["version"],
+              "image_size":   image_size,
+             }
 
-    return {"id":           build_id,
-            "queue_status": status,
-            "job_created":  times.get(TS_CREATED),
-            "job_started":  times.get(TS_STARTED),
-            "job_finished": times.get(TS_FINISHED),
-            "compose_type": compose_type,
-            "blueprint":    blueprint["name"],
-            "version":      blueprint["version"],
-            "image_size":   image_size,
-            "uploads":      summaries,
-            }
+    if api == 1:
+        # Get uploads for this build_id
+        upload_uuids = uuid_get_uploads(cfg, build_id)
+        summaries = [upload.summary() for upload in get_uploads(cfg["upload"], upload_uuids)]
+        detail["uploads"] = summaries
+    return detail
 
-def queue_status(cfg):
+def queue_status(cfg, api=1):
     """Return details about what is in the queue.
 
     :param cfg: Configuration settings
     :type cfg: ComposerConfig
+    :param api: Select which api version of the dict to return (default 1)
+    :type api: int
     :returns: A list of the new composes, and a list of the running composes
     :rtype: dict
 
@@ -378,7 +388,7 @@ def queue_status(cfg):
     new_details = []
     for n in new_queue:
         try:
-            d = compose_detail(cfg, n)
+            d = compose_detail(cfg, n, api)
         except IOError:
             continue
         new_details.append(d)
@@ -386,7 +396,7 @@ def queue_status(cfg):
     run_details = []
     for r in run_queue:
         try:
-            d = compose_detail(cfg, r)
+            d = compose_detail(cfg, r, api)
         except IOError:
             continue
         run_details.append(d)
@@ -396,32 +406,36 @@ def queue_status(cfg):
         "run": run_details
     }
 
-def uuid_status(cfg, uuid):
+def uuid_status(cfg, uuid, api=1):
     """Return the details of a specific UUID compose
 
     :param cfg: Configuration settings
     :type cfg: ComposerConfig
     :param uuid: The UUID of the build
     :type uuid: str
+    :param api: Select which api version of the dict to return (default 1)
+    :type api: int
     :returns: Details about the build
     :rtype: dict or None
 
-    Returns the same dict as `compose_details()`
+    Returns the same dict as `compose_detail()`
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     try:
-        return compose_detail(cfg, uuid_dir)
+        return compose_detail(cfg, uuid_dir, api)
     except IOError:
         return None
 
-def build_status(cfg, status_filter=None):
+def build_status(cfg, status_filter=None, api=1):
     """Return the details of finished or failed builds
 
     :param cfg: Configuration settings
     :type cfg: ComposerConfig
     :param status_filter: What builds to return. None == all, "FINISHED", or "FAILED"
     :type status_filter: str
-    :returns: A list of the build details (from compose_details)
+    :param api: Select which api version of the dict to return (default 1)
+    :type api: int
+    :returns: A list of the build details (from compose_detail)
     :rtype: list of dicts
 
     This returns a list of build details for each of the matching builds on the
@@ -441,7 +455,7 @@ def build_status(cfg, status_filter=None):
         try:
             status = open(joinpaths(build, "STATUS"), "r").read().strip()
             if status in status_filter:
-                results.append(compose_detail(cfg, build))
+                results.append(compose_detail(cfg, build, api))
         except IOError:
             pass
     return results
@@ -573,7 +587,7 @@ def uuid_delete(cfg, uuid):
     shutil.rmtree(uuid_dir)
     return True
 
-def uuid_info(cfg, uuid):
+def uuid_info(cfg, uuid, api=1):
     """Return information about the composition
 
     :param cfg: Configuration settings
@@ -614,17 +628,14 @@ def uuid_info(cfg, uuid):
         raise RuntimeError("Missing deps.toml for %s" % uuid)
     deps_dict = toml.loads(open(deps_path, "r").read())
 
-    details = compose_detail(cfg, uuid_dir)
+    details = compose_detail(cfg, uuid_dir, api)
 
     commit_path = joinpaths(uuid_dir, "COMMIT")
     if not os.path.exists(commit_path):
         raise RuntimeError("Missing commit hash for %s" % uuid)
     commit_id = open(commit_path, "r").read().strip()
 
-    upload_uuids = uuid_get_uploads(cfg, uuid)
-    summaries = [upload.summary() for upload in get_uploads(cfg["upload"], upload_uuids)]
-
-    return {"id":           uuid,
+    info = {"id":           uuid,
             "config":       cfg_dict,
             "blueprint":    frozen_dict,
             "commit":       commit_id,
@@ -632,8 +643,12 @@ def uuid_info(cfg, uuid):
             "compose_type": details["compose_type"],
             "queue_status": details["queue_status"],
             "image_size":   details["image_size"],
-            "uploads":      summaries,
     }
+    if api == 1:
+        upload_uuids = uuid_get_uploads(cfg, uuid)
+        summaries = [upload.summary() for upload in get_uploads(cfg["upload"], upload_uuids)]
+        info["uploads"] = summaries
+    return info
 
 def uuid_tar(cfg, uuid, metadata=False, image=False, logs=False):
     """Return a tar of the build data

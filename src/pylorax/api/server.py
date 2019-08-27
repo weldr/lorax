@@ -91,6 +91,11 @@ server.register_blueprint(v0_api, url_prefix="/api/v0/")
 # Use v0 routes by default
 skip_rules = [
     "/compose",
+    "/compose/queue",
+    "/compose/finished",
+    "/compose/failed",
+    "/compose/status/<uuids>",
+    "/compose/info/<uuid>",
     "/projects/source/info/<source_names>",
     "/projects/source/new",
 ]
