@@ -29,6 +29,7 @@ import unittest
 
 from flask import json
 from ..lib import create_git_repo
+import lifted.config
 from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
 from pylorax.api.errors import *                               # pylint: disable=wildcard-import
 from pylorax.api.queue import start_queue_monitor
@@ -112,6 +113,7 @@ class ServerAPIV0TestCase(unittest.TestCase):
         server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        lifted.config.configure(server.config["COMPOSER_CFG"])
         os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
@@ -1758,6 +1760,7 @@ class ServerAPIV1TestCase(unittest.TestCase):
         server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        lifted.config.configure(server.config["COMPOSER_CFG"])
         os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
@@ -3517,6 +3520,7 @@ class RepoCacheAPIV0TestCase(unittest.TestCase):
         server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        lifted.config.configure(server.config["COMPOSER_CFG"])
         os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
@@ -3656,6 +3660,7 @@ class RepoCacheAPIV1TestCase(unittest.TestCase):
         server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        lifted.config.configure(server.config["COMPOSER_CFG"])
         os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
@@ -3797,6 +3802,7 @@ class GitRPMBlueprintTestCase(unittest.TestCase):
         server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        lifted.config.configure(server.config["COMPOSER_CFG"])
         os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:

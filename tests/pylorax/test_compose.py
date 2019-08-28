@@ -20,6 +20,7 @@ import shutil
 import tempfile
 import unittest
 
+import lifted.config
 from pylorax import get_buildarch
 from pylorax.api.compose import add_customizations, get_extra_pkgs, compose_types
 from pylorax.api.compose import timezone_cmd, get_timezone_settings
@@ -804,6 +805,7 @@ class ExtraPkgsTest(unittest.TestCase):
     def setUpClass(self):
         self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
         self.config = configure(root_dir=self.tmp_dir, test_config=True)
+        lifted.config.configure(self.config)
         make_dnf_dirs(self.config, os.getuid(), os.getgid())
         self.dbo = get_base_object(self.config)
 

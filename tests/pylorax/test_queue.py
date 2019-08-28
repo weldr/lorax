@@ -20,6 +20,7 @@ import tempfile
 import unittest
 from uuid import uuid4
 
+import lifted.config
 from pylorax.api.config import configure, make_queue_dirs
 from pylorax.api.queue import check_queues
 from pylorax.base import DataHolder
@@ -36,6 +37,7 @@ class QueueTestCase(unittest.TestCase):
         self.config["REPO_DIR"] = repo_dir
 
         self.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        lifted.config.configure(self.config["COMPOSER_CFG"])
         os.makedirs(joinpaths(self.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
         errors = make_queue_dirs(self.config["COMPOSER_CFG"], os.getgid())
         if errors:

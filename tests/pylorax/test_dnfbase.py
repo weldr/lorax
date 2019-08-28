@@ -21,6 +21,7 @@ import unittest
 
 import configparser
 
+import lifted.config
 from pylorax.api.config import configure, make_dnf_dirs
 from pylorax.api.dnfbase import get_base_object
 
@@ -42,6 +43,7 @@ use_system_repos = False
 
         # will read the above configuration
         config = configure(conf_file=conf_file, root_dir=self.tmp_dir)
+        lifted.config.configure(config)
         make_dnf_dirs(config, os.getuid(), os.getgid())
 
         # will read composer config and store a dnf config file
@@ -76,6 +78,7 @@ class DnfbaseSystemReposTest(unittest.TestCase):
 
         # will read the above configuration
         config = configure(root_dir=self.tmp_dir)
+        lifted.config.configure(config)
         make_dnf_dirs(config, os.getuid(), os.getgid())
 
         # will read composer config and store a dnf config file
@@ -105,6 +108,7 @@ class CreateDnfDirsTest(unittest.TestCase):
 
     def test_creates_missing_dnf_root_directory(self):
         config = configure(test_config=True, root_dir=self.tmp_dir)
+        lifted.config.configure(config)
 
         # will create the above directory if missing
         make_dnf_dirs(config, os.getuid(), os.getgid())

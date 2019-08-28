@@ -22,6 +22,7 @@ import tempfile
 import time
 import unittest
 
+import lifted.config
 from pylorax.sysutils import joinpaths
 from pylorax.api.config import configure, make_dnf_dirs
 from pylorax.api.projects import api_time, api_changelog, pkg_to_project, pkg_to_project_info, pkg_to_dep
@@ -49,6 +50,7 @@ class ProjectsTest(unittest.TestCase):
     def setUpClass(self):
         self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
         self.config = configure(root_dir=self.tmp_dir, test_config=True)
+        lifted.config.configure(self.config)
         make_dnf_dirs(self.config, os.getuid(), os.getgid())
         self.dbo = get_base_object(self.config)
         os.environ["TZ"] = "UTC"
@@ -215,10 +217,12 @@ class ConfigureTest(unittest.TestCase):
 
     def test_configure_reads_existing_file(self):
         config = configure(conf_file=self.conf_file)
+        lifted.config.configure(config)
         self.assertEqual(config.get('composer', 'cache_dir'), '/tmp/cache-test')
 
     def test_configure_reads_non_existing_file(self):
         config = configure(conf_file=self.conf_file + '.non-existing')
+        lifted.config.configure(config)
         self.assertEqual(config.get('composer', 'cache_dir'), '/var/tmp/composer/cache')
 
 def fakerepo_baseurl_v0():
