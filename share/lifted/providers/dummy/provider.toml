@@ -1,4 +1,5 @@
 display = "Dummy"
+supported_types = []
 
 [settings-info]
 # This provider has no settings.
