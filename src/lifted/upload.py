@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2019 Red Hat, Inc.
+# Copyright (C) 2019 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,8 +16,6 @@
 #
 
 from datetime import datetime
-from enum import Enum
-from functools import partial
 import logging
 from multiprocessing import current_process
 import os
