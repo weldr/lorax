@@ -152,6 +152,7 @@ Requires: python3-rpmfluff
 Requires: git
 Requires: xz
 Requires: createrepo_c
+Requires: python3-ansible-runner
 
 %{?systemd_requires}
 BuildRequires: systemd
