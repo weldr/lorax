@@ -5,6 +5,7 @@ RUN  dnf -y install \
   libselinux-python3 \
   make \
   pykickstart \
+  python3-ansible-runner \
   python3-coverage \
   python3-coveralls \
   python3-flask \
@@ -33,6 +34,7 @@ RUN  dnf -y install \
   pbzip2 \
   squashfs-tools \
   qemu-img \
+  yamllint \
   which && \
   touch /.in-container
 RUN useradd weldr

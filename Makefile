@@ -43,6 +43,8 @@ install: all
 check:
 	@echo "*** Running pylint ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ ./tests/pylint/runpylint.py
+	@echo "*** Running yamllint ***"
+	./tests/lint-playbooks.sh
 
 test:
 	@echo "*** Running tests ***"
