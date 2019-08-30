@@ -48,7 +48,7 @@ from pylorax.sysutils import joinpaths, remove
 
 
 # Default parameters for rebuilding initramfs, override with --dracut-args
-DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom qemu qemu-net",
+DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live dmsquash-live-ntfs convertfs pollcdrom qemu qemu-net",
                   "--omit", "plymouth", "--no-hostonly", "--debug", "--no-early-microcode"]
 
 RUNTIME = "images/install.img"
