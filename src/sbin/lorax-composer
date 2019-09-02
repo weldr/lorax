@@ -37,7 +37,6 @@ from gevent.pywsgi import WSGIServer
 from pylorax import vernum, log_selinux_state
 from pylorax.api.cmdline import lorax_composer_parser
 from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs, make_owned_dir
-from pylorax.api.compose import test_templates
 from pylorax.api.dnfbase import DNFLock
 from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
@@ -266,10 +265,6 @@ if __name__ == '__main__':
     except RuntimeError:
         # Error has already been logged. Just exit cleanly.
         sys.exit(1)
-
-    # Depsolve the templates and make a note of the failures for /api/status to report
-    with server.config["DNFLOCK"].lock:
-        server.config["TEMPLATE_ERRORS"] = test_templates(server.config["DNFLOCK"].dbo, server.config["COMPOSER_CFG"].get("composer", "share_dir"))
 
     log.info("Starting %s on %s with blueprints from %s", VERSION, opts.socket, opts.BLUEPRINTS)
     http_server = WSGIServer(listener, server, log=LogWrapper(server_log))

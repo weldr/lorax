@@ -57,36 +57,6 @@ from pylorax.ltmpl import LiveTemplateRunner
 from pylorax.sysutils import joinpaths, flatconfig
 
 
-def test_templates(dbo, share_dir):
-    """ Try depsolving each of the the templates and report any errors
-
-    :param dbo: dnf base object
-    :type dbo: dnf.Base
-    :returns: List of template types and errors
-    :rtype: List of errors
-
-    Return a list of templates and errors encountered or an empty list
-    """
-    template_errors = []
-    for compose_type in compose_types(share_dir):
-        # Read the kickstart template for this type
-        ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
-        ks_template = open(ks_template_path, "r").read()
-
-        # How much space will the packages in the default template take?
-        ks_version = makeVersion()
-        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
-        ks.readKickstartFromString(ks_template+"\n%end\n")
-        pkgs = [(name, "*") for name in ks.handler.packages.packageList]
-        grps = [grp.name for grp in ks.handler.packages.groupList]
-        try:
-            projects_depsolve(dbo, pkgs, grps)
-        except ProjectsError as e:
-            template_errors.append("Error depsolving %s: %s" % (compose_type, str(e)))
-
-    return template_errors
-
-
 def repo_to_ks(r, url="url"):
     """ Return a kickstart line with the correct args.
     :param r: DNF repository information
