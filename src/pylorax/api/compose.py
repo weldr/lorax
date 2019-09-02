@@ -36,7 +36,9 @@ log = logging.getLogger("lorax-composer")
 import os
 from glob import glob
 from io import StringIO
+import json
 from math import ceil
+import osbuild
 import shutil
 from uuid import uuid4
 
@@ -662,51 +664,8 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     if compose_type not in compose_types(share_dir):
         raise RuntimeError("Invalid compose type (%s), must be one of %s" % (compose_type, compose_types(share_dir)))
 
-    # Some image types (live-iso) need extra packages for composer to execute the output template
-    with dnflock.lock:
-        extra_pkgs = get_extra_pkgs(dnflock.dbo, share_dir, compose_type)
-    log.debug("Extra packages needed for %s: %s", compose_type, extra_pkgs)
-
     with gitlock.lock:
         (commit_id, recipe) = read_recipe_and_id(gitlock.repo, branch, recipe_name)
-
-    # Combine modules and packages and depsolve the list
-    module_nver = recipe.module_nver
-    package_nver = recipe.package_nver
-    package_nver.extend([(name, '*') for name in extra_pkgs])
-
-    projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
-    deps = []
-    log.info("depsolving %s", recipe["name"])
-    try:
-        # This can possibly update repodata and reset the YumBase object.
-        with dnflock.lock_check:
-            (installed_size, deps) = projects_depsolve_with_size(dnflock.dbo, projects, recipe.group_names, with_core=False)
-    except ProjectsError as e:
-        log.error("start_build depsolve: %s", str(e))
-        raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
-
-    # Read the kickstart template for this type
-    ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
-    ks_template = open(ks_template_path, "r").read()
-
-    # How much space will the packages in the default template take?
-    ks_version = makeVersion()
-    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
-    ks.readKickstartFromString(ks_template+"\n%end\n")
-    pkgs = [(name, "*") for name in ks.handler.packages.packageList]
-    grps = [grp.name for grp in ks.handler.packages.groupList]
-    try:
-        with dnflock.lock:
-            (template_size, _) = projects_depsolve_with_size(dnflock.dbo, pkgs, grps, with_core=not ks.handler.packages.nocore)
-    except ProjectsError as e:
-        log.error("start_build depsolve: %s", str(e))
-        raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
-    log.debug("installed_size = %d, template_size=%d", installed_size, template_size)
-
-    # Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 10% (which doesn't always work).
-    installed_size = int((installed_size+template_size)) * 1.2
-    log.debug("/ partition size = %d", installed_size)
 
     # Create the results directory
     build_id = str(uuid4())
@@ -723,20 +682,6 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     with open(recipe_path, "w") as f:
         f.write(recipe.toml())
 
-    # Write the frozen recipe
-    frozen_recipe = recipe.freeze(deps)
-    recipe_path = joinpaths(results_dir, "frozen.toml")
-    with open(recipe_path, "w") as f:
-        f.write(frozen_recipe.toml())
-
-    # Write out the dependencies to the results dir
-    deps_path = joinpaths(results_dir, "deps.toml")
-    with open(deps_path, "w") as f:
-        f.write(toml.dumps({"packages":deps}))
-
-    # Save a copy of the original kickstart
-    shutil.copy(ks_template_path, results_dir)
-
     with dnflock.lock:
         repos = list(dnflock.dbo.repos.iter_enabled())
     if not repos:
@@ -745,48 +690,6 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     # Create the git rpms, if any, and return the path to the repo under results_dir
     gitrpm_repo = create_gitrpm_repo(results_dir, recipe)
 
-    # Create the final kickstart with repos and package list
-    ks_path = joinpaths(results_dir, "final-kickstart.ks")
-    with open(ks_path, "w") as f:
-        ks_url = repo_to_ks(repos[0], "url")
-        log.debug("url = %s", ks_url)
-        f.write('url %s\n' % ks_url)
-        for idx, r in enumerate(repos[1:]):
-            ks_repo = repo_to_ks(r, "baseurl")
-            log.debug("repo composer-%s = %s", idx, ks_repo)
-            f.write('repo --name="composer-%s" %s\n' % (idx, ks_repo))
-
-        if gitrpm_repo:
-            log.debug("repo gitrpms = %s", gitrpm_repo)
-            f.write('repo --name="gitrpms" --baseurl="file://%s"\n' % gitrpm_repo)
-
-        # Setup the disk for booting
-        # TODO Add GPT and UEFI boot support
-        f.write('clearpart --all --initlabel\n')
-
-        # Write the root partition and it's size in MB (rounded up)
-        f.write('part / --size=%d\n' % ceil(installed_size / 1024**2))
-
-        # Some customizations modify the template before writing it
-        f.write(customize_ks_template(ks_template, recipe))
-
-        for d in deps:
-            f.write(dep_nevra(d)+"\n")
-
-        # Include the rpms from the gitrpm repo directory
-        if gitrpm_repo:
-            for rpm in glob(os.path.join(gitrpm_repo, "*.rpm")):
-                f.write(os.path.basename(rpm)[:-4]+"\n")
-
-        f.write("%end\n")
-
-        # Other customizations can be appended to the kickstart
-        add_customizations(f, recipe)
-
-    # Setup the config to pass to novirt_install
-    log_dir = joinpaths(results_dir, "logs/")
-    cfg_args = compose_args(compose_type)
-
     # Get the title, project, and release version from the host
     if not os.path.exists("/etc/os-release"):
         log.error("/etc/os-release is missing, cannot determine product or release version")
@@ -794,25 +697,134 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
 
     log.debug("os_release = %s", dict(os_release.items()))
 
-    cfg_args["title"] = os_release.get("PRETTY_NAME", "")
-    cfg_args["project"] = os_release.get("NAME", "")
-    cfg_args["releasever"] = os_release.get("VERSION_ID", "")
-    cfg_args["volid"] = ""
-    cfg_args["extra_boot_args"] = get_kernel_append(recipe)
+    image_name, pipeline = create_pipeline(compose_type, recipe, repos, releasever=os_release.get("VERSION_ID", ""))
+    if pipeline:
+        job = {
+            "compose_type": compose_type,
+            "image_name": image_name,
+            "pipeline": pipeline.description()
+        }
+        with open(joinpaths(results_dir, "job.json"), "w") as f:
+            json.dump(job, f, indent=2)
+    else:
+        # Some image types (live-iso) need extra packages for composer to execute the output template
+        with dnflock.lock:
+            extra_pkgs = get_extra_pkgs(dnflock.dbo, share_dir, compose_type)
+        log.debug("Extra packages needed for %s: %s", compose_type, extra_pkgs)
 
-    if "compression" not in cfg_args:
-        cfg_args["compression"] = "xz"
+        # Combine modules and packages and depsolve the list
+        module_nver = recipe.module_nver
+        package_nver = recipe.package_nver
+        package_nver.extend([(name, '*') for name in extra_pkgs])
 
-    if "compress_args" not in cfg_args:
-        cfg_args["compress_args"] = []
+        projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
+        deps = []
+        log.info("depsolving %s", recipe["name"])
+        try:
+            # This can possibly update repodata and reset the YumBase object.
+            with dnflock.lock_check:
+                (installed_size, deps) = projects_depsolve_with_size(dnflock.dbo, projects, recipe.group_names, with_core=False)
+        except ProjectsError as e:
+            log.error("start_build depsolve: %s", str(e))
+            raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
 
-    cfg_args.update({
-        "ks":               [ks_path],
-        "logfile":          log_dir,
-        "timeout":          60,                     # 60 minute timeout
-    })
-    with open(joinpaths(results_dir, "config.toml"), "w") as f:
-        f.write(toml.dumps(cfg_args))
+        # Read the kickstart template for this type
+        ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
+        ks_template = open(ks_template_path, "r").read()
+
+        # How much space will the packages in the default template take?
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString(ks_template+"\n%end\n")
+        pkgs = [(name, "*") for name in ks.handler.packages.packageList]
+        grps = [grp.name for grp in ks.handler.packages.groupList]
+        try:
+            with dnflock.lock:
+                (template_size, _) = projects_depsolve_with_size(dnflock.dbo, pkgs, grps, with_core=not ks.handler.packages.nocore)
+        except ProjectsError as e:
+            log.error("start_build depsolve: %s", str(e))
+            raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
+        log.debug("installed_size = %d, template_size=%d", installed_size, template_size)
+
+        # Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 10% (which doesn't always work).
+        installed_size = int((installed_size+template_size)) * 1.2
+        log.debug("/ partition size = %d", installed_size)
+
+        # Write the frozen recipe
+        frozen_recipe = recipe.freeze(deps)
+        recipe_path = joinpaths(results_dir, "frozen.toml")
+        with open(recipe_path, "w") as f:
+            f.write(frozen_recipe.toml())
+
+        # Write out the dependencies to the results dir
+        deps_path = joinpaths(results_dir, "deps.toml")
+        with open(deps_path, "w") as f:
+            f.write(toml.dumps({"packages":deps}))
+
+        # Save a copy of the original kickstart
+        shutil.copy(ks_template_path, results_dir)
+
+        # Create the final kickstart with repos and package list
+        ks_path = joinpaths(results_dir, "final-kickstart.ks")
+        with open(ks_path, "w") as f:
+            ks_url = repo_to_ks(repos[0], "url")
+            log.debug("url = %s", ks_url)
+            f.write('url %s\n' % ks_url)
+            for idx, r in enumerate(repos[1:]):
+                ks_repo = repo_to_ks(r, "baseurl")
+                log.debug("repo composer-%s = %s", idx, ks_repo)
+                f.write('repo --name="composer-%s" %s\n' % (idx, ks_repo))
+
+            if gitrpm_repo:
+                log.debug("repo gitrpms = %s", gitrpm_repo)
+                f.write('repo --name="gitrpms" --baseurl="file://%s"\n' % gitrpm_repo)
+
+            # Setup the disk for booting
+            # TODO Add GPT and UEFI boot support
+            f.write('clearpart --all --initlabel\n')
+
+            # Write the root partition and it's size in MB (rounded up)
+            f.write('part / --size=%d\n' % ceil(installed_size / 1024**2))
+
+            # Some customizations modify the template before writing it
+            f.write(customize_ks_template(ks_template, recipe))
+
+            for d in deps:
+                f.write(dep_nevra(d)+"\n")
+
+            # Include the rpms from the gitrpm repo directory
+            if gitrpm_repo:
+                for rpm in glob(os.path.join(gitrpm_repo, "*.rpm")):
+                    f.write(os.path.basename(rpm)[:-4]+"\n")
+
+            f.write("%end\n")
+
+            # Other customizations can be appended to the kickstart
+            add_customizations(f, recipe)
+
+        # Setup the config to pass to novirt_install
+        log_dir = joinpaths(results_dir, "logs/")
+        cfg_args = compose_args(compose_type)
+
+        cfg_args["title"] = os_release.get("PRETTY_NAME", "")
+        cfg_args["project"] = os_release.get("NAME", "")
+        cfg_args["releasever"] = os_release.get("VERSION_ID", "")
+        cfg_args["volid"] = ""
+        cfg_args["extra_boot_args"] = get_kernel_append(recipe)
+
+        if "compression" not in cfg_args:
+            cfg_args["compression"] = "xz"
+
+        if "compress_args" not in cfg_args:
+            cfg_args["compress_args"] = []
+
+        cfg_args.update({
+            "ks":               [ks_path],
+            "logfile":          log_dir,
+            "timeout":          60,                     # 60 minute timeout
+        })
+        with open(joinpaths(results_dir, "config.toml"), "w") as f:
+            f.write(toml.dumps(cfg_args))
 
     # Set the initial status
     open(joinpaths(results_dir, "STATUS"), "w").write("WAITING")
@@ -832,8 +844,10 @@ def compose_types(share_dir):
     r""" Returns a list of the supported output types
 
     The output types come from the kickstart names in /usr/share/lorax/composer/\*ks
+    and osbuild pipelines.
     """
-    return sorted([os.path.basename(ks)[:-3] for ks in glob(joinpaths(share_dir, "composer/*.ks"))])
+    kickstarts = [os.path.basename(ks)[:-3] for ks in glob(joinpaths(share_dir, "composer/*.ks"))]
+    return sorted(kickstarts + list_pipelines())
 
 def compose_args(compose_type):
     """ Returns the settings to pass to novirt_install for the compose type
@@ -845,32 +859,7 @@ def compose_args(compose_type):
     These are the ones the define the type of output, it's filename, etc.
     Other options will be filled in by `make_compose()`
     """
-    _MAP = {"tar":              {"make_iso":                False,
-                                 "make_disk":               False,
-                                 "make_fsimage":            False,
-                                 "make_appliance":          False,
-                                 "make_ami":                False,
-                                 "make_tar":                True,
-                                 "make_tar_disk":           False,
-                                 "make_pxe_live":           False,
-                                 "make_ostree_live":        False,
-                                 "make_oci":                False,
-                                 "make_vagrant":            False,
-                                 "ostree":                  False,
-                                 "live_rootfs_keep_size":   False,
-                                 "live_rootfs_size":        0,
-                                 "image_size_align":        0,
-                                 "image_type":              False,          # False instead of None because of TOML
-                                 "qemu_args":               [],
-                                 "image_name":              default_image_name("xz", "root.tar"),
-                                 "tar_disk_name":           None,
-                                 "image_only":              True,
-                                 "app_name":                None,
-                                 "app_template":            None,
-                                 "app_file":                None,
-                                 "squashfs_only":           False,
-                                },
-            "liveimg-tar":      {"make_iso":                False,
+    _MAP = {"liveimg-tar":      {"make_iso":                False,
                                  "make_disk":               False,
                                  "make_fsimage":            False,
                                  "make_appliance":          False,
@@ -941,32 +930,6 @@ def compose_args(compose_type):
                                  "image_type":              False,          # False instead of None because of TOML
                                  "qemu_args":               [],
                                  "image_name":              "disk.img",
-                                 "tar_disk_name":           None,
-                                 "fs_label":                "",
-                                 "image_only":              True,
-                                 "app_name":                None,
-                                 "app_template":            None,
-                                 "app_file":                None,
-                                 "squashfs_only":           False,
-                                },
-            "qcow2":            {"make_iso":                False,
-                                 "make_disk":               True,
-                                 "make_fsimage":            False,
-                                 "make_appliance":          False,
-                                 "make_ami":                False,
-                                 "make_tar":                False,
-                                 "make_tar_disk":           False,
-                                 "make_pxe_live":           False,
-                                 "make_ostree_live":        False,
-                                 "make_oci":                False,
-                                 "make_vagrant":            False,
-                                 "ostree":                  False,
-                                 "live_rootfs_keep_size":   False,
-                                 "live_rootfs_size":        0,
-                                 "image_size_align":        0,
-                                 "image_type":              "qcow2",
-                                 "qemu_args":               [],
-                                 "image_name":              "disk.qcow2",
                                  "tar_disk_name":           None,
                                  "fs_label":                "",
                                  "image_only":              True,
@@ -1186,7 +1149,134 @@ def compose_args(compose_type):
                                  "squashfs_only":           False,
                                 },
             }
-    return _MAP[compose_type]
+    return _MAP.get(compose_type)
+
+pipeline_funcs = {}
+
+def pipeline(function):
+    """Docorator for functions that generate pipelines.
+
+    The function's name must be the same as the output type for which it
+    generates a pipeline. It must take (blueprint, repos, releasever) as
+    arguments and returns (image_name, pipeline).
+    """
+    pipeline_funcs[function.__name__] = function
+
+def create_pipeline(compose_type, blueprint, repos, releasever):
+    func = pipeline_funcs.get(compose_type)
+    if func:
+        return func(blueprint, repos, releasever)
+    else:
+        return None, None
+
+def list_pipelines():
+    return list(pipeline_funcs.keys())
+
+def repodict(repo):
+    """Returns attributes of @repo as a dict."""
+    r = {}
+    if repo.name:
+        r["name"] = repo.name
+    if repo.baseurl:
+        # convert from libdnf.module.VectorString, because that's not JSON-serializable
+        r["baseurl"] = [url for url in repo.baseurl]
+    if repo.metalink:
+        r["metalink"] = repo.metalink
+    if repo.mirrorlist:
+        r["mirrorlist"] = repo.mirrorlist
+    if repo.sslverify:
+        r["sslverify"] = repo.sslverify
+    if repo.sslcacert:
+        r["sslcacert"] = repo.sslcacert
+    if repo.sslclientcert:
+        r["sslclientcert"] = repo.sslclientcert
+    if repo.sslclientkey:
+        r["sslclientkey"] = repo.sslclientkey
+    return r
+
+def base_pipeline(blueprint, repos, releasever, additional_packages=None):
+    pipeline = osbuild.Pipeline()
+
+    packages = ["@core", "kernel", "selinux-policy-targeted"]
+    if additional_packages:
+        packages += additional_packages
+    for package, version in blueprint.package_nver:
+        packages.append(f"{package}-{version}")
+
+    pipeline.add_stage("org.osbuild.dnf", {
+        "releasever": releasever,
+        "repos": { r.id: repodict(r) for r in repos },
+        "packages": packages
+    })
+
+    customizations = blueprint.get("customizations", {})
+
+    users = {}
+    for user in customizations.get("user", []):
+        try:
+            name = user["name"]
+        except KeyError as error:
+            raise RuntimeError("user entry requires a name") from error
+
+        # these fields have the same meaning in blueprints and org.osbuild.users
+        fields = ("description", "uid", "gid", "groups", "password", "home", "shell", "key")
+        users[name] = { f: user[f] for f in fields if f in user }
+    pipeline.add_stage("org.osbuild.users", { "users": users })
+
+    if "hostname" in customizations:
+        pipeline.add_stage("org.osbuild.hostname", { "hostname": customizations["hostname"] })
+
+    return pipeline
+
+@pipeline
+def tar(blueprint, repos, releasever):
+    image_name = "root.tar.xz"
+    pipeline = base_pipeline(blueprint, repos, releasever)
+    pipeline.add_stage("org.osbuild.selinux", { "file_contexts": "etc/selinux/targeted/contexts/files/file_contexts" })
+    pipeline.set_assembler("org.osbuild.tar", {
+        "filename": image_name,
+        "compression": "xz"
+    })
+    return image_name, pipeline
+
+@pipeline
+def qcow2(blueprint, repos, releasever):
+    image_name = "disk.qcow2"
+    root_fs_uuid = str(uuid4())
+
+    pipeline = base_pipeline(blueprint, repos, releasever, additional_packages=["grub2-pc"])
+
+    grub2_options = { "root_fs_uuid": root_fs_uuid }
+    kernel_append = blueprint.get("customizations", {}).get("kernel", {}).get("append")
+    if kernel_append:
+        grub2_options["kernel_opts"] = kernel_append
+    pipeline.add_stage("org.osbuild.grub2", grub2_options)
+
+    pipeline.add_stage("org.osbuild.fstab", {
+        "filesystems": [
+            {
+                "uuid": root_fs_uuid,
+                "vfs_type": "ext4",
+                "path": "/",
+                "freq": "1",
+                "passno": "1"
+            }
+        ]
+    })
+
+    pipeline.add_stage("org.osbuild.fix-bls")
+
+    pipeline.add_stage("org.osbuild.selinux", {
+        "file_contexts": "etc/selinux/targeted/contexts/files/file_contexts"
+    })
+
+    pipeline.set_assembler("org.osbuild.qcow2", {
+        "filename": image_name,
+        "root_fs_uuid": root_fs_uuid,
+        "size": 3221225472
+    })
+
+    return image_name, pipeline
 
 def move_compose_results(cfg, results_dir):
     """Move the final image to the results_dir and cleanup the unneeded compose files

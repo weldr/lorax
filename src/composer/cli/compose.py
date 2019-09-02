@@ -381,9 +381,10 @@ def compose_info(socket_path, api_version, args, show_json=False, testmode=0):
     for m in result["blueprint"]["modules"]:
         print("    %s-%s" % (m["name"], m["version"]))
 
-    print("Dependencies:")
-    for d in result["deps"]["packages"]:
-        print("    " + packageNEVRA(d))
+    if "deps" in result:
+        print("Dependencies:")
+        for d in result["deps"]["packages"]:
+            print("    " + packageNEVRA(d))
 
     return rc
 

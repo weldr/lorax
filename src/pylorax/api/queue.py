@@ -22,7 +22,10 @@ dnf_log = logging.getLogger("dnf")
 import os
 import grp
 from glob import glob
+import json
 import multiprocessing as mp
+import osbuild
+import pytoml as toml
 import pwd
 import shutil
 import subprocess
@@ -157,26 +160,31 @@ def monitor(cfg):
 
             log.info("Starting new compose: %s", dst)
             open(joinpaths(dst, "STATUS"), "w").write("RUNNING\n")
+            if os.path.exists(joinpaths(dst, "config.toml")):
+                try:
+                    make_compose(cfg, os.path.realpath(dst))
+                    log.info("Finished building %s, results are in %s", dst, os.path.realpath(dst))
+                    status = "FINISHED"
+                except Exception:
+                    import traceback
+                    log.error("traceback: %s", traceback.format_exc())
+                    status = "FAILED"
+                finally:
+                    for handler, loggers in handlers:
+                        for logger in loggers:
+                            logger.removeHandler(handler)
+                        handler.close()
+            else:
+                with open(joinpaths(dst, "job.json")) as f:
+                    job = json.load(f)
+                pipeline = osbuild.load(job["pipeline"])
+                results = pipeline.run(joinpaths(dst, "output"), store=joinpaths(dst, "osbuild/store"), check=False)
+                status = "FINISHED" if results["returncode"] == 0 else "FAILED"
+                with open(joinpaths(dst, "results.json"), "w") as f:
+                    json.dump(results, f)
 
-            try:
-                make_compose(cfg, os.path.realpath(dst))
-                log.info("Finished building %s, results are in %s", dst, os.path.realpath(dst))
-                open(joinpaths(dst, "STATUS"), "w").write("FINISHED\n")
-                write_timestamp(dst, TS_FINISHED)
-            except Exception:
-                import traceback
-                log.error("traceback: %s", traceback.format_exc())
-
-# TODO - Write the error message to an ERROR-LOG file to include with the status
-#                log.error("Error running compose: %s", e)
-                open(joinpaths(dst, "STATUS"), "w").write("FAILED\n")
-                write_timestamp(dst, TS_FINISHED)
-            finally:
-                for handler, loggers in handlers:
-                    for logger in loggers:
-                        logger.removeHandler(handler)
-                    handler.close()
-
+            open(joinpaths(dst, "STATUS"), "w").write(f"{status}\n")
+            write_timestamp(dst, TS_FINISHED)
             os.unlink(dst)
 
 def make_compose(cfg, results_dir):
@@ -282,6 +290,7 @@ def make_compose(cfg, results_dir):
         log.debug("Install finished, chowning results to %s:%s", user, group)
         subprocess.call(["chown", "-R", "%s:%s" % (user, group), results_dir])
 
+
 def get_compose_type(results_dir):
     """Return the type of composition.
 
@@ -291,6 +300,13 @@ def get_compose_type(results_dir):
     :rtype: str
     :raises: RuntimeError if no kickstart template can be found.
     """
+    try:
+        with open(joinpaths(results_dir, "job.json")) as f:
+            job = json.load(f)
+            return job["compose_type"]
+    except FileNotFoundError:
+        pass # fall through to code below
+
     # Should only be 2 kickstarts, the final-kickstart.ks and the template
     t = [os.path.basename(ks)[:-3] for ks in glob(joinpaths(results_dir, "*.ks"))
                                    if "final-kickstart" not in ks]
@@ -538,21 +554,11 @@ def uuid_info(cfg, uuid):
     if not os.path.exists(uuid_dir):
         return None
 
-    # Load the compose configuration
-    cfg_path = joinpaths(uuid_dir, "config.toml")
-    if not os.path.exists(cfg_path):
-        raise RuntimeError("Missing config.toml for %s" % uuid)
-    cfg_dict = toml.loads(open(cfg_path, "r").read())
-
-    frozen_path = joinpaths(uuid_dir, "frozen.toml")
-    if not os.path.exists(frozen_path):
-        raise RuntimeError("Missing frozen.toml for %s" % uuid)
-    frozen_dict = toml.loads(open(frozen_path, "r").read())
-
-    deps_path = joinpaths(uuid_dir, "deps.toml")
-    if not os.path.exists(deps_path):
-        raise RuntimeError("Missing deps.toml for %s" % uuid)
-    deps_dict = toml.loads(open(deps_path, "r").read())
+    try:
+        with open(joinpaths(uuid_dir, "blueprint.toml"), "r") as f:
+            blueprint = toml.loads(f.read())
+    except FileNotFoundError:
+        raise RuntimeError("Missing blueprint.toml for %s" % uuid)
 
     details = compose_detail(uuid_dir)
 
@@ -561,15 +567,28 @@ def uuid_info(cfg, uuid):
         raise RuntimeError("Missing commit hash for %s" % uuid)
     commit_id = open(commit_path, "r").read().strip()
 
-    return {"id":           uuid,
-            "config":       cfg_dict,
-            "blueprint":    frozen_dict,
+    info = {"id":           uuid,
+            "blueprint":    blueprint,
             "commit":       commit_id,
-            "deps":         deps_dict,
             "compose_type": details["compose_type"],
             "queue_status": details["queue_status"],
             "image_size":   details["image_size"]
     }
+
+    try:
+        with open(joinpaths(uuid_dir, "deps.toml")) as f:
+            info["deps"] = toml.loads(f.read())
+    except FileNotFoundError:
+        pass # don't include deps when deps.toml doesn't exist
+
+    try:
+        with open(joinpaths(uuid_dir, "config.toml")) as f:
+            info["config"] = toml.load(f)
+    except FileNotFoundError:
+        with open(joinpaths(uuid_dir, "job.json")) as f:
+            info["job"] = json.load(f)
+
+    return info
 
 def uuid_tar(cfg, uuid, metadata=False, image=False, logs=False):
     """Return a tar of the build data
@@ -596,16 +615,17 @@ def uuid_tar(cfg, uuid, metadata=False, image=False, logs=False):
         raise RuntimeError("%s is not a valid build_id" % uuid)
 
     # Load the compose configuration
-    cfg_path = joinpaths(uuid_dir, "config.toml")
-    if not os.path.exists(cfg_path):
-        raise RuntimeError("Missing config.toml for %s" % uuid)
-    cfg_dict = toml.loads(open(cfg_path, "r").read())
-    image_name = cfg_dict["image_name"]
+    try:
+        with open(joinpaths(uuid_dir, "config.toml")) as f:
+            cfg_dict = toml.load(f)
+            image_name = cfg_dict["image_name"]
+    except FileNotFoundError:
+        image_name = None
 
     def include_file(f):
         if f.endswith("/logs"):
             return logs
-        if f.endswith(image_name):
+        if (image_name and f.endswith(image_name)) or f.endswith("output"):
             return image
         return metadata
     filenames = [os.path.basename(f) for f in glob(joinpaths(uuid_dir, "*")) if include_file(f)]
@@ -641,13 +661,14 @@ def get_image_name(uuid_dir):
         raise RuntimeError("%s is not a valid build_id" % uuid)
 
     # Load the compose configuration
-    cfg_path = joinpaths(uuid_dir, "config.toml")
-    if not os.path.exists(cfg_path):
-        raise RuntimeError("Missing config.toml for %s" % uuid)
-    cfg_dict = toml.loads(open(cfg_path, "r").read())
-    image_name = cfg_dict["image_name"]
-
-    return (image_name, joinpaths(uuid_dir, image_name))
+    try:
+        with open(joinpaths(uuid_dir, "config.toml")) as f:
+            cfg_dict = toml.load(f)
+            return cfg_dict["image_name"], joinpaths(uuid_dir, cfg_dict["image_name"])
+    except FileNotFoundError:
+        with open(joinpaths(uuid_dir, "job.json")) as f:
+            job = json.load(f)
+        return job["image_name"], joinpaths(uuid_dir, "output", job["image_name"])
 
 def uuid_log(cfg, uuid, size=1024):
     """Return `size` KiB from the end of the most currently relevant log for a

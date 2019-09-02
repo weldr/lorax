@@ -17,7 +17,7 @@ if ! rpm -q beakerlib; then
     fi
 fi
 
-yum install -y jq make
+yum install -y jq make python3-devel
 
 # Grow root partition to make room for images. This only works on Fedora right now.
 echo ", +" | sfdisk -N 2 -f /dev/vda
@@ -27,7 +27,7 @@ rootlv=$(findmnt --noheadings -oSOURCE /)
 lvresize $rootlv -l+100%FREE -r
 
 rm -rf build-results
-su builder -c "/usr/bin/mock --no-clean --resultdir build-results --rebuild $SRPM"
+su builder -c "/usr/bin/mock --verbose --no-clean --resultdir build-results --rebuild $SRPM"
 
 packages=$(find build-results -name '*.rpm' -not -name '*.src.rpm')
 rpm -e --verbose $(basename -a ${packages[@]} | sed 's/-[0-9].*.rpm$//') || true
@@ -37,10 +37,12 @@ yum install -y $packages
 # This is temporary, for people to play around with osbuild
 if [ ! -d osbuild ]; then
   git clone https://github.com/osbuild/osbuild
+else
+  git -C osbuild pull
 fi
 
 rpm -e --verbose osbuild || true
-(cd osbuild; make rpm; yum install -y *.rpm)
+(cd osbuild; make rpm; yum install -y output/noarch/*.rpm)
 
 
 systemctl enable lorax-composer.socket
