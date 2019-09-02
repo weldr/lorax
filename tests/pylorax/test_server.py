@@ -151,9 +151,6 @@ class ServerTestCase(unittest.TestCase):
         if "releasever" not in self.substitutions or "basearch" not in self.substitutions:
             raise RuntimeError("DNF is missing the releasever and basearch substitutions")
 
-        # Include a message in /api/status output
-        server.config["TEMPLATE_ERRORS"] = ["Test message"]
-
         server.config['TESTING'] = True
         self.server = server.test_client()
         self.repo_dir = repo_dir
@@ -187,9 +184,6 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         # Make sure the fields are present
         self.assertEqual(sorted(data.keys()), sorted(status_fields))
-
-        # Check for test message
-        self.assertEqual(data["msgs"], ["Test message"])
 
 
     def test_02_blueprints_list(self):
@@ -1961,9 +1955,6 @@ class RepoCacheTestCase(unittest.TestCase):
 
         server.config["DNFLOCK"] = DNFLock(server.config["COMPOSER_CFG"], expire_secs=10)
 
-        # Include a message in /api/status output
-        server.config["TEMPLATE_ERRORS"] = ["Test message"]
-
         server.config['TESTING'] = True
         self.server = server.test_client()
         self.repo_dir = repo_dir
@@ -2096,9 +2087,6 @@ class GitRPMBlueprintTestCase(unittest.TestCase):
             self.rawhide = True
 
         server.config["DNFLOCK"] = DNFLock(server.config["COMPOSER_CFG"], expire_secs=10)
-
-        # Include a message in /api/status output
-        server.config["TEMPLATE_ERRORS"] = ["Test message"]
 
         server.config['TESTING'] = True
         self.server = server.test_client()

@@ -69,8 +69,7 @@ def api_status():
             "msgs": []}
 
     The 'msgs' field can be a list of strings describing startup problems or status that
-    should be displayed to the user. eg. if the compose templates are not depsolving properly
-    the errors will be in 'msgs'.
+    should be displayed to the user.
     """
     return jsonify(backend="lorax-composer",
                    build=vernum,
@@ -78,7 +77,7 @@ def api_status():
                    db_version="0",
                    schema_version="0",
                    db_supported=True,
-                   msgs=server.config["TEMPLATE_ERRORS"])
+                   msgs=[])
 
 @server.errorhandler(werkzeug.exceptions.HTTPException)
 def bad_request(error):
