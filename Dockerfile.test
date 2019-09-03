@@ -27,7 +27,6 @@ RUN  dnf -y install \
   python3-pyvmomi \
   beakerlib \
   sudo \
-  tito \
   rsync \
   e2fsprogs \
   xz-lzma-compat \
