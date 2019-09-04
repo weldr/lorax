@@ -25,6 +25,7 @@ from flask import current_app as api
 
 from lifted.queue import get_upload, reset_upload, cancel_upload, delete_upload
 from lifted.providers import list_providers, resolve_provider, load_profiles, validate_settings, save_settings
+from lifted.providers import load_settings
 from pylorax.api.checkparams import checkparams
 from pylorax.api.compose import start_build
 from pylorax.api.errors import BAD_COMPOSE_TYPE, BUILD_FAILED, INVALID_CHARS, MISSING_POST, PROJECTS_ERROR
@@ -191,7 +192,23 @@ def v1_compose_start():
       Start a compose. The content type should be 'application/json' and the body of the POST
       should look like this. The "upload" object is optional.
 
-      Example::
+      The upload object can specify either a pre-existing profile to use (as returned by
+      `/uploads/providers` or one-time use settings for the provider.
+
+      Example with upload profile::
+
+          {
+            "blueprint_name": "http-server",
+            "compose_type": "tar",
+            "branch": "master",
+            "upload": {
+              "image_name": "My Image",
+              "provider": "azure",
+              "profile": "production-azure-settings"
+            }
+          }
+
+      Example with upload settings::
 
           {
             "blueprint_name": "http-server",
@@ -220,7 +237,7 @@ def v1_compose_start():
       If an "upload" is given, it will schedule an upload to run when the build
       finishes.
 
-      Example::
+      Example response::
 
           {
             "build_id": "e6fa6db4-9c81-4b70-870f-a697ca405cdf",
@@ -265,8 +282,15 @@ def v1_compose_start():
     if "upload" in compose:
         try:
             image_name = compose["upload"]["image_name"]
-            provider_name = compose["upload"]["provider"]
-            settings = compose["upload"]["settings"]
+
+            if "profile" in compose["upload"]:
+                # Load a specific profile for this provider
+                profile = compose["upload"]["profile"]
+                provider_name = compose["upload"]["provider"]
+                settings = load_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, profile)
+            else:
+                provider_name = compose["upload"]["provider"]
+                settings = compose["upload"]["settings"]
         except KeyError as e:
             errors.append({"id": UPLOAD_ERROR, "msg": f'Missing parameter {str(e)}!'})
         try:
