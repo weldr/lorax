@@ -170,3 +170,38 @@ def save_settings(ucfg, provider_name, profile, settings):
 
     with open(path, "w") as settings_file:
         toml.dump(settings, settings_file)
+
+def load_settings(ucfg, provider_name, profile):
+    """Load settings for a provider's profile
+
+    :param ucfg: upload config
+    :type ucfg: object
+    :param provider_name: the name of the cloud provider, e.g. "azure"
+    :type provider_name: str
+    :param profile: the name of the profile to save
+    :type profile: str != ""
+    :returns: The profile settings for the selected provider
+    :rtype: dict
+    :raises: ValueError when passed invalid settings or an invalid profile name
+    :raises: RuntimeError when the provider or profile couldn't be found
+    :raises: ValueError when the passed settings are invalid
+
+    This also calls validate_settings on the loaded settings, potentially
+    raising an error if the saved settings are invalid.
+    """
+    if not profile:
+        raise ValueError("Profile name cannot be empty!")
+    if not provider_name:
+        raise ValueError("Provider name cannot be empty!")
+    directory = os.path.join(ucfg["settings_dir"], provider_name)
+    if not os.path.isdir(directory):
+        raise RuntimeError(f'Couldn\'t find provider "{provider_name}"!')
+
+    path = os.path.join(directory, f"{profile}.toml")
+    if not os.path.isfile(path):
+        raise RuntimeError(f'Couldn\'t find provider "{provider_name}"!')
+
+    with open(path) as file:
+        settings = toml.load(file)
+    validate_settings(ucfg, provider_name, settings)
+    return settings

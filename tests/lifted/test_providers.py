@@ -21,7 +21,7 @@ import unittest
 
 import lifted.config
 from lifted.providers import list_providers, resolve_provider, resolve_playbook_path, save_settings
-from lifted.providers import load_profiles, validate_settings
+from lifted.providers import load_profiles, validate_settings, load_settings
 import pylorax.api.config
 from pylorax.sysutils import joinpaths
 
@@ -93,3 +93,28 @@ class ProvidersTestCase(unittest.TestCase):
             print(p)
             profile = load_profiles(self.config["upload"], p)
             self.assertTrue(test_profiles[p][0] in profile)
+
+    # This *must* run after test_save_settings, _zz_ ensures that happens
+    def test_zz_load_settings_errors(self):
+        """Test returning the correct errors for missing profiles and providers"""
+        with self.assertRaises(ValueError):
+            load_settings(self.config["upload"], "", "")
+
+        with self.assertRaises(ValueError):
+            load_settings(self.config["upload"], "", "default")
+
+        with self.assertRaises(ValueError):
+            load_settings(self.config["upload"], "azure", "")
+
+        with self.assertRaises(RuntimeError):
+            load_settings(self.config["upload"], "foo", "default")
+
+        with self.assertRaises(RuntimeError):
+            load_settings(self.config["upload"], "azure", "missing-test")
+
+    # This *must* run after test_save_settings, _zz_ ensures that happens
+    def test_zz_load_settings(self):
+        """Test loading settings"""
+        for p in list_providers(self.config["upload"]):
+            settings = load_settings(self.config["upload"], p, test_profiles[p][0])
+            self.assertEqual(settings, test_profiles[p][1])
