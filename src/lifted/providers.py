@@ -129,7 +129,7 @@ def list_providers(ucfg):
     :rtype: list of str
     """
     paths = glob(os.path.join(ucfg["providers_dir"], "*"))
-    return [os.path.basename(path) for path in paths]
+    return sorted(os.path.basename(path) for path in paths)
 
 
 def validate_settings(ucfg, provider_name, settings, image_name=None):
