@@ -25,7 +25,7 @@ from flask import current_app as api
 
 from lifted.queue import get_upload, reset_upload, cancel_upload, delete_upload
 from lifted.providers import list_providers, resolve_provider, load_profiles, validate_settings, save_settings
-from lifted.providers import load_settings
+from lifted.providers import load_settings, delete_profile
 from pylorax.api.checkparams import checkparams
 from pylorax.api.compose import start_build
 from pylorax.api.errors import BAD_COMPOSE_TYPE, BUILD_FAILED, INVALID_CHARS, MISSING_POST, PROJECTS_ERROR
@@ -897,6 +897,31 @@ def v1_providers_save():
         return jsonify(status=False, errors=[error]), 400
     try:
         save_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, profile, settings)
+    except Exception as e:
+        error = {"id": UPLOAD_ERROR, "msg": str(e)}
+        return jsonify(status=False, errors=[error])
+    return jsonify(status=True)
+
+@v1_api.route("/upload/providers/delete", defaults={"provider_name": "", "profile": ""}, methods=["DELETE"])
+@v1_api.route("/upload/providers/delete/<provider_name>/<profile>", methods=["DELETE"])
+@checkparams([("provider_name", "", "no provider name given"), ("profile", "", "no profile given")])
+def v1_providers_delete(provider_name, profile):
+    """Delete a provider's profile settings
+
+    **DELETE /api/v1/upload/providers/delete/<provider_name>/<profile>**
+
+      Example response::
+
+          {
+            "status": true
+          }
+    """
+    if None in (VALID_API_STRING.match(provider_name), VALID_API_STRING.match(profile)):
+        error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
+        return jsonify(status=False, errors=[error]), 400
+
+    try:
+        delete_profile(api.config["COMPOSER_CFG"]["upload"], provider_name, profile)
     except Exception as e:
         error = {"id": UPLOAD_ERROR, "msg": str(e)}
         return jsonify(status=False, errors=[error])
