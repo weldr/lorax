@@ -23,6 +23,35 @@ import stat
 import pylorax.api.toml as toml
 
 
+def _get_profile_path(ucfg, provider_name, profile, exists=True):
+    """Helper to return the directory and path for a provider's profile file
+
+    :param ucfg: upload config
+    :type ucfg: object
+    :param provider_name: the name of the cloud provider, e.g. "azure"
+    :type provider_name: str
+    :param profile: the name of the profile to save
+    :type profile: str != ""
+    :returns: Full path of the profile .toml file
+    :rtype: str
+    :raises: ValueError when passed invalid settings or an invalid profile name
+    :raises: RuntimeError when the provider or profile couldn't be found
+    """
+    if not profile:
+        raise ValueError("Profile name cannot be empty!")
+    if not provider_name:
+        raise ValueError("Provider name cannot be empty!")
+
+    directory = os.path.join(ucfg["settings_dir"], provider_name)
+    # create the settings directory if it doesn't exist
+    os.makedirs(directory, exist_ok=True)
+
+    path = os.path.join(directory, f"{profile}.toml")
+    if exists and not os.path.isfile(path):
+        raise RuntimeError(f'Couldn\'t find profile "{profile}"!')
+
+    return path
+
 def resolve_provider(ucfg, provider_name):
     """Get information about the specified provider as defined in that
     provider's `provider.toml`, including the provider's display name and expected
@@ -149,16 +178,9 @@ def save_settings(ucfg, provider_name, profile, settings):
     :type settings: dict
     :raises: ValueError when passed invalid settings or an invalid profile name
     """
-    if not profile:
-        raise ValueError("Profile name cannot be empty!")
+    path = _get_profile_path(ucfg, provider_name, profile, exists=False)
     validate_settings(ucfg, provider_name, settings, image_name=None)
 
-    directory = os.path.join(ucfg["settings_dir"], provider_name)
-
-    # create the settings directory if it doesn't exist
-    os.makedirs(directory, exist_ok=True)
-
-    path = os.path.join(directory, f"{profile}.toml")
     # touch the TOML file if it doesn't exist
     if not os.path.isfile(path):
         open(path, "a").close()
@@ -189,19 +211,26 @@ def load_settings(ucfg, provider_name, profile):
     This also calls validate_settings on the loaded settings, potentially
     raising an error if the saved settings are invalid.
     """
-    if not profile:
-        raise ValueError("Profile name cannot be empty!")
-    if not provider_name:
-        raise ValueError("Provider name cannot be empty!")
-    directory = os.path.join(ucfg["settings_dir"], provider_name)
-    if not os.path.isdir(directory):
-        raise RuntimeError(f'Couldn\'t find provider "{provider_name}"!')
-
-    path = os.path.join(directory, f"{profile}.toml")
-    if not os.path.isfile(path):
-        raise RuntimeError(f'Couldn\'t find provider "{provider_name}"!')
+    path = _get_profile_path(ucfg, provider_name, profile)
 
     with open(path) as file:
         settings = toml.load(file)
     validate_settings(ucfg, provider_name, settings)
     return settings
+
+def delete_profile(ucfg, provider_name, profile):
+    """Delete a provider's profile settings file
+
+    :param ucfg: upload config
+    :type ucfg: object
+    :param provider_name: the name of the cloud provider, e.g. "azure"
+    :type provider_name: str
+    :param profile: the name of the profile to save
+    :type profile: str != ""
+    :raises: ValueError when passed invalid settings or an invalid profile name
+    :raises: RuntimeError when the provider or profile couldn't be found
+    """
+    path = _get_profile_path(ucfg, provider_name, profile)
+
+    if os.path.exists(path):
+        os.unlink(path)

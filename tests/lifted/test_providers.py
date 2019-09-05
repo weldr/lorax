@@ -21,7 +21,7 @@ import unittest
 
 import lifted.config
 from lifted.providers import list_providers, resolve_provider, resolve_playbook_path, save_settings
-from lifted.providers import load_profiles, validate_settings, load_settings
+from lifted.providers import load_profiles, validate_settings, load_settings, delete_profile
 import pylorax.api.config
 from pylorax.sysutils import joinpaths
 
@@ -118,3 +118,31 @@ class ProvidersTestCase(unittest.TestCase):
         for p in list_providers(self.config["upload"]):
             settings = load_settings(self.config["upload"], p, test_profiles[p][0])
             self.assertEqual(settings, test_profiles[p][1])
+
+    # This *must* run after all the save and load tests, but *before* the actual delete test
+    # _zz_ ensures this happens
+    def test_zz_delete_settings_errors(self):
+        """Test raising the correct errors when deleting"""
+        with self.assertRaises(ValueError):
+            delete_profile(self.config["upload"], "", "")
+
+        with self.assertRaises(ValueError):
+            delete_profile(self.config["upload"], "", "default")
+
+        with self.assertRaises(ValueError):
+            delete_profile(self.config["upload"], "azure", "")
+
+        with self.assertRaises(RuntimeError):
+            delete_profile(self.config["upload"], "azure", "missing-test")
+
+    # This *must* run after all the save and load tests, _zzz_ ensures this happens
+    def test_zzz_delete_settings(self):
+        """Test raising the correct errors when deleting"""
+        # Ensure the profile is really there
+        settings = load_settings(self.config["upload"], "azure", test_profiles["azure"][0])
+        self.assertEqual(settings, test_profiles["azure"][1])
+
+        delete_profile(self.config["upload"], "azure", test_profiles["azure"][0])
+
+        with self.assertRaises(RuntimeError):
+            load_settings(self.config["upload"], "azure", test_profiles["azure"][0])
