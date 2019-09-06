@@ -29,15 +29,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose finished"
-        if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
-                sleep 10
-                rlLogInfo "Waiting for compose to finish ..."
-            done;
-            check_compose_status "$UUID"
-        else
-            rlFail "Compose UUID is empty!"
-        fi
+        wait_for_compose $UUID
 
         # Running a compose can lead to a different selinux policy in the
         # kernel, which may break docker. Reload the policy from the host and
