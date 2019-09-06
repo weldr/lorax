@@ -152,3 +152,18 @@ check_compose_status() {
         return 1
     fi
 }
+
+# Wait until the compose is done (finished or failed)
+wait_for_compose() {
+    local UUID=$1
+    if [ -n "$UUID" ]; then
+        until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
+            sleep 20
+            rlLogInfo "Waiting for compose to finish ..."
+        done;
+        check_compose_status "$UUID"
+    else
+        rlFail "Compose UUID is empty!"
+    fi
+}
+
