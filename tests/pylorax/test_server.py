@@ -2777,9 +2777,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         ids = [e["id"] for e in data["new"] + data["run"]]
         self.assertEqual(build_id in ids, True, "Failed to add build to the queue")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["new"] + data["run"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Wait for it to start
         self.assertEqual(_wait_for_status(self, build_id, ["RUNNING"], api=1), True, "Failed to start test compose")
@@ -2799,9 +2799,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         ids = [e["id"] for e in data["failed"]]
         self.assertEqual(build_id in ids, True, "Failed build not listed by /compose/failed")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["failed"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Test the /api/v1/compose/finished route
         resp = self.server.get("/api/v1/compose/finished")
@@ -2816,9 +2816,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         ids = [(e["id"], e["queue_status"]) for e in data["uuids"]]
         self.assertEqual((build_id, "FAILED") in ids, True, "Failed build not listed by /compose/status")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["uuids"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Test the /api/v1/compose/cancel/<uuid> route
         resp = self.server.post("/api/v1/compose?test=1",
@@ -2875,9 +2875,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         ids = [e["id"] for e in data["new"] + data["run"]]
         self.assertEqual(build_id in ids, True, "Failed to add build to the queue")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["new"] + data["run"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Wait for it to start
         self.assertEqual(_wait_for_status(self, build_id, ["RUNNING"], api=1), True, "Failed to start test compose")
@@ -2897,9 +2897,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         ids = [e["id"] for e in data["finished"]]
         self.assertEqual(build_id in ids, True, "Finished build not listed by /compose/finished")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["finished"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Test the /api/v1/compose/failed route
         resp = self.server.get("/api/v1/compose/failed")
@@ -2914,9 +2914,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         ids = [(e["id"], e["queue_status"]) for e in data["uuids"]]
         self.assertEqual((build_id, "FINISHED") in ids, True, "Finished build not listed by /compose/status")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["uuids"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Test the /api/v1/compose/metadata/<uuid> route
         resp = self.server.get("/api/v1/compose/metadata/%s" % build_id)
@@ -2988,9 +2988,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         ids = [e["id"] for e in data["new"] + data["run"]]
         self.assertEqual(build_id_fail in ids, True, "Failed to add build to the queue")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["new"] + data["run"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Wait for it to start
         self.assertEqual(_wait_for_status(self, build_id_fail, ["RUNNING"], api=1), True, "Failed to start test compose")
@@ -3014,9 +3014,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         ids = [e["id"] for e in data["new"] + data["run"]]
         self.assertEqual(build_id_success in ids, True, "Failed to add build to the queue")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["new"] + data["run"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Wait for it to start
         self.assertEqual(_wait_for_status(self, build_id_success, ["RUNNING"], api=1), True, "Failed to start test compose")
@@ -3032,9 +3032,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertIn(build_id_success, ids, "Finished build not listed by /compose/status/*")
         self.assertIn(build_id_fail, ids, "Failed build not listed by /compose/status/*")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["uuids"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Filter by name
         resp = self.server.get("/api/v1/compose/status/*?blueprint=%s" % test_compose_fail["blueprint_name"])
@@ -3044,9 +3044,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertIn(build_id_fail, ids, "Failed build not listed by /compose/status blueprint filter")
         self.assertNotIn(build_id_success, ids, "Finished build listed by /compose/status blueprint filter")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["uuids"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Filter by type
         resp = self.server.get("/api/v1/compose/status/*?type=tar")
@@ -3056,9 +3056,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertIn(build_id_fail, ids, "Failed build not listed by /compose/status type filter")
         self.assertIn(build_id_success, ids, "Finished build not listed by /compose/status type filter")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["uuids"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         resp = self.server.get("/api/v1/compose/status/*?type=snakes")
         data = json.loads(resp.data)
@@ -3074,9 +3074,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertIn(build_id_fail, ids, "Failed build not listed by /compose/status status filter")
         self.assertNotIn(build_id_success, "Finished build listed by /compose/status status filter")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["uuids"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
     def test_compose_14_kernel_append(self):
         """Test the /api/v1/compose with kernel append customization"""
@@ -3100,9 +3100,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         ids = [e["id"] for e in data["new"] + data["run"]]
         self.assertEqual(build_id in ids, True, "Failed to add build to the queue")
 
-        # V0 API should *not* have the uploads details in the results
+        # V1 API should have the uploads details in the results
         uploads = all("uploads" in e for e in data["new"] + data["run"])
-        self.assertTrue(uploads, "V0 API should include 'uploads' field")
+        self.assertTrue(uploads, "V1 API should include 'uploads' field")
 
         # Wait for it to start
         self.assertEqual(_wait_for_status(self, build_id, ["RUNNING"], api=1), True, "Failed to start test compose")
