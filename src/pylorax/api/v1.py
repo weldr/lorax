@@ -241,7 +241,7 @@ def v1_compose_start():
 
           {
             "build_id": "e6fa6db4-9c81-4b70-870f-a697ca405cdf",
-            "upload_uuid": "572eb0d0-5348-4600-9666-14526ba628bb",
+            "upload_id": "572eb0d0-5348-4600-9666-14526ba628bb",
             "status": true
           }
     """
@@ -784,7 +784,7 @@ def v1_upload_reset(uuid):
 def v1_upload_cancel(uuid):
     """Cancel an upload that is either queued or in progress
 
-    **DELETE /api/v1/uploads/delete/<compose_uuid>/<upload_uuid>**
+    **DELETE /api/v1/uploads/cancel/<upload_uuid>**
 
       Example response::
 
