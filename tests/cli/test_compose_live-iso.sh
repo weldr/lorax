@@ -44,14 +44,7 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "compose finished"
-        if [ -n "$UUID" ]; then
-            until $CLI compose details $UUID | grep 'FINISHED\|FAILED'; do
-                sleep 20
-                rlLogInfo "Waiting for compose to finish ..."
-            done;
-        else
-            rlFail "Compose UUID is empty!"
-        fi
+        wait_for_compose $UUID
 
         rlRun -t -c "$CLI compose image $UUID"
         IMAGE="$UUID-live.iso"

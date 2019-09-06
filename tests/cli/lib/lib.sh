@@ -143,3 +143,26 @@ check_kernel_cmdline() {
     rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} 'grep custom_cmdline_arg /proc/cmdline'" 0 \
         "System booted from the image contains specified parameter on kernel command line"
 }
+
+# Fail if the compose failed, only call after checking for FINISHED|FAILED
+check_compose_status() {
+    UUID="$1"
+    if "$CLI" compose details "$UUID" | grep FAILED; then
+        rlFail "compose $UUID FAILED"
+        return 1
+    fi
+}
+
+# Wait until the compose is done (finished or failed)
+wait_for_compose() {
+    local UUID=$1
+    if [ -n "$UUID" ]; then
+        until $CLI compose details $UUID | grep 'FINISHED\|FAILED'; do
+            sleep 20
+            rlLogInfo "Waiting for compose to finish ..."
+        done;
+        check_compose_status "$UUID"
+    else
+        rlFail "Compose UUID is empty!"
+    fi
+}
