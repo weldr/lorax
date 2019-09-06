@@ -39,6 +39,8 @@ import pylorax.api.toml as toml
 from pylorax.api.dnfbase import DNFLock
 from pylorax.sysutils import joinpaths
 
+from tests.lifted.profiles import test_profiles
+
 # Used for testing UTF-8 input support
 UTF8_TEST_STRING = "I ｗ𝒊ll 𝟉ο𝘁 𝛠ａ𝔰ꜱ 𝘁𝒉𝝸𝚜"
 
@@ -114,7 +116,11 @@ class ServerAPIV0TestCase(unittest.TestCase):
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
         lifted.config.configure(server.config["COMPOSER_CFG"])
-        os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
+
+        # Copy the shared files over to the directory tree we are using
+        for d in ["composer", "lifted"]:
+            shutil.copytree(joinpaths("./share", d), joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), d))
+
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
             raise RuntimeError("\n".join(errors))
@@ -161,11 +167,6 @@ class ServerAPIV0TestCase(unittest.TestCase):
         self.repo_dir = repo_dir
 
         self.examples_path = "./tests/pylorax/blueprints/"
-
-        # Copy the shared files over to the directory tree we are using
-        share_path = "./share/composer/"
-        for f in glob(joinpaths(share_path, "*")):
-            shutil.copy(f, joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
 
         # Import the example blueprints
         commit_recipe_directory(server.config["GITLOCK"].repo, "master", self.examples_path)
@@ -1761,7 +1762,11 @@ class ServerAPIV1TestCase(unittest.TestCase):
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
         lifted.config.configure(server.config["COMPOSER_CFG"])
-        os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
+
+        # Copy the shared files over to the directory tree we are using
+        for d in ["composer", "lifted"]:
+            shutil.copytree(joinpaths("./share", d), joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), d))
+
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
             raise RuntimeError("\n".join(errors))
@@ -1808,11 +1813,6 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.repo_dir = repo_dir
 
         self.examples_path = "./tests/pylorax/blueprints/"
-
-        # Copy the shared files over to the directory tree we are using
-        share_path = "./share/composer/"
-        for f in glob(joinpaths(share_path, "*")):
-            shutil.copy(f, joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
 
         # Import the example blueprints
         commit_recipe_directory(server.config["GITLOCK"].repo, "master", self.examples_path)
@@ -3487,6 +3487,160 @@ class ServerAPIV1TestCase(unittest.TestCase):
             "errors": [{ "id": "HTTPError", "code": 405, "msg": "Method Not Allowed" }]
         })
 
+    # upload route tests need to be run in order
+    def test_upload_00_providers(self):
+        """List upload providers without profile settings"""
+        # list of providers, before saving and settings
+        resp = self.server.get("/api/v1/upload/providers")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue("providers" in data)
+        providers = sorted(data["providers"].keys())
+        self.assertEqual(providers, ["azure", "dummy", "openstack", "vsphere"])
+
+    def test_upload_01_providers_save(self):
+        """Save settings for a provider"""
+        # list of providers, and their settings
+        test_settings = {
+            "provider": "azure",
+            "profile": test_profiles["azure"][0],
+            "settings": test_profiles["azure"][1]
+        }
+
+        resp = self.server.post("/api/v1/upload/providers/save",
+                                data=json.dumps(test_settings),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Check that the new profile is listed
+        resp = self.server.get("/api/v1/upload/providers")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue("providers" in data)
+        self.assertTrue("azure" in data["providers"])
+        self.assertTrue(test_profiles["azure"][0] in data["providers"]["azure"]["profiles"])
+
+    def test_upload_02_compose_profile(self):
+        """Test starting a compose with upload profile"""
+        test_compose = {
+            "blueprint_name": "example-custom-base",
+            "compose_type": "vhd",
+            "branch": "master",
+            "upload": {
+                "image_name": "Azure custom-base",
+                "provider": "azure",
+                "settings": test_profiles["azure"][1]
+            }
+        }
+        resp = self.server.post("/api/v1/compose?test=2",
+                                data=json.dumps(test_compose),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to start test compose: %s" % data)
+        self.assertTrue("build_id" in data)
+        self.assertTrue(len(data["build_id"]) > 0)
+        self.assertTrue("upload_id" in data)
+        self.assertTrue(len(data["upload_id"]) > 0)
+
+        upload_id = data["upload_id"]
+
+        # Get info about the upload
+        resp = self.server.get("/api/v1/upload/info/%s" % upload_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        self.assertEqual(data["status"], True)
+        self.assertTrue("upload" in data)
+        self.assertEqual(data["upload"]["provider_name"], "azure")
+        self.assertEqual(data["upload"]["uuid"], upload_id)
+        self.assertEqual(data["upload"]["image_name"], "Azure custom-base")
+
+        # Get the upload log
+        resp = self.server.get("/api/v1/upload/log/%s" % upload_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        self.assertEqual(data["status"], True)
+        # NOTE: log is empty
+
+        # Cancel the upload
+        resp = self.server.delete("/api/v1/upload/cancel/%s" % upload_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        self.assertEqual(data["status"], True)
+        self.assertEqual(data["uuid"], upload_id)
+
+    def test_upload_03_compose_settings(self):
+        """Test starting a compose with upload settings"""
+        test_compose = {
+            "blueprint_name": "example-custom-base",
+            "compose_type": "vhd",
+            "branch": "master",
+            "upload": {
+                "image_name": "Azure custom-base",
+                "provider": "azure",
+                "profile": test_profiles["azure"][0]
+            }
+        }
+        resp = self.server.post("/api/v1/compose?test=2",
+                                data=json.dumps(test_compose),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to start test compose: %s" % data)
+        self.assertTrue("build_id" in data)
+        self.assertTrue(len(data["build_id"]) > 0)
+        self.assertTrue("upload_id" in data)
+        self.assertTrue(len(data["upload_id"]) > 0)
+
+        upload_id = data["upload_id"]
+
+        # Get info about the upload
+        resp = self.server.get("/api/v1/upload/info/%s" % upload_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        self.assertEqual(data["status"], True)
+        self.assertTrue("upload" in data)
+        self.assertEqual(data["upload"]["provider_name"], "azure")
+        self.assertEqual(data["upload"]["uuid"], upload_id)
+        self.assertEqual(data["upload"]["image_name"], "Azure custom-base")
+
+        # Get the upload log
+        resp = self.server.get("/api/v1/upload/log/%s" % upload_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        self.assertEqual(data["status"], True)
+        # NOTE: log is empty
+
+        # Cancel the upload
+        resp = self.server.delete("/api/v1/upload/cancel/%s" % upload_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        self.assertEqual(data["status"], True)
+        self.assertEqual(data["uuid"], upload_id)
+
+
+    def test_upload_04_providers_delete(self):
+        """Delete a profile from a provider"""
+        # /api/v1/upload/providers/delete/provider/profile
+        resp = self.server.delete("/api/v1/upload/providers/delete/azure/%s" % test_profiles["azure"][0])
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data, {"status":True})
+
+        # Check that the profile has been deleted
+        resp = self.server.get("/api/v1/upload/providers")
+        data = json.loads(resp.data)
+        self.assertTrue("providers" in data)
+        self.assertTrue("azure" in data["providers"])
+        self.assertEqual(data["providers"]["azure"]["profiles"], {})
+
 @contextmanager
 def in_tempdir(prefix='tmp'):
     """Execute a block of code with chdir in a temporary location"""
@@ -3521,7 +3675,11 @@ class RepoCacheAPIV0TestCase(unittest.TestCase):
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
         lifted.config.configure(server.config["COMPOSER_CFG"])
-        os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
+
+        # Copy the shared files over to the directory tree we are using
+        for d in ["composer", "lifted"]:
+            shutil.copytree(joinpaths("./share", d), joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), d))
+
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
             raise RuntimeError("\n".join(errors))
@@ -3545,11 +3703,6 @@ class RepoCacheAPIV0TestCase(unittest.TestCase):
         server.config['TESTING'] = True
         self.server = server.test_client()
         self.repo_dir = repo_dir
-
-        # Copy the shared files over to the directory tree we are using
-        share_path = "./share/composer/"
-        for f in glob(joinpaths(share_path, "*")):
-            shutil.copy(f, joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
 
         start_queue_monitor(server.config["COMPOSER_CFG"], 0, 0)
 
@@ -3661,7 +3814,11 @@ class RepoCacheAPIV1TestCase(unittest.TestCase):
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
         lifted.config.configure(server.config["COMPOSER_CFG"])
-        os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
+
+        # Copy the shared files over to the directory tree we are using
+        for d in ["composer", "lifted"]:
+            shutil.copytree(joinpaths("./share", d), joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), d))
+
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
             raise RuntimeError("\n".join(errors))
@@ -3685,11 +3842,6 @@ class RepoCacheAPIV1TestCase(unittest.TestCase):
         server.config['TESTING'] = True
         self.server = server.test_client()
         self.repo_dir = repo_dir
-
-        # Copy the shared files over to the directory tree we are using
-        share_path = "./share/composer/"
-        for f in glob(joinpaths(share_path, "*")):
-            shutil.copy(f, joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
 
         start_queue_monitor(server.config["COMPOSER_CFG"], 0, 0)
 
@@ -3803,7 +3955,11 @@ class GitRPMBlueprintTestCase(unittest.TestCase):
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
         lifted.config.configure(server.config["COMPOSER_CFG"])
-        os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
+
+        # Copy the shared files over to the directory tree we are using
+        for d in ["composer", "lifted"]:
+            shutil.copytree(joinpaths("./share", d), joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), d))
+
         errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
             raise RuntimeError("\n".join(errors))
@@ -3822,11 +3978,6 @@ class GitRPMBlueprintTestCase(unittest.TestCase):
         server.config['TESTING'] = True
         self.server = server.test_client()
         self.repo_dir = repo_dir
-
-        # Copy the shared files over to the directory tree we are using
-        share_path = "./share/composer/"
-        for f in glob(joinpaths(share_path, "*")):
-            shutil.copy(f, joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
 
         start_queue_monitor(server.config["COMPOSER_CFG"], 0, 0)
 
