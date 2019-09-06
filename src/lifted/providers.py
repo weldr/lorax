@@ -37,6 +37,9 @@ def _get_profile_path(ucfg, provider_name, profile, exists=True):
     :raises: ValueError when passed invalid settings or an invalid profile name
     :raises: RuntimeError when the provider or profile couldn't be found
     """
+    # Make sure no path elements are present
+    profile = os.path.basename(profile)
+    provider_name = os.path.basename(provider_name)
     if not profile:
         raise ValueError("Profile name cannot be empty!")
     if not provider_name:
@@ -50,7 +53,7 @@ def _get_profile_path(ucfg, provider_name, profile, exists=True):
     if exists and not os.path.isfile(path):
         raise RuntimeError(f'Couldn\'t find profile "{profile}"!')
 
-    return path
+    return os.path.abspath(path)
 
 def resolve_provider(ucfg, provider_name):
     """Get information about the specified provider as defined in that
@@ -71,6 +74,8 @@ def resolve_provider(ucfg, provider_name):
     :returns: the provider
     :rtype: dict
     """
+    # Make sure no path elements are present
+    provider_name = os.path.basename(provider_name)
     path = os.path.join(ucfg["providers_dir"], provider_name, "provider.toml")
     try:
         with open(path) as provider_file:
@@ -91,6 +96,8 @@ def load_profiles(ucfg, provider_name):
     :returns: a dict of settings dicts, keyed by profile name
     :rtype: dict
     """
+    # Make sure no path elements are present
+    provider_name = os.path.basename(provider_name)
 
     def load_path(path):
         with open(path) as file:
@@ -114,6 +121,9 @@ def resolve_playbook_path(ucfg, provider_name):
     :returns: the path to the playbook
     :rtype: str
     """
+    # Make sure no path elements are present
+    provider_name = os.path.basename(provider_name)
+
     path = os.path.join(ucfg["providers_dir"], provider_name, "playbook.yaml")
     if not os.path.isfile(path):
         raise RuntimeError(f'Couldn\'t find playbook for "{provider_name}"!')

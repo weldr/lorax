@@ -56,6 +56,9 @@ def _get_queue_path(ucfg):
 
 
 def _get_upload_path(ucfg, uuid, write=False):
+    # Make sure no path elements are present
+    uuid = os.path.basename(uuid)
+
     path = os.path.join(_get_queue_path(ucfg), f"{uuid}.toml")
     if write and not os.path.exists(path):
         open(path, "a").close()

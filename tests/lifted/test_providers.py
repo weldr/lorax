@@ -22,6 +22,7 @@ import unittest
 import lifted.config
 from lifted.providers import list_providers, resolve_provider, resolve_playbook_path, save_settings
 from lifted.providers import load_profiles, validate_settings, load_settings, delete_profile
+from lifted.providers import _get_profile_path
 import pylorax.api.config
 from pylorax.sysutils import joinpaths
 
@@ -38,6 +39,14 @@ class ProvidersTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.root_dir)
+
+    def test_get_profile_path(self):
+        """Make sure that _get_profile_path strips path elements from the input"""
+        path = _get_profile_path(self.config["upload"], "azure", "staging-settings", exists=False)
+        self.assertEqual(path, os.path.abspath(joinpaths(self.config["upload"]["settings_dir"], "azure/staging-settings.toml")))
+
+        path = _get_profile_path(self.config["upload"], "../../../../foo/bar/azure", "/not/my/path/staging-settings", exists=False)
+        self.assertEqual(path, os.path.abspath(joinpaths(self.config["upload"]["settings_dir"], "azure/staging-settings.toml")))
 
     def test_list_providers(self):
         p = list_providers(self.config["upload"])
