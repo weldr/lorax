@@ -31,11 +31,9 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose image"
+        wait_for_compose $UUID
         if [ -n "$UUID" ]; then
-            until $CLI compose details $UUID | grep 'FINISHED\|FAILED'; do
-                sleep 60
-                rlLogInfo "Waiting for compose to finish ..."
-            done;
+            check_compose_status "$UUID"
 
             rlRun -t -c "$CLI compose image $UUID"
             rlAssertExists "$UUID-root.tar.xz"
@@ -44,8 +42,6 @@ rlJournalStart
             rlAssertExists    "/var/lib/lorax/composer/results/$UUID/"
             rlAssertExists    "/var/lib/lorax/composer/results/$UUID/root.tar.xz"
             rlAssertNotDiffer "/var/lib/lorax/composer/results/$UUID/root.tar.xz" "$UUID-root.tar.xz"
-        else
-            rlFail "Compose UUID is empty!"
         fi
     rlPhaseEnd
 
