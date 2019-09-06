@@ -314,7 +314,7 @@ def v1_compose_start():
             return jsonify(status=False, errors=[{"id": BUILD_FAILED, "msg": str(e)}]), 400
 
     if "upload" in compose:
-        upload_uuid = uuid_schedule_upload(
+        upload_id = uuid_schedule_upload(
             api.config["COMPOSER_CFG"],
             build_id,
             provider_name,
@@ -322,9 +322,9 @@ def v1_compose_start():
             settings
         )
     else:
-        upload_uuid = ""
+        upload_id = ""
 
-    return jsonify(status=True, build_id=build_id, upload_id=upload_uuid)
+    return jsonify(status=True, build_id=build_id, upload_id=upload_id)
 
 @v1_api.route("/compose/queue")
 def v1_compose_queue():
@@ -596,7 +596,7 @@ def v1_compose_uploads_schedule(compose_uuid):
 
           {
             "status": true,
-            "upload_uuid": "572eb0d0-5348-4600-9666-14526ba628bb"
+            "upload_id": "572eb0d0-5348-4600-9666-14526ba628bb"
           }
     """
     if VALID_API_STRING.match(compose_uuid) is None:
@@ -625,7 +625,7 @@ def v1_compose_uploads_schedule(compose_uuid):
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(e)}]), 400
 
     try:
-        upload_uuid = uuid_schedule_upload(
+        upload_id = uuid_schedule_upload(
             api.config["COMPOSER_CFG"],
             compose_uuid,
             provider_name,
@@ -634,7 +634,7 @@ def v1_compose_uploads_schedule(compose_uuid):
         )
     except RuntimeError as e:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(e)}]), 400
-    return jsonify(status=True, upload_uuid=upload_uuid)
+    return jsonify(status=True, upload_id=upload_id)
 
 @v1_api.route("/compose/uploads/delete", defaults={"compose_uuid": "", "upload_uuid": ""}, methods=["DELETE"])
 @v1_api.route("/compose/uploads/delete/<compose_uuid>/<upload_uuid>", methods=["DELETE"])
@@ -648,7 +648,7 @@ def v1_compose_uploads_delete(compose_uuid, upload_uuid):
 
           {
             "status": true,
-            "upload_uuid": "572eb0d0-5348-4600-9666-14526ba628bb"
+            "upload_id": "572eb0d0-5348-4600-9666-14526ba628bb"
           }
     """
     if None in (VALID_API_STRING.match(compose_uuid), VALID_API_STRING.match(upload_uuid)):
@@ -663,15 +663,15 @@ def v1_compose_uploads_delete(compose_uuid, upload_uuid):
         delete_upload(api.config["COMPOSER_CFG"]["upload"], upload_uuid)
     except RuntimeError as error:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
-    return jsonify(status=True, upload_uuid=upload_uuid)
+    return jsonify(status=True, upload_id=upload_uuid)
 
-@v1_api.route("/upload/info", defaults={"uuid": ""})
-@v1_api.route("/upload/info/<uuid>")
-@checkparams([("uuid", "", "no UUID given")])
-def v1_upload_info(uuid):
+@v1_api.route("/upload/info", defaults={"upload_uuid": ""})
+@v1_api.route("/upload/info/<upload_uuid>")
+@checkparams([("upload_uuid", "", "no UUID given")])
+def v1_upload_info(upload_uuid):
     """Returns information about a given upload
 
-    **GET /api/v1/upload/info/<uuid>**
+    **GET /api/v1/upload/info/<upload_uuid>**
 
       Example response::
 
@@ -697,47 +697,48 @@ def v1_upload_info(uuid):
             }
           }
     """
-    if VALID_API_STRING.match(uuid) is None:
+    if VALID_API_STRING.match(upload_uuid) is None:
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
     try:
-        upload = get_upload(api.config["COMPOSER_CFG"]["upload"], uuid).summary()
+        upload = get_upload(api.config["COMPOSER_CFG"]["upload"], upload_uuid).summary()
     except RuntimeError as error:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
     return jsonify(status=True, upload=upload)
 
-@v1_api.route("/upload/log", defaults={"uuid": ""})
-@v1_api.route("/upload/log/<uuid>")
-@checkparams([("uuid", "", "no UUID given")])
-def v1_upload_log(uuid):
+@v1_api.route("/upload/log", defaults={"upload_uuid": ""})
+@v1_api.route("/upload/log/<upload_uuid>")
+@checkparams([("upload_uuid", "", "no UUID given")])
+def v1_upload_log(upload_uuid):
     """Returns an upload's log
 
-    **GET /api/v1/upload/log/<uuid>**
+    **GET /api/v1/upload/log/<upload_uuid>**
 
       Example response::
 
           {
             "status": true,
+            "upload_id": "b637c411-9d9d-4279-b067-6c8d38e3b211",
             "log": "\n __________________\r\n< PLAY [localhost] >..."
           }
     """
-    if VALID_API_STRING.match(uuid) is None:
+    if VALID_API_STRING.match(upload_uuid) is None:
         error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
         return jsonify(status=False, errors=[error]), 400
 
     try:
-        upload = get_upload(api.config["COMPOSER_CFG"]["upload"], uuid)
+        upload = get_upload(api.config["COMPOSER_CFG"]["upload"], upload_uuid)
     except RuntimeError as error:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
-    return jsonify(status=True, log=upload.upload_log)
+    return jsonify(status=True, upload_id=upload_uuid, log=upload.upload_log)
 
-@v1_api.route("/upload/reset", defaults={"uuid": ""}, methods=["POST"])
-@v1_api.route("/upload/reset/<uuid>", methods=["POST"])
-@checkparams([("uuid", "", "no UUID given")])
-def v1_upload_reset(uuid):
+@v1_api.route("/upload/reset", defaults={"upload_uuid": ""}, methods=["POST"])
+@v1_api.route("/upload/reset/<upload_uuid>", methods=["POST"])
+@checkparams([("upload_uuid", "", "no UUID given")])
+def v1_upload_reset(upload_uuid):
     """Reset an upload so it can be attempted again
 
-    **POST /api/v1/upload/reset/<uuid>**
+    **POST /api/v1/upload/reset/<upload_uuid>**
 
       Optionally pass in a new image name and/or new settings.
 
@@ -761,10 +762,10 @@ def v1_upload_reset(uuid):
 
           {
             "status": true,
-            "uuid": "c75d5d62-9d26-42fc-a8ef-18bb14679fc7"
+            "upload_id": "c75d5d62-9d26-42fc-a8ef-18bb14679fc7"
           }
     """
-    if VALID_API_STRING.match(uuid) is None:
+    if VALID_API_STRING.match(upload_uuid) is None:
         error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
         return jsonify(status=False, errors=[error]), 400
 
@@ -773,15 +774,15 @@ def v1_upload_reset(uuid):
     settings = parsed.get("settings") if parsed else None
 
     try:
-        reset_upload(api.config["COMPOSER_CFG"]["upload"], uuid, image_name, settings)
+        reset_upload(api.config["COMPOSER_CFG"]["upload"], upload_uuid, image_name, settings)
     except RuntimeError as error:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
-    return jsonify(status=True, uuid=uuid)
+    return jsonify(status=True, upload_id=upload_uuid)
 
-@v1_api.route("/upload/cancel", defaults={"uuid": ""}, methods=["DELETE"])
-@v1_api.route("/upload/cancel/<uuid>", methods=["DELETE"])
-@checkparams([("uuid", "", "no UUID given")])
-def v1_upload_cancel(uuid):
+@v1_api.route("/upload/cancel", defaults={"upload_uuid": ""}, methods=["DELETE"])
+@v1_api.route("/upload/cancel/<upload_uuid>", methods=["DELETE"])
+@checkparams([("upload_uuid", "", "no UUID given")])
+def v1_upload_cancel(upload_uuid):
     """Cancel an upload that is either queued or in progress
 
     **DELETE /api/v1/uploads/cancel/<upload_uuid>**
@@ -790,18 +791,18 @@ def v1_upload_cancel(uuid):
 
           {
             "status": true,
-            "uuid": "037a3d56-b421-43e9-9935-c98350c89996"
+            "upload_id": "037a3d56-b421-43e9-9935-c98350c89996"
           }
     """
-    if VALID_API_STRING.match(uuid) is None:
+    if VALID_API_STRING.match(upload_uuid) is None:
         error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
         return jsonify(status=False, errors=[error]), 400
 
     try:
-        cancel_upload(api.config["COMPOSER_CFG"]["upload"], uuid)
+        cancel_upload(api.config["COMPOSER_CFG"]["upload"], upload_uuid)
     except RuntimeError as error:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
-    return jsonify(status=True, uuid=uuid)
+    return jsonify(status=True, upload_id=upload_uuid)
 
 @v1_api.route("/upload/providers")
 def v1_upload_providers():

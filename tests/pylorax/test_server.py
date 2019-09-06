@@ -3571,7 +3571,7 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         print(data)
         self.assertEqual(data["status"], True)
-        self.assertEqual(data["uuid"], upload_id)
+        self.assertEqual(data["upload_id"], upload_id)
 
     def test_upload_03_compose_settings(self):
         """Test starting a compose with upload settings"""
@@ -3623,7 +3623,7 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         print(data)
         self.assertEqual(data["status"], True)
-        self.assertEqual(data["uuid"], upload_id)
+        self.assertEqual(data["upload_id"], upload_id)
 
 
     def test_upload_04_providers_delete(self):
