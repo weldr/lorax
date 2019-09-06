@@ -23,15 +23,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStart "compose finished"
-        if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
-                sleep 10
-                rlLogInfo "Waiting for compose to finish..."
-            done
-            check_compose_status "$UUID"
-        else
-            flFail "Compose UUID is empty!"
-        fi
+        wait_for_compose $UUID
     rlPhaseEnd
 
     rlPhaseStart "compose check"
