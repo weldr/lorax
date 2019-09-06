@@ -193,7 +193,7 @@ def v1_compose_start():
       should look like this. The "upload" object is optional.
 
       The upload object can specify either a pre-existing profile to use (as returned by
-      `/uploads/providers` or one-time use settings for the provider.
+      `/uploads/providers`) or one-time use settings for the provider.
 
       Example with upload profile::
 
@@ -575,7 +575,18 @@ def v1_compose_uploads_schedule(compose_uuid):
 
     **POST /api/v1/uploads/schedule/<compose_uuid>**
 
-      Example request::
+      The body can specify either a pre-existing profile to use (as returned by
+      `/uploads/providers`) or one-time use settings for the provider.
+
+      Example with upload profile::
+
+          {
+            "image_name": "My Image",
+            "provider": "azure",
+            "profile": "production-azure-settings"
+          }
+
+      Example with upload settings::
 
           {
             "image_name": "My Image",
@@ -610,7 +621,12 @@ def v1_compose_uploads_schedule(compose_uuid):
     try:
         image_name = parsed["image_name"]
         provider_name = parsed["provider"]
-        settings = parsed["settings"]
+        if "profile" in parsed:
+            # Load a specific profile for this provider
+            profile = parsed["profile"]
+            settings = load_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, profile)
+        else:
+            settings = parsed["settings"]
     except KeyError as e:
         error = {"id": UPLOAD_ERROR, "msg": f'Missing parameter {str(e)}!'}
         return jsonify(status=False, errors=[error]), 400
