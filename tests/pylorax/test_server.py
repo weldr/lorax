@@ -3692,6 +3692,13 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertEqual(data["status"], True, "Failed to schedule upload: %s" % data)
         self.assertTrue(len(data["upload_id"]) > 0)
 
+        # Delete this upload from this compose
+        resp = self.server.delete("/api/v1/compose/uploads/delete/%s/%s" % (build_id, data["upload_id"]))
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to delete upload: %s" % data)
+        self.assertTrue(len(data["upload_id"]) > 0)
+
     def test_upload_06_providers_delete(self):
         """Delete a profile from a provider"""
         # /api/v1/upload/providers/delete/provider/profile
