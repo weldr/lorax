@@ -67,14 +67,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose finished"
-        if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
-                rlLogInfo "Waiting for compose to finish ..."
-                sleep 30
-            done;
-        else
-            rlFail "Compose UUID is empty!"
-        fi
+        wait_for_compose $UUID
     rlPhaseEnd
 
     rlPhaseStartTest "Upload image to Azure"
