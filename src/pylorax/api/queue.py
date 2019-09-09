@@ -461,12 +461,38 @@ def build_status(cfg, status_filter=None, api=1):
     return results
 
 def _upload_list_path(cfg, uuid):
+    """Return the path to the UPLOADS file
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: Path to the UPLOADS file listing the build's associated uploads
+    :rtype: str
+    :raises: RuntimeError if the uuid is not found
+    """
     results_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if not os.path.isdir(results_dir):
         raise RuntimeError(f'"{uuid}" is not a valid build uuid!')
     return joinpaths(results_dir, "UPLOADS")
 
 def uuid_schedule_upload(cfg, uuid, provider_name, image_name, settings):
+    """Schedule an upload of an image
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :param provider_name: The name of the cloud provider, e.g. "azure"
+    :type provider_name: str
+    :param image_name: Path of the image to upload
+    :type image_name: str
+    :param settings: Settings to use for the selected provider
+    :type settings: dict
+    :returns: uuid of the upload
+    :rtype: str
+    :raises: RuntimeError if the uuid is not a valid build uuid
+    """
     status = uuid_status(cfg, uuid)
     if status is None:
         raise RuntimeError(f'"{uuid}" is not a valid build uuid!')
@@ -476,6 +502,15 @@ def uuid_schedule_upload(cfg, uuid, provider_name, image_name, settings):
     return upload.uuid
 
 def uuid_get_uploads(cfg, uuid):
+    """Return the list of uploads for a build uuid
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: The upload UUIDs associated with the build UUID
+    :rtype: frozenset
+    """
     try:
         with open(_upload_list_path(cfg, uuid)) as uploads_file:
             return frozenset(uploads_file.read().split())
@@ -483,6 +518,17 @@ def uuid_get_uploads(cfg, uuid):
         return frozenset()
 
 def uuid_add_upload(cfg, uuid, upload_uuid):
+    """Add an upload UUID to a build
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :param upload_uuid: The UUID of the upload
+    :type upload_uuid: str
+    :returns: None
+    :rtype: None
+    """
     if upload_uuid not in uuid_get_uploads(cfg, uuid):
         with open(_upload_list_path(cfg, uuid), "a") as uploads_file:
             print(upload_uuid, file=uploads_file)
@@ -491,6 +537,16 @@ def uuid_add_upload(cfg, uuid, upload_uuid):
             uuid_ready_upload(cfg, uuid, upload_uuid)
 
 def uuid_remove_upload(cfg, upload_uuid):
+    """Remove an upload UUID from the build
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param upload_uuid: The UUID of the upload
+    :type upload_uuid: str
+    :returns: None
+    :rtype: None
+    :raises: RuntimeError if the upload_uuid is not found
+    """
     for build_uuid in (os.path.basename(b) for b in glob(joinpaths(cfg.get("composer", "lib_dir"), "results/*"))):
         uploads = uuid_get_uploads(cfg, build_uuid)
         if upload_uuid not in uploads:
@@ -505,6 +561,18 @@ def uuid_remove_upload(cfg, upload_uuid):
     raise RuntimeError(f"{upload_uuid} is not a valid upload id!")
 
 def uuid_ready_upload(cfg, uuid, upload_uuid):
+    """Set an upload to READY if the build is in FINISHED state
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :param upload_uuid: The UUID of the upload
+    :type upload_uuid: str
+    :returns: None
+    :rtype: None
+    :raises: RuntimeError if the build uuid is invalid or not in FINISHED state.
+    """
     status = uuid_status(cfg, uuid)
     if not status:
         raise RuntimeError(f"{uuid} is not a valid build id!")
