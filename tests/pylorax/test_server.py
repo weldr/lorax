@@ -3714,6 +3714,20 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertTrue("azure" in data["providers"])
         self.assertEqual(data["providers"]["azure"]["profiles"], {})
 
+    def test_upload_07_delete_unknown_profile(self):
+        """Delete an unknown profile"""
+        resp = self.server.delete("/api/v1/upload/providers/delete/azure/unknown")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Failed to delete upload: %s" % data)
+
+    def test_upload_08_delete_unknown_upload(self):
+        """Delete an unknown upload uuid"""
+        resp = self.server.delete("/api/v1/upload/delete/4b15fd5a-0d5a-42c5-8534-95d831328803")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Failed to delete profile: %s" % data)
+
 @contextmanager
 def in_tempdir(prefix='tmp'):
     """Execute a block of code with chdir in a temporary location"""
