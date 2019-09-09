@@ -3693,7 +3693,7 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertTrue(len(data["upload_id"]) > 0)
 
         # Delete this upload from this compose
-        resp = self.server.delete("/api/v1/compose/uploads/delete/%s/%s" % (build_id, data["upload_id"]))
+        resp = self.server.delete("/api/v1/upload/delete/%s" % data["upload_id"])
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], True, "Failed to delete upload: %s" % data)

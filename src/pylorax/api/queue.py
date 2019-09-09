@@ -490,11 +490,19 @@ def uuid_add_upload(cfg, uuid, upload_uuid):
         if status and status["queue_status"] == "FINISHED":
             uuid_ready_upload(cfg, uuid, upload_uuid)
 
-def uuid_remove_upload(cfg, uuid, upload_uuid):
-    uploads = uuid_get_uploads(cfg, uuid) - frozenset((upload_uuid,))
-    with open(_upload_list_path(cfg, uuid), "w") as uploads_file:
-        for upload in uploads:
-            print(upload, file=uploads_file)
+def uuid_remove_upload(cfg, upload_uuid):
+    for build_uuid in (os.path.basename(b) for b in glob(joinpaths(cfg.get("composer", "lib_dir"), "results/*"))):
+        uploads = uuid_get_uploads(cfg, build_uuid)
+        if upload_uuid not in uploads:
+            continue
+
+        uploads = uploads - frozenset((upload_uuid,))
+        with open(_upload_list_path(cfg, build_uuid), "w") as uploads_file:
+            for upload in uploads:
+                print(upload, file=uploads_file)
+        return
+
+    raise RuntimeError(f"{upload_uuid} is not a valid upload id!")
 
 def uuid_ready_upload(cfg, uuid, upload_uuid):
     status = uuid_status(cfg, uuid)

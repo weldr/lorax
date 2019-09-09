@@ -652,13 +652,13 @@ def v1_compose_uploads_schedule(compose_uuid):
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(e)}]), 400
     return jsonify(status=True, upload_id=upload_id)
 
-@v1_api.route("/compose/uploads/delete", defaults={"compose_uuid": "", "upload_uuid": ""}, methods=["DELETE"])
-@v1_api.route("/compose/uploads/delete/<compose_uuid>/<upload_uuid>", methods=["DELETE"])
-@checkparams([("compose_uuid", "", "no compose UUID given"), ("upload_uuid", "", "no upload UUID given")])
-def v1_compose_uploads_delete(compose_uuid, upload_uuid):
+@v1_api.route("/upload/delete", defaults={"upload_uuid": ""}, methods=["DELETE"])
+@v1_api.route("/upload/delete/<upload_uuid>", methods=["DELETE"])
+@checkparams([("upload_uuid", "", "no upload UUID given")])
+def v1_compose_uploads_delete(upload_uuid):
     """Delete an upload and disassociate it from its compose
 
-    **DELETE /api/v1/uploads/delete/<compose_uuid>/<upload_uuid>**
+    **DELETE /api/v1/upload/delete/<upload_uuid>**
 
       Example response::
 
@@ -667,15 +667,12 @@ def v1_compose_uploads_delete(compose_uuid, upload_uuid):
             "upload_id": "572eb0d0-5348-4600-9666-14526ba628bb"
           }
     """
-    if None in (VALID_API_STRING.match(compose_uuid), VALID_API_STRING.match(upload_uuid)):
+    if VALID_API_STRING.match(upload_uuid) is None:
         error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
         return jsonify(status=False, errors=[error]), 400
 
-    if not uuid_status(api.config["COMPOSER_CFG"], compose_uuid):
-        error = {"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % compose_uuid}
-        return jsonify(status=False, errors=[error]), 400
-    uuid_remove_upload(api.config["COMPOSER_CFG"], compose_uuid, upload_uuid)
     try:
+        uuid_remove_upload(api.config["COMPOSER_CFG"], upload_uuid)
         delete_upload(api.config["COMPOSER_CFG"]["upload"], upload_uuid)
     except RuntimeError as error:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
