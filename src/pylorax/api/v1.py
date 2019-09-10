@@ -361,7 +361,27 @@ def v1_compose_queue():
                 "queue_status": "RUNNING",
                 "job_created": 1517362633.7965999,
                 "job_started": 1517362633.8001345,
-                "version": "0.0.6"
+                "version": "0.0.6",
+                "uploads": [
+                    {
+                        "creation_time": 1568150660.524401,
+                        "image_name": "glusterfs server",
+                        "image_path": null,
+                        "provider_name": "azure",
+                        "settings": {
+                            "client_id": "need",
+                            "location": "need",
+                            "resource_group": "group",
+                            "secret": "need",
+                            "storage_account_name": "need",
+                            "storage_container": "need",
+                            "subscription_id": "need",
+                            "tenant": "need"
+                        },
+                        "status": "WAITING",
+                        "uuid": "21898dfd-9ac9-4e22-bb1d-7f12d0129e65"
+                    }
+                ]
               }
             ]
           }
@@ -396,7 +416,27 @@ def v1_compose_finished():
                 "job_created": 1517362289.7193348,
                 "job_started": 1517362289.9751132,
                 "job_finished": 1517363500.1234567,
-                "version": "0.0.6"
+                "version": "0.0.6",
+                "uploads": [
+                    {
+                        "creation_time": 1568150660.524401,
+                        "image_name": "glusterfs server",
+                        "image_path": "/var/lib/lorax/composer/results/e695affd-397f-4af9-9022-add2636e7459/disk.vhd",
+                        "provider_name": "azure",
+                        "settings": {
+                            "client_id": "need",
+                            "location": "need",
+                            "resource_group": "group",
+                            "secret": "need",
+                            "storage_account_name": "need",
+                            "storage_container": "need",
+                            "subscription_id": "need",
+                            "tenant": "need"
+                        },
+                        "status": "WAITING",
+                        "uuid": "21898dfd-9ac9-4e22-bb1d-7f12d0129e65"
+                    }
+                ]
               }
             ]
           }
@@ -422,7 +462,27 @@ def v1_compose_failed():
                 "job_created": 1517523249.9301329,
                 "job_started": 1517523249.9314211,
                 "job_finished": 1517523255.5623411,
-                "version": "0.0.2"
+                "version": "0.0.2",
+                "uploads": [
+                    {
+                        "creation_time": 1568150660.524401,
+                        "image_name": "http-server",
+                        "image_path": null,
+                        "provider_name": "azure",
+                        "settings": {
+                            "client_id": "need",
+                            "location": "need",
+                            "resource_group": "group",
+                            "secret": "need",
+                            "storage_account_name": "need",
+                            "storage_container": "need",
+                            "subscription_id": "need",
+                            "tenant": "need"
+                        },
+                        "status": "WAITING",
+                        "uuid": "21898dfd-9ac9-4e22-bb1d-7f12d0129e65"
+                    }
+                ]
               }
             ]
           }
@@ -460,7 +520,27 @@ def v1_compose_status(uuids):
                 "job_created": 1517363442.188399,
                 "job_started": 1517363442.325324,
                 "job_finished": 1517363451.653621,
-                "version": "0.0.6"
+                "version": "0.0.6",
+                "uploads": [
+                    {
+                        "creation_time": 1568150660.524401,
+                        "image_name": "glusterfs server",
+                        "image_path": null,
+                        "provider_name": "azure",
+                        "settings": {
+                            "client_id": "need",
+                            "location": "need",
+                            "resource_group": "group",
+                            "secret": "need",
+                            "storage_account_name": "need",
+                            "storage_container": "need",
+                            "subscription_id": "need",
+                            "tenant": "need"
+                        },
+                        "status": "WAITING",
+                        "uuid": "21898dfd-9ac9-4e22-bb1d-7f12d0129e65"
+                    }
+                ]
               }
             ]
           }
@@ -551,7 +631,27 @@ def v1_compose_info(uuid):
             "blueprint": {
               "description": "An example kubernetes master",
               ...
-            }
+            },
+            "uploads": [
+                {
+                    "creation_time": 1568150660.524401,
+                    "image_name": "glusterfs server",
+                    "image_path": "/var/lib/lorax/composer/results/c30b7d80-523b-4a23-ad52-61b799739ce8/disk.vhd",
+                    "provider_name": "azure",
+                    "settings": {
+                        "client_id": "need",
+                        "location": "need",
+                        "resource_group": "group",
+                        "secret": "need",
+                        "storage_account_name": "need",
+                        "storage_container": "need",
+                        "subscription_id": "need",
+                        "tenant": "need"
+                    },
+                    "status": "FAILED",
+                    "uuid": "21898dfd-9ac9-4e22-bb1d-7f12d0129e65"
+                }
+            ]
           }
     """
     if VALID_API_STRING.match(uuid) is None:
