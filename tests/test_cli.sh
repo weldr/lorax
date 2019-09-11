@@ -89,7 +89,6 @@ until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/s
     echo "DEBUG: Waiting for backend API to become ready before testing ..."
 done;
 
-
 export BEAKERLIB_JOURNAL=0
 if [ -z "$*" ]; then
     # invoke cli/ tests which can be executed without special preparation
