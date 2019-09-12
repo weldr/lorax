@@ -23,6 +23,7 @@ import signal
 from uuid import uuid4
 
 from ansible_runner.interface import run as ansible_run
+from ansible_runner.exceptions import AnsibleRunnerException
 
 log = logging.getLogger("lifted")
 
@@ -68,8 +69,13 @@ class Upload:
         :param callback: a function of the form callback(self)
         :type callback: function
         """
-        log.info(str(message))
-        self.upload_log += f"{message}\n"
+        if message:
+            messages = str(message).splitlines()
+
+            # Log multi-line messages as individual log lines
+            for m in messages:
+                log.info(m)
+            self.upload_log += f"{message}\n"
         if callback:
             callback(self)
 
@@ -106,6 +112,7 @@ class Upload:
         :param status_callback: a function of the form callback(self)
         :type status_callback: function
         """
+        self._log("Setting status to %s" % status)
         self.status = status
         if status_callback:
             status_callback(self)
@@ -118,6 +125,7 @@ class Upload:
         :param status_callback: a function of the form callback(self)
         :type status_callback: function
         """
+        self._log("Setting image_path to %s" % image_path)
         self.image_path = image_path
         if self.status == "WAITING":
             self.set_status("READY", status_callback)
@@ -133,7 +141,7 @@ class Upload:
         if not self.image_path:
             raise RuntimeError(f"Can't reset, no image supplied yet!")
         # self.error = None
-        self._log("Resetting...")
+        self._log("Resetting state")
         self.set_status("READY", status_callback)
 
     def is_cancellable(self):
@@ -166,21 +174,38 @@ class Upload:
         """
         if self.status != "READY":
             raise RuntimeError("This upload is not ready!")
-        self.upload_pid = current_process().pid
-        self.set_status("RUNNING", status_callback)
 
-        logger = lambda e: self._log(e["stdout"], status_callback)
+        try:
+            self.upload_pid = current_process().pid
+            self.set_status("RUNNING", status_callback)
+            self._log("Executing playbook.yml")
 
-        runner = ansible_run(
-            playbook=self.playbook_path,
-            extravars={
-                **self.settings,
-                "image_name": self.image_name,
-                "image_path": self.image_path,
-            },
-            event_handler=logger,
-        )
-        if runner.status == "successful":
-            self.set_status("FINISHED", status_callback)
-        else:
-            self.set_status("FAILED", status_callback)
+            # NOTE: event_handler doesn't seem to be called for playbook errors
+            logger = lambda e: self._log(e["stdout"], status_callback)
+
+            runner = ansible_run(
+                playbook=self.playbook_path,
+                extravars={
+                    **self.settings,
+                    "image_name": self.image_name,
+                    "image_path": self.image_path,
+                },
+                event_handler=logger,
+            )
+
+            # Try logging events and stats -- but they may not exist, so catch the error
+            try:
+                for e in runner.events:
+                    self._log("%s" % dir(e), status_callback)
+
+                self._log("%s" % runner.stats, status_callback)
+            except AnsibleRunnerException:
+                self._log("%s" % runner.stdout.read(), status_callback)
+
+            if runner.status == "successful":
+                self.set_status("FINISHED", status_callback)
+            else:
+                self.set_status("FAILED", status_callback)
+        except Exception:
+            import traceback
+            log.error(traceback.format_exc(limit=2))
