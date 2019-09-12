@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import unittest
 import composertest
 
 
@@ -40,6 +41,7 @@ class TestTar(composertest.ComposerTestCase):
     def test_tar(self):
         self.runCliTest("/tests/cli/test_compose_tar.sh")
 
+    @unittest.skip("No such file: 'new-kernel-pkg' in Fedora 30 anaconda. Enable with Fedora 31")
     def test_tar_kickstart(self):
         self.runCliTest("/tests/cli/test_compose_tar_kickstart.sh")
 
