@@ -74,7 +74,7 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        rlRun -t -c "$QEMU -m 2048 -boot c -hda $IMAGE -nographic \
+        rlRun -t -c "$QEMU -m 1024 -boot c -hda $IMAGE -nographic \
                            -net user,id=nic0,hostfwd=tcp::2222-:22 -net nic &"
         sleep 60
     rlPhaseEnd
