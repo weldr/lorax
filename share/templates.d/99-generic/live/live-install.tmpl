@@ -5,7 +5,6 @@
 %if basearch == "aarch64":
     installpkg efibootmgr
     installpkg grub2-efi-aa64-cdboot shim-aa64
-    installpkg uboot-tools
 %endif
 %if basearch in ("arm", "armhfp"):
     installpkg efibootmgr
