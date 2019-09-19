@@ -3496,7 +3496,7 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         self.assertTrue("providers" in data)
         providers = sorted(data["providers"].keys())
-        self.assertEqual(providers, ["azure", "dummy", "openstack", "vsphere"])
+        self.assertEqual(providers, ["aws", "azure", "dummy", "openstack", "vsphere"])
 
     def test_upload_01_providers_save(self):
         """Save settings for a provider"""

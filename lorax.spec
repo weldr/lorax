@@ -153,6 +153,8 @@ Requires: git
 Requires: xz
 Requires: createrepo_c
 Requires: python3-ansible-runner
+# For AWS playbook support
+Requires: python3-boto3
 
 %{?systemd_requires}
 BuildRequires: systemd
@@ -237,11 +239,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %files composer
 %config(noreplace) %{_sysconfdir}/lorax/composer.conf
 %{python3_sitelib}/pylorax/api/*
+%{python3_sitelib}/lifted/*
 %{_sbindir}/lorax-composer
 %{_unitdir}/lorax-composer.service
 %{_unitdir}/lorax-composer.socket
 %dir %{_datadir}/lorax/composer
 %{_datadir}/lorax/composer/*
+%{_datadir}/lorax/lifted/*
 %{_tmpfilesdir}/lorax-composer.conf
 %dir %attr(0771, root, weldr) %{_sharedstatedir}/lorax/composer/
 %dir %attr(0771, root, weldr) %{_sharedstatedir}/lorax/composer/blueprints/

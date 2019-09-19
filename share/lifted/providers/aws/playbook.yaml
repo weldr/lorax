@@ -1,0 +1,94 @@
+- hosts: localhost
+  tasks:
+  - name: Make sure bucket exists
+    aws_s3:
+      bucket: "{{ aws_bucket }}"
+      mode: create
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      region: "{{ aws_region }}"
+    register: bucket_facts
+  - fail:
+      msg: "Bucket creation failed"
+    when:
+      - bucket_facts.msg != "Bucket created successfully"
+      - bucket_facts.msg != "Bucket already exists."
+  - name: Make sure vmimport role exists
+    iam_role_facts:
+      name: vmimport
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      region: "{{ aws_region }}"
+    register: role_facts
+  - fail:
+      msg: "Role vmimport doesn't exist"
+    when: role_facts.iam_roles | length < 1
+  - name: Make sure the AMI name isn't already in use
+    ec2_ami_facts:
+      filters:
+        name: "{{ image_name }}"
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      region: "{{ aws_region }}"
+    register: ami_facts
+  - fail:
+      msg: "An AMI named {{ image_name }} already exists"
+    when: ami_facts.images | length > 0
+  - stat:
+      path: "{{ image_path }}"
+    register: image_stat
+  - set_fact:
+      image_id: "{{ image_name }}-{{ image_stat['stat']['checksum'] }}.ami"
+  - name: Upload the .ami image to an s3 bucket
+    aws_s3:
+      bucket: "{{ aws_bucket }}"
+      src: "{{ image_path }}"
+      object: "{{ image_id }}"
+      mode: put
+      overwrite: different
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      region: "{{ aws_region }}"
+  - name: Import a snapshot from an AMI stored as an s3 object
+    ec2_snapshot_import:
+      description: "{{ image_name }}"
+      format: raw
+      s3_bucket: "{{ aws_bucket }}"
+      s3_key: "{{ image_id }}"
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      region: "{{ aws_region }}"
+      wait: yes
+      tags:
+        Name: "{{ image_name }}"
+    register: import_facts
+  - fail:
+      msg: "Import of image from s3 failed"
+    when:
+      - import_facts.status != "completed"
+  - name: Register the snapshot as an AMI
+    ec2_ami:
+      name: "{{ image_name }}"
+      state: present
+      virtualization_type: hvm
+      root_device_name: /dev/sda1
+      device_mapping:
+        - device_name: /dev/sda1
+          snapshot_id: "{{ import_facts.snapshot_id }}"
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      region: "{{ aws_region }}"
+      wait: yes
+    register: register_facts
+  - fail:
+      msg: "Registering snapshot as an AMI failed"
+    when:
+        - register_facts.msg != "AMI creation operation complete."
+  - name: Delete the s3 object used for the snapshot/AMI
+    aws_s3:
+      bucket: "{{ aws_bucket }}"
+      object: "{{ image_id }}"
+      mode: delobj
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      region: "{{ aws_region }}"

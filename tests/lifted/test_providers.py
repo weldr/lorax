@@ -50,7 +50,7 @@ class ProvidersTestCase(unittest.TestCase):
 
     def test_list_providers(self):
         p = list_providers(self.config["upload"])
-        self.assertEqual(p, ['azure', 'dummy', 'openstack', 'vsphere'])
+        self.assertEqual(p, ['aws', 'azure', 'dummy', 'openstack', 'vsphere'])
 
     def test_resolve_provider(self):
         for p in list_providers(self.config["upload"]):

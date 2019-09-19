@@ -17,6 +17,12 @@
 
 # test profile settings for each provider
 test_profiles = {
+    "aws": ["aws-profile", {
+        "aws_access_key": "theaccesskey",
+        "aws_secret_key": "thesecretkey",
+        "aws_region":     "us-east-1",
+        "aws_bucket":     "composer-mops"
+        }],
     "azure": ["azure-profile", {
         "resource_group":       "production",
         "storage_account_name": "HomerSimpson",

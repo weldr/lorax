@@ -1,0 +1,29 @@
+display = "AWS"
+
+supported_types = [
+    "ami",
+]
+
+[settings-info.aws_access_key]
+display = "AWS Access Key"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.aws_secret_key]
+display = "AWS Secret Key"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.aws_region]
+display = "AWS Region"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.aws_bucket]
+display = "AWS Bucket"
+type = "string"
+placeholder = ""
+regex = ''
