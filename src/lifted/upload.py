@@ -191,6 +191,7 @@ class Upload:
                     "image_path": self.image_path,
                 },
                 event_handler=logger,
+                verbosity=2,
             )
 
             # Try logging events and stats -- but they may not exist, so catch the error
