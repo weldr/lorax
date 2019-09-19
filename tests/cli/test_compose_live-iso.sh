@@ -60,7 +60,7 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        rlRun -t -c "$QEMU -m 1024 -boot c -cdrom $IMAGE -nographic \
+        rlRun -t -c "$QEMU -m 2048 -boot c -cdrom $IMAGE -nographic \
                            -net user,id=nic0,hostfwd=tcp::2222-:22 -net nic &"
         # 60 seconds timeout at boot menu screen
         # then media check + boot ~ 30 seconds
