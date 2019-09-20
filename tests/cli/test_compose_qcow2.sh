@@ -16,6 +16,13 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun -t -c 'echo "**** DEBUG INFO FROM THE TEST ****"'
+        rlRun -t -c 'cat /sys/module/kvm_intel/parameters/nested'
+        rlRun -t -c 'cat /sys/module/kvm_amd/parameters/nested'
+        rlRun -t -c 'lsmod | grep kvm'
+        rlRun -t -c 'lscpu'
+        rlRun -t -c 'echo "**** END DEBUG INFO ****"'
+
         rlAssertExists $QEMU_BIN
     rlPhaseEnd
 

@@ -2,6 +2,12 @@
 
 SRPM="$1"
 
+echo "**** DEBUG INFO FROM vm.install ****"
+cat /sys/module/kvm_intel/parameters/nested
+lsmod | grep kvm
+lscpu
+echo "**** END DEBUG INFO ****"
+
 if ! rpm -q beakerlib; then
     if [ $(. /etc/os-release && echo $ID) = "rhel" ]; then
         (cd /etc/yum.repos.d; curl -O -L http://download.devel.redhat.com/beakerrepos/beaker-client-RedHatEnterpriseLinux.repo)
