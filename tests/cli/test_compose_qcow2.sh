@@ -18,6 +18,14 @@ QEMU="/usr/libexec/qemu-kvm"
 rlJournalStart
     rlPhaseStartSetup
         rlAssertExists $QEMU
+
+        rlRun -t -c 'echo "**** DEBUG INFO FROM THE TEST ****"'
+        rlRun -t -c 'cat /sys/module/kvm_intel/parameters/nested'
+        rlRun -t -c 'cat /sys/module/kvm_amd/parameters/nested'
+        rlRun -t -c 'lsmod | grep kvm'
+        rlRun -t -c 'lscpu'
+        rlRun -t -c 'echo "**** END DEBUG INFO ****"'
+
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
