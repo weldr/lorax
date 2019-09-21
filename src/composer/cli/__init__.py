@@ -25,14 +25,16 @@ from composer.cli.projects import projects_cmd
 from composer.cli.compose import compose_cmd
 from composer.cli.sources import sources_cmd
 from composer.cli.status import status_cmd
+from composer.cli.upload import upload_cmd
 
 command_map = {
     "blueprints": blueprints_cmd,
-    "modules": modules_cmd,
-    "projects": projects_cmd,
-    "compose": compose_cmd,
-    "sources": sources_cmd,
-    "status": status_cmd
+    "modules":    modules_cmd,
+    "projects":   projects_cmd,
+    "compose":    compose_cmd,
+    "sources":    sources_cmd,
+    "status":     status_cmd,
+    "upload":     upload_cmd
     }
 
 

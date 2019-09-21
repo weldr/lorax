@@ -133,4 +133,24 @@ status_help = """
 status show                         Show API server status.
 """
 
-epilog = compose_help + blueprints_help + modules_help + projects_help + sources_help + status_help
+upload_help = """
+upload info <UPLOAD-UUID>
+    Details about an upload
+
+upload start <BUILD-UUID> <PROVIDER> <PROFILE>|<PROFILE.TOML>
+    Upload a build image to the selected provider.
+
+upload log <UPLOAD-UUID>
+    Show the upload log
+
+upload cancel <UPLOAD-UUID>
+    Cancel an upload with that is queued or in progress
+
+upload delete <UPLOAD-UUID>
+    Delete the upload and remove it from the build
+
+upload reset <UPLOAD-UUID>
+    Reset the upload so that it can be tried again
+"""
+
+epilog = compose_help + blueprints_help + modules_help + projects_help + sources_help + status_help + upload_help
