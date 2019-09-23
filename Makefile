@@ -140,12 +140,10 @@ vm: $(VM_IMAGE)
 vm-reset:
 	rm -f $(VM_IMAGE) $(VM_IMAGE).qcow2
 
-# checkout Cockpit's bots/ directory for standard test VM images and API to launch them
-# must be from cockpit's master, as only that has current and existing images; but testvm.py API is stable
+# checkout Cockpit's bots for standard test VM images and API to launch them
+# must be from master, as only that has current and existing images; but testvm.py API is stable
 bots:
-	git fetch --depth=1 https://github.com/cockpit-project/cockpit.git
-	git checkout --force FETCH_HEAD -- bots/
-	git reset bots
+	git clone --depth=1 https://github.com/cockpit-project/bots.git
 
 .PHONY: ci_after_success
 ci_after_success:
