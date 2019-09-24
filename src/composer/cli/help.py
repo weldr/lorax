@@ -137,7 +137,7 @@ upload_help = """
 upload info <UPLOAD-UUID>
     Details about an upload
 
-upload start <BUILD-UUID> <PROVIDER> <PROFILE>|<PROFILE.TOML>
+upload start <BUILD-UUID> <IMAGE-NAME> [<PROVIDER> <PROFILE>|<PROFILE.TOML>]
     Upload a build image to the selected provider.
 
 upload log <UPLOAD-UUID>
@@ -153,4 +153,22 @@ upload reset <UPLOAD-UUID>
     Reset the upload so that it can be tried again
 """
 
-epilog = compose_help + blueprints_help + modules_help + projects_help + sources_help + status_help + upload_help
+providers_help = """
+providers list <PROVIDER>
+    List the available providers, or list the <provider's> available profiles
+
+providers show <PROVIDER> <PROFILE>
+    show the details of a specific provider's profile
+
+providers push <PROFILE.TOML>
+    Add a new profile, or overwrite an existing one
+
+providers save <PROVIDER> <PROFILE>
+    Save the profile's details to a TOML file named <PROFILE>.toml
+
+providers delete <PROVIDER> <PROFILE>
+    Delete a profile from a provider
+"""
+
+epilog = compose_help + blueprints_help + modules_help + projects_help \
+         + sources_help + status_help + upload_help + providers_help

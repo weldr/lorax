@@ -36,6 +36,7 @@ def upload_cmd(opts):
     This dispatches the upload commands to a function
     """
     cmd_map = {
+        "list":   upload_list,
         "info":   upload_info,
         "start":  upload_start,
         "log":    upload_log,
@@ -51,6 +52,40 @@ def upload_cmd(opts):
         return 1
 
     return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json, opts.testmode)
+
+def upload_list(socket_path, api_version, args, show_json=False, testmode=0):
+    """Return the composes and their associated upload uuids and status
+
+    :param socket_path: Path to the Unix socket to use for API communication
+    :type socket_path: str
+    :param api_version: Version of the API to talk to. eg. "0"
+    :type api_version: str
+    :param args: List of remaining arguments from the cmdline
+    :type args: list of str
+    :param show_json: Set to True to show the JSON output instead of the human readable output
+    :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
+
+    upload list
+    """
+    api_route = client.api_url(api_version, "/compose/finished")
+    r = client.get_url_json(socket_path, api_route)
+    results = r["finished"]
+    if not results:
+        return 0
+
+    if show_json:
+        print(json.dumps(results, indent=4))
+    else:
+        compose_fmt = "{id} {queue_status} {blueprint} {version} {compose_type}"
+        upload_fmt = '    {uuid} "{image_name}" {provider_name} {status}'
+        for c in results:
+            print(compose_fmt.format(**c))
+            print("\n".join(upload_fmt.format(**u) for u in c["uploads"]))
+            print()
+
+    return 0
 
 def upload_info(socket_path, api_version, args, show_json=False, testmode=0):
     """Return detailed information about the upload

@@ -26,6 +26,7 @@ from composer.cli.compose import compose_cmd
 from composer.cli.sources import sources_cmd
 from composer.cli.status import status_cmd
 from composer.cli.upload import upload_cmd
+from composer.cli.providers import providers_cmd
 
 command_map = {
     "blueprints": blueprints_cmd,
@@ -34,7 +35,8 @@ command_map = {
     "compose":    compose_cmd,
     "sources":    sources_cmd,
     "status":     status_cmd,
-    "upload":     upload_cmd
+    "upload":     upload_cmd,
+    "providers":  providers_cmd
     }
 
 
