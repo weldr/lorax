@@ -8,6 +8,8 @@ declare -A __composer_cli_cmds=(
   [modules]="list"
   [projects]="list info"
   [sources]="list info add change delete"
+  [upload]="info start log cancel delete reset"
+  [providers]="list show push save delete"
   [help]=""
 )
 
@@ -29,6 +31,14 @@ __composer_compose_types() {
 
 __composer_composes() {
     __composer_socket_ok && composer-cli compose list $@ | while read id rest; do echo $id; done
+}
+
+__composer_provider_list() {
+    __composer_socket_ok && composer-cli providers list
+}
+
+__composer_profile_list() {
+    __composer_socket_ok && composer-cli providers list $1
 }
 
 __word_in_list() {
@@ -86,13 +96,16 @@ _composer_cli() {
             compose:list)
                 COMPREPLY=($(compgen -W "waiting running finish failed" -- "${cur}"))
             ;;
+            providers:list)
+                COMPREPLY=($(compgen -W "$(__composer_provider_list)" -- "${cur}"))
+            ;;
             *:list|*:help|compose:types)
                 COMPREPLY=()
             ;;
             sources:info|sources:delete)
                 COMPREPLY=($(compgen -W "$(__composer_sources)" -- "${cur}"))
             ;;
-            sources:add|sources:change|blueprints:workspace|blueprints:push)
+            sources:add|sources:change|blueprints:workspace|blueprints:push|providers:push)
                 compopt -o filenames
                 COMPREPLY=($(compgen -f -- "${cur}"))
             ;;
@@ -117,6 +130,12 @@ _composer_cli() {
             compose:*)
                 COMPREPLY=($(compgen -W "$(__composer_composes)" -- "${cur}"))
             ;;
+            upload:start)
+                COMPREPLY=($(compgen -W "$(__composer_composes)" -- "${cur}"))
+            ;;
+            providers:show|providers:save|providers:delete)
+                COMPREPLY=($(compgen -W "$(__composer_provider_list)" -- "${cur}"))
+            ;;
         esac
     else
         # Complete words past the subcommand's argument (if appropriate)
@@ -135,6 +154,28 @@ _composer_cli() {
             ;;
             sources:info)
                 COMPREPLY=($(compgen -W "$(__composer_sources)" -- "${cur}"))
+            ;;
+            upload:start)
+                if [ "$cmd_cword" == 4 ]; then
+                    # If they have types something looking like a path, use file completion
+                    # otherwise suggest providers.
+                    case "${cur}" in
+                        */*)
+                            compopt -o filenames
+                            COMPREPLY=($(compgen -f -- "${cur}"))
+                        ;;
+                        *)
+                            COMPREPLY=($(compgen -W "$(__composer_provider_list)" -- "${cur}"))
+                        ;;
+                    esac
+                elif [ "$cmd_cword" == 5 ]; then
+                    COMPREPLY=($(compgen -W "$(__composer_profile_list ${prev})" -- "${cur}"))
+                fi
+            ;;
+            providers:show|providers:save|providers:delete)
+                if [ "$cmd_cword" == 3 ]; then
+                    COMPREPLY=($(compgen -W "$(__composer_profile_list ${prev})" -- "${cur}"))
+                fi
             ;;
         esac
     fi
