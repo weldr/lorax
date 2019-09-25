@@ -20,6 +20,7 @@ log = logging.getLogger("composer-cli")
 from datetime import datetime
 import sys
 import json
+import toml
 
 from composer import http_client as client
 from composer.cli.help import compose_help
@@ -212,7 +213,7 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
     :param testmode: Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.
     :type testmode: int
 
-    compose start <blueprint-name> <compose-type>
+    compose start <blueprint-name> <compose-type> [<image-name> <provider> <profile> | <image-name> <profile.toml>]
     """
     if len(args) == 0:
         log.error("start is missing the blueprint name and output type")
@@ -220,12 +221,30 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
     if len(args) == 1:
         log.error("start is missing the output type")
         return 1
+    if len(args) == 3:
+        log.error("start is missing the provider and profile details")
+        return 1
 
     config = {
         "blueprint_name": args[0],
         "compose_type": args[1],
         "branch": "master"
         }
+    if len(args) == 4:
+        config["upload"] = {"image_name": args[2]}
+        # profile TOML file (maybe)
+        try:
+            config["upload"].update(toml.load(args[3]))
+        except toml.TomlDecodeError as e:
+            log.error(str(e))
+            return 1
+    elif len(args) == 5:
+        config["upload"] = {
+            "image_name":  args[2],
+            "provider":  args[3],
+            "profile":  args[4]
+        }
+
     if testmode:
         test_url = "?test=%d" % testmode
     else:
@@ -237,6 +256,10 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
         return rc
 
     print("Compose %s added to the queue" % result["build_id"])
+
+    if "upload_id" in result and result["upload_id"]:
+        print ("Upload %s added to the upload queue" % result["upload_id"])
+
     return rc
 
 def compose_log(socket_path, api_version, args, show_json=False, testmode=0):

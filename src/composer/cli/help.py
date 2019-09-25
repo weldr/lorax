@@ -16,8 +16,8 @@
 
 # Documentation for the commands
 compose_help = """
-compose start <BLUEPRINT> <TYPE>
-    Start a compose using the selected blueprint and output type.
+compose start <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROVIDER> <PROFILE> | <IMAGE-NAME> <PROFILE.TOML>]
+    Start a compose using the selected blueprint and output type. Optionally start an upload.
 
 compose types
     List the supported output types.
