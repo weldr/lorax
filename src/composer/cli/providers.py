@@ -40,7 +40,8 @@ def providers_cmd(opts):
         "show":     providers_show,
         "push":     providers_push,
         "save":     providers_save,
-        "delete":   providers_delete
+        "delete":   providers_delete,
+        "template": providers_template
         }
     if opts.args[1] == "help" or opts.args[1] == "--help":
         print(providers_help)
@@ -234,3 +235,44 @@ def providers_delete(socket_path, api_version, args, show_json=False, testmode=0
     api_route = client.api_url(api_version, "/upload/providers/delete/%s/%s" % (args[0], args[1]))
     result = client.delete_url_json(socket_path, api_route)
     return handle_api_result(result, show_json)[0]
+
+def providers_template(socket_path, api_version, args, show_json=False, testmode=0):
+    """Return a TOML template for setting the provider's fields
+
+    :param socket_path: Path to the Unix socket to use for API communication
+    :type socket_path: str
+    :param api_version: Version of the API to talk to. eg. "0"
+    :type api_version: str
+    :param args: List of remaining arguments from the cmdline
+    :type args: list of str
+    :param show_json: Set to True to show the JSON output instead of the human readable output
+    :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
+
+    providers template <provider>
+    """
+    if len(args) == 0:
+        log.error("template is missing the provider name")
+        return 1
+
+    api_route = client.api_url(api_version, "/upload/providers")
+    r = client.get_url_json(socket_path, api_route)
+    results = r["providers"]
+    if not results:
+        return 0
+
+    if show_json:
+        print(json.dumps(results, indent=4))
+        return 0
+
+    if args[0] not in results:
+        log.error("%s is not a valid provider", args[0])
+        return 1
+
+    template = {"provider": args[0]}
+    settings = results[args[0]]["settings-info"]
+    template["settings"] = dict([(k, settings[k]["display"]) for k in settings])
+    print(toml.dumps(template))
+
+    return 0

@@ -9,7 +9,7 @@ declare -A __composer_cli_cmds=(
   [projects]="list info"
   [sources]="list info add change delete"
   [upload]="info start log cancel delete reset"
-  [providers]="list show push save delete"
+  [providers]="list show push save delete template"
   [help]=""
 )
 
@@ -96,7 +96,7 @@ _composer_cli() {
             compose:list)
                 COMPREPLY=($(compgen -W "waiting running finish failed" -- "${cur}"))
             ;;
-            providers:list)
+            providers:list|providers:template)
                 COMPREPLY=($(compgen -W "$(__composer_provider_list)" -- "${cur}"))
             ;;
             *:list|*:help|compose:types)
@@ -146,6 +146,20 @@ _composer_cli() {
             compose:start)
                 if [ "$cmd_cword" == 3 ]; then
                     COMPREPLY=($(compgen -W "$(__composer_compose_types)" -- "${cur}"))
+                elif [ "$cmd_cword" == 5 ]; then
+                    # If they have typed something looking like a path, use file completion
+                    # otherwise suggest providers.
+                    case "${cur}" in
+                        */*)
+                            compopt -o filenames
+                            COMPREPLY=($(compgen -f -- "${cur}"))
+                        ;;
+                        *)
+                            COMPREPLY=($(compgen -W "$(__composer_provider_list)" -- "${cur}"))
+                        ;;
+                    esac
+                elif [ "$cmd_cword" == 6 ]; then
+                    COMPREPLY=($(compgen -W "$(__composer_profile_list ${prev})" -- "${cur}"))
                 fi
             ;;
             # TODO: blueprints:diff and blueprints:undo want commits
@@ -157,7 +171,7 @@ _composer_cli() {
             ;;
             upload:start)
                 if [ "$cmd_cword" == 4 ]; then
-                    # If they have types something looking like a path, use file completion
+                    # If they have typed something looking like a path, use file completion
                     # otherwise suggest providers.
                     case "${cur}" in
                         */*)
