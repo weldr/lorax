@@ -650,6 +650,16 @@ name = "python"
 version = "2.7.*"
 """)
 
+    def _create_bad_toml_file(self):
+        open(self.new_recipe, 'w').write("""customizations]
+hostname = "testing-bad-recipe"
+""")
+
+    def _create_bad_recipe(self):
+        open(self.new_recipe, 'w').write("""[customizations]
+hostname = "testing-bad-recipe"
+""")
+
     def test_01_repo_creation(self):
         """Test that creating the repository succeeded"""
         self.assertNotEqual(self.repo, None)
@@ -690,6 +700,18 @@ version = "2.7.*"
         with self.assertRaises(recipes.RecipeFileError):
             recipes.commit_recipe_file(self.repo, "master", recipe_path)
 
+    def test_04_commit_recipe_file_bad_toml(self):
+        """Test committing an invalid TOML file"""
+        self._create_bad_toml_file()
+        with self.assertRaises(TomlError):
+            recipes.commit_recipe_file(self.repo, "master", self.new_recipe)
+
+    def test_04_commit_recipe_file_bad_recipe(self):
+        """Test committing an invalid recipe file"""
+        self._create_bad_recipe()
+        with self.assertRaises(recipes.RecipeError):
+            recipes.commit_recipe_file(self.repo, "master", self.new_recipe)
+
     def test_05_commit_toml_dir(self):
         """Test committing a directory of TOML files"""
         # first verify that the newly created file isn't present
@@ -715,6 +737,10 @@ version = "2.7.*"
 
         # then create it and commit the entire directory
         self._create_another_recipe()
+
+        # try to commit while raising RecipeError
+        with mock.patch('pylorax.api.recipes.commit_recipe_file', side_effect=recipes.RecipeError('TESTING')):
+            recipes.commit_recipe_directory(self.repo, "master", self.examples_path)
 
         # try to commit while raising RecipeFileError
         with mock.patch('pylorax.api.recipes.commit_recipe_file', side_effect=recipes.RecipeFileError('TESTING')):

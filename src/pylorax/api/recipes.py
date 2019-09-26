@@ -841,7 +841,7 @@ def commit_recipe_directory(repo, branch, directory):
         # Skip files with errors, but try the others
         try:
             commit_recipe_file(repo, branch, joinpaths(directory, f))
-        except (RecipeFileError, toml.TomlError):
+        except (RecipeError, RecipeFileError, toml.TomlError):
             pass
 
 def tag_recipe_commit(repo, branch, recipe_name):
