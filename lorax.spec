@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.10
+Version:        32.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -254,6 +254,27 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Sep 30 2019 Brian C. Lane <bcl@redhat.com> 32.0-1
+- aarch64: Fix live-iso creation on aarch64 (bcl@redhat.com)
+- Add test for running composer with --no-system-repos option (jikortus@redhat.com)
+- [tests] Use functions for starting and stopping lorax-composer (jikortus@redhat.com)
+- Makefile: Update bots target for moved GitHub project (sanne.raymaekers@gmail.com)
+- Keep the zramctl utility from util-linux on boot.iso (mkolman@redhat.com)
+- Skip kickstart tar test for fedora-30/tar scenario (atodorov@redhat.com)
+- Enable fedora-30/tar test scenario (atodorov@redhat.com)
+- [tests] Collect compose logs after each build (atodorov@redhat.com)
+- [tests] Use a function to wait for compose to finish (jikortus@redhat.com)
+- When launching AWS instances wait for the one we just launched (atodorov@redhat.com)
+- tests: Add kickstart tar installation test (jikortus@redhat.com)
+- tests: add option to disable kernel command line parameters check (jikortus@redhat.com)
+- tests: Use a loop to wait for VM and sshd to start (bcl@redhat.com)
+- creator.py: include dmsquash-live-ntfs by default (gmt@be-evil.net)
+- Skip Azure test b/c misconfigured infra & creds (atodorov@redhat.com)
+- tests: Drop tito from the Dockerfile.test (bcl@redhat.com)
+- tests: Drop sort from compose types test (bcl@redhat.com)
+- Revert "tests: Fix the order of liveimg-tar live-iso" (atodorov@redhat.com)
+- New test: assert toml files in git workspace (atodorov@redhat.com)
+
 * Tue Aug 20 2019 Brian C. Lane <bcl@redhat.com> 31.10-1
 - tests: Update gpg key to fedora 32 (bcl@redhat.com)
 - tests: Fix the order of liveimg-tar live-iso (bcl@redhat.com)
