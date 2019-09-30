@@ -19,12 +19,21 @@ if [ "$COMPOSER_TEST_FAIL_FAST" == "1" ]; then
   }
 fi
 
+
 export QEMU_BIN="/usr/bin/qemu-system-$(uname -m)"
-export QEMU="$QEMU_BIN -machine accel=kvm:tcg"
+if [ `rlGetArch` == "ppc64le" ]; then
+    # because there is only qemu-system-ppc64 !
+    export QEMU_BIN="/usr/bin/qemu-system-ppc64"
+fi
+export QEMU="$QEMU_BIN -accel kvm:tcg -cpu host"
 export SSH_PORT=2222
 
 boot_image() {
     QEMU_BOOT=$1
+    if [ `rlGetArch` == "aarch64" ]; then
+        QEMU_BOOT="$QEMU_BOOT -machine virt"
+    fi
+
     TIMEOUT=$2
     rlRun -t -c "$QEMU -m 2048 $QEMU_BOOT -nographic -monitor none \
                  -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic \
