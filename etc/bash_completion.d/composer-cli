@@ -8,7 +8,7 @@ declare -A __composer_cli_cmds=(
   [modules]="list"
   [projects]="list info"
   [sources]="list info add change delete"
-  [upload]="info start log cancel delete reset"
+  [upload]="list info start log cancel delete reset"
   [providers]="list show push save delete template"
   [help]=""
 )
