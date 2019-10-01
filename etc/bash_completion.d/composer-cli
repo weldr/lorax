@@ -9,7 +9,7 @@ declare -A __composer_cli_cmds=(
   [projects]="list info"
   [sources]="list info add change delete"
   [upload]="list info start log cancel delete reset"
-  [providers]="list show push save delete template"
+  [providers]="list info show push save delete template"
   [help]=""
 )
 
@@ -133,7 +133,7 @@ _composer_cli() {
             upload:start)
                 COMPREPLY=($(compgen -W "$(__composer_composes)" -- "${cur}"))
             ;;
-            providers:show|providers:save|providers:delete)
+            providers:show|providers:save|providers:delete|providers:info)
                 COMPREPLY=($(compgen -W "$(__composer_provider_list)" -- "${cur}"))
             ;;
         esac

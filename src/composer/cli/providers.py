@@ -37,6 +37,7 @@ def providers_cmd(opts):
     """
     cmd_map = {
         "list":     providers_list,
+        "info":     providers_info,
         "show":     providers_show,
         "push":     providers_push,
         "save":     providers_save,
@@ -84,6 +85,47 @@ def providers_list(socket_path, api_version, args, show_json=False, testmode=0):
             print("\n".join(sorted(results[args[0]]["profiles"].keys())))
         else:
             print("\n".join(sorted(results.keys())))
+
+    return 0
+
+def providers_info(socket_path, api_version, args, show_json=False, testmode=0):
+    """Show information about each provider
+
+    :param socket_path: Path to the Unix socket to use for API communication
+    :type socket_path: str
+    :param api_version: Version of the API to talk to. eg. "0"
+    :type api_version: str
+    :param args: List of remaining arguments from the cmdline
+    :type args: list of str
+    :param show_json: Set to True to show the JSON output instead of the human readable output
+    :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
+
+    providers info <PROVIDER>
+    """
+    if len(args) == 0:
+        log.error("info is missing the provider name")
+        return 1
+
+    api_route = client.api_url(api_version, "/upload/providers")
+    r = client.get_url_json(socket_path, api_route)
+    results = r["providers"]
+    if not results:
+        return 0
+
+    if show_json:
+        print(json.dumps(results, indent=4))
+    else:
+        if args[0] not in results:
+            log.error("%s is not a valid provider", args[0])
+            return 1
+        p = results[args[0]]
+        print("%s supports these image types: %s" % (p["display"], ", ".join(p["supported_types"])))
+        print("Settings:")
+        for k in p["settings-info"]:
+            f = p["settings-info"][k]
+            print("    %-20s: %s is a %s" % (k, f["display"], f["type"]))
 
     return 0
 
