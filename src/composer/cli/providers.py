@@ -151,8 +151,10 @@ def providers_push(socket_path, api_version, args, show_json=False, testmode=0):
     """
     if len(args) == 0:
         log.error("push is missing the profile TOML file")
+        return 1
     if not os.path.exists(args[0]):
         log.error("Missing profile TOML file: %s", args[0])
+        return 1
 
     api_route = client.api_url(api_version, "/upload/providers/save")
     profile = toml.load(args[0])
