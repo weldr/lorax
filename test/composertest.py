@@ -11,6 +11,7 @@ import unittest
 sys.path.append(os.path.join(os.path.dirname(__file__), "../bots/machine"))
 import testvm # pylint: disable=import-error
 
+#pylint: disable=subprocess-run-check
 
 def print_exception(etype, value, tb):
     # only include relevant lines
