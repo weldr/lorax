@@ -194,13 +194,14 @@ def upload_log(socket_path, api_version, args, show_json=False, testmode=0):
         return 1
 
     api_route = client.api_url(api_version, "/upload/log/%s" % args[0])
-    try:
-        result = client.get_url_raw(socket_path, api_route)
-    except RuntimeError as e:
-        print(str(e))
-        return 1
+    result = client.get_url_json(socket_path, api_route)
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
-    print(result)
+    print("Upload log for %s:\n" % result["upload_id"])
+    print(result["log"])
+
     return 0
 
 def upload_cancel(socket_path, api_version, args, show_json=False, testmode=0):
