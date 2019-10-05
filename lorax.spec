@@ -217,6 +217,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sbindir}/lorax
 %{_sbindir}/mkefiboot
 %{_sbindir}/livemedia-creator
+%{_sbindir}/mkksiso
 %{_bindir}/image-minimizer
 %{_bindir}/mk-s390-cdboot
 %dir %{_sysconfdir}/lorax
