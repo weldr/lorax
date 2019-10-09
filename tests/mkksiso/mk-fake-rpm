@@ -1,0 +1,54 @@
+#!/usr/bin/python3
+
+# Copyright (C) 2019 Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+from contextlib import contextmanager
+from rpmfluff import SimpleRpmBuild, expectedArch
+import os
+import shutil
+import sys
+import tempfile
+
+@contextmanager
+def in_tempdir(prefix='tmp'):
+    """Execute a block of code with chdir in a temporary location"""
+    oldcwd = os.getcwd()
+    tmpdir = tempfile.mkdtemp(prefix=prefix)
+    os.chdir(tmpdir)
+    try:
+        yield
+    finally:
+        os.chdir(oldcwd)
+        shutil.rmtree(tmpdir)
+
+
+def makeFakeRPM(repo_dir, name, epoch, version, release):
+    """Make a fake rpm file in repo_dir"""
+    p = SimpleRpmBuild(name, version, release)
+    if epoch:
+        p.epoch = epoch
+    p.add_simple_payload_file_random()
+    with in_tempdir("lorax-test-rpms."):
+        p.make()
+        rpmfile = p.get_built_rpm(expectedArch)
+        shutil.move(rpmfile, repo_dir)
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print("%s DIRECTORY RPM-NAME" % os.path.basename(sys.argv[0]))
+        sys.exit(1)
+
+    makeFakeRPM(os.path.abspath(sys.argv[1]), sys.argv[2], 0, "1.0.0", "1")

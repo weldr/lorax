@@ -33,10 +33,7 @@ all: src/pylorax/version.py src/composer/version.py
 install: all
 	$(PYTHON) setup.py install --root=$(DESTDIR) --prefix=$(PREFIX)
 	mkdir -p $(DESTDIR)/$(mandir)/man1
-	install -m 644 docs/man/lorax.1 $(DESTDIR)/$(mandir)/man1
-	install -m 644 docs/man/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
-	install -m 644 docs/man/lorax-composer.1 $(DESTDIR)/$(mandir)/man1
-	install -m 644 docs/man/composer-cli.1 $(DESTDIR)/$(mandir)/man1
+	install -m 644 docs/man/*.1 $(DESTDIR)/$(mandir)/man1
 	mkdir -p $(DESTDIR)/etc/bash_completion.d
 	install -m 644 etc/bash_completion.d/composer-cli $(DESTDIR)/etc/bash_completion.d
 
@@ -68,6 +65,9 @@ test_images:
 
 test_cli:
 	sudo -E ./tests/test_cli.sh
+
+test_mkksiso:
+	sudo -E ./tests/mkksiso/test_mkksiso.sh
 
 clean_cloud_envs:
 	# clean beakerlib logs from previous executions
