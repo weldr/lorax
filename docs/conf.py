@@ -267,6 +267,7 @@ man_pages = [
     ('livemedia-creator', 'livemedia-creator', u'Live Media Creator Documentation', [u'Weldr Team'], 1),
     ('lorax-composer', 'lorax-composer', u'Lorax Composer Documentation', [u'Weldr Team'], 1),
     ('composer-cli', 'composer-cli', u'Composer Cmdline Utility Documentation', [u'Weldr Team'], 1),
+    ('mkksiso', 'mkksiso', u'Make Kickstart ISO Utility Documentation', [u'Weldr Team'], 1),
 ]
 
 # If true, show URL addresses after external links.
