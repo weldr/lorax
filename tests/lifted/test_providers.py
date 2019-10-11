@@ -42,15 +42,15 @@ class ProvidersTestCase(unittest.TestCase):
 
     def test_get_profile_path(self):
         """Make sure that _get_profile_path strips path elements from the input"""
-        path = _get_profile_path(self.config["upload"], "azure", "staging-settings", exists=False)
-        self.assertEqual(path, os.path.abspath(joinpaths(self.config["upload"]["settings_dir"], "azure/staging-settings.toml")))
+        path = _get_profile_path(self.config["upload"], "aws", "staging-settings", exists=False)
+        self.assertEqual(path, os.path.abspath(joinpaths(self.config["upload"]["settings_dir"], "aws/staging-settings.toml")))
 
-        path = _get_profile_path(self.config["upload"], "../../../../foo/bar/azure", "/not/my/path/staging-settings", exists=False)
-        self.assertEqual(path, os.path.abspath(joinpaths(self.config["upload"]["settings_dir"], "azure/staging-settings.toml")))
+        path = _get_profile_path(self.config["upload"], "../../../../foo/bar/aws", "/not/my/path/staging-settings", exists=False)
+        self.assertEqual(path, os.path.abspath(joinpaths(self.config["upload"]["settings_dir"], "aws/staging-settings.toml")))
 
     def test_list_providers(self):
         p = list_providers(self.config["upload"])
-        self.assertEqual(p, ['aws', 'azure', 'dummy', 'openstack', 'vsphere'])
+        self.assertEqual(p, ['aws', 'dummy', 'openstack', 'vsphere'])
 
     def test_resolve_provider(self):
         for p in list_providers(self.config["upload"]):
@@ -79,10 +79,10 @@ class ProvidersTestCase(unittest.TestCase):
             validate_settings(self.config["upload"], "dummy", test_profiles["dummy"][1], image_name="")
 
         with self.assertRaises(ValueError):
-            validate_settings(self.config["upload"], "azure", {"wrong-key": "wrong value"})
+            validate_settings(self.config["upload"], "aws", {"wrong-key": "wrong value"})
 
         with self.assertRaises(ValueError):
-            validate_settings(self.config["upload"], "azure", {"secret": False})
+            validate_settings(self.config["upload"], "aws", {"secret": False})
 
         # TODO - test regex, needs a provider with a regex
 
@@ -113,13 +113,13 @@ class ProvidersTestCase(unittest.TestCase):
             load_settings(self.config["upload"], "", "default")
 
         with self.assertRaises(ValueError):
-            load_settings(self.config["upload"], "azure", "")
+            load_settings(self.config["upload"], "aws", "")
 
         with self.assertRaises(RuntimeError):
             load_settings(self.config["upload"], "foo", "default")
 
         with self.assertRaises(RuntimeError):
-            load_settings(self.config["upload"], "azure", "missing-test")
+            load_settings(self.config["upload"], "aws", "missing-test")
 
     # This *must* run after test_save_settings, _zz_ ensures that happens
     def test_zz_load_settings(self):
@@ -139,19 +139,19 @@ class ProvidersTestCase(unittest.TestCase):
             delete_profile(self.config["upload"], "", "default")
 
         with self.assertRaises(ValueError):
-            delete_profile(self.config["upload"], "azure", "")
+            delete_profile(self.config["upload"], "aws", "")
 
         with self.assertRaises(RuntimeError):
-            delete_profile(self.config["upload"], "azure", "missing-test")
+            delete_profile(self.config["upload"], "aws", "missing-test")
 
     # This *must* run after all the save and load tests, _zzz_ ensures this happens
     def test_zzz_delete_settings(self):
         """Test raising the correct errors when deleting"""
         # Ensure the profile is really there
-        settings = load_settings(self.config["upload"], "azure", test_profiles["azure"][0])
-        self.assertEqual(settings, test_profiles["azure"][1])
+        settings = load_settings(self.config["upload"], "aws", test_profiles["aws"][0])
+        self.assertEqual(settings, test_profiles["aws"][1])
 
-        delete_profile(self.config["upload"], "azure", test_profiles["azure"][0])
+        delete_profile(self.config["upload"], "aws", test_profiles["aws"][0])
 
         with self.assertRaises(RuntimeError):
-            load_settings(self.config["upload"], "azure", test_profiles["azure"][0])
+            load_settings(self.config["upload"], "aws", test_profiles["aws"][0])

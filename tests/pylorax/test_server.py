@@ -3496,15 +3496,15 @@ class ServerAPIV1TestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         self.assertTrue("providers" in data)
         providers = sorted(data["providers"].keys())
-        self.assertEqual(providers, ["aws", "azure", "dummy", "openstack", "vsphere"])
+        self.assertEqual(providers, ["aws", "dummy", "openstack", "vsphere"])
 
     def test_upload_01_providers_save(self):
         """Save settings for a provider"""
         # list of providers, and their settings
         test_settings = {
-            "provider": "azure",
-            "profile": test_profiles["azure"][0],
-            "settings": test_profiles["azure"][1]
+            "provider": "aws",
+            "profile": test_profiles["aws"][0],
+            "settings": test_profiles["aws"][1]
         }
 
         resp = self.server.post("/api/v1/upload/providers/save",
@@ -3518,19 +3518,19 @@ class ServerAPIV1TestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertTrue("providers" in data)
-        self.assertTrue("azure" in data["providers"])
-        self.assertTrue(test_profiles["azure"][0] in data["providers"]["azure"]["profiles"])
+        self.assertTrue("aws" in data["providers"])
+        self.assertTrue(test_profiles["aws"][0] in data["providers"]["aws"]["profiles"])
 
     def test_upload_02_compose_profile(self):
         """Test starting a compose with upload profile"""
         test_compose = {
             "blueprint_name": "example-custom-base",
-            "compose_type": "vhd",
+            "compose_type": "ami",
             "branch": "master",
             "upload": {
-                "image_name": "Azure custom-base",
-                "provider": "azure",
-                "settings": test_profiles["azure"][1]
+                "image_name": "AWS custom-base",
+                "provider": "aws",
+                "settings": test_profiles["aws"][1]
             }
         }
         resp = self.server.post("/api/v1/compose?test=2",
@@ -3553,9 +3553,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         print(data)
         self.assertEqual(data["status"], True)
         self.assertTrue("upload" in data)
-        self.assertEqual(data["upload"]["provider_name"], "azure")
+        self.assertEqual(data["upload"]["provider_name"], "aws")
         self.assertEqual(data["upload"]["uuid"], upload_id)
-        self.assertEqual(data["upload"]["image_name"], "Azure custom-base")
+        self.assertEqual(data["upload"]["image_name"], "AWS custom-base")
 
         # Get the upload log
         resp = self.server.get("/api/v1/upload/log/%s" % upload_id)
@@ -3577,12 +3577,12 @@ class ServerAPIV1TestCase(unittest.TestCase):
         """Test starting a compose with upload settings"""
         test_compose = {
             "blueprint_name": "example-custom-base",
-            "compose_type": "vhd",
+            "compose_type": "ami",
             "branch": "master",
             "upload": {
-                "image_name": "Azure custom-base",
-                "provider": "azure",
-                "profile": test_profiles["azure"][0]
+                "image_name": "AWS custom-base",
+                "provider": "aws",
+                "profile": test_profiles["aws"][0]
             }
         }
         resp = self.server.post("/api/v1/compose?test=2",
@@ -3605,9 +3605,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
         print(data)
         self.assertEqual(data["status"], True)
         self.assertTrue("upload" in data)
-        self.assertEqual(data["upload"]["provider_name"], "azure")
+        self.assertEqual(data["upload"]["provider_name"], "aws")
         self.assertEqual(data["upload"]["uuid"], upload_id)
-        self.assertEqual(data["upload"]["image_name"], "Azure custom-base")
+        self.assertEqual(data["upload"]["image_name"], "AWS custom-base")
 
         # Get the upload log
         resp = self.server.get("/api/v1/upload/log/%s" % upload_id)
@@ -3630,7 +3630,7 @@ class ServerAPIV1TestCase(unittest.TestCase):
 
         # Create a test compose
         test_compose = {"blueprint_name": "example-custom-base",
-                        "compose_type": "vhd",
+                        "compose_type": "ami",
                         "branch": "master"}
 
         resp = self.server.post("/api/v1/compose?test=2",
@@ -3666,9 +3666,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
 
         # Schedule an upload of this image using settings
         upload = {
-            "image_name": "Azure custom-base",
-            "provider": "azure",
-            "settings": test_profiles["azure"][1]
+            "image_name": "AWS custom-base",
+            "provider": "aws",
+            "settings": test_profiles["aws"][1]
         }
         resp = self.server.post("/api/v1/compose/uploads/schedule/%s" % build_id,
                                 data=json.dumps(upload),
@@ -3680,9 +3680,9 @@ class ServerAPIV1TestCase(unittest.TestCase):
 
         # Schedule an upload of this image using settings
         upload = {
-            "image_name": "Azure custom-base",
-            "provider": "azure",
-            "profile": test_profiles["azure"][0]
+            "image_name": "AWS custom-base",
+            "provider": "aws",
+            "profile": test_profiles["aws"][0]
         }
         resp = self.server.post("/api/v1/compose/uploads/schedule/%s" % build_id,
                                 data=json.dumps(upload),
@@ -3702,7 +3702,7 @@ class ServerAPIV1TestCase(unittest.TestCase):
     def test_upload_06_providers_delete(self):
         """Delete a profile from a provider"""
         # /api/v1/upload/providers/delete/provider/profile
-        resp = self.server.delete("/api/v1/upload/providers/delete/azure/%s" % test_profiles["azure"][0])
+        resp = self.server.delete("/api/v1/upload/providers/delete/aws/%s" % test_profiles["aws"][0])
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data, {"status":True})
@@ -3711,12 +3711,12 @@ class ServerAPIV1TestCase(unittest.TestCase):
         resp = self.server.get("/api/v1/upload/providers")
         data = json.loads(resp.data)
         self.assertTrue("providers" in data)
-        self.assertTrue("azure" in data["providers"])
-        self.assertEqual(data["providers"]["azure"]["profiles"], {})
+        self.assertTrue("aws" in data["providers"])
+        self.assertEqual(data["providers"]["aws"]["profiles"], {})
 
     def test_upload_07_delete_unknown_profile(self):
         """Delete an unknown profile"""
-        resp = self.server.delete("/api/v1/upload/providers/delete/azure/unknown")
+        resp = self.server.delete("/api/v1/upload/providers/delete/aws/unknown")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False, "Failed to delete upload: %s" % data)
