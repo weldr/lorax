@@ -29,7 +29,6 @@ class TestImages(composertest.ComposerTestCase):
         self.runCliTest("/tests/cli/test_compose_partitioned-disk.sh")
 
 
-@unittest.skip('Disabled due to issues with nested KVM')
 class TestQcow2(composertest.ComposerTestCase):
     def tearDown(self):
         super().tearDownTestMachine()
