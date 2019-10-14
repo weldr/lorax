@@ -173,14 +173,10 @@ vm-reset:
 # checkout Cockpit's bots for standard test VM images and API to launch them
 # must be from master, as only that has current and existing images; but testvm.py API is stable
 bots:
-	if [ ! -d bots ]; then \
-		git clone --depth=1 https://github.com/cockpit-project/bots.git; \
-	else \
-		cd bots && git fetch && git reset --hard origin/master; \
-        fi
+	git clone --depth=1 https://github.com/cockpit-project/bots.git
 
 .PHONY: ci_after_success
 ci_after_success:
 # nothing to do here, but Jenkins expects this to be present, otherwise fails
 
-.PHONY: docs check test srpm vm vm-reset bots
+.PHONY: docs check test srpm vm vm-reset
