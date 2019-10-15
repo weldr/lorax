@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import tempfile
 import unittest
 
 import composertest
@@ -30,14 +31,46 @@ class TestImages(composertest.ComposerTestCase):
 
 @unittest.skip('Nested KVM seems to be buggy and software emulation is too slow')
 class TestQcow2(composertest.ComposerTestCase):
+    def tearDown(self):
+        super().tearDownTestMachine()
+
     def test_qcow2(self):
         self.runCliTest("/tests/cli/test_compose_qcow2.sh")
+
+        with tempfile.TemporaryDirectory(prefix="/var/tmp/lorax-test.") as tmpdir:
+            # Copy the resulting qcow2 image and shut down the VM
+            self.tearDownVirt(virt_dir="/var/tmp/test-results/*", local_dir=tmpdir)
+
+            # Boot the image
+            self.setUpTestMachine(tmpdir + "/disk.qcow2", tmpdir + "/id_rsa")
+
+            # Upload the contents of the ./tests/ directory to the machine
+            self.machine.upload(["../tests"], "/")
+
+            # Run the test, on the booted image
+            self.runImageTest("/tests/cli/test_boot_qcow2.sh")
 
 
 @unittest.skip('Nested KVM seems to be buggy and software emulation is too slow')
 class TestLiveIso(composertest.ComposerTestCase):
+    def tearDown(self):
+        super().tearDownTestMachine()
+
     def test_live_iso(self):
         self.runCliTest("/tests/cli/test_compose_live-iso.sh")
+
+        with tempfile.TemporaryDirectory(prefix="/var/tmp/lorax-test.") as tmpdir:
+            # Copy the resulting iso and shut down the VM
+            self.tearDownVirt(virt_dir="/var/tmp/test-results/*", local_dir=tmpdir)
+
+            # Boot the image
+            self.setUpTestMachine(tmpdir + "/live.iso")
+
+            # Upload the contents of the ./tests/ directory to the machine
+            self.machine.upload(["../tests"], "/")
+
+            # Run the test, on the booted image
+            self.runImageTest("/tests/cli/test_boot_live-iso.sh")
 
 
 class TestTar(composertest.ComposerTestCase):
