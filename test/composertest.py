@@ -23,15 +23,20 @@ def print_exception(etype, value, tb):
     traceback.print_exception(etype, value, tb, limit=limit)
 
 
-class ComposerTestCase(unittest.TestCase):
-    image = testvm.DEFAULT_IMAGE
+class VirtMachineTestCase(unittest.TestCase):
     sit = False
+    network = None
+    machine = None
+    ssh_command = None
 
-    def setUp(self):
+    def setUpTestMachine(self, image, identity_file=None):
         self.network = testvm.VirtNetwork(0)
-        self.machine = testvm.VirtMachine(self.image, networking=self.network.host(), memory_mb=2048)
+        if identity_file:
+            self.machine = testvm.VirtMachine(image, networking=self.network.host(), cpus=2, memory_mb=2048, identity_file=identity_file)
+        else:
+            self.machine = testvm.VirtMachine(image, networking=self.network.host(), cpus=2, memory_mb=2048)
 
-        print("Starting virtual machine '{}'".format(self.image))
+        print("Starting virtual machine '{}'".format(image))
         self.machine.start()
         self.machine.wait_boot()
 
@@ -46,15 +51,7 @@ class ComposerTestCase(unittest.TestCase):
         print(" ".join(self.ssh_command))
         print()
 
-        print("Waiting for lorax-composer to become ready...")
-        curl_command = ["curl", "--max-time", "360",
-                                "--silent",
-                                "--unix-socket", "/run/weldr/api.socket",
-                                "http://localhost/api/status"]
-        r = subprocess.run(self.ssh_command + curl_command, stdout=subprocess.DEVNULL)
-        self.assertEqual(r.returncode, 0)
-
-    def tearDown(self):
+    def tearDownTestMachine(self):
         if os.environ.get('TEST_ATTACHMENTS'):
             self.machine.download_dir('/var/log/tests', os.environ.get('TEST_ATTACHMENTS'))
 
@@ -79,6 +76,35 @@ class ComposerTestCase(unittest.TestCase):
         """
         return subprocess.run(self.ssh_command + command, **args)
 
+
+class ComposerTestCase(VirtMachineTestCase):
+    def setUp(self):
+        self.setUpTestMachine(testvm.DEFAULT_IMAGE)
+
+        # Upload the contents of the ./tests/ directory to the machine (it must have beakerlib already installed)
+        self.machine.upload(["../tests"], "/")
+
+        print("Waiting for lorax-composer to become ready...")
+        curl_command = ["curl", "--max-time", "360",
+                                "--silent",
+                                "--unix-socket", "/run/weldr/api.socket",
+                                "http://localhost/api/status"]
+        r = subprocess.run(self.ssh_command + curl_command, stdout=subprocess.DEVNULL)
+        self.assertEqual(r.returncode, 0)
+
+    def tearDown(self):
+        self.tearDownVirt()
+
+    def tearDownVirt(self, virt_dir=None, local_dir=None):
+        if os.environ.get('TEST_ATTACHMENTS'):
+            self.machine.download_dir('/var/log/tests', os.environ.get('TEST_ATTACHMENTS'))
+
+        if virt_dir and local_dir:
+            self.machine.download_dir(virt_dir, local_dir)
+
+        self.tearDownTestMachine()
+        return local_dir
+
     def runCliTest(self, script):
         extra_env = []
         if self.sit:
@@ -89,6 +115,16 @@ class ComposerTestCase(unittest.TestCase):
                           "PACKAGE=composer-cli",
                           *extra_env,
                           "/tests/test_cli.sh", script])
+        self.assertEqual(r.returncode, 0)
+
+    def runImageTest(self, script):
+        extra_env = []
+        if self.sit:
+            extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
+
+        r = self.execute(["TEST=" + self.id(),
+                          *extra_env,
+                          "/tests/test_image.sh", script])
         self.assertEqual(r.returncode, 0)
 
 
