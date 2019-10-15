@@ -78,6 +78,10 @@ else
     composer_start
 fi
 
+# Clean out the test-results directory
+if [ -e "/var/tmp/test-results" ]; then
+    rm -rf "/var/tmp/test-results"
+fi
 
 export BEAKERLIB_JOURNAL=0
 export PATH="/usr/local/bin:$PATH"
