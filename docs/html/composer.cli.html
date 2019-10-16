@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli package &mdash; Lorax 31.9 documentation</title>
+  <title>composer.cli package &mdash; Lorax 32.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="pylorax package" href="pylorax.html" />
+    <link rel="next" title="lifted package" href="lifted.html" />
     <link rel="prev" title="composer package" href="composer.html" /> 
 </head>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                31.9
+                32.1
               </div>
             
           
@@ -104,6 +104,7 @@
 <li class="toctree-l3"><a class="reference internal" href="composer.html#module-composer">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="lifted.html">lifted package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.html">pylorax package</a></li>
 </ul>
 </li>
@@ -189,10 +190,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -205,13 +206,13 @@
 <dd><p>Process blueprints commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.7)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
+<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.8)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Value to return from sys.exit()</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
 </dd>
 </dl>
 <p>This dispatches the blueprints commands to a function</p>
@@ -224,10 +225,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -241,10 +242,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -258,10 +259,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -279,10 +280,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -298,10 +299,10 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -315,10 +316,10 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -332,10 +333,10 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -349,10 +350,10 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -366,10 +367,10 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -383,10 +384,10 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -401,10 +402,10 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -418,10 +419,10 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -435,10 +436,10 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -451,13 +452,13 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dd><p>Return comma-separated list of the dict's name/user fields</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- key/values</p>
+<dd class="field-odd"><p><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- key/values</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>String of the dict's keys and values</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
 </dd>
 </dl>
 <p>root, norm</p>
@@ -470,8 +471,8 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>change</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- The individual blueprint change dict</p></li>
-<li><p><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Number of spaces to indent</p></li>
+<li><p><strong>change</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- The individual blueprint change dict</p></li>
+<li><p><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- Number of spaces to indent</p></li>
 </ul>
 </dd>
 </dl>
@@ -483,13 +484,13 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dd><p>Return the dict as a human readable single line</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- key/values</p>
+<dd class="field-odd"><p><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- key/values</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>String of the dict's keys and values</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
 </dd>
 </dl>
 <p>key=&quot;str&quot;, key=&quot;str1,str2&quot;, ...</p>
@@ -501,7 +502,7 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dd><p>Generate nice diff entry string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>diff</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- Difference entry dict</p>
+<dd class="field-odd"><p><strong>diff</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Difference entry dict</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Nice string</p>
@@ -528,11 +529,11 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -546,13 +547,13 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dd><p>Process compose commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.7)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
+<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.8)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Value to return from sys.exit()</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
 </dd>
 </dl>
 <p>This dispatches the compose commands to a function</p>
@@ -565,11 +566,11 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -585,11 +586,11 @@ or failed, not a running compose.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -605,11 +606,11 @@ of compose that was selected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -630,11 +631,11 @@ of compose that was selected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -650,11 +651,11 @@ during the build.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -669,11 +670,11 @@ during the build.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -688,11 +689,11 @@ during the build.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -708,15 +709,15 @@ It is saved as uuid.tar</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.</p></li>
 </ul>
 </dd>
 </dl>
-<p>compose start &lt;blueprint-name&gt; &lt;compose-type&gt;</p>
+<p>compose start &lt;blueprint-name&gt; &lt;compose-type&gt; [&lt;image-name&gt; &lt;provider&gt; &lt;profile&gt; | &lt;image-name&gt; &lt;profile.toml&gt;]</p>
 </dd></dl>
 
 <dl class="function">
@@ -726,11 +727,11 @@ It is saved as uuid.tar</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -745,11 +746,11 @@ and failed so raw JSON output is not available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
-<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- unused in this function</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
 </ul>
 </dd>
 </dl>
@@ -769,13 +770,13 @@ include this extra information.</p>
 <dd><p>Process modules commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.7)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
+<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.8)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Value to return from sys.exit()</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -789,13 +790,13 @@ include this extra information.</p>
 <dd><p>Process projects commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.7)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
+<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.8)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Value to return from sys.exit()</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -807,10 +808,10 @@ include this extra information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -824,14 +825,161 @@ include this extra information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
 <p>projects list</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-composer.cli.providers">
+<span id="composer-cli-providers-module"></span><h2>composer.cli.providers module<a class="headerlink" href="#module-composer.cli.providers" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="composer.cli.providers.providers_cmd">
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process providers commands</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.8)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value to return from sys.exit()</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+<p>This dispatches the providers commands to a function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.providers.providers_delete">
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_delete</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a profile from a provider</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>providers delete &lt;provider&gt; &lt;profile&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.providers.providers_info">
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_info</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show information about each provider</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>providers info &lt;PROVIDER&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.providers.providers_list">
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of providers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>providers list</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.providers.providers_push">
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_push</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_push" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new provider profile or overwrite an existing one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>providers push &lt;profile.toml&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.providers.providers_save">
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_save</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a provider's profile to a TOML file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>providers save &lt;provider&gt; &lt;profile&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.providers.providers_show">
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_show</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return details about a provider</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>providers show &lt;provider&gt; &lt;profile&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.providers.providers_template">
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_template</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a TOML template for setting the provider's fields</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>providers template &lt;provider&gt;</p>
 </dd></dl>
 
 </div>
@@ -844,10 +992,10 @@ include this extra information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -860,13 +1008,13 @@ include this extra information.</p>
 <dd><p>Process sources commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.7)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
+<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.8)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Value to return from sys.exit()</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -878,10 +1026,10 @@ include this extra information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -895,10 +1043,10 @@ include this extra information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -912,10 +1060,10 @@ include this extra information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
-<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
-<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 </ul>
 </dd>
 </dl>
@@ -931,15 +1079,163 @@ include this extra information.</p>
 <dd><p>Process status commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.7)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
+<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.8)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Value to return from sys.exit()</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-composer.cli.upload">
+<span id="composer-cli-upload-module"></span><h2>composer.cli.upload module<a class="headerlink" href="#module-composer.cli.upload" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="composer.cli.upload.upload_cancel">
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_cancel</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel the queued or running upload</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>upload cancel &lt;build-uuid&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.upload.upload_cmd">
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process upload commands</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.8)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value to return from sys.exit()</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+<p>This dispatches the upload commands to a function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.upload.upload_delete">
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_delete</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an upload and remove it from the build</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>upload delete &lt;build-uuid&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.upload.upload_info">
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_info</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return detailed information about the upload</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>upload info &lt;uuid&gt;</p>
+<p>This returns information about the upload, including uuid, name, status, service, and image.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.upload.upload_list">
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the composes and their associated upload uuids and status</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>upload list</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.upload.upload_log">
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_log</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the upload log</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>upload log &lt;build-uuid&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.upload.upload_reset">
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_reset</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the upload and execute it again</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>upload reset &lt;build-uuid&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.upload.upload_start">
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_start</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start upload up a build uuid image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- unused in this function</p></li>
+</ul>
+</dd>
+</dl>
+<p>upload start &lt;build-uuid&gt; &lt;image-name&gt; [&lt;provider&gt; &lt;profile&gt; | &lt;profile.toml&gt;]</p>
 </dd></dl>
 
 </div>
@@ -970,13 +1266,13 @@ include this extra information.</p>
 <dd><p>Convert a blueprint name into a filename.toml</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>blueprint_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The blueprint's name</p>
+<dd class="field-odd"><p><strong>blueprint_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The blueprint's name</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The blueprint name with ' ' converted to - and .toml appended</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -987,10 +1283,10 @@ include this extra information.</p>
 <dd><p>Log any errors, return the correct value</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- JSON result from the http query</p>
+<dd class="field-odd"><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- JSON result from the http query</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>(rc, should_exit_now)</p>
@@ -1006,13 +1302,13 @@ not to continue processing the results.</p>
 <dd><p>Return the package info as a NEVRA</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pkg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- The package details</p>
+<dd class="field-odd"><p><strong>pkg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- The package details</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>name-[epoch:]version-release-arch</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1023,13 +1319,13 @@ not to continue processing the results.</p>
 <dd><p>Convert a blueprint name into a filename.toml</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>blueprint_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The blueprint's name</p>
+<dd class="field-odd"><p><strong>blueprint_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The blueprint's name</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The blueprint name with ' ' converted to - and .toml appended</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1043,7 +1339,7 @@ not to continue processing the results.</p>
 <dd><p>Main program execution</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.7)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
+<dd class="field-odd"><p><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.8)"><em>argparse.Namespace</em></a>) -- Cmdline arguments</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1059,7 +1355,7 @@ not to continue processing the results.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pylorax.html" class="btn btn-neutral float-right" title="pylorax package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="lifted.html" class="btn btn-neutral float-right" title="lifted package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="composer.html" class="btn btn-neutral float-left" title="composer package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

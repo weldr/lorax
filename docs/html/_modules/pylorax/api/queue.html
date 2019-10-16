@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.queue &mdash; Lorax 31.9 documentation</title>
+  <title>pylorax.api.queue &mdash; Lorax 32.1 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.9
+                32.1
               </div>
             
           
@@ -196,6 +196,8 @@
 <span class="kn">from</span> <span class="nn">pylorax.creator</span> <span class="k">import</span> <span class="n">run_creator</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">read_tail</span>
 
+<span class="kn">from</span> <span class="nn">lifted.queue</span> <span class="k">import</span> <span class="n">create_upload</span><span class="p">,</span> <span class="n">get_uploads</span><span class="p">,</span> <span class="n">ready_upload</span><span class="p">,</span> <span class="n">delete_upload</span>
+
 <div class="viewcode-block" id="check_queues"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.check_queues">[docs]</a><span class="k">def</span> <span class="nf">check_queues</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Check to make sure the new and run queue symlinks are correct</span>
 
@@ -251,7 +253,7 @@
     <span class="n">lib_dir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">)</span>
     <span class="n">share_dir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;share_dir&quot;</span><span class="p">)</span>
     <span class="n">tmp</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
-    <span class="n">monitor_cfg</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">composer_dir</span><span class="o">=</span><span class="n">lib_dir</span><span class="p">,</span> <span class="n">share_dir</span><span class="o">=</span><span class="n">share_dir</span><span class="p">,</span> <span class="n">uid</span><span class="o">=</span><span class="n">uid</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">tmp</span><span class="o">=</span><span class="n">tmp</span><span class="p">)</span>
+    <span class="n">monitor_cfg</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span> <span class="n">composer_dir</span><span class="o">=</span><span class="n">lib_dir</span><span class="p">,</span> <span class="n">share_dir</span><span class="o">=</span><span class="n">share_dir</span><span class="p">,</span> <span class="n">uid</span><span class="o">=</span><span class="n">uid</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">tmp</span><span class="o">=</span><span class="n">tmp</span><span class="p">)</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">monitor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">monitor_cfg</span><span class="p">,))</span>
     <span class="n">p</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
@@ -321,6 +323,11 @@
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finished building </span><span class="si">%s</span><span class="s2">, results are in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span>
                 <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;FINISHED</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">write_timestamp</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">TS_FINISHED</span><span class="p">)</span>
+
+                <span class="n">upload_cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">upload</span> <span class="ow">in</span> <span class="n">get_uploads</span><span class="p">(</span><span class="n">upload_cfg</span><span class="p">,</span> <span class="n">uuid_get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuids</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Readying upload </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">upload</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+                    <span class="n">uuid_ready_upload</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">upload</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="kn">import</span> <span class="nn">traceback</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;traceback: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
@@ -456,11 +463,15 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot find ks template for build </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">results_dir</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="compose_detail"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.compose_detail">[docs]</a><span class="k">def</span> <span class="nf">compose_detail</span><span class="p">(</span><span class="n">results_dir</span><span class="p">):</span>
+<div class="viewcode-block" id="compose_detail"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.compose_detail">[docs]</a><span class="k">def</span> <span class="nf">compose_detail</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">results_dir</span><span class="p">,</span> <span class="n">api</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return details about the build.</span>
 
+<span class="sd">    :param cfg: Configuration settings (required for api=1)</span>
+<span class="sd">    :type cfg: ComposerConfig</span>
 <span class="sd">    :param results_dir: The directory containing the metadata and results for the build</span>
 <span class="sd">    :type results_dir: str</span>
+<span class="sd">    :param api: Select which api version of the dict to return (default 1)</span>
+<span class="sd">    :type api: int</span>
 <span class="sd">    :returns: A dictionary with details about the compose</span>
 <span class="sd">    :rtype: dict</span>
 <span class="sd">    :raises: IOError if it cannot read the directory, STATUS, or blueprint file.</span>
@@ -473,6 +484,7 @@
 <span class="sd">    * blueprint - Blueprint name</span>
 <span class="sd">    * version - Blueprint version</span>
 <span class="sd">    * image_size - Size of the image, if finished. 0 otherwise.</span>
+<span class="sd">    * uploads - For API v1 details about uploading the image are included</span>
 
 <span class="sd">    Various timestamps are also included in the dict.  These are all Unix UTC timestamps.</span>
 <span class="sd">    It is possible for these timestamps to not always exist, in which case they will be</span>
@@ -496,22 +508,31 @@
 
     <span class="n">times</span> <span class="o">=</span> <span class="n">timestamp_dict</span><span class="p">(</span><span class="n">results_dir</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span>           <span class="n">build_id</span><span class="p">,</span>
-            <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
-            <span class="s2">&quot;job_created&quot;</span><span class="p">:</span>  <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TS_CREATED</span><span class="p">),</span>
-            <span class="s2">&quot;job_started&quot;</span><span class="p">:</span>  <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TS_STARTED</span><span class="p">),</span>
-            <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TS_FINISHED</span><span class="p">),</span>
-            <span class="s2">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">compose_type</span><span class="p">,</span>
-            <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span>    <span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;version&quot;</span><span class="p">:</span>      <span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;image_size&quot;</span><span class="p">:</span>   <span class="n">image_size</span>
-            <span class="p">}</span></div>
+    <span class="n">detail</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span>           <span class="n">build_id</span><span class="p">,</span>
+              <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
+              <span class="s2">&quot;job_created&quot;</span><span class="p">:</span>  <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TS_CREATED</span><span class="p">),</span>
+              <span class="s2">&quot;job_started&quot;</span><span class="p">:</span>  <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TS_STARTED</span><span class="p">),</span>
+              <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TS_FINISHED</span><span class="p">),</span>
+              <span class="s2">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">compose_type</span><span class="p">,</span>
+              <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span>    <span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+              <span class="s2">&quot;version&quot;</span><span class="p">:</span>      <span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span>
+              <span class="s2">&quot;image_size&quot;</span><span class="p">:</span>   <span class="n">image_size</span><span class="p">,</span>
+             <span class="p">}</span>
 
-<div class="viewcode-block" id="queue_status"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.queue_status">[docs]</a><span class="k">def</span> <span class="nf">queue_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">api</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Get uploads for this build_id</span>
+        <span class="n">upload_uuids</span> <span class="o">=</span> <span class="n">uuid_get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">build_id</span><span class="p">)</span>
+        <span class="n">summaries</span> <span class="o">=</span> <span class="p">[</span><span class="n">upload</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span> <span class="k">for</span> <span class="n">upload</span> <span class="ow">in</span> <span class="n">get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">upload_uuids</span><span class="p">)]</span>
+        <span class="n">detail</span><span class="p">[</span><span class="s2">&quot;uploads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">summaries</span>
+    <span class="k">return</span> <span class="n">detail</span></div>
+
+<div class="viewcode-block" id="queue_status"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.queue_status">[docs]</a><span class="k">def</span> <span class="nf">queue_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">api</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return details about what is in the queue.</span>
 
 <span class="sd">    :param cfg: Configuration settings</span>
 <span class="sd">    :type cfg: ComposerConfig</span>
+<span class="sd">    :param api: Select which api version of the dict to return (default 1)</span>
+<span class="sd">    :type api: int</span>
 <span class="sd">    :returns: A list of the new composes, and a list of the running composes</span>
 <span class="sd">    :rtype: dict</span>
 
@@ -525,7 +546,7 @@
     <span class="n">new_details</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">new_queue</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">api</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">new_details</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -533,7 +554,7 @@
     <span class="n">run_details</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">run_queue</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">api</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">run_details</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -543,32 +564,36 @@
         <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="n">run_details</span>
     <span class="p">}</span></div>
 
-<div class="viewcode-block" id="uuid_status"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_status">[docs]</a><span class="k">def</span> <span class="nf">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
+<div class="viewcode-block" id="uuid_status"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_status">[docs]</a><span class="k">def</span> <span class="nf">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">api</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the details of a specific UUID compose</span>
 
 <span class="sd">    :param cfg: Configuration settings</span>
 <span class="sd">    :type cfg: ComposerConfig</span>
 <span class="sd">    :param uuid: The UUID of the build</span>
 <span class="sd">    :type uuid: str</span>
+<span class="sd">    :param api: Select which api version of the dict to return (default 1)</span>
+<span class="sd">    :type api: int</span>
 <span class="sd">    :returns: Details about the build</span>
 <span class="sd">    :rtype: dict or None</span>
 
-<span class="sd">    Returns the same dict as `compose_details()`</span>
+<span class="sd">    Returns the same dict as `compose_detail()`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">uuid_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid_dir</span><span class="p">,</span> <span class="n">api</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="build_status"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.build_status">[docs]</a><span class="k">def</span> <span class="nf">build_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">status_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="build_status"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.build_status">[docs]</a><span class="k">def</span> <span class="nf">build_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">status_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">api</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the details of finished or failed builds</span>
 
 <span class="sd">    :param cfg: Configuration settings</span>
 <span class="sd">    :type cfg: ComposerConfig</span>
 <span class="sd">    :param status_filter: What builds to return. None == all, &quot;FINISHED&quot;, or &quot;FAILED&quot;</span>
 <span class="sd">    :type status_filter: str</span>
-<span class="sd">    :returns: A list of the build details (from compose_details)</span>
+<span class="sd">    :param api: Select which api version of the dict to return (default 1)</span>
+<span class="sd">    :type api: int</span>
+<span class="sd">    :returns: A list of the build details (from compose_detail)</span>
 <span class="sd">    :rtype: list of dicts</span>
 
 <span class="sd">    This returns a list of build details for each of the matching builds on the</span>
@@ -588,10 +613,131 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">status</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">status_filter</span><span class="p">:</span>
-                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compose_detail</span><span class="p">(</span><span class="n">build</span><span class="p">))</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compose_detail</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">build</span><span class="p">,</span> <span class="n">api</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
             <span class="k">pass</span>
     <span class="k">return</span> <span class="n">results</span></div>
+
+<span class="k">def</span> <span class="nf">_upload_list_path</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the path to the UPLOADS file</span>
+
+<span class="sd">    :param cfg: Configuration settings</span>
+<span class="sd">    :type cfg: ComposerConfig</span>
+<span class="sd">    :param uuid: The UUID of the build</span>
+<span class="sd">    :type uuid: str</span>
+<span class="sd">    :returns: Path to the UPLOADS file listing the build&#39;s associated uploads</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :raises: RuntimeError if the uuid is not found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">results_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">results_dir</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;&quot;</span><span class="si">{uuid}</span><span class="s1">&quot; is not a valid build uuid!&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;UPLOADS&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="uuid_schedule_upload"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_schedule_upload">[docs]</a><span class="k">def</span> <span class="nf">uuid_schedule_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">provider_name</span><span class="p">,</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Schedule an upload of an image</span>
+
+<span class="sd">    :param cfg: Configuration settings</span>
+<span class="sd">    :type cfg: ComposerConfig</span>
+<span class="sd">    :param uuid: The UUID of the build</span>
+<span class="sd">    :type uuid: str</span>
+<span class="sd">    :param provider_name: The name of the cloud provider, e.g. &quot;azure&quot;</span>
+<span class="sd">    :type provider_name: str</span>
+<span class="sd">    :param image_name: Path of the image to upload</span>
+<span class="sd">    :type image_name: str</span>
+<span class="sd">    :param settings: Settings to use for the selected provider</span>
+<span class="sd">    :type settings: dict</span>
+<span class="sd">    :returns: uuid of the upload</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :raises: RuntimeError if the uuid is not a valid build uuid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;&quot;</span><span class="si">{uuid}</span><span class="s1">&quot; is not a valid build uuid!&#39;</span><span class="p">)</span>
+
+    <span class="n">upload</span> <span class="o">=</span> <span class="n">create_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">provider_name</span><span class="p">,</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+    <span class="n">uuid_add_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">upload</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">upload</span><span class="o">.</span><span class="n">uuid</span></div>
+
+<div class="viewcode-block" id="uuid_get_uploads"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_get_uploads">[docs]</a><span class="k">def</span> <span class="nf">uuid_get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the list of uploads for a build uuid</span>
+
+<span class="sd">    :param cfg: Configuration settings</span>
+<span class="sd">    :type cfg: ComposerConfig</span>
+<span class="sd">    :param uuid: The UUID of the build</span>
+<span class="sd">    :type uuid: str</span>
+<span class="sd">    :returns: The upload UUIDs associated with the build UUID</span>
+<span class="sd">    :rtype: frozenset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_upload_list_path</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">))</span> <span class="k">as</span> <span class="n">uploads_file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">uploads_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">frozenset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="uuid_add_upload"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_add_upload">[docs]</a><span class="k">def</span> <span class="nf">uuid_add_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">upload_uuid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add an upload UUID to a build</span>
+
+<span class="sd">    :param cfg: Configuration settings</span>
+<span class="sd">    :type cfg: ComposerConfig</span>
+<span class="sd">    :param uuid: The UUID of the build</span>
+<span class="sd">    :type uuid: str</span>
+<span class="sd">    :param upload_uuid: The UUID of the upload</span>
+<span class="sd">    :type upload_uuid: str</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">upload_uuid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uuid_get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_upload_list_path</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">),</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">uploads_file</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">upload_uuid</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">uploads_file</span><span class="p">)</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">and</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">:</span>
+            <span class="n">uuid_ready_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">upload_uuid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="uuid_remove_upload"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_remove_upload">[docs]</a><span class="k">def</span> <span class="nf">uuid_remove_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">upload_uuid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove an upload UUID from the build</span>
+
+<span class="sd">    :param cfg: Configuration settings</span>
+<span class="sd">    :type cfg: ComposerConfig</span>
+<span class="sd">    :param upload_uuid: The UUID of the upload</span>
+<span class="sd">    :type upload_uuid: str</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    :raises: RuntimeError if the upload_uuid is not found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">build_uuid</span> <span class="ow">in</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;results/*&quot;</span><span class="p">))):</span>
+        <span class="n">uploads</span> <span class="o">=</span> <span class="n">uuid_get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">build_uuid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">upload_uuid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uploads</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">uploads</span> <span class="o">=</span> <span class="n">uploads</span> <span class="o">-</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">upload_uuid</span><span class="p">,))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_upload_list_path</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">build_uuid</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">uploads_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">upload</span> <span class="ow">in</span> <span class="n">uploads</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">uploads_file</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{upload_uuid}</span><span class="s2"> is not a valid upload id!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="uuid_ready_upload"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_ready_upload">[docs]</a><span class="k">def</span> <span class="nf">uuid_ready_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">upload_uuid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set an upload to READY if the build is in FINISHED state</span>
+
+<span class="sd">    :param cfg: Configuration settings</span>
+<span class="sd">    :type cfg: ComposerConfig</span>
+<span class="sd">    :param uuid: The UUID of the build</span>
+<span class="sd">    :type uuid: str</span>
+<span class="sd">    :param upload_uuid: The UUID of the upload</span>
+<span class="sd">    :type upload_uuid: str</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    :raises: RuntimeError if the build uuid is invalid or not in FINISHED state.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{uuid}</span><span class="s2"> is not a valid build id!&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Build </span><span class="si">{uuid}</span><span class="s2"> is not finished!&quot;</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">image_path</span> <span class="o">=</span> <span class="n">uuid_image</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+    <span class="n">ready_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">upload_uuid</span><span class="p">,</span> <span class="n">image_path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="uuid_cancel"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_cancel">[docs]</a><span class="k">def</span> <span class="nf">uuid_cancel</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Cancel a build and delete its results</span>
@@ -668,10 +814,14 @@
     <span class="n">uuid_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">uuid_dir</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Directory length is too short: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">uuid_dir</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">upload</span> <span class="ow">in</span> <span class="n">get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">uuid_get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)):</span>
+        <span class="n">delete_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">upload</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+
     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="uuid_info"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_info">[docs]</a><span class="k">def</span> <span class="nf">uuid_info</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
+<div class="viewcode-block" id="uuid_info"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_info">[docs]</a><span class="k">def</span> <span class="nf">uuid_info</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">api</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return information about the composition</span>
 
 <span class="sd">    :param cfg: Configuration settings</span>
@@ -712,22 +862,27 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Missing deps.toml for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="n">deps_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">deps_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
-    <span class="n">details</span> <span class="o">=</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">)</span>
+    <span class="n">details</span> <span class="o">=</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid_dir</span><span class="p">,</span> <span class="n">api</span><span class="p">)</span>
 
     <span class="n">commit_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">,</span> <span class="s2">&quot;COMMIT&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">commit_path</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Missing commit hash for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="n">commit_id</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">commit_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span>           <span class="n">uuid</span><span class="p">,</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span>           <span class="n">uuid</span><span class="p">,</span>
             <span class="s2">&quot;config&quot;</span><span class="p">:</span>       <span class="n">cfg_dict</span><span class="p">,</span>
             <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span>    <span class="n">frozen_dict</span><span class="p">,</span>
             <span class="s2">&quot;commit&quot;</span><span class="p">:</span>       <span class="n">commit_id</span><span class="p">,</span>
             <span class="s2">&quot;deps&quot;</span><span class="p">:</span>         <span class="n">deps_dict</span><span class="p">,</span>
             <span class="s2">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;compose_type&quot;</span><span class="p">],</span>
             <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="n">details</span><span class="p">[</span><span class="s2">&quot;queue_status&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;image_size&quot;</span><span class="p">:</span>   <span class="n">details</span><span class="p">[</span><span class="s2">&quot;image_size&quot;</span><span class="p">]</span>
-    <span class="p">}</span></div>
+            <span class="s2">&quot;image_size&quot;</span><span class="p">:</span>   <span class="n">details</span><span class="p">[</span><span class="s2">&quot;image_size&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">api</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">upload_uuids</span> <span class="o">=</span> <span class="n">uuid_get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="n">summaries</span> <span class="o">=</span> <span class="p">[</span><span class="n">upload</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span> <span class="k">for</span> <span class="n">upload</span> <span class="ow">in</span> <span class="n">get_uploads</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">upload_uuids</span><span class="p">)]</span>
+        <span class="n">info</span><span class="p">[</span><span class="s2">&quot;uploads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">summaries</span>
+    <span class="k">return</span> <span class="n">info</span></div>
 
 <div class="viewcode-block" id="uuid_tar"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_tar">[docs]</a><span class="k">def</span> <span class="nf">uuid_tar</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a tar of the build data</span>

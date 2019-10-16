@@ -156,14 +156,26 @@ The names must match the names exactly, and the versions can be an exact match
 or a filesystem-like glob of the version using ``*`` wildcards and ``?``
 character matching.
 
-NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
-that is planned for a future release. And currently there are no differences
-between ``packages`` and ``modules`` in ``lorax-composer``.
+NOTE: Currently there are no differences between ``packages`` and ``modules``
+in ``lorax-composer``. Both are treated like an rpm package dependency.
+
+For example, to install ``tmux-2.9a`` and ``openssh-server-8.*``, you would add
+this to your blueprint::
+
+    [[packages]]
+    name = "tmux"
+    version = "2.9a"
+
+    [[packages]]
+    name = "openssh-server"
+    version = "8.*"
+
+
 
 [[groups]]
 ~~~~~~~~~~
 
-These entries describe a group of packages to be installed into the image.  Package groups are
+The ``groups`` entries describe a group of packages to be installed into the image.  Package groups are
 defined in the repository metadata.  Each group has a descriptive name used primarily for display
 in user interfaces and an ID more commonly used in kickstart files.  Here, the ID is the expected
 way of listing a group.
@@ -171,6 +183,16 @@ way of listing a group.
 Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
 For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
 for selecting optional packages.
+
+For example, if you want to install the ``anaconda-tools`` group you would add this to your
+blueprint::
+
+    [[groups]]
+    name="anaconda-tools"
+
+``groups`` is a TOML list, so each group needs to be listed separately, like ``packages`` but with
+no version number.
+
 
 Customizations
 ~~~~~~~~~~~~~~

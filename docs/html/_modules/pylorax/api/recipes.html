@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.recipes &mdash; Lorax 31.9 documentation</title>
+  <title>pylorax.api.recipes &mdash; Lorax 32.1 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.9
+                32.1
               </div>
             
           
@@ -999,7 +999,7 @@
         <span class="c1"># Skip files with errors, but try the others</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">commit_recipe_file</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">RecipeFileError</span><span class="p">,</span> <span class="n">toml</span><span class="o">.</span><span class="n">TomlError</span><span class="p">):</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">RecipeError</span><span class="p">,</span> <span class="n">RecipeFileError</span><span class="p">,</span> <span class="n">toml</span><span class="o">.</span><span class="n">TomlError</span><span class="p">):</span>
             <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="tag_recipe_commit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.tag_recipe_commit">[docs]</a><span class="k">def</span> <span class="nf">tag_recipe_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">):</span>

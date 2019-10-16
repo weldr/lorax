@@ -1,0 +1,715 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lifted package &mdash; Lorax 32.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pylorax package" href="pylorax.html" />
+    <link rel="prev" title="composer.cli package" href="composer.cli.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                32.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="composer.html">composer package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">lifted package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-lifted.config">lifted.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-lifted.providers">lifted.providers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-lifted.queue">lifted.queue module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-lifted.upload">lifted.upload module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-lifted">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.html">pylorax package</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lorax</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">src</a> &raquo;</li>
+        
+      <li>lifted package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/lifted.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="lifted-package">
+<h1>lifted package<a class="headerlink" href="#lifted-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-lifted.config">
+<span id="lifted-config-module"></span><h2>lifted.config module<a class="headerlink" href="#module-lifted.config" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="lifted.config.configure">
+<code class="sig-prename descclassname">lifted.config.</code><code class="sig-name descname">configure</code><span class="sig-paren">(</span><em class="sig-param">conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/config.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.config.configure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add lifted settings to the configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>conf</strong> (<a class="reference internal" href="pylorax.api.html#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) -- configuration object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>This uses the composer.share_dir and composer.lib_dir as the base
+directories for the settings.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-lifted.providers">
+<span id="lifted-providers-module"></span><h2>lifted.providers module<a class="headerlink" href="#module-lifted.providers" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="lifted.providers.delete_profile">
+<code class="sig-prename descclassname">lifted.providers.</code><code class="sig-name descname">delete_profile</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">provider_name</em>, <em class="sig-param">profile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/providers.html#delete_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.providers.delete_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a provider's profile settings file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>provider_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the name of the cloud provider, e.g. &quot;azure&quot;</p></li>
+<li><p><strong>profile</strong> (<em>str != &quot;&quot;</em>) -- the name of the profile to save</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>ValueError when passed invalid settings or an invalid profile name</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p>RuntimeError when the provider or profile couldn't be found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.providers.list_providers">
+<code class="sig-prename descclassname">lifted.providers.</code><code class="sig-name descname">list_providers</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/providers.html#list_providers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.providers.list_providers" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the names of the available upload providers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of all available provider_names</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.providers.load_profiles">
+<code class="sig-prename descclassname">lifted.providers.</code><code class="sig-name descname">load_profiles</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">provider_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/providers.html#load_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.providers.load_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all settings profiles associated with a provider</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>provider_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- name a provider to find profiles for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dict of settings dicts, keyed by profile name</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.providers.load_settings">
+<code class="sig-prename descclassname">lifted.providers.</code><code class="sig-name descname">load_settings</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">provider_name</em>, <em class="sig-param">profile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/providers.html#load_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.providers.load_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load settings for a provider's profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>provider_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the name of the cloud provider, e.g. &quot;azure&quot;</p></li>
+<li><p><strong>profile</strong> (<em>str != &quot;&quot;</em>) -- the name of the profile to save</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The profile settings for the selected provider</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>ValueError when passed invalid settings or an invalid profile name</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p>RuntimeError when the provider or profile couldn't be found</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>ValueError when the passed settings are invalid</p>
+</dd>
+</dl>
+<p>This also calls validate_settings on the loaded settings, potentially
+raising an error if the saved settings are invalid.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.providers.resolve_playbook_path">
+<code class="sig-prename descclassname">lifted.providers.</code><code class="sig-name descname">resolve_playbook_path</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">provider_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/providers.html#resolve_playbook_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.providers.resolve_playbook_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a provider's name, return the path to its playbook</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>provider_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the name of the provider to find the playbook for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>RuntimeError when the provider couldn't be found</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the path to the playbook</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.providers.resolve_provider">
+<code class="sig-prename descclassname">lifted.providers.</code><code class="sig-name descname">resolve_provider</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">provider_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/providers.html#resolve_provider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.providers.resolve_provider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information about the specified provider as defined in that
+provider's <cite>provider.toml</cite>, including the provider's display name and expected
+settings.</p>
+<p>At a minimum, each setting has a display name (that likely differs from its
+snake_case name) and a type. Currently, there are two types of settings:
+string and boolean. String settings can optionally have a &quot;placeholder&quot;
+value for use on the front end and a &quot;regex&quot; for making sure that a value
+follows an expected pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>provider_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the name of the provider to look for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>RuntimeError when the provider couldn't be found</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the provider</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.providers.save_settings">
+<code class="sig-prename descclassname">lifted.providers.</code><code class="sig-name descname">save_settings</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">provider_name</em>, <em class="sig-param">profile</em>, <em class="sig-param">settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/providers.html#save_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.providers.save_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save (and overwrite) settings for a given provider</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>provider_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the name of the cloud provider, e.g. &quot;azure&quot;</p></li>
+<li><p><strong>profile</strong> (<em>str != &quot;&quot;</em>) -- the name of the profile to save</p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- settings to save for that provider</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>ValueError when passed invalid settings or an invalid profile name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.providers.validate_settings">
+<code class="sig-prename descclassname">lifted.providers.</code><code class="sig-name descname">validate_settings</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">provider_name</em>, <em class="sig-param">settings</em>, <em class="sig-param">image_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/providers.html#validate_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.providers.validate_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise a ValueError if any settings are invalid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>provider_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the name of the provider to validate the settings against</p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- the settings to validate</p></li>
+<li><p><strong>image_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- optionally check whether an image_name is valid</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>ValueError when the passed settings are invalid</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p>RuntimeError when provider_name can't be found</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-lifted.queue">
+<span id="lifted-queue-module"></span><h2>lifted.queue module<a class="headerlink" href="#module-lifted.queue" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="lifted.queue.cancel_upload">
+<code class="sig-prename descclassname">lifted.queue.</code><code class="sig-name descname">cancel_upload</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">uuid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/queue.html#cancel_upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.queue.cancel_upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel an upload</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference internal" href="pylorax.api.html#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) -- the compose config</p></li>
+<li><p><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the UUID of the upload to cancel</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.queue.create_upload">
+<code class="sig-prename descclassname">lifted.queue.</code><code class="sig-name descname">create_upload</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">provider_name</em>, <em class="sig-param">image_name</em>, <em class="sig-param">settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/queue.html#create_upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.queue.create_upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new upload</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>provider_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the name of the cloud provider to upload to, e.g.  &quot;azure&quot;</p></li>
+<li><p><strong>image_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- what to name the image in the cloud</p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- settings to pass to the upload, specific to the cloud provider</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the created upload object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#lifted.upload.Upload" title="lifted.upload.Upload">Upload</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.queue.delete_upload">
+<code class="sig-prename descclassname">lifted.queue.</code><code class="sig-name descname">delete_upload</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">uuid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/queue.html#delete_upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.queue.delete_upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an upload</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference internal" href="pylorax.api.html#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) -- the compose config</p></li>
+<li><p><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the UUID of the upload to delete</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.queue.get_all_uploads">
+<code class="sig-prename descclassname">lifted.queue.</code><code class="sig-name descname">get_all_uploads</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/queue.html#get_all_uploads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.queue.get_all_uploads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all stored Upload objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of all stored upload objects</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of Upload</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.queue.get_upload">
+<code class="sig-prename descclassname">lifted.queue.</code><code class="sig-name descname">get_upload</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">uuid</em>, <em class="sig-param">ignore_missing=False</em>, <em class="sig-param">ignore_corrupt=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/queue.html#get_upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.queue.get_upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an Upload object by UUID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- UUID of the upload to get</p></li>
+<li><p><strong>ignore_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- if True, don't raise a RuntimeError when the specified upload is missing, instead just return None</p></li>
+<li><p><strong>ignore_corrupt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- if True, don't raise a RuntimeError when the specified upload could not be deserialized, instead just return None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the upload object or None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#lifted.upload.Upload" title="lifted.upload.Upload">Upload</a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>RuntimeError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.queue.get_uploads">
+<code class="sig-prename descclassname">lifted.queue.</code><code class="sig-name descname">get_uploads</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">uuids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/queue.html#get_uploads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.queue.get_uploads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a list of Upload objects from a list of upload UUIDs, ignoring
+missing or corrupt uploads</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>uuids</strong> (<em>list of str</em>) -- list of upload UUIDs to get</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of the uploads that were successfully deserialized</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of Upload</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.queue.ready_upload">
+<code class="sig-prename descclassname">lifted.queue.</code><code class="sig-name descname">ready_upload</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">uuid</em>, <em class="sig-param">image_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/queue.html#ready_upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.queue.ready_upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass an image_path to an upload and mark it ready to execute</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the UUID of the upload to mark ready</p></li>
+<li><p><strong>image_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the path of the image to pass to the upload</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.queue.reset_upload">
+<code class="sig-prename descclassname">lifted.queue.</code><code class="sig-name descname">reset_upload</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em>, <em class="sig-param">uuid</em>, <em class="sig-param">new_image_name=None</em>, <em class="sig-param">new_settings=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/queue.html#reset_upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.queue.reset_upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset an upload so it can be attempted again</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) -- upload config</p></li>
+<li><p><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the UUID of the upload to reset</p></li>
+<li><p><strong>new_image_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- optionally update the upload's image_name</p></li>
+<li><p><strong>new_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- optionally update the upload's settings</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="lifted.queue.start_upload_monitor">
+<code class="sig-prename descclassname">lifted.queue.</code><code class="sig-name descname">start_upload_monitor</code><span class="sig-paren">(</span><em class="sig-param">ucfg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/queue.html#start_upload_monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.queue.start_upload_monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a thread that manages the upload queue</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ucfg</strong> (<a class="reference internal" href="pylorax.api.html#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) -- the compose config</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-lifted.upload">
+<span id="lifted-upload-module"></span><h2>lifted.upload module<a class="headerlink" href="#module-lifted.upload" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="lifted.upload.Upload">
+<em class="property">class </em><code class="sig-prename descclassname">lifted.upload.</code><code class="sig-name descname">Upload</code><span class="sig-paren">(</span><em class="sig-param">uuid=None</em>, <em class="sig-param">provider_name=None</em>, <em class="sig-param">playbook_path=None</em>, <em class="sig-param">image_name=None</em>, <em class="sig-param">settings=None</em>, <em class="sig-param">creation_time=None</em>, <em class="sig-param">upload_log=None</em>, <em class="sig-param">upload_pid=None</em>, <em class="sig-param">image_path=None</em>, <em class="sig-param">status_callback=None</em>, <em class="sig-param">status=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/upload.html#Upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.upload.Upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Represents an upload of an image to a cloud provider. Instances of this
+class are serialized as TOML and stored in the upload queue directory,
+which is /var/lib/lorax/upload/queue/ by default</p>
+<dl class="method">
+<dt id="lifted.upload.Upload.cancel">
+<code class="sig-name descname">cancel</code><span class="sig-paren">(</span><em class="sig-param">status_callback=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/upload.html#Upload.cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.upload.Upload.cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel the upload. Sends a SIGINT to self.upload_pid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>status_callback</strong> (<em>function</em>) -- a function of the form callback(self)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lifted.upload.Upload.execute">
+<code class="sig-name descname">execute</code><span class="sig-paren">(</span><em class="sig-param">status_callback=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/upload.html#Upload.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.upload.Upload.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the upload. Meant to be called from a dedicated process so
+that the upload can be cancelled by sending a SIGINT to
+self.upload_pid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>status_callback</strong> (<em>function</em>) -- a function of the form callback(self)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lifted.upload.Upload.is_cancellable">
+<code class="sig-name descname">is_cancellable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/upload.html#Upload.is_cancellable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.upload.Upload.is_cancellable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the upload in a cancellable state?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>whether the upload is cancellable</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lifted.upload.Upload.ready">
+<code class="sig-name descname">ready</code><span class="sig-paren">(</span><em class="sig-param">image_path</em>, <em class="sig-param">status_callback</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/upload.html#Upload.ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.upload.Upload.ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide an image_path and mark the upload as ready to execute</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- path of the image to upload</p></li>
+<li><p><strong>status_callback</strong> (<em>function</em>) -- a function of the form callback(self)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lifted.upload.Upload.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><em class="sig-param">status_callback</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/upload.html#Upload.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.upload.Upload.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the upload so it can be attempted again</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>status_callback</strong> (<em>function</em>) -- a function of the form callback(self)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lifted.upload.Upload.serializable">
+<code class="sig-name descname">serializable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/upload.html#Upload.serializable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.upload.Upload.serializable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a representation of the object as a dict for serialization</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the object's __dict__</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lifted.upload.Upload.set_status">
+<code class="sig-name descname">set_status</code><span class="sig-paren">(</span><em class="sig-param">status</em>, <em class="sig-param">status_callback=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/upload.html#Upload.set_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.upload.Upload.set_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the status of the upload with an optional callback</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>status</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- the new status</p></li>
+<li><p><strong>status_callback</strong> (<em>function</em>) -- a function of the form callback(self)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lifted.upload.Upload.summary">
+<code class="sig-name descname">summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lifted/upload.html#Upload.summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lifted.upload.Upload.summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dict with useful information about the upload</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>upload information</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-lifted">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-lifted" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pylorax.html" class="btn btn-neutral float-right" title="pylorax package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="composer.cli.html" class="btn btn-neutral float-left" title="composer.cli package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Red Hat, Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
