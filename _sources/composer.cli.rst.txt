@@ -52,6 +52,14 @@ composer.cli.projects module
    :undoc-members:
    :show-inheritance:
 
+composer.cli.providers module
+-----------------------------
+
+.. automodule:: composer.cli.providers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 composer.cli.sources module
 ---------------------------
 
@@ -64,6 +72,14 @@ composer.cli.status module
 --------------------------
 
 .. automodule:: composer.cli.status
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+composer.cli.upload module
+--------------------------
+
+.. automodule:: composer.cli.upload
    :members:
    :undoc-members:
    :show-inheritance:

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.compose &mdash; Lorax 31.9 documentation</title>
+  <title>pylorax.api.compose &mdash; Lorax 32.1 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.9
+                32.1
               </div>
             
           
@@ -1034,6 +1034,31 @@
 <span class="sd">    Other options will be filled in by `make_compose()`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tar&quot;</span><span class="p">:</span>              <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_vagrant&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="kc">False</span><span class="p">,</span>          <span class="c1"># False instead of None because of TOML</span>
+                                 <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
+                                 <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="n">default_image_name</span><span class="p">(</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="s2">&quot;root.tar&quot;</span><span class="p">),</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
+                                <span class="p">},</span>
+            <span class="s2">&quot;liveimg-tar&quot;</span><span class="p">:</span>      <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>

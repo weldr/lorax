@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.dnfbase &mdash; Lorax 31.9 documentation</title>
+  <title>pylorax.api.dnfbase &mdash; Lorax 32.1 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.9
+                32.1
               </div>
             
           
@@ -261,6 +261,11 @@
 
     <span class="k">if</span> <span class="n">conf</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;dnf&quot;</span><span class="p">,</span> <span class="s2">&quot;sslverify&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conf</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s2">&quot;dnf&quot;</span><span class="p">,</span> <span class="s2">&quot;sslverify&quot;</span><span class="p">):</span>
         <span class="n">dbc</span><span class="o">.</span><span class="n">sslverify</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># If the system repos are enabled read the dnf vars from /etc/dnf/vars/</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">conf</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">,</span> <span class="s2">&quot;use_system_repos&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">conf</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">,</span> <span class="s2">&quot;use_system_repos&quot;</span><span class="p">):</span>
+        <span class="n">dbc</span><span class="o">.</span><span class="n">substitutions</span><span class="o">.</span><span class="n">update_from_etc</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dnf vars: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dbc</span><span class="o">.</span><span class="n">substitutions</span><span class="p">)</span>
 
     <span class="n">_releasever</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;releasever&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_releasever</span><span class="p">:</span>
