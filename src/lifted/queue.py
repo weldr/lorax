@@ -91,11 +91,9 @@ def get_upload(ucfg, uuid, ignore_missing=False, ignore_corrupt=False):
     :type ucfg: object
     :param uuid: UUID of the upload to get
     :type uuid: str
-    :param ignore_missing: if True, don't raise a RuntimeError when the
-    specified upload is missing, instead just return None
+    :param ignore_missing: if True, don't raise a RuntimeError when the specified upload is missing, instead just return None
     :type ignore_missing: bool
-    :param ignore_corrupt: if True, don't raise a RuntimeError when the
-    specified upload could not be deserialized, instead just return None
+    :param ignore_corrupt: if True, don't raise a RuntimeError when the specified upload could not be deserialized, instead just return None
     :type ignore_corrupt: bool
     :returns: the upload object or None
     :rtype: Upload or None
@@ -146,13 +144,11 @@ def create_upload(ucfg, provider_name, image_name, settings):
 
     :param ucfg: upload config
     :type ucfg: object
-    :param provider_name: the name of the cloud provider to upload to, e.g.
-    "azure"
+    :param provider_name: the name of the cloud provider to upload to, e.g.  "azure"
     :type provider_name: str
     :param image_name: what to name the image in the cloud
     :type image_name: str
-    :param settings: settings to pass to the upload, specific to the cloud
-    provider
+    :param settings: settings to pass to the upload, specific to the cloud provider
     :type settings: dict
     :returns: the created upload object
     :rtype: Upload

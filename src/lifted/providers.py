@@ -147,8 +147,7 @@ def validate_settings(ucfg, provider_name, settings, image_name=None):
 
     :param ucfg: upload config
     :type ucfg: object
-    :param provider_name: the name of the provider to validate the settings
-    against
+    :param provider_name: the name of the provider to validate the settings against
     :type provider_name: str
     :param settings: the settings to validate
     :type settings: dict

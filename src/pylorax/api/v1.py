@@ -832,7 +832,7 @@ def v1_upload_log(upload_uuid):
           {
             "status": true,
             "upload_id": "b637c411-9d9d-4279-b067-6c8d38e3b211",
-            "log": "\n __________________\r\n< PLAY [localhost] >..."
+            "log": "< PLAY [localhost] >..."
           }
     """
     if VALID_API_STRING.match(upload_uuid) is None:
