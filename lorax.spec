@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.0
+Version:        32.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -260,6 +260,58 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Wed Oct 16 2019 Brian C. Lane <bcl@redhat.com> 32.1-1
+- Bump default platform and releasever to 32 (bcl@redhat.com)
+- New lorax documentation - 32.1 (bcl@redhat.com)
+- docs: Fix Sphinx errors in docstrings (bcl@redhat.com)
+- vm.install: Turn on verbose output (bcl@redhat.com)
+- tests: Switch the azure examples used in the lifted tests to use aws (bcl@redhat.com)
+- Remove lifted azure support (bcl@redhat.com)
+- composer-cli: Add providers info <PROVIDER> command (bcl@redhat.com)
+- composer-cli: Fix error handling in providers push (bcl@redhat.com)
+- composer-cli: Fix upload log output (bcl@redhat.com)
+- Add list to bash completion for composer-cli upload (bcl@redhat.com)
+- Update composer-cli documentation (bcl@redhat.com)
+- Add composer and lifted to coverage report (bcl@redhat.com)
+- composer-cli: Add starting an upload to compose start (bcl@redhat.com)
+- composer-cli: Add providers template command (bcl@redhat.com)
+- bash_completion: Add support for new composer-cli commands (bcl@redhat.com)
+- composer-cli: Add support for providers command (bcl@redhat.com)
+- composer-cli: Add support for upload command (bcl@redhat.com)
+- Increase ansible verbosity to 2 (bcl@redhat.com)
+- lifted: Add support for AWS upload (bcl@redhat.com)
+- lifted: Improve logging for upload playbooks (bcl@redhat.com)
+- Add upload status examples to compose route docstrings (bcl@redhat.com)
+- tests: Add tests for deleting unknown upload and profile (bcl@redhat.com)
+- Add docstrings to the new upload functions in pylorax.api.queue (bcl@redhat.com)
+- Change /compose/uploads/delete to /upload/delete (bcl@redhat.com)
+- tests: Add test for /compose/uploads/delete (bcl@redhat.com)
+- tests: Add tests for /compose/uploads/schedule (bcl@redhat.com)
+- Add profile support to /uploads/schedule/ (bcl@redhat.com)
+- tests: Fix comments about V1 API results including uploads data (bcl@redhat.com)
+- lifted: Make sure inputs cannot have path elements (bcl@redhat.com)
+- Use consistent naming for upload uuids (bcl@redhat.com)
+- tests: Add tests for new upload routes (bcl@redhat.com)
+- Fix some docstrings in the v1 API (bcl@redhat.com)
+- lifted: Make sure providers list is always sorted (bcl@redhat.com)
+- Add /upload/providers/delete route (bcl@redhat.com)
+- lifted: Add delete_profile function and tests (bcl@redhat.com)
+- Add support for starting a compose upload with the profile (bcl@redhat.com)
+- lifted: Add a function to load the settings for a provider's profile (bcl@redhat.com)
+- Fix pylint errors in lifted.upload (bcl@redhat.com)
+- tests: Add yamllint of the lifted playbooks (bcl@redhat.com)
+- tests: Add tests for the new lifted module (bcl@redhat.com)
+- All providers should have 'supported_types' (bcl@redhat.com)
+- lifted directories should be under share_dir and lib_dir (bcl@redhat.com)
+- tests: Add tests for API v1 (bcl@redhat.com)
+- Make sure V0 API doesn't return uploads information (bcl@redhat.com)
+- Automatically upload composed images to the cloud (egoode@redhat.com)
+- Add load and dump to pylorax.api.toml (egoode@redhat.com)
+- Support CI testing against a bots project PR (martin@piware.de)
+- Makefile: Don't clobber an existing bots checkout (martin@piware.de)
+- lorax-composer: Handle RecipeError in commit_recipe_directory (bcl@redhat.com)
+- test: Disable pylint subprocess check check (bcl@redhat.com)
+
 * Mon Sep 30 2019 Brian C. Lane <bcl@redhat.com> 32.0-1
 - aarch64: Fix live-iso creation on aarch64 (bcl@redhat.com)
 - Add test for running composer with --no-system-repos option (jikortus@redhat.com)
