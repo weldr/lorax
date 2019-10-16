@@ -20,8 +20,18 @@ lorax cmdline arguments
 -----------------------
 
 .. argparse::
-   :ref: pylorax.cmdline.lorax_parser
-   :prog: lorax
+    :ref: pylorax.cmdline.lorax_parser
+    :prog: lorax
+
+    --macboot : @replace
+        Make the iso bootable on UEFI based Mac systems
+
+        Default: True
+
+    --nomacboot : @replace
+        Do not create a Mac bootable iso
+
+        Default: False
 
 
 Quickstart
