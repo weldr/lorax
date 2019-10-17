@@ -303,6 +303,8 @@ def estimate_size(packages, block_size=6144):
     for p in packages:
         installed_size += len(p.files) * block_size
         installed_size += p.installsize
+        # also count the downloaded RPM package size
+        installed_size += ((p.downloadsize / block_size) + 1) * block_size
     return installed_size
 
 
