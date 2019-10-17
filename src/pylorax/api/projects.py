@@ -363,6 +363,8 @@ def estimate_size(packages, block_size=4096):
     for p in packages:
         installed_size += len(p.po.filelist) * block_size
         installed_size += p.po.installedsize
+        # also count the RPM package size (yum cache)
+        installed_size += ((p.po.size / block_size) + 1) * block_size
     return installed_size
 
 def projects_depsolve_with_size(yb, projects, groups, with_core=True):
