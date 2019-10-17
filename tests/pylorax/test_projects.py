@@ -223,8 +223,10 @@ class ProjectsTest(unittest.TestCase):
 
     def test_projects_size_depsolve_glob(self):
         """Test that depsolving with a '*' version glob doesn't glob package names"""
-        size, deps = projects_depsolve_with_size(self.yb, [("python", "*")], [], with_core=False)
+        size, anaconda_size, deps = projects_depsolve_with_size(self.yb, [("python", "*")], [], with_core=False)
         self.assertTrue(size > 0)
+        self.assertTrue(anaconda_size > 0)
+        self.assertTrue(anaconda_size < size)
         self.assertTrue(len(deps) > 1)
         self.assertTrue("python" in [dep["name"] for dep in deps])
         self.assertTrue("python-blivet" not in [dep["name"] for dep in deps])

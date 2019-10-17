@@ -52,6 +52,7 @@ from pylorax.api.projects import projects_depsolve, projects_depsolve_with_size,
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
 from pylorax.api.timestamp import TS_CREATED, write_timestamp
+from pylorax.executils import runcmd_output
 from pylorax.imgutils import default_image_name
 from pylorax.sysutils import joinpaths
 
@@ -628,6 +629,25 @@ def add_customizations(f, recipe):
             else:
                 log.warning("Skipping group %s, already created by user", group["name"])
 
+
+def get_md_size(yum_path):
+    """Estimate the amount of space needed by anaconda
+
+    Anaconda doesn't download the filelists or 'other' metadata, which can add
+    up to a significant difference, so exclude those from the calculation.
+    """
+    try:
+        du_output = runcmd_output(["/usr/bin/du",
+                                   "--exclude", "*other*",
+                                   "--exclude", "*filelists*",
+                                   "-sb",
+                                   yum_path])
+        return int(du_output.split()[0])
+    except (ValueError, IndexError) as e:
+        log.error("Problem calculating metadata size from '%s': %s", du_output, str(e))
+        return 0
+
+
 def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_mode=0):
     """ Start the build
 
@@ -660,7 +680,7 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     try:
         # This can possibly update repodata and reset the YumBase object.
         with yumlock.lock_check:
-            (installed_size, deps) = projects_depsolve_with_size(yumlock.yb, projects, recipe.group_names, with_core=False)
+            (installed_size, anaconda_size, deps) = projects_depsolve_with_size(yumlock.yb, projects, recipe.group_names, with_core=False)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
         raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
@@ -669,7 +689,7 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
     ks_template = open(ks_template_path, "r").read()
 
-    # How much space will the packages in the default template take?
+    # How much space will the packages in the selected template take?
     ks_version = makeVersion(RHEL7)
     ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
     ks.readKickstartFromString(ks_template+"\n%end\n")
@@ -677,16 +697,29 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     grps = [grp.name for grp in ks.handler.packages.groupList]
     try:
         with yumlock.lock:
-            (template_size, _) = projects_depsolve_with_size(yumlock.yb, pkgs, grps,
-                                                             with_core=not ks.handler.packages.nocore)
+            (template_size, anaconda_tmpl_size, _) = projects_depsolve_with_size(yumlock.yb, pkgs, grps, with_core=not ks.handler.packages.nocore)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
         raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
-    log.debug("installed_size = %d, template_size=%d", installed_size, template_size)
 
-    # Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 35% (which doesn't always work).
-    installed_size = max(1024**3, int((installed_size+template_size) * 1.4))
-    log.debug("/ partition size = %d", installed_size)
+    # Anaconda also stores the metadata on the disk once it is partitioned, try to take this into account by
+    # adding the size of the lorax-composer metadata storage.
+    with yumlock.lock:
+        metadata_size = get_md_size(yumlock.yb.conf.installroot)
+
+    # Anaconda estimates size differently, only taking into account installed size and adding 35%
+    # But we must make sure that our actual disk size is at least as big as the anaconda size, otherwise the install will fail
+    anaconda_minimum = int((anaconda_size+anaconda_tmpl_size) * 1.35)
+
+    log.debug("anaconda_size = %d, anaconda_template_size=%d, anaconda_minimum=%d", anaconda_size, anaconda_tmpl_size, anaconda_minimum)
+    log.debug("installed_size = %d, template_size=%d, metadata_size=%d", installed_size, template_size, metadata_size)
+
+    # Add 10% to the composer estimate
+    installed_size = int((installed_size+template_size+metadata_size) * 1.10)
+
+    # Select the largest size for the partition
+    partition_size = max(1024**3, anaconda_minimum, installed_size)
+    log.debug("/ partition size = %d", partition_size)
 
     # Create the results directory
     build_id = str(uuid4())
