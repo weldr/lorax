@@ -52,7 +52,7 @@ from pylorax.api.projects import projects_depsolve, projects_depsolve_with_size,
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
 from pylorax.api.timestamp import TS_CREATED, write_timestamp
-from pylorax.imgutils import default_image_name
+from pylorax.imgutils import default_image_name, estimate_size
 from pylorax.sysutils import joinpaths
 
 
@@ -402,10 +402,16 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
         raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
-    log.debug("installed_size = %d, template_size=%d", installed_size, template_size)
+
+    # Anaconda also stores the metadata on the disk once it is partitioned, try to take this into account by
+    # adding the size of the lorax-composer metadata storage.
+    with yumlock.lock:
+        metadata_size = estimate_size(yumlock.yb.conf.installroot)
+
+    log.debug("installed_size = %d, template_size=%d, metadata_size=%d", installed_size, template_size, metadata_size)
 
     # Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 35% (which doesn't always work).
-    installed_size = max(1024**3, int((installed_size+template_size) * 1.4))
+    installed_size = max(1024**3, int((installed_size+template_size+metadata_size) * 1.4))
     log.debug("/ partition size = %d", installed_size)
 
     # Create the results directory
