@@ -352,20 +352,26 @@ def estimate_size(packages, block_size=4096):
     :type packages: list of TransactionMember objects
     :param block_size: The block size to use for rounding up file sizes.
     :type block_size: int
-    :returns: The estimated size of installed packages
-    :rtype: int
+    :returns: Tuple of the the estimated size needed, and the size anaconda will calculate
+    :rtype: tuple(int, int)
 
     Estimating actual requirements is difficult without the actual file sizes, which
     yum doesn't provide access to. So use the file count and block size to estimate
     a minimum size for each package.
+
+    Anaconda only takes into account the installedsize of each package. It then fudges
+    this by 35% to make sure there is enough space.
     """
     installed_size = 0
+    anaconda_size = 0
     for p in packages:
         installed_size += len(p.po.filelist) * block_size
         installed_size += p.po.installedsize
+        # anaconda only takes into account installedsize
+        anaconda_size += p.po.installedsize
         # also count the RPM package size (yum cache)
         installed_size += ((p.po.size / block_size) + 1) * block_size
-    return installed_size
+    return (installed_size, anaconda_size)
 
 def projects_depsolve_with_size(yb, projects, groups, with_core=True):
     """Return the dependencies and installed size for a list of projects
@@ -376,9 +382,12 @@ def projects_depsolve_with_size(yb, projects, groups, with_core=True):
     :type projects: List of tuples
     :param groups: The groups to include in dependency solving
     :type groups: List of str
-    :returns: installed size and a list of NEVRA's of the project and its dependencies
-    :rtype: tuple of (int, list of dicts)
+    :returns: installed size, size estimated by anaconda, and a list of NEVRA's of the project and its dependencies
+    :rtype: tuple of (int, int, list of dicts)
     :raises: ProjectsError if there was a problem installing something
+
+    The anaconda_size only includes the installed package size, not file block or cache estimation like
+    installed_size includes.
     """
     try:
         install_errors = _depsolve(yb, projects, groups)
@@ -393,13 +402,13 @@ def projects_depsolve_with_size(yb, projects, groups, with_core=True):
         if rc not in [0, 1, 2]:
             raise ProjectsError("There was a problem depsolving %s: %s" % (projects, msg))
         yb.tsInfo.makelists()
-        installed_size = estimate_size(yb.tsInfo.installed + yb.tsInfo.depinstalled)
+        (installed_size, anaconda_size) = estimate_size(yb.tsInfo.installed + yb.tsInfo.depinstalled)
         deps = sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())
     except YumBaseError as e:
         raise ProjectsError("There was a problem depsolving %s: %s" % (projects, str(e)))
     finally:
         yb.closeRpmDB()
-    return (installed_size, deps)
+    return (installed_size, anaconda_size, deps)
 
 def modules_list(yb, module_names):
     """Return a list of modules
