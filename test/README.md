@@ -75,3 +75,35 @@ You can retry a failed test with:
 
 If no test is given, all failed tests will be retried. Pass `--allow` to
 trigger tests on a pull request by an outside contributor.
+
+
+## Azure setup
+
+To authenticate Ansible (used in tests) with Azure you need to set the following
+environment variables:
+`AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT`, `AZURE_CLIENT_ID` and `AZURE_SECRET`.
+
+From the left-hand side menu at https://portal.azure.com select
+*Resource groups* >> *Click on composer RG*. Above the resulting list of resources
+you can see *Subscription ID* -> `AZURE_SUBSCRIPTION_ID`.
+
+From the left-hand side menu at https://portal.azure.com select
+*Azure Active Directory* >> *App registrations* >> New registration. Give it a name
+and leave the rest with default values. Once the AD application has been created
+you can click on its name to view its properties. There you have:
+
+* Directory (tenant) ID -> `AZURE_TENANT`
+* Application (client) ID -> `AZURE_CLIENT_ID`
+* Certificates & secrets (on the left) >> New client secret -> `AZURE_SECRET`
+
+Next make sure the newly created AD App has access to the storage account.
+From the left-hand side menu at https://portal.azure.com select
+*Storage accounts* >> *composerredhat* >> *Access control (IAM)* >>
+*Role assignments* >> *Add* >> *Add role assignment*. Then make sure to select
+- Role == Contributor
+- Scope == Resource group (Inherited)
+- AD app name (not the user owning the application)
+
+
+Storage account itself must be of type **StorageV2** so tests can upload blobs
+to it!
