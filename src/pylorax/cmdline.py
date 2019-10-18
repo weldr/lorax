@@ -296,8 +296,6 @@ def lmc_parser(dracut_default=""):
     vagrant_group.add_argument("--vagrantfile",
                                help="optional vagrantfile")
 
-    parser.add_argument("--title", default="Linux Live Media",
-                        help="Substituted for @TITLE@ in bootloader config files")
     parser.add_argument("--project", default="Linux",
                         help="substituted for @PROJECT@ in bootloader config files")
     parser.add_argument("--releasever", default="32",
