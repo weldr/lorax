@@ -17,6 +17,8 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartSetup
+        # NOTE: see test/README.md for information how to obtain these
+        # UUIDs and what configuration is expected on the Azure side
         if [ -z "$AZURE_SUBSCRIPTION_ID" ]; then
             rlFail "AZURE_SUBSCRIPTION_ID is empty!"
         else
