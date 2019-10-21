@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.30
+Version:        28.14.31
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -251,6 +251,24 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Oct 21 2019 Brian C. Lane <bcl@redhat.com> 28.14.31-1
+- tests: Document Azure setup (atodorov) (atodorov)
+- tests: unskip Azure scenario (atodorov) (atodorov)
+- Support CI testing against a bots project PR (martin) (martin)
+- Makefile: Update bots target for moved GitHub project (sanne.raymaekers)
+- Skip azure, live-iso & qcow2 tests due to infra issues (atodorov)
+  Related: rhbz#1724073
+- tests: Add check to make sure the compose actually finished (bcl)
+  Related: rhbz#1724073
+- Backport Cockpit CI changes for RHEL 8 (atodorov)
+  Related: rhbz#1724073
+- tests: Drop sort from compose types test (bcl)
+  Related: rhbz#1714103
+- New test: assert toml files in git workspace (atodorov)
+  Related: rhbz#1714103
+- Use passwd --status for locked root account check (jikortus)
+  Related: rhbz#1728571
+
 * Thu Jun 27 2019 Brian C. Lane <bcl@redhat.com> 28.14.30-1
 - New lorax documentation - 28.14.30 (bcl)
   Related: rhbz#1709594
