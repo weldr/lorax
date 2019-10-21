@@ -103,6 +103,18 @@ class TestTar(composertest.ComposerTestCase):
             # Run the test, on the booted image
             self.runImageTest("/tests/cli/test_boot_tar_kickstart.sh")
 
+class TestPylint(composertest.ComposerTestCase):
+    def test_ci(self):
+
+        # Create an empty folder for the upload bellow
+        self.execute(["mkdir", "/lorax"])
+
+        # Upload contents of repo for running the test
+        self.machine.upload(["../tests", "../src", "../share", "../docs", "../Makefile",
+        "../test-packages"], "/lorax")
+
+        # Running the test
+        self.runImageTest("/tests/cli/test_ci.sh")
 
 if __name__ == '__main__':
     composertest.main()
