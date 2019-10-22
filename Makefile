@@ -128,6 +128,15 @@ $(VM_IMAGE): srpm bots
 vm: $(VM_IMAGE)
 	echo $(VM_IMAGE)
 
+# grab all repositories from the host system, overwriting what's inside the VM
+# and update the image. Mostly used when testing downstream snapshots to make
+# sure VM_IMAGE is as close as possible to the host!
+vm-local-repos: vm
+	bots/image-customize -v \
+		--upload /etc/yum.repos.d:/etc/yum.repos.d/ \
+		--run-command "yum -y update" \
+		$(TEST_OS)
+
 vm-reset:
 	rm -f $(VM_IMAGE) $(VM_IMAGE).qcow2
 
