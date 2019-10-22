@@ -38,6 +38,13 @@ To delete the generated image, run
 Base images are stored in `bots/images`. Set `TEST_DATA` to override this
 directory.
 
+Use
+
+    $ make vm-local-repos
+
+to configure the image with all repositories found on the host system! This
+is mostly useful when running tests by hand on a downstream snapshot!
+
 ## Running tests
 
 After building a test image, run
