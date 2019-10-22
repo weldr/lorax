@@ -19,6 +19,35 @@ if [ "$COMPOSER_TEST_FAIL_FAST" == "1" ]; then
   }
 fi
 
+
+setup_beakerlib_env() {
+    export BEAKERLIB_DIR=$(mktemp -d /tmp/composer-test.XXXXXX)
+    export BEAKERLIB_JOURNAL=0
+}
+
+run_beakerlib_tests() {
+    if [ -z "$*" ]; then
+        echo "run_beakerlib_tests() requires a test to execute"
+    else
+        # execute tests
+        for TEST in "$@"; do
+            $TEST
+        done
+    fi
+}
+
+parse_beakerlib_results() {
+    . $BEAKERLIB_DIR/TestResults
+
+    TESTRESULT_RESULT_ECODE="${TESTRESULT_RESULT_ECODE:-}"
+    if [ $TESTRESULT_RESULT_ECODE != 0 ]; then
+      echo "Test failed. Leaving log in $BEAKERLIB_DIR"
+      exit $TESTRESULT_RESULT_ECODE
+    fi
+
+    rm -rf $BEAKERLIB_DIR
+}
+
 export QEMU_BIN="/usr/bin/qemu-system-$(uname -m)"
 export QEMU="$QEMU_BIN -machine accel=kvm:tcg"
 export SSH_PORT=2222
