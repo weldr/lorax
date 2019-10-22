@@ -58,17 +58,8 @@ test_images:
 				    tests/cli/test_compose_qcow2.sh            \
 				    tests/cli/test_compose_live-iso.sh
 
-test_aws:
-	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_aws.sh
-
-test_azure:
-	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_azure.sh
-
-test_openstack:
-	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_openstack.sh
-
-test_vmware:
-	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_vmware.sh
+test_cli:
+	sudo -E ./tests/test_cli.sh
 
 clean:
 	-rm -rf build src/pylorax/version.py
