@@ -5,7 +5,6 @@ set -eu
 
 . $(dirname $0)/cli/lib/lib.sh
 
-export BEAKERLIB_DIR=$(mktemp -d /tmp/composer-test.XXXXXX)
 CLI="${CLI:-}"
 
 function setup_tests {
@@ -105,19 +104,9 @@ if [ -e "/var/tmp/test-results" ]; then
     rm -rf "/var/tmp/test-results"
 fi
 
-export BEAKERLIB_JOURNAL=0
-if [ -z "$*" ]; then
-    # invoke cli/ tests which can be executed without special preparation
-    ./tests/cli/test_blueprints_sanity.sh
-    ./tests/cli/test_compose_sanity.sh
-else
-    # execute other cli tests which need more adjustments in the calling environment
-    # or can't be executed inside Travis CI
-    for TEST in "$@"; do
-        $TEST
-    done
-fi
+setup_beakerlib_env
 
+run_beakerlib_tests "$@"
 
 if [ -z "$CLI" ]; then
     # stop lorax-composer and remove /run/weldr/api.socket
@@ -132,11 +121,4 @@ else
     composer_start
 fi
 
-. $BEAKERLIB_DIR/TestResults
-
-if [ $TESTRESULT_RESULT_ECODE != 0 ]; then
-  echo "Test failed. Leaving log in $BEAKERLIB_DIR"
-  exit $TESTRESULT_RESULT_ECODE
-fi
-
-rm -rf $BEAKERLIB_DIR
+parse_beakerlib_results
