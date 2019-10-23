@@ -81,4 +81,11 @@ rpm -e --verbose $(basename -a ${packages[@]} | sed 's/-[0-9].*.rpm$//') || true
 yum install -y $packages
 
 systemctl enable lorax-composer.socket
-systemctl enable docker.service
+
+if [ -f /usr/bin/docker ]; then
+    yum remove -y $(rpm -qf /usr/bin/docker)
+fi
+
+if ! rpm -q podman-docker; then
+    yum install -y podman-docker
+fi
