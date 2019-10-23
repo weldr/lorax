@@ -1,12 +1,14 @@
 # Integration Tests
 
 lorax uses Cockpit's integration test framework and infrastructure. To do this,
-we're checking out Cockpit's `bots/` subdirectory. It contains links to test
+we're checking out
+[cockpit-project/bots/](https://github.com/cockpit-project/bots) repository.
+It contains links to test
 images and tools to manipulate and start virtual machines from them.
 
 Each test is run on a new instance of a virtual machine.
-Branch/test matrix is configured in `bots/tests-scan` inside the
-[cockpit repository](https://github.com/cockpit-project/cockpit).
+Branch/test scenario matrix is configured in
+[testmap.py](https://github.com/cockpit-project/bots/blob/master/task/testmap.py).
 
 ## Dependencies
 
@@ -28,7 +30,8 @@ This downloads a base image from Cockpit's infrastructure. You can control
 which image is downloaded with the `TEST_OS` environment variable. Cockpit's
 [documentation](https://github.com/cockpit-project/cockpit/blob/master/test/README.md#test-configuration)
 lists accepted values. It then creates a new image based on that (a qemu
-snapshot) in `tests/images`, which contain the current `tests/` directory and
+snapshot) in `test/images`, which contain the current `test/` and `tests/`
+directories and
 have newly built rpms from the current checkout installed.
 
 To delete the generated image, run
