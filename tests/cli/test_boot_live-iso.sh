@@ -15,7 +15,7 @@ set -e
 rlJournalStart
     rlPhaseStartTest "Verify live iso"
         # Just the fact that this is running means the image can boot and ssh is working
-        rlRun -t -c "passwd --status root | grep -E '^root\s+NP?'" 0 "root account has no password set"
+        ROOT_ACCOUNT_LOCKED=0 verify_image liveuser localhost "-p 22"
         rlAssertGrep "liveuser" /etc/passwd
         rlAssertGrep "custom_cmdline_arg" /proc/cmdline
     rlPhaseEnd
