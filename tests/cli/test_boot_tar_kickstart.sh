@@ -15,6 +15,7 @@ set -e
 rlJournalStart
     rlPhaseStartTest "Verify VM instance"
         # Just the fact that this is running means the image can boot and ssh is working
+        CHECK_CMDLINE=0 verify_image root localhost "-p 22"
         rlAssertExists "/root/.ssh/authorized_keys"
     rlPhaseEnd
 rlJournalEnd
