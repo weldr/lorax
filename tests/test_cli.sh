@@ -1,5 +1,7 @@
 #!/bin/bash
 # Note: execute this file from the project root directory
+# Note: Use test/check-cli && test/check-cloud if you want to
+# execute test scenarios by hand!
 
 set -eu
 
