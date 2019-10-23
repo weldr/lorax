@@ -18,7 +18,6 @@ CLI="${CLI:-./src/bin/composer-cli}"
 rlJournalStart
     rlPhaseStartSetup
         rlAssertExists /usr/bin/docker
-        rlRun -t -c "systemctl restart docker"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
@@ -31,14 +30,6 @@ rlJournalStart
 
     rlPhaseStartTest "compose finished"
         wait_for_compose $UUID
-
-        # Running a compose can lead to a different selinux policy in the
-        # kernel, which may break docker. Reload the policy from the host and
-        # restart docker as a workaround.
-        # See https://bugzilla.redhat.com/show_bug.cgi?id=1711813
-        semodule -R
-        systemctl restart docker
-
         rlRun -t -c "$CLI compose image $UUID"
         IMAGE="$UUID-root.tar.xz"
     rlPhaseEnd
