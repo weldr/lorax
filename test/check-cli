@@ -44,6 +44,10 @@ class TestQcow2(composertest.ComposerTestCase):
             # Boot the image
             self.setUpTestMachine(tmpdir + "/disk.qcow2", tmpdir + "/id_rsa")
 
+            # Upload SSH keys to the machine so we can use the existing assertions
+            # by ssh'ing to localhost
+            self.machine.upload([tmpdir + "/id_rsa", tmpdir + "/id_rsa.pub"], "/root/.ssh")
+
             # Upload the contents of the ./tests/ directory to the machine
             self.machine.upload(["../tests"], "/")
 
@@ -86,6 +90,10 @@ class TestTar(composertest.ComposerTestCase):
 
             # Boot the image, login using the ssh key
             self.setUpTestMachine(tmpdir + "/disk.img", tmpdir + "/id_rsa")
+
+            # Upload SSH keys to the machine so we can use the existing assertions
+            # by ssh'ing to localhost
+            self.machine.upload([tmpdir + "/id_rsa", tmpdir + "/id_rsa.pub"], "/root/.ssh")
 
             # Upload the contents of the ./tests/ directory to the machine
             self.machine.upload(["../tests"], "/")

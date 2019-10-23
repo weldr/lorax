@@ -122,7 +122,7 @@ check_root_account() {
     fi
 
     if [ $ROOT_ACCOUNT_LOCKED == 0 ]; then
-        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo grep '^root::' /etc/shadow\"" \
+        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo passwd --status root | grep -E '^root\s+NP?'\"" \
             0 "Password for root account in /etc/shadow is empty"
     else
         # ssh returns 255 in case of any ssh error, so it's better to grep the specific error message
