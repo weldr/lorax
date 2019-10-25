@@ -104,8 +104,10 @@ __EOF__
         mv $image $image_path
         restorecon $image_path
         rlLogInfo "Starting installation from tar image in a VM"
-        $QEMU -m 2048 -drive file=disk.img,format=raw -nographic -kernel vmlinuz -initrd initrd.img \
-            -append "inst.ks=http://10.0.2.2/ks-tar.cfg inst.stage2=$baseurl console=ttyS0" --no-reboot
+        $QEMU -m 2048 -drive file=disk.img,format=raw -kernel vmlinuz -initrd initrd.img \
+            -append "inst.ks=http://10.0.2.2/ks-tar.cfg inst.stage2=$baseurl console=ttyS0" --no-reboot \
+            -nographic -monitor none -chardev null,id=log0,mux=on,logfile=/var/log$TEST/qemu.log,logappend=on \
+            -serial chardev:log0
 
         rlLogInfo "Installation of the image finished."
     rlPhaseEnd
