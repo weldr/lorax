@@ -37,6 +37,9 @@ run_beakerlib_tests() {
 }
 
 parse_beakerlib_results() {
+    if [ ! -f "$BEAKERLIB_DIR/TestResults" ]; then
+        exit "$BEAKERLIB_DIR/TestResults not found" 1
+    fi
     . $BEAKERLIB_DIR/TestResults
 
     TESTRESULT_RESULT_ECODE="${TESTRESULT_RESULT_ECODE:-}"
