@@ -1,28 +1,47 @@
-<%page args="kernels, runtime_img, runtime_base, basearch, outroot, extra_boot_args"/>
+<%page args="kernels, runtime_img, runtime_base, basearch, outroot, isolabel, extra_boot_args"/>
 <%
 configdir="tmp/config_files/s390"
 BOOTDIR="images"
 KERNELDIR=BOOTDIR
 INITRD_ADDRESS="0x02000000"
+LIVEDIR="LiveOS"
 LORAXDIR="usr/share/lorax/"
 # The assumption seems to be that there is only one s390 kernel, ever
 kernel = kernels[0]
 
+## Don't allow spaces or escape characters in the iso label
+def valid_label(ch):
+    return ch.isalnum() or ch == '_'
+
+isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
+
 from os.path import basename
+import os
+from pylorax.sysutils import joinpaths
+
+# Test the runtime_img, if it is > 4GiB we need to set -iso-level to 3
+if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
+    isoargs = "-iso-level 3"
+else:
+    isoargs = ""
 %>
 
-mkdir images
-install ${runtime_img} images
-treeinfo stage2 mainimage images/${runtime_base}
+mkdir ${LIVEDIR}
+install ${runtime_img} ${LIVEDIR}/squashfs.img
+treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
 
+mkdir ${BOOTDIR}
 ## install bootloader (such as it is) and bootloader config
 install ${configdir}/redhat.exec ${BOOTDIR}
 install ${configdir}/generic.prm ${BOOTDIR}
+install ${configdir}/cdboot.prm ${BOOTDIR}
 install ${configdir}/generic.ins .
 
 ## configure bootloader
 replace @INITRD_LOAD_ADDRESS@ ${INITRD_ADDRESS} generic.ins
 replace @EXTRA@ '${extra_boot_args}' ${BOOTDIR}/generic.prm
+replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${BOOTDIR}/cdboot.prm
+replace @EXTRA@ '${extra_boot_args}' ${BOOTDIR}/cdboot.prm
 
 ## install kernel
 installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/kernel.img
@@ -36,6 +55,7 @@ treeinfo images-${basearch} initrd.addrsize ${BOOTDIR}/initrd.addrsize
 treeinfo images-${basearch} generic.prm ${BOOTDIR}/generic.prm
 treeinfo images-${basearch} generic.ins generic.ins
 treeinfo images-${basearch} redhat.exec ${BOOTDIR}/redhat.exec
+treeinfo images-${basearch} cdboot.prm ${BOOTDIR}/cdboot.prm
 
 # Create optional product.img and updates.img
 <% filegraft=""; images=["product", "updates"] %>
@@ -52,3 +72,19 @@ treeinfo images-${basearch} redhat.exec ${BOOTDIR}/redhat.exec
     install ${f} ${f|basename}
     <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
 %endfor
+
+## Make a combined kernel+initrd image for the iso
+runcmd mk-s390-cdboot -i ${outroot}/${KERNELDIR}/kernel.img \
+                      -r ${outroot}/${KERNELDIR}/initrd.img \
+                      -p ${outroot}/${BOOTDIR}/cdboot.prm \
+                      -o ${outroot}/${BOOTDIR}/cdboot.img
+
+## make boot.iso
+runcmd xorrisofs ${isoargs} -o ${outroot}/images/boot.iso \
+       -b ${BOOTDIR}/cdboot.img -c ${BOOTDIR}/boot.cat \
+       -boot-load-size 4 -no-emul-boot \
+       -R -J -V '${isolabel}' -graft-points \
+       ${BOOTDIR}=${outroot}/${BOOTDIR} \
+       ${LIVEDIR}=${outroot}/${LIVEDIR} \
+       ${filegraft}
+treeinfo images-${basearch} boot.iso images/boot.iso
