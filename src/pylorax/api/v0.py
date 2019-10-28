@@ -1832,12 +1832,9 @@ def v0_api(api):
     @api.route("/api/v0/compose/types")
     @crossdomain(origin="*")
     def v0_compose_types():
-        """Return the list of enabled output types
-
-        (only enabled types are returned)
-        """
+        """Return the list of output types and their enabled/disabled state"""
         share_dir = api.config["COMPOSER_CFG"].get("composer", "share_dir")
-        return jsonify(types=[{"name": k, "enabled": True} for k in compose_types(share_dir)])
+        return jsonify(types=[{"name": t, "enabled": e} for t, e in compose_types(share_dir)])
 
     @api.route("/api/v0/compose/queue")
     @crossdomain(origin="*")

@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from io import StringIO
+import os
 import shutil
 import tempfile
 import unittest
@@ -742,7 +743,7 @@ disabled = ["postfix", "telnetd"]
         # Test against all of the available templates
         share_dir = "./share/"
         errors = []
-        for compose_type in compose_types(share_dir):
+        for compose_type, _enabled in compose_types(share_dir):
             # Read the kickstart template for this type
             ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
             ks_template = open(ks_template_path, "r").read()
@@ -835,3 +836,11 @@ class ExtraPkgsTest(unittest.TestCase):
         """Test that non-live doesn't parse live-install.tmpl"""
         extra_pkgs = get_extra_pkgs(self.dbo, "./share/", "qcow2")
         self.assertEqual(extra_pkgs, [])
+
+class ComposeTypesTest(unittest.TestCase):
+    def test_compose_types(self):
+        types = compose_types("./share/")
+        self.assertTrue(("qcow2", True) in types)
+
+        if os.uname().machine != 'x86_64':
+            self.assertTrue(("alibaba", False) in types)
