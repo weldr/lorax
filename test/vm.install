@@ -17,6 +17,11 @@ if ! rpm -q beakerlib; then
     fi
 fi
 
+# disable mirrors & re-enable direct download
+sed -i "s/metalink.*//" /etc/yum.repos.d/*.repo
+sed -i "s/#\(baseurl=.*\)/\1/" /etc/yum.repos.d/*.repo
+sed -i "s/download.fedoraproject/dl.fedoraproject/" /etc/yum.repos.d/*.repo
+
 # Grow root partition to make room for images. This only works on Fedora right now.
 echo ", +" | sfdisk -N 2 -f /dev/vda
 partprobe
