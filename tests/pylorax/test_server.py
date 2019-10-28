@@ -960,6 +960,10 @@ class ServerAPIV0TestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         self.assertEqual({"name": "tar", "enabled": True} in data["types"], True)
 
+        # All of the non-x86 compose types disable alibaba
+        if os.uname().machine != 'x86_64':
+            self.assertEqual({"name": "alibaba", "enabled": False} in data["types"], True)
+
     def test_compose_02_bad_type(self):
         """Test that using an unsupported image type failes"""
         test_compose = {"blueprint_name": "example-glusterfs",

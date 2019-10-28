@@ -1495,7 +1495,7 @@ def v0_compose_types():
           }
     """
     share_dir = api.config["COMPOSER_CFG"].get("composer", "share_dir")
-    return jsonify(types=[{"name": k, "enabled": True} for k in compose_types(share_dir)])
+    return jsonify(types=[{"name": t, "enabled": e} for t, e in compose_types(share_dir)])
 
 @v0_api.route("/compose/queue")
 def v0_compose_queue():

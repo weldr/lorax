@@ -68,7 +68,10 @@ def test_templates(dbo, share_dir):
     Return a list of templates and errors encountered or an empty list
     """
     template_errors = []
-    for compose_type in compose_types(share_dir):
+    for compose_type, enabled in compose_types(share_dir):
+        if not enabled:
+            continue
+
         # Read the kickstart template for this type
         ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
         ks_template = open(ks_template_path, "r").read()
@@ -688,9 +691,12 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     share_dir = cfg.get("composer", "share_dir")
     lib_dir = cfg.get("composer", "lib_dir")
 
-    # Make sure compose_type is valid
-    if compose_type not in compose_types(share_dir):
-        raise RuntimeError("Invalid compose type (%s), must be one of %s" % (compose_type, compose_types(share_dir)))
+    # Make sure compose_type is valid, only allow enabled types
+    type_enabled = dict(compose_types(share_dir)).get(compose_type)
+    if type_enabled is None:
+        raise RuntimeError("Invalid compose type (%s), must be one of %s" % (compose_type, [t for t, e in compose_types(share_dir)]))
+    if not type_enabled:
+        raise RuntimeError("Compose type '%s' is disabled on this architecture" % compose_type)
 
     # Some image types (live-iso) need extra packages for composer to execute the output template
     with dnflock.lock:
@@ -859,11 +865,30 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
 
 # Supported output types
 def compose_types(share_dir):
-    r""" Returns a list of the supported output types
+    r""" Returns a list of tuples of the supported output types, and their state
 
     The output types come from the kickstart names in /usr/share/lorax/composer/\*ks
+
+    If they are disabled on the current arch their state is False. If enabled, it is True.
+    eg. [("alibaba", False), ("ext4-filesystem", True), ...]
     """
-    return sorted([os.path.basename(ks)[:-3] for ks in glob(joinpaths(share_dir, "composer/*.ks"))])
+    # These are compose types that are not supported on an architecture. eg. hyper-v on s390
+    # If it is not listed, it is allowed
+    disable_map = {
+        "arm": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
+        "armhfp": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
+        "aarch64": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
+        "ppc": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
+        "ppc64": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
+        "ppc64le": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
+        "s390": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
+        "s390x": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
+    }
+
+    all_types = sorted([os.path.basename(ks)[:-3] for ks in glob(joinpaths(share_dir, "composer/*.ks"))])
+    arch_disabled = disable_map.get(os.uname().machine, [])
+
+    return [(t, t not in arch_disabled) for t in all_types]
 
 def compose_args(compose_type):
     """ Returns the settings to pass to novirt_install for the compose type
