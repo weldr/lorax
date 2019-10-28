@@ -37,6 +37,13 @@ description = "tar image test"
 version = "0.0.1"
 modules = []
 
+[[groups]]
+name = "anaconda-tools"
+
+[[packages]]
+name = "kernel"
+version = "*"
+
 [[packages]]
 name = "openssh-server"
 version = "*"
