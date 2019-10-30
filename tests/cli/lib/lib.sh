@@ -32,7 +32,7 @@ boot_image() {
                  -serial chardev:log0 &"
     # wait for ssh to become ready (yes, http is the wrong protocol, but it returns the header)
     tries=0
-    until curl -sS -m 15 "http://localhost:$SSH_PORT/" | grep 'OpenSSH'; do
+    until curl --http0.9 -sS -m 15 "http://localhost:$SSH_PORT/" | grep 'OpenSSH'; do
         tries=$((tries + 1))
         if [ $tries -gt $TIMEOUT ]; then
             exit 1
