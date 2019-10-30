@@ -60,8 +60,8 @@ class TestLiveIso(composertest.ComposerTestCase):
             # Copy the resulting iso and shut down the VM
             self.tearDownVirt(virt_dir="/var/tmp/test-results/*", local_dir=tmpdir)
 
-            # Boot the image
-            self.setUpTestMachine(tmpdir + "/live.iso")
+            # Boot the image, login using the ssh key
+            self.setUpTestMachine(tmpdir + "/live.iso", tmpdir + "/id_rsa")
 
             # Upload the contents of the ./tests/ directory to the machine
             self.machine.upload(["../tests"], "/")

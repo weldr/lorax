@@ -15,6 +15,22 @@ function setup_tests {
     # explicitly enable sshd for live-iso b/c it is disabled by default
     # due to security concerns (no root password required)
     sed -i.orig 's/^services.*/services --disabled="network" --enabled="NetworkManager,sshd"/' $share_dir/composer/live-iso.ks
+
+    # Make the live-iso boot more quickly (isolinux.cfg)
+    for cfg in "$share_dir"/templates.d/99-generic/live/config_files/*/isolinux.cfg; do
+        sed -i.orig 's/^timeout.*/timeout 20/' "$cfg"
+    done
+
+    # Make the live-iso boot more quickly (grub.cfg)
+    for cfg in "$share_dir"/templates.d/99-generic/live/config_files/*/grub.conf; do
+        sed -i.orig 's/^timeout.*/timeout 2/' "$cfg"
+    done
+
+    # Make the live-iso boot more quickly (grub2-efi.cfg)
+    for cfg in "$share_dir"/templates.d/99-generic/live/config_files/*/grub2-efi.cfg; do
+        sed -i.orig 's/^set timeout.*/set timeout=2/' "$cfg"
+    done
+
     # explicitly enable logging in with empty passwords via ssh, because
     # the default sshd setting for PermitEmptyPasswords is 'no'
     awk -i inplace "
@@ -43,6 +59,12 @@ function teardown_tests {
     local blueprints_dir=$2
 
     mv $share_dir/composer/live-iso.ks.orig $share_dir/composer/live-iso.ks
+
+    # Restore all the configuration files
+    for cfg in "$share_dir"/templates.d/99-generic/live/config_files/*/*.orig; do
+        mv "$cfg" "${cfg%%.orig}"
+    done
+
     rm -rf $blueprints_dir
     mv ${blueprints_dir}.orig $blueprints_dir
 }
