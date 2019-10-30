@@ -16,26 +16,28 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartSetup
-        rlAssertExists $QEMU_BIN
-        if ! rlCheckRpm httpd; then
-            dnf -y install httpd
-        fi
-        systemctl start httpd
+        TMP_DIR=$(mktemp -d /tmp/composer.XXXXX)
+        SSH_KEY_DIR=$(mktemp -d /tmp/composer-ssh-keys.XXXXXX)
 
-        ks_path="/var/www/html/ks-tar.cfg"
-        tmp_dir=$(mktemp -d /tmp/composer.XXXXX)
-        ssh_key_dir=$(mktemp -d /tmp/composer-ssh-keys.XXXXXX)
+        rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
+        PUB_KEY=$(cat "$SSH_KEY_DIR/id_rsa.pub")
 
-        rlRun -t -c "ssh-keygen -t rsa -N '' -f $ssh_key_dir/id_rsa"
-        pub_key=$(cat $ssh_key_dir/id_rsa.pub)
-
-        bp_name="test-tar"
-        blueprint="$bp_name.toml"
-        cat > $blueprint << __EOF__
-name = "$bp_name"
+        cat > "$TMP_DIR/test-tar.toml" << __EOF__
+name = "test-tar"
 description = "tar image test"
 version = "0.0.1"
 modules = []
+
+[[groups]]
+name = "anaconda-tools"
+
+[[packages]]
+name = "kernel"
+version = "*"
+
+[[packages]]
+name = "beakerlib"
+version = "*"
 
 [[packages]]
 name = "openssh-server"
@@ -43,52 +45,32 @@ version = "*"
 
 [[customizations.user]]
 name = "root"
-key = "$pub_key"
+key = "$PUB_KEY"
 
 __EOF__
-        rlRun -t -c "$CLI blueprints push $blueprint"
-        image_path="/var/www/html/root.tar.xz"
-
-        version=$(awk -F = '$1 == "VERSION_ID" { print $2 }' /etc/os-release | tr -d \")
-        arch=$(uname -m)
-        baseurl=$(curl "https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-${version}&arch=${arch}" | \
-            grep -v "^#" | head -n 1)
-        rlRun -t -c "curl --remote-name-all $baseurl/images/pxeboot/{vmlinuz,initrd.img}"
-
-        rlRun -t -c "fallocate -l 5G disk.img"
+        rlRun -t -c "$CLI blueprints push $TMP_DIR/test-tar.toml"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
-        uuid=$($CLI compose start $bp_name liveimg-tar)
+        UUID=$($CLI compose start test-tar liveimg-tar)
         rlAssertEquals "exit code should be zero" $? 0
 
-        uuid=$(echo $uuid | cut -f 2 -d' ')
+        UUID=$(echo "$UUID" | cut -f 2 -d' ')
     rlPhaseEnd
 
     rlPhaseStartTest "compose finished"
-        if [ -n "$uuid" ]; then
-            until $CLI compose info $uuid | grep 'FINISHED\|FAILED'; do
-                sleep 60
-                rlLogInfo "Waiting for compose to finish ..."
-            done;
-            check_compose_status "$UUID"
-        else
-            rlFail "Compose uuid is empty!"
-        fi
-
-        rlRun -t -c "$CLI compose image $uuid"
-        image="$uuid-root.tar.xz"
+        wait_for_compose "$UUID"
     rlPhaseEnd
 
     rlPhaseStartTest "Install tar image using kickstart liveimg command"
-        cat > $ks_path << __EOF__
+        cat > "$TMP_DIR/test-liveimg.ks" << __EOF__
 cmdline
 lang en_US.UTF-8
 timezone America/New_York
 keyboard us
 rootpw --lock
-sshkey --username root "$pub_key"
+sshkey --username root "$PUB_KEY"
 bootloader --location=mbr
 zerombr
 clearpart --initlabel --all
@@ -98,31 +80,24 @@ autopart
 # (using 'poweroff' ks command just halted the machine without powering it off)
 reboot
 
-liveimg --url http://10.0.2.2/root.tar.xz
+liveimg --url file:///var/lib/lorax/composer/results/$UUID/root.tar.xz
 
 __EOF__
-        mv $image $image_path
-        restorecon $image_path
-        rlLogInfo "Starting installation from tar image in a VM"
-        $QEMU -m 2048 -drive file=disk.img,format=raw -nographic -kernel vmlinuz -initrd initrd.img \
-            -append "inst.ks=http://10.0.2.2/ks-tar.cfg inst.stage2=$baseurl console=ttyS0" --no-reboot
+        # Build the disk image directly in the results directory
+        rlRun -t -c "mkdir -p /var/tmp/test-results/"
+        rlRun -t -c "fallocate -l 5G /var/tmp/test-results/disk.img"
 
+        rlLogInfo "Starting installation from tar image using anaconda"
+        rlRun -t -c "anaconda --image=/var/tmp/test-results/disk.img --kickstart=$TMP_DIR/test-liveimg.ks"
         rlLogInfo "Installation of the image finished."
-    rlPhaseEnd
 
-    rlPhaseStartTest "Boot and check the installed system"
-        boot_image "-drive file=disk.img,format=raw" 600
-        # run generic tests to verify the instance
-        CHECK_CMDLINE=0 verify_image root localhost "-i $ssh_key_dir/id_rsa -p 2222"
+        # Include the ssh key needed to log into the image
+        rlRun -t -c "cp $SSH_KEY_DIR/* /var/tmp/test-results"
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlRun -t -c "killall -9 $QEMU_BIN"
-        rlRun -t -c "rm -rf $image $blueprint $image_path vmlinuz initrd.img disk.img $ks_path"
-        rlRun -t -c "$CLI blueprints delete $bp_name"
-        rlRun -t -c "$CLI compose delete $uuid"
-        rlRun -t -c "systemctl stop httpd"
+        rlRun -t -c "$CLI compose delete $UUID"
+        rlRun -t -c "rm -rf $TMP_DIR $SSH_KEY_DIR"
     rlPhaseEnd
-
 rlJournalEnd
 rlJournalPrintText
