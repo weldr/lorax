@@ -43,6 +43,14 @@ version = "*"
 name = "openssh-server"
 version = "*"
 
+[[packages]]
+name = "openssh-clients"
+version = "*"
+
+[[packages]]
+name = "passwd"
+version = "*"
+
 [[customizations.user]]
 name = "root"
 key = "$PUB_KEY"
