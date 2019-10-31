@@ -43,8 +43,12 @@ version = "*"
 name = "openssh-server"
 version = "*"
 
-[[groups]]
-name = "anaconda-tools"
+[[packages]]
+name = "openssh-clients"
+version = "*"
+
+[[packages]]
+name = "passwd"
 version = "*"
 
 [[customizations.user]]

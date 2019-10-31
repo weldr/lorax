@@ -121,20 +121,27 @@ check_root_account() {
         return 1
     fi
 
+    # If you are connected as root you do not need sudo
+    if [[ "$SSH_USER" == "root" ]]; then
+        SUDO=""
+    else
+        SUDO="sudo"
+    fi
+
     if [ $ROOT_ACCOUNT_LOCKED == 0 ]; then
-        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo passwd --status root | grep -E '^root\s+NP?'\"" \
+        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"$SUDO passwd --status root | grep -E '^root\s+NP?'\"" \
             0 "Password for root account in /etc/shadow is empty"
     else
         # ssh returns 255 in case of any ssh error, so it's better to grep the specific error message
         rlRun -t -c "ssh $SSH_OPTS -o PubkeyAuthentication=no root@${SSH_MACHINE} 2>&1 | grep -i 'permission denied ('" \
             0 "Can't ssh to '$SSH_MACHINE' as root using password-based auth"
-        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo passwd --status root | grep -E '^root\s+LK?'\"" \
+        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"$SUDO passwd --status root | grep -E '^root\s+LK?'\"" \
             0 "root account is disabled in /etc/shadow"
-        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo grep 'USER_LOGIN.*acct=\\\"root\\\".*terminal=ssh.*res=failed' /var/log/audit/audit.log\"" \
+        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"$SUDO grep 'USER_LOGIN.*acct=\\\"root\\\".*terminal=ssh.*res=failed' /var/log/audit/audit.log\"" \
             0 "audit.log contains entry about unsuccessful root login"
         # We modify the default sshd settings on live ISO, so we can only check the default empty password setting
         # outside of live ISO
-        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} 'sudo grep -E \"^[[:blank:]]*PermitEmptyPasswords[[:blank:]]*yes\" /etc/ssh/sshd_config'" 1 \
+        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} '$SUDO grep -E \"^[[:blank:]]*PermitEmptyPasswords[[:blank:]]*yes\" /etc/ssh/sshd_config'" 1 \
             "Login with empty passwords is disabled in sshd config file"
     fi
     rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} 'cat /etc/redhat-release'"
