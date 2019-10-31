@@ -277,9 +277,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 - Backport Cockpit CI changes for RHEL 8 (atodorov)
   Related: rhbz#1724073
 - tests: Drop sort from compose types test (bcl)
-  Related: rhbz#1714103
 - New test: assert toml files in git workspace (atodorov)
-  Related: rhbz#1714103
 - Use passwd --status for locked root account check (jikortus)
   Related: rhbz#1728571
 
