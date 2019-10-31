@@ -43,17 +43,12 @@ version = "*"
 name = "openssh-server"
 version = "*"
 
-# sudo and auditd are needed for checks performed on the installed image instance
 [[packages]]
-name = "sudo"
+name = "openssh-clients"
 version = "*"
 
 [[packages]]
-name = "audit"
-version = "*"
-
-[[groups]]
-name = "anaconda-tools"
+name = "passwd"
 version = "*"
 
 [[customizations.user]]
