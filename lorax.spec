@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.31
+Version:        28.14.32
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -251,6 +251,20 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Oct 31 2019 Brian C. Lane <bcl@redhat.com> 28.14.32-1
+- tests: Add tests for recipe checking functions (bcl)
+  Related: rhbz#1716596
+- lorax-composer: Add basic case check to check_recipe_dict (bcl)
+  Related: rhbz#1716596
+- lorax-composer: Add basic recipe checker function (bcl)
+  Resolves: rhbz#1716596
+- Add live iso support to s390 (bcl)
+  Related: rhbz#1746424
+- Disable some compose types on other architectures (bcl)
+  Resolves: rhbz#1751998
+- aarch64: Fix live-iso creation on aarch64 (bcl)
+  Resolves: rhbz#1752002
+
 * Mon Oct 21 2019 Brian C. Lane <bcl@redhat.com> 28.14.31-1
 - tests: Document Azure setup (atodorov) (atodorov)
 - tests: unskip Azure scenario (atodorov) (atodorov)
