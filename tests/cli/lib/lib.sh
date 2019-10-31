@@ -137,7 +137,7 @@ check_root_account() {
             0 "Can't ssh to '$SSH_MACHINE' as root using password-based auth"
         rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"$SUDO passwd --status root | grep -E '^root\s+LK?'\"" \
             0 "root account is disabled in /etc/shadow"
-        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"$SUDO grep 'USER_LOGIN.*acct=\\\"root\\\".*terminal=ssh.*res=failed' /var/log/audit/audit.log\"" \
+        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"$SUDO journalctl -g 'USER_LOGIN.*acct=\\\"root\\\".*terminal=ssh.*res=failed'\"" \
             0 "audit.log contains entry about unsuccessful root login"
         # We modify the default sshd settings on live ISO, so we can only check the default empty password setting
         # outside of live ISO
