@@ -11,3 +11,5 @@
 - Keep all build config files in one directory
 - Move everything in Lorax.{configure,run}() to config files/templates
 - Better debug output (esp. for tracebacks)
+- Keep rocking out
+- Fix VMware tests
