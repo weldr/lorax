@@ -1,0 +1,57 @@
+#!/usr/bin/python3
+
+
+import tempfile
+import composertest
+
+
+class LoraxTestCase(composertest.ComposerTestCase):
+    def setUp(self):
+        self.setUpTestMachine()
+
+        # Upload the contents of the ./tests/ directory to the machine (it must have beakerlib already installed)
+        self.machine.upload(["../tests"], "/")
+
+    def tearDown(self):
+        super().tearDownTestMachine()
+
+    def runLoraxTest(self, script):
+        extra_env = []
+        if self.sit:
+            extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
+
+        r = self.execute(["TEST=" + self.id(),
+                          *extra_env,
+                          "/tests/test_lorax.sh", script])
+        self.assertEqual(r.returncode, 0)
+
+    def runShellTest(self, script):
+        """Run a shell script directly, without the beakerlib wrapper"""
+        extra_env = []
+        r = self.execute(["TEST=" + self.id(),
+                          *extra_env,
+                          script])
+        self.assertEqual(r.returncode, 0)
+
+
+class TestLorax(LoraxTestCase):
+    def test_boot_iso(self):
+        self.runLoraxTest("/tests/lorax/test_build_bootiso.sh")
+
+        with tempfile.TemporaryDirectory(prefix="/var/tmp/lorax-test.") as tmpdir:
+            # Copy the resulting iso and shut down the VM
+            self.tearDownVirt(virt_dir="/var/tmp/test-results/*", local_dir=tmpdir)
+
+            # Boot the image, login with ssh (no key needed)
+            self.setUpTestMachine(tmpdir + "/images/boot.iso")
+
+            # Upload the contents of the ./tests/ directory to the machine
+            self.machine.upload(["../tests"], "/")
+
+            # Run the test on the booted image
+            # NOTE: The boot.iso cannot run beakerlib so this test is called directly
+            self.runShellTest("/tests/lorax/test_boot_bootiso.sh")
+
+
+if __name__ == '__main__':
+    composertest.main()
