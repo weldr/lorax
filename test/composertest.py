@@ -4,12 +4,15 @@ import argparse
 import os
 import subprocess
 import sys
+import time
 import traceback
 import unittest
 
 # import Cockpit's machinery for test VMs and its browser test API
 sys.path.append(os.path.join(os.path.dirname(__file__), "../bots/machine"))
-import testvm # pylint: disable=import-error
+import testvm                                   # pylint: disable=import-error
+import machine_core.exceptions as exceptions    # pylint: disable=import-error
+import machine_core.timeout as timeoutlib       # pylint: disable=import-error
 
 #pylint: disable=subprocess-run-check
 
@@ -28,8 +31,9 @@ class VirtMachineTestCase(unittest.TestCase):
     network = None
     machine = None
     ssh_command = None
+    boot_id = None
 
-    def setUpTestMachine(self, image, identity_file=None):
+    def setUpTestMachine(self, image=testvm.DEFAULT_IMAGE, identity_file=None):
         self.network = testvm.VirtNetwork(0)
         if identity_file:
             self.machine = testvm.VirtMachine(image, networking=self.network.host(), cpus=2, memory_mb=2048, identity_file=identity_file)
@@ -38,7 +42,9 @@ class VirtMachineTestCase(unittest.TestCase):
 
         print("Starting virtual machine '{}'".format(image))
         self.machine.start()
-        self.machine.wait_boot()
+
+        # Modified wait_boot that doesn't check for /run/nologin
+        self.wait_boot()
 
         # run a command to force starting the SSH master
         self.machine.execute("uptime")
@@ -76,10 +82,46 @@ class VirtMachineTestCase(unittest.TestCase):
         """
         return subprocess.run(self.ssh_command + command, **args)
 
+    def wait_boot(self, timeout_sec=120):
+        """Wait until logging in as root works
+
+           The cockpit tests assume logging in as non-root, but that isn't always true
+           when testing things like boot.iso images. So this checks for ssh login without
+           checking for /run/nologin
+
+           raises an error if there was a timeout/failure to connect
+        """
+        # This is mostly a copy of the SSHConnection wait_boot and wait_user_login
+        start_time = time.time()
+        boot_id = None
+        while (time.time() - start_time) < timeout_sec:
+            if self.machine.wait_execute(timeout_sec=15):
+                tries_left = 60
+                while (tries_left > 0):
+                    try:
+                        with timeoutlib.Timeout(seconds=30):
+                            boot_id = self.machine.execute("cat /proc/sys/kernel/random/boot_id", direct=True)
+                            break
+                    except subprocess.CalledProcessError:
+                        pass
+                    except RuntimeError:
+                        # timeout; assume that ssh just went down during reboot, go back to wait_boot()
+                        break
+                    tries_left = tries_left - 1
+                    time.sleep(1)
+                else:
+                    raise exceptions.Failure("Timed out waiting for boot_id")
+
+                if boot_id:
+                    break
+        if not boot_id:
+            raise exceptions.Failure("Unable to reach machine {0} via ssh: {1}:{2}".format(self.machine.label, self.machine.ssh_address, self.machine.ssh_port))
+        self.boot_id = boot_id
+
 
 class ComposerTestCase(VirtMachineTestCase):
     def setUp(self):
-        self.setUpTestMachine(testvm.DEFAULT_IMAGE)
+        self.setUpTestMachine()
 
         # Upload the contents of the ./tests/ directory to the machine (it must have beakerlib already installed)
         self.machine.upload(["../tests"], "/")
