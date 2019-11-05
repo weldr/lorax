@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.1
+Version:        32.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -262,6 +262,35 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Nov 05 2019 Brian C. Lane <bcl@redhat.com> 32.2-1
+- New lorax documentation - 32.2 (bcl@redhat.com)
+- tests: Add 'test_mkksiso' tests (bcl@redhat.com)
+- mkksiso: Add documentation (bcl@redhat.com)
+- mkksiso: Add a tool to add a kickstart to an existing boot.iso (bcl@redhat.com)
+- tests: Add a lorax boot.iso test (bcl@redhat.com)
+- test: Add wait_boot method for root logins (bcl@redhat.com)
+- tests: Ensure failure if beakerlib results file not found (atodorov@redhat.com)
+- tests: Documentation updates (atodorov@redhat.com)
+- tests: Use host repositories for make vm (atodorov@redhat.com)
+- Remove unused make targets (atodorov@redhat.com)
+- DRY when setting up, running & parsing results for beakerlib tests (atodorov@redhat.com)
+- tests: Disable mirrors (atodorov@redhat.com)
+- tests: Use journalctl -g to check for failed login (bcl@redhat.com)
+- tests: Fix check_root_account when used with tar liveimg test (bcl@redhat.com)
+- tests: Use the same asserts as before (atodorov@redhat.com)
+- tests: switch to using podman instead of docker (atodorov@redhat.com)
+- tests: Remove nested vm from tar liveimg kickstart test (bcl@redhat.com)
+- tests: Use --http0.9 for curl ssh test (bcl@redhat.com)
+- test: Boot the live-iso faster, and login using ssh key (bcl@redhat.com)
+- test: Split up the test class to allow booting other images (bcl@redhat.com)
+- tests: Split testing the image into a separate script (bcl@redhat.com)
+- Add live iso support to s390 (bcl@redhat.com)
+- docs: Override macboot/nomacboot documentation (bcl@redhat.com)
+- Disable some compose types on other architectures (bcl@redhat.com)
+- lorax: Drop unused --title option (bcl@redhat.com)
+- tests: Document Azure setup (atodorov@redhat.com)
+- tests: unskip Azure scenario (atodorov@redhat.com)
+
 * Wed Oct 16 2019 Brian C. Lane <bcl@redhat.com> 32.1-1
 - Bump default platform and releasever to 32 (bcl@redhat.com)
 - New lorax documentation - 32.1 (bcl@redhat.com)
