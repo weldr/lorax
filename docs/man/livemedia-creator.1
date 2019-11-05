@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LIVEMEDIA-CREATOR" "1" "Oct 16, 2019" "32.1" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Nov 05, 2019" "32.2" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .
@@ -79,19 +79,21 @@ Create Live Install Media
 .ft C
 usage: livemedia\-creator [\-h]
                          (\-\-make\-iso | \-\-make\-disk | \-\-make\-fsimage | \-\-make\-appliance | \-\-make\-ami | \-\-make\-tar | \-\-make\-tar\-disk | \-\-make\-pxe\-live | \-\-make\-ostree\-live | \-\-make\-oci | \-\-make\-vagrant)
-                         [\-\-iso ISO] [\-\-iso\-only] [\-\-iso\-name ISO_NAME] [\-\-ks KS] [\-\-image\-only] [\-\-no\-virt] [\-\-proxy PROXY]
-                         [\-\-anaconda\-arg ANACONDA_ARGS] [\-\-armplatform ARMPLATFORM] [\-\-location LOCATION] [\-\-logfile LOGFILE]
-                         [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP] [\-\-resultdir RESULT_DIR] [\-\-macboot] [\-\-nomacboot]
-                         [\-\-extra\-boot\-args EXTRA_BOOT_ARGS] [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image] [\-\-fs\-image FS_IMAGE]
-                         [\-\-image\-name IMAGE_NAME] [\-\-tar\-disk\-name TAR_DISK_NAME] [\-\-fs\-label FS_LABEL]
-                         [\-\-image\-size\-align IMAGE_SIZE_ALIGN] [\-\-image\-type IMAGE_TYPE] [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2]
-                         [\-\-qcow2\-arg QEMU_ARGS] [\-\-compression COMPRESSION] [\-\-compress\-arg COMPRESS_ARGS] [\-\-app\-name APP_NAME]
-                         [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE] [\-\-ram MEMORY] [\-\-vcpus VCPUS] [\-\-vnc VNC]
-                         [\-\-arch ARCH] [\-\-kernel\-args KERNEL_ARGS] [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi] [\-\-no\-kvm]
-                         [\-\-with\-rng WITH_RNG] [\-\-dracut\-arg DRACUT_ARGS] [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE]
-                         [\-\-live\-rootfs\-keep\-size] [\-\-oci\-config OCI_CONFIG] [\-\-oci\-runtime OCI_RUNTIME]
-                         [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE] [\-\-title TITLE] [\-\-project PROJECT]
-                         [\-\-releasever RELEASEVER] [\-\-volid VOLID] [\-\-squashfs\-only] [\-\-timeout TIMEOUT] [\-V]
+                         [\-\-iso ISO] [\-\-iso\-only] [\-\-iso\-name ISO_NAME] [\-\-ks KS] [\-\-image\-only] [\-\-no\-virt]
+                         [\-\-proxy PROXY] [\-\-anaconda\-arg ANACONDA_ARGS] [\-\-armplatform ARMPLATFORM]
+                         [\-\-location LOCATION] [\-\-logfile LOGFILE] [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP]
+                         [\-\-resultdir RESULT_DIR] [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS]
+                         [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image] [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME]
+                         [\-\-tar\-disk\-name TAR_DISK_NAME] [\-\-fs\-label FS_LABEL] [\-\-image\-size\-align IMAGE_SIZE_ALIGN]
+                         [\-\-image\-type IMAGE_TYPE] [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2] [\-\-qcow2\-arg QEMU_ARGS]
+                         [\-\-compression COMPRESSION] [\-\-compress\-arg COMPRESS_ARGS] [\-\-app\-name APP_NAME]
+                         [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE] [\-\-ram MEMORY] [\-\-vcpus VCPUS]
+                         [\-\-vnc VNC] [\-\-arch ARCH] [\-\-kernel\-args KERNEL_ARGS] [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi]
+                         [\-\-no\-kvm] [\-\-with\-rng WITH_RNG] [\-\-dracut\-arg DRACUT_ARGS]
+                         [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE] [\-\-live\-rootfs\-keep\-size] [\-\-oci\-config OCI_CONFIG]
+                         [\-\-oci\-runtime OCI_RUNTIME] [\-\-vagrant\-metadata VAGRANT_METADATA]
+                         [\-\-vagrantfile VAGRANTFILE] [\-\-project PROJECT] [\-\-releasever RELEASEVER] [\-\-volid VOLID]
+                         [\-\-squashfs\-only] [\-\-timeout TIMEOUT] [\-V]
 .ft P
 .fi
 .UNINDENT
@@ -207,20 +209,19 @@ Default: /var/tmp
 Directory to copy the resulting images and iso into. Defaults to the temporary working directory
 .TP
 .B\-\-macboot
+Make the iso bootable on UEFI based Mac systems
+.sp
 Default: True
 .TP
 .B\-\-nomacboot
-Default: True
+Do not create a Mac bootable iso
+.sp
+Default: False
 .TP
 .B\-\-extra\-boot\-args
 Extra arguments to add to the bootloader kernel cmdline in the templates
 .sp
 Default: ""
-.TP
-.B\-\-title
-Substituted for @TITLE@ in bootloader config files
-.sp
-Default: "Linux Live Media"
 .TP
 .B\-\-project
 substituted for @PROJECT@ in bootloader config files
@@ -230,7 +231,7 @@ Default: "Linux"
 .B\-\-releasever
 substituted for @VERSION@ in bootloader config files
 .sp
-Default: "29"
+Default: "32"
 .TP
 .B\-\-volid
 volume id

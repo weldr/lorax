@@ -225,6 +225,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %dir %{_datadir}/lorax
 %{_mandir}/man1/lorax.1*
 %{_mandir}/man1/livemedia-creator.1*
+%{_mandir}/man1/mkksiso.1*
 %{_tmpfilesdir}/lorax.conf
 
 %files docs

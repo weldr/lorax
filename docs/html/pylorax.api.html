@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 32.1 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 32.2 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                32.1
+                32.2
               </div>
             
           
@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="composer.html">composer package</a></li>
@@ -309,8 +310,10 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 <dl class="function">
 <dt id="pylorax.api.compose.compose_types">
 <code class="sig-prename descclassname">pylorax.api.compose.</code><code class="sig-name descname">compose_types</code><span class="sig-paren">(</span><em class="sig-param">share_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.compose_types" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of the supported output types</p>
+<dd><p>Returns a list of tuples of the supported output types, and their state</p>
 <p>The output types come from the kickstart names in /usr/share/lorax/composer/*ks</p>
+<p>If they are disabled on the current arch their state is False. If enabled, it is True.
+eg. [(&quot;alibaba&quot;, False), (&quot;ext4-filesystem&quot;, True), ...]</p>
 </dd></dl>
 
 <dl class="function">

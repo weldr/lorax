@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "Oct 16, 2019" "32.1" "Lorax"
+.TH "LORAX" "1" "Nov 05, 2019" "32.2" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .
@@ -55,13 +55,14 @@ Create the Anaconda boot.iso
 .sp
 .nf
 .ft C
-usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-repo REPOSITORY] [\-m REPOSITORY] [\-t VARIANT] [\-b URL]
-             [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE] [\-e PACKAGE] [\-\-buildarch ARCH] [\-\-volid VOLID] [\-\-macboot]
-             [\-\-nomacboot] [\-\-noupgrade] [\-\-logfile LOGFILE] [\-\-tmp TMP] [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force]
-             [\-\-add\-template ADD_TEMPLATES] [\-\-add\-template\-var ADD_TEMPLATE_VARS] [\-\-add\-arch\-template ADD_ARCH_TEMPLATES]
-             [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify] [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
-             [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only]
-             [\-\-dracut\-arg DRACUT_ARGS] [\-V]
+usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-repo REPOSITORY] [\-m REPOSITORY] [\-t VARIANT]
+             [\-b URL] [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE] [\-e PACKAGE] [\-\-buildarch ARCH]
+             [\-\-volid VOLID] [\-\-macboot] [\-\-nomacboot] [\-\-noupgrade] [\-\-logfile LOGFILE] [\-\-tmp TMP]
+             [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force] [\-\-add\-template ADD_TEMPLATES]
+             [\-\-add\-template\-var ADD_TEMPLATE_VARS] [\-\-add\-arch\-template ADD_ARCH_TEMPLATES]
+             [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify] [\-\-sharedir SHAREDIR]
+             [\-\-enablerepo [repo]] [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl]
+             [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -147,10 +148,14 @@ build architecture
 volume id
 .TP
 .B\-\-macboot
+Make the iso bootable on UEFI based Mac systems
+.sp
 Default: True
 .TP
 .B\-\-nomacboot
-Default: True
+Do not create a Mac bootable iso
+.sp
+Default: False
 .TP
 .B\-\-noupgrade
 Default: True
