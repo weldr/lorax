@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.compose &mdash; Lorax 32.1 documentation</title>
+  <title>pylorax.api.compose &mdash; Lorax 32.2 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.1
+                32.2
               </div>
             
           
@@ -89,6 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lorax-composer.html">lorax-composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
 </ul>
@@ -226,7 +227,10 @@
 <span class="sd">    Return a list of templates and errors encountered or an empty list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">template_errors</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">compose_type</span> <span class="ow">in</span> <span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">compose_type</span><span class="p">,</span> <span class="n">enabled</span> <span class="ow">in</span> <span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">enabled</span><span class="p">:</span>
+            <span class="k">continue</span>
+
         <span class="c1"># Read the kickstart template for this type</span>
         <span class="n">ks_template_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">share_dir</span><span class="p">,</span> <span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.ks&quot;</span>
         <span class="n">ks_template</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ks_template_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -846,9 +850,12 @@
     <span class="n">share_dir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;share_dir&quot;</span><span class="p">)</span>
     <span class="n">lib_dir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Make sure compose_type is valid</span>
-    <span class="k">if</span> <span class="n">compose_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid compose type (</span><span class="si">%s</span><span class="s2">), must be one of </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">compose_type</span><span class="p">,</span> <span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">)))</span>
+    <span class="c1"># Make sure compose_type is valid, only allow enabled types</span>
+    <span class="n">type_enabled</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">compose_type</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">type_enabled</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid compose type (</span><span class="si">%s</span><span class="s2">), must be one of </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">compose_type</span><span class="p">,</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">)]))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">type_enabled</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Compose type &#39;</span><span class="si">%s</span><span class="s2">&#39; is disabled on this architecture&quot;</span> <span class="o">%</span> <span class="n">compose_type</span><span class="p">)</span>
 
     <span class="c1"># Some image types (live-iso) need extra packages for composer to execute the output template</span>
     <span class="k">with</span> <span class="n">dnflock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
@@ -1017,11 +1024,30 @@
 
 <span class="c1"># Supported output types</span>
 <div class="viewcode-block" id="compose_types"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.compose_types">[docs]</a><span class="k">def</span> <span class="nf">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Returns a list of the supported output types</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Returns a list of tuples of the supported output types, and their state</span>
 
 <span class="sd">    The output types come from the kickstart names in /usr/share/lorax/composer/\*ks</span>
+
+<span class="sd">    If they are disabled on the current arch their state is False. If enabled, it is True.</span>
+<span class="sd">    eg. [(&quot;alibaba&quot;, False), (&quot;ext4-filesystem&quot;, True), ...]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ks</span><span class="p">)[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">ks</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">share_dir</span><span class="p">,</span> <span class="s2">&quot;composer/*.ks&quot;</span><span class="p">))])</span></div>
+    <span class="c1"># These are compose types that are not supported on an architecture. eg. hyper-v on s390</span>
+    <span class="c1"># If it is not listed, it is allowed</span>
+    <span class="n">disable_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;arm&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;alibaba&quot;</span><span class="p">,</span> <span class="s2">&quot;ami&quot;</span><span class="p">,</span> <span class="s2">&quot;google&quot;</span><span class="p">,</span> <span class="s2">&quot;hyper-v&quot;</span><span class="p">,</span> <span class="s2">&quot;vhd&quot;</span><span class="p">,</span> <span class="s2">&quot;vmdk&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;armhfp&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;alibaba&quot;</span><span class="p">,</span> <span class="s2">&quot;ami&quot;</span><span class="p">,</span> <span class="s2">&quot;google&quot;</span><span class="p">,</span> <span class="s2">&quot;hyper-v&quot;</span><span class="p">,</span> <span class="s2">&quot;vhd&quot;</span><span class="p">,</span> <span class="s2">&quot;vmdk&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;aarch64&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;alibaba&quot;</span><span class="p">,</span> <span class="s2">&quot;ami&quot;</span><span class="p">,</span> <span class="s2">&quot;google&quot;</span><span class="p">,</span> <span class="s2">&quot;hyper-v&quot;</span><span class="p">,</span> <span class="s2">&quot;vhd&quot;</span><span class="p">,</span> <span class="s2">&quot;vmdk&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;ppc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;alibaba&quot;</span><span class="p">,</span> <span class="s2">&quot;ami&quot;</span><span class="p">,</span> <span class="s2">&quot;google&quot;</span><span class="p">,</span> <span class="s2">&quot;hyper-v&quot;</span><span class="p">,</span> <span class="s2">&quot;vhd&quot;</span><span class="p">,</span> <span class="s2">&quot;vmdk&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;ppc64&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;alibaba&quot;</span><span class="p">,</span> <span class="s2">&quot;ami&quot;</span><span class="p">,</span> <span class="s2">&quot;google&quot;</span><span class="p">,</span> <span class="s2">&quot;hyper-v&quot;</span><span class="p">,</span> <span class="s2">&quot;vhd&quot;</span><span class="p">,</span> <span class="s2">&quot;vmdk&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;ppc64le&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;alibaba&quot;</span><span class="p">,</span> <span class="s2">&quot;ami&quot;</span><span class="p">,</span> <span class="s2">&quot;google&quot;</span><span class="p">,</span> <span class="s2">&quot;hyper-v&quot;</span><span class="p">,</span> <span class="s2">&quot;vhd&quot;</span><span class="p">,</span> <span class="s2">&quot;vmdk&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;s390&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;alibaba&quot;</span><span class="p">,</span> <span class="s2">&quot;ami&quot;</span><span class="p">,</span> <span class="s2">&quot;google&quot;</span><span class="p">,</span> <span class="s2">&quot;hyper-v&quot;</span><span class="p">,</span> <span class="s2">&quot;vhd&quot;</span><span class="p">,</span> <span class="s2">&quot;vmdk&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;s390x&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;alibaba&quot;</span><span class="p">,</span> <span class="s2">&quot;ami&quot;</span><span class="p">,</span> <span class="s2">&quot;google&quot;</span><span class="p">,</span> <span class="s2">&quot;hyper-v&quot;</span><span class="p">,</span> <span class="s2">&quot;vhd&quot;</span><span class="p">,</span> <span class="s2">&quot;vmdk&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="n">all_types</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ks</span><span class="p">)[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">ks</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">share_dir</span><span class="p">,</span> <span class="s2">&quot;composer/*.ks&quot;</span><span class="p">))])</span>
+    <span class="n">arch_disabled</span> <span class="o">=</span> <span class="n">disable_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">machine</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="k">return</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">arch_disabled</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">all_types</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="compose_args"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.compose_args">[docs]</a><span class="k">def</span> <span class="nf">compose_args</span><span class="p">(</span><span class="n">compose_type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Returns the settings to pass to novirt_install for the compose type</span>

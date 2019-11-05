@@ -43,8 +43,18 @@ livemedia-creator cmdline arguments
 -----------------------------------
 
 .. argparse::
-   :ref: pylorax.cmdline.lmc_parser
-   :prog: livemedia-creator
+    :ref: pylorax.cmdline.lmc_parser
+    :prog: livemedia-creator
+
+    --macboot : @replace
+        Make the iso bootable on UEFI based Mac systems
+
+        Default: True
+
+    --nomacboot : @replace
+        Do not create a Mac bootable iso
+
+        Default: False
 
 
 Quickstart

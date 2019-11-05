@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 32.1 documentation</title>
+  <title>pylorax package &mdash; Lorax 32.2 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                32.1
+                32.2
               </div>
             
           
@@ -91,6 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="composer.html">composer package</a></li>
@@ -431,7 +432,7 @@ this. Everything else should be a nop.</p>
 
 <dl class="function">
 <dt id="pylorax.creator.make_appliance">
-<code class="sig-prename descclassname">pylorax.creator.</code><code class="sig-name descname">make_appliance</code><span class="sig-paren">(</span><em class="sig-param">disk_img</em>, <em class="sig-param">name</em>, <em class="sig-param">template</em>, <em class="sig-param">outfile</em>, <em class="sig-param">networks=None</em>, <em class="sig-param">ram=1024</em>, <em class="sig-param">vcpus=1</em>, <em class="sig-param">arch=None</em>, <em class="sig-param">title='Linux'</em>, <em class="sig-param">project='Linux'</em>, <em class="sig-param">releasever='29'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_appliance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_appliance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pylorax.creator.</code><code class="sig-name descname">make_appliance</code><span class="sig-paren">(</span><em class="sig-param">disk_img</em>, <em class="sig-param">name</em>, <em class="sig-param">template</em>, <em class="sig-param">outfile</em>, <em class="sig-param">networks=None</em>, <em class="sig-param">ram=1024</em>, <em class="sig-param">vcpus=1</em>, <em class="sig-param">arch=None</em>, <em class="sig-param">title='Linux'</em>, <em class="sig-param">project='Linux'</em>, <em class="sig-param">releasever='32'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_appliance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_appliance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate an appliance description file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -446,7 +447,7 @@ this. Everything else should be a nop.</p>
 <li><p><strong>arch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- CPU architecture. Default is 'x86_64'</p></li>
 <li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Title, passed to template. Default is 'Linux'</p></li>
 <li><p><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Project, passed to template. Default is 'Linux'</p></li>
-<li><p><strong>releasever</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Release version, passed to template. Default is 29</p></li>
+<li><p><strong>releasever</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Release version, passed to template. Default is 32</p></li>
 </ul>
 </dd>
 </dl>
@@ -629,7 +630,7 @@ See the cmdline --help for livemedia-creator for the possible options</p>
 <span id="pylorax-dnfbase-module"></span><h2>pylorax.dnfbase module<a class="headerlink" href="#module-pylorax.dnfbase" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="pylorax.dnfbase.get_dnf_base_object">
-<code class="sig-prename descclassname">pylorax.dnfbase.</code><code class="sig-name descname">get_dnf_base_object</code><span class="sig-paren">(</span><em class="sig-param">installroot</em>, <em class="sig-param">sources</em>, <em class="sig-param">mirrorlists=None</em>, <em class="sig-param">repos=None</em>, <em class="sig-param">enablerepos=None</em>, <em class="sig-param">disablerepos=None</em>, <em class="sig-param">tempdir='/var/tmp'</em>, <em class="sig-param">proxy=None</em>, <em class="sig-param">releasever='29'</em>, <em class="sig-param">cachedir=None</em>, <em class="sig-param">logdir=None</em>, <em class="sig-param">sslverify=True</em>, <em class="sig-param">dnfplugins=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfbase.html#get_dnf_base_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfbase.get_dnf_base_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pylorax.dnfbase.</code><code class="sig-name descname">get_dnf_base_object</code><span class="sig-paren">(</span><em class="sig-param">installroot</em>, <em class="sig-param">sources</em>, <em class="sig-param">mirrorlists=None</em>, <em class="sig-param">repos=None</em>, <em class="sig-param">enablerepos=None</em>, <em class="sig-param">disablerepos=None</em>, <em class="sig-param">tempdir='/var/tmp'</em>, <em class="sig-param">proxy=None</em>, <em class="sig-param">releasever='32'</em>, <em class="sig-param">cachedir=None</em>, <em class="sig-param">logdir=None</em>, <em class="sig-param">sslverify=True</em>, <em class="sig-param">dnfplugins=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfbase.html#get_dnf_base_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfbase.get_dnf_base_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a dnf Base object and setup the repositories and installroot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
