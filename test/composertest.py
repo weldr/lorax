@@ -54,6 +54,9 @@ class ComposerTestCase(unittest.TestCase):
         self.assertEqual(r.returncode, 0)
 
     def tearDown(self):
+        if os.environ.get('TEST_ATTACHMENTS'):
+            self.machine.download_dir('/var/log/tests', os.environ.get('TEST_ATTACHMENTS'))
+
         # Peek into internal data structure, because there's no way to get the
         # TestResult at this point. `errors` is a list of tuples (method, error)
         errors = list(e[1] for e in self._outcome.errors if e[1])
