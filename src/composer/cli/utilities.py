@@ -73,9 +73,9 @@ def handle_api_result(result, show_json=False):
     # What's the rc? If status is present, use that
     # If not, use length of errors
     if "status" in result:
-        rc = bool(not result["status"])
+        rc = int(not result["status"])
     else:
-        rc = bool(len(result.get("errors", [])) > 0)
+        rc = int(len(result.get("errors", [])) > 0)
 
     # Caller should return if showing json, or status was present and False
     exit_now = show_json or ("status" in result and rc)
