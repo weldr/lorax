@@ -26,8 +26,10 @@ export SSH_PORT=2222
 boot_image() {
     QEMU_BOOT=$1
     TIMEOUT=$2
-    rlRun -t -c "$QEMU -m 2048 $QEMU_BOOT -nographic \
-                 -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic &"
+    rlRun -t -c "$QEMU -m 2048 $QEMU_BOOT -nographic -monitor none \
+                 -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic \
+                 -chardev null,id=log0,mux=on,logfile=/var/log$TEST/qemu.log,logappend=on \
+                 -serial chardev:log0 &"
     # wait for ssh to become ready (yes, http is the wrong protocol, but it returns the header)
     tries=0
     until curl -sS -m 15 "http://localhost:$SSH_PORT/" | grep 'OpenSSH'; do
@@ -162,6 +164,10 @@ wait_for_compose() {
             rlLogInfo "Waiting for compose to finish ..."
         done;
         check_compose_status "$UUID"
+
+        rlRun -t -c "mkdir -p /var/log/$TEST"
+        rlRun -t -c "$CLI compose logs $UUID"
+        rlRun -t -c "mv $UUID-logs.tar /var/log/$TEST"
     else
         rlFail "Compose UUID is empty!"
     fi
