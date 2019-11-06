@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+. /usr/share/beakerlib/beakerlib.sh
+
 # Monkey-patch beakerlib to exit on first failure if COMPOSER_TEST_FAIL_FAST is
 # set. https://github.com/beakerlib/beakerlib/issues/42
+COMPOSER_TEST_FAIL_FAST=${COMPOSER_TEST_FAIL_FAST:-0}
 if [ "$COMPOSER_TEST_FAIL_FAST" == "1" ]; then
   eval "original$(declare -f __INTERNAL_LogAndJournalFail)"
 
@@ -37,6 +40,58 @@ boot_image() {
     done;
 }
 
+wait_for_composer() {
+    tries=0
+    until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/status | grep 'db_supported.*true'; do
+        tries=$((tries + 1))
+        if [ $tries -gt 50 ]; then
+            exit 1
+        fi
+        sleep 5
+        echo "DEBUG: Waiting for backend API to become ready before testing ..."
+    done;
+}
+
+composer_start() {
+    local rc
+    local params="$@"
+
+    if [[ -z "$CLI" || "$CLI" == "./src/bin/composer-cli" ]]; then
+        ./src/sbin/lorax-composer $params --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
+    elif [ -n "$params" ]; then
+        /usr/sbin/lorax-composer $params /var/lib/lorax/composer/blueprints &
+    else
+        # socket stop/start seems to be necessary for a proper service restart
+        # after a previous direct manual run for it to work properly
+        systemctl start lorax-composer.socket
+        systemctl start lorax-composer
+    fi
+    rc=$?
+
+    # wait for the backend to become ready
+    if [ "$rc" -eq 0 ]; then
+        wait_for_composer
+    else
+        rlLogFail "Unable to start lorax-composer (exit code $rc)"
+    fi
+    return $rc
+}
+
+composer_stop() {
+    MANUAL=${MANUAL:-0}
+    # socket stop/start seems to be necessary for a proper service restart
+    # after a previous direct manual run for it to work properly
+    if systemctl list-units | grep -q lorax-composer.socket; then
+        systemctl stop lorax-composer.socket
+    fi
+
+    if [[ -z "$CLI" || "$CLI" == "./src/bin/composer-cli" || "$MANUAL" == "1" ]]; then
+        pkill -9 lorax-composer
+        rm -f /run/weldr/api.socket
+    else
+        systemctl stop lorax-composer
+    fi
+}
 
 # a generic helper function unifying the specific checks executed on a running
 # image instance
