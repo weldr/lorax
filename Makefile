@@ -14,7 +14,9 @@ TAG = lorax-$(VERSION)-$(RELEASE)
 IMAGE_RELEASE = $(shell awk -F: '/FROM/ { print $$2}' Dockerfile.test)
 
 ifeq ($(TEST_OS),)
-TEST_OS = fedora-30
+OS_ID = $(shell awk -F= '/^ID/ {print $$2}' /etc/os-release)
+OS_VERSION = $(shell awk -F= '/^VERSION_ID/ {print $$2}' /etc/os-release)
+TEST_OS = $(OS_ID)-$(OS_VERSION)
 endif
 export TEST_OS
 VM_IMAGE=$(CURDIR)/test/images/$(TEST_OS)
