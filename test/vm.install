@@ -17,16 +17,13 @@ fi
 if ! rpm -q beakerlib; then
     if [ $(. /etc/os-release && echo $ID) = "rhel" ]; then
         (cd /etc/yum.repos.d; curl -O -L http://download.devel.redhat.com/beakerrepos/beaker-client-RedHatEnterpriseLinux.repo)
-
-         # The beaker repository doesn't include repos for minor releases
-         VERSION=$(. /etc/os-release && echo ${VERSION_ID%.*})
-         yum install -y --releasever=$VERSION --setopt=sslverify=0 beakerlib
-
-         # prevent yum from trying to sync the cache again later (it fails without sslverify=0)
-         rm /etc/yum.repos.d/beaker-client-RedHatEnterpriseLinux.repo
-     else
-         yum install -y beakerlib
+        # disable sslverify b/c yum will fail to sync metadata otherwise
+        sed -i "s/\(gpgcheck=0\)/\1\nsslverify=0/" /etc/yum.repos.d/beaker-client-RedHatEnterpriseLinux.repo
+        # do not remove the repo file. We now have tests which use beakerlib
+        # inside their blueprints so this needs to stay on the VM
     fi
+
+    yum install -y beakerlib
 fi
 
 EPEL_REPO="/etc/yum.repos.d/epel7.repo"
