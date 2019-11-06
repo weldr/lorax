@@ -52,11 +52,13 @@ class CliUtilitiesTest(unittest.TestCase):
         """Test a result with no status and no error fields"""
         result = {"foo": "bar"}
         self.assertEqual(handle_api_result(result, show_json=False), (0, False))
+        self.assertTrue(handle_api_result(result, show_json=False)[0] is 0)
 
     def test_api_result_2(self):
         """Test a result with errors=[{"id": INVALID_CHARS, "msg": "some error"}], and no status field"""
         result = {"foo": "bar", "errors": [{"id": INVALID_CHARS, "msg": "some error"}]}
         self.assertEqual(handle_api_result(result, show_json=False), (1, False))
+        self.assertTrue(handle_api_result(result, show_json=False)[0] is 1)
 
     def test_api_result_3(self):
         """Test a result with status=True, and errors=[]"""
