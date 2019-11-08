@@ -1,4 +1,7 @@
-#version=DEVEL
+# Live ISO Image
+# NOTE: This example is for creating a live-iso, eg.
+# livemedia-creator --project RHEL --releasever 8 --make-iso --ks=rhel-livemedia.ks --no-virt
+
 # X Window System configuration information
 xconfig  --startxonboot
 # Keyboard layouts

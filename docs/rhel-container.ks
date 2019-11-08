@@ -1,5 +1,7 @@
 # Minimal install for containers
-
+# NOTE: This example is for creating a tar, eg.
+# livemedia-creator --project RHEL --releasever 8 --make-tar --ks=rhel-container.ks --no-virt
+#
 # Use network installation
 url --url="http://URL-TO-BASEOS/"
 repo --name=appstream --baseurl="http://URL-TO-APPSTREAM/"

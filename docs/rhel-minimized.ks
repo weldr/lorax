@@ -1,4 +1,10 @@
 # Minimal Disk Image -- Example of image-minimizer usage in %post
+# NOTE: This example is for creating a disk image, eg.
+# livemedia-creator --project RHEL --releasever 8 --make-disk --ks=rhel-minimized.ks --no-virt
+#
+# Using it for a live-iso will require adding:
+#   dracut-live
+#   system-logos
 #
 # Firewall configuration
 firewall --enabled

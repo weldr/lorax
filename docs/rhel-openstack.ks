@@ -1,4 +1,6 @@
 # Minimal Disk Image
+# NOTE: This example is for creating a qcow2 OpenStack disk image, eg.
+# livemedia-creator --project RHEL --releasever 8 --make-disk --image-type=qcow2 --ks=rhel-openstack.ks --no-virt
 #
 # Firewall configuration
 firewall --enabled

@@ -1,4 +1,11 @@
 # Minimal Disk Image
+# NOTE: This example is for creating a disk image, eg.
+# livemedia-creator --project RHEL --releasever 8 --make-disk --ks=rhel-minimal.ks --no-virt
+#
+# Using it for a live-iso will require adding:
+#   dracut-live
+#   system-logos
+
 #
 # Firewall configuration
 firewall --enabled
@@ -27,7 +34,7 @@ bootloader --location=mbr
 # Partition clearing information
 clearpart --all --initlabel
 # Disk partitioning information
-part / --fstype="ext4" --size=1500
+part / --fstype="ext4" --size=2000
 part swap --size=512
 
 %post
