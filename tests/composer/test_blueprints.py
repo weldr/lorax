@@ -232,7 +232,7 @@ class BlueprintsTest(unittest.TestCase):
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_tag(self):
         """blueprints tag"""
-        rc = blueprints_tag("/run/weldr/api.socket", 0, ["glusterfs"], show_json=False)
+        rc = blueprints_tag("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
         self.assertTrue(rc == 0)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
