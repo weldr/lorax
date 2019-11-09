@@ -23,7 +23,7 @@ bootloader --location=mbr --append="no_timer_check console=ttyS0,115200n8 earlyp
 reqpart --add-boot
 
 # Basic services
-services --enabled=sshd,chronyd,waagent
+services --enabled=sshd,chronyd,waagent,cloud-init,cloud-init-local,cloud-config,cloud-final
 
 %post
 # Remove random-seed
@@ -47,6 +47,19 @@ PEERDNS=yes
 IPV6INIT=no
 EOF
 
+# Restrict cloud-init to Azure datasource
+cat > /etc/cloud/cloud.cfg.d/91-azure_datasource.cfg << EOF
+# Azure Data Source config
+datasource_list: [ Azure ]
+datasource:
+    Azure:
+        apply_network_config: False
+EOF
+
+# Setup waagent to work with cloud-init
+sed -i 's/Provisioning.Enabled=y/Provisioning.Enabled=n/g' /etc/waagent.conf
+sed -i 's/Provisioning.UseCloudInit=n/Provisioning.UseCloudInit=y/g' /etc/waagent.conf
+
 # Add Hyper-V modules into initramfs
 cat > /etc/dracut.conf.d/10-hyperv.conf << EOF
 add_drivers+=" hv_vmbus hv_netvsc hv_storvsc "
@@ -66,9 +79,11 @@ selinux-policy-targeted
 chrony
 
 WALinuxAgent
-
-# Requirements of WALinuxAgent
 python3
 net-tools
+
+cloud-init
+cloud-utils-growpart
+gdisk
 
 # NOTE lorax-composer will add the recipe packages below here, including the final %end
