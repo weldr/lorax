@@ -51,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Lorax'
-copyright = u'2018, Red Hat, Inc.'      # pylint: disable=redefined-builtin
+copyright = u'2018-2019, Red Hat, Inc.'      # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -287,7 +287,7 @@ texinfo_documents = [
 epub_title = u'Lorax'
 epub_author = u'Weldr Team'
 epub_publisher = u'Weldr Team'
-epub_copyright = u'2018, Red Hat, Inc.'
+epub_copyright = u'2018-2019, Red Hat, Inc.'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'src'

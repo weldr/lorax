@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.recipes &mdash; Lorax 28.14.30 documentation</title>
+  <title>pylorax.api.recipes &mdash; Lorax 28.14.33 documentation</title>
   
 
   
@@ -17,33 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -57,7 +58,7 @@
             
             
               <div class="version">
-                28.14.30
+                28.14.33
               </div>
             
           
@@ -426,6 +427,153 @@
     <span class="n">recipe_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">recipe_str</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">recipe_from_dict</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="check_required_list"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.check_required_list">[docs]</a><span class="k">def</span> <span class="nf">check_required_list</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check a list of dicts for required fields</span>
+
+<span class="sd">    :param lst: A list of dicts with fields</span>
+<span class="sd">    :type lst: list of dict</span>
+<span class="sd">    :param fields: A list of field name strings</span>
+<span class="sd">    :type fields: list of str</span>
+<span class="sd">    :returns: A list of error strings</span>
+<span class="sd">    :rtype: list of str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+        <span class="n">m_errs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">check_list_case</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">m_errs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m_errs</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> is missing </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">m_errs</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">errors</span></div>
+
+<div class="viewcode-block" id="check_list_case"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.check_list_case">[docs]</a><span class="k">def</span> <span class="nf">check_list_case</span><span class="p">(</span><span class="n">expected_keys</span><span class="p">,</span> <span class="n">recipe_keys</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the case of the recipe keys</span>
+
+<span class="sd">    :param expected_keys: A list of expected key strings</span>
+<span class="sd">    :type expected_keys: list of str</span>
+<span class="sd">    :param recipe_keys: A list of the recipe&#39;s key strings</span>
+<span class="sd">    :type recipe_keys: list of str</span>
+<span class="sd">    :returns: list of errors</span>
+<span class="sd">    :rtype: list of str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">recipe_keys</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">expected_keys</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">expected_keys</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> should be </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">errors</span></div>
+
+<div class="viewcode-block" id="check_recipe_dict"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.check_recipe_dict">[docs]</a><span class="k">def</span> <span class="nf">check_recipe_dict</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check a dict before using it to create a new Recipe</span>
+
+<span class="sd">    :param recipe_dict: A plain dict of the recipe</span>
+<span class="sd">    :type recipe_dict: dict</span>
+<span class="sd">    :returns: True if dict is ok</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    :raises: RecipeError</span>
+
+<span class="sd">    This checks a dict to make sure required fields are present,</span>
+<span class="sd">    that optional fields are correct, and that other optional fields</span>
+<span class="sd">    are of the correct format, when included.</span>
+
+<span class="sd">    This collects all of the errors and returns a single RecipeError with</span>
+<span class="sd">    a string that can be presented to users.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Check for wrong case of top level keys</span>
+    <span class="n">top_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="s2">&quot;modules&quot;</span><span class="p">,</span> <span class="s2">&quot;packages&quot;</span><span class="p">,</span> <span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="s2">&quot;repos&quot;</span><span class="p">,</span> <span class="s2">&quot;customizations&quot;</span><span class="p">]</span>
+    <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">check_list_case</span><span class="p">(</span><span class="n">recipe_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">top_keys</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe_dict</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Missing &#39;name&#39;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;description&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe_dict</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Missing &#39;description&#39;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;version&quot;</span> <span class="ow">in</span> <span class="n">recipe_dict</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">semver</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Invalid &#39;version&#39;, must use Semantic Versioning&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Examine all the modules</span>
+    <span class="k">if</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modules&quot;</span><span class="p">):</span>
+        <span class="n">module_errors</span> <span class="o">=</span> <span class="n">check_required_list</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">[</span><span class="s2">&quot;modules&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">module_errors</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;modules&#39; errors:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">module_errors</span><span class="p">))</span>
+
+    <span class="c1"># Examine all the packages</span>
+    <span class="k">if</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;packages&quot;</span><span class="p">):</span>
+        <span class="n">package_errors</span> <span class="o">=</span> <span class="n">check_required_list</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">[</span><span class="s2">&quot;packages&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">package_errors</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;packages&#39; errors:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">package_errors</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">):</span>
+        <span class="n">groups_errors</span> <span class="o">=</span> <span class="n">check_required_list</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">[</span><span class="s2">&quot;groups&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">groups_errors</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;groups&#39; errors:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">groups_errors</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;git&quot;</span><span class="p">):</span>
+        <span class="n">repos_errors</span> <span class="o">=</span> <span class="n">check_required_list</span><span class="p">(</span><span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;git&quot;</span><span class="p">),</span>
+                           <span class="p">[</span><span class="s2">&quot;rpmname&quot;</span><span class="p">,</span> <span class="s2">&quot;rpmversion&quot;</span><span class="p">,</span> <span class="s2">&quot;rpmrelease&quot;</span><span class="p">,</span> <span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;repo&quot;</span><span class="p">,</span> <span class="s2">&quot;ref&quot;</span><span class="p">,</span> <span class="s2">&quot;destination&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">repos_errors</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;repos.git&#39; errors:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">repos_errors</span><span class="p">))</span>
+
+    <span class="c1"># No customizations to check, exit now</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;customizations&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">errors</span>
+
+    <span class="c1"># Make sure to catch empty sections by testing for keywords, not just looking at .get() result.</span>
+    <span class="k">if</span> <span class="s2">&quot;kernel&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">check_list_case</span><span class="p">([</span><span class="s2">&quot;append&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;kernel &quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s2">&quot;append&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kernel&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;customizations.kernel&#39;: missing append field.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;sshkey&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">sshkey_errors</span> <span class="o">=</span> <span class="n">check_required_list</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sshkey&quot;</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">sshkey_errors</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;customizations.sshkey&#39; errors:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sshkey_errors</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s2">&quot;user&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">user_errors</span> <span class="o">=</span> <span class="n">check_required_list</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">user_errors</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;customizations.user&#39; errors:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_errors</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s2">&quot;group&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">group_errors</span> <span class="o">=</span> <span class="n">check_required_list</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">group_errors</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;customizations.group&#39; errors:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">group_errors</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s2">&quot;timezone&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">check_list_case</span><span class="p">([</span><span class="s2">&quot;timezone&quot;</span><span class="p">,</span> <span class="s2">&quot;ntpservers&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s2">&quot;timezone&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;timezone &quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;timezone&quot;</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;customizations.timezone&#39;: missing timezone or ntpservers fields.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;locale&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">check_list_case</span><span class="p">([</span><span class="s2">&quot;languages&quot;</span><span class="p">,</span> <span class="s2">&quot;keyboard&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s2">&quot;locale&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;locale &quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locale&quot;</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;customizations.locale&#39;: missing languages or keyboard fields.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;firewall&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">check_list_case</span><span class="p">([</span><span class="s2">&quot;ports&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s2">&quot;firewall&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;firewall &quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;firewall&quot;</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;customizations.firewall&#39;: missing ports field or services section.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;services&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;firewall&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">check_list_case</span><span class="p">([</span><span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="s2">&quot;disabled&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s2">&quot;firewall&quot;</span><span class="p">][</span><span class="s2">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;firewall.services &quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;firewall&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;services&quot;</span><span class="p">):</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;customizations.firewall.services&#39;: missing enabled or disabled fields.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;services&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">check_list_case</span><span class="p">([</span><span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="s2">&quot;disabled&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s2">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;services &quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;services&quot;</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&#39;customizations.services&#39;: missing enabled or disabled fields.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">errors</span></div>
+
 <div class="viewcode-block" id="recipe_from_dict"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.recipe_from_dict">[docs]</a><span class="k">def</span> <span class="nf">recipe_from_dict</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a Recipe object from a plain dict.</span>
 
@@ -435,6 +583,11 @@
 <span class="sd">    :rtype: Recipe</span>
 <span class="sd">    :raises: RecipeError</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">check_recipe_dict</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">RecipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
     <span class="c1"># Make RecipeModule objects from the toml</span>
     <span class="c1"># The TOML may not have modules or packages in it. Set them to None in this case</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1293,7 +1446,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018-2019, Red Hat, Inc.
 
     </p>
   </div>
@@ -1310,35 +1463,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'28.14.30',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
