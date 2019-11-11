@@ -134,6 +134,10 @@ installpkg pcmciautils
     installpkg libmlx4 rdma-core
 %endif
 installpkg rng-tools
+%if basearch in ("i386", "x86_64", "aarch64"):
+installpkg dmidecode
+%endif
+
 
 ## fonts & themes
 installpkg bitmap-fangsongti-fonts
