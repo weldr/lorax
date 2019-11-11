@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.32
+Version:        28.14.33
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -251,6 +251,63 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Nov 11 2019 Brian C. Lane <bcl@redhat.com> 28.14.33-1
+- New lorax documentation - 28.14.33 (bcl)
+  Related: rhbz#1761653
+- docs: Increase root filesystem to 2000 in rhel-minimal.ks (bcl)
+  Resolves: rhbz#1730937
+- Update ppc64le isolabel to match x86_64 logic (bcl)
+  Related: rhbz#1757338
+- set inst.stage2 for ppc64le image (dan)
+  Related: rhbz#1757338
+- docs: Override macboot/nomacboot documentation (bcl)
+  Resolves: rhbz#1761653
+- tests: Keep beakerlib repo on the VM for tests which need it (atodorov)
+  Related: rhbz#1769525
+- tests: unskip Qcow2 and Live-ISO scenarios (atodorov)
+  Related: rhbz#1769525
+- tests: Ensure failure if beakerlib results file not found (atodorov)
+  Related: rhbz#1769525
+- tests: Documentation updates (atodorov)
+  Related: rhbz#1769525
+- tests: Use host repositories for make vm (atodorov)
+  Related: rhbz#1769525
+- Remove unused make targets (atodorov)
+  Related: rhbz#1769525
+- DRY when setting up, running & parsing results for beakerlib tests (atodorov)
+  Related: rhbz#1769525
+- tests: Use journalctl -g to check for failed login (bcl)
+  Related: rhbz#1769525
+- tests: Fix check_root_account when used with tar liveimg test (bcl)
+  Related: rhbz#1769525
+- tests: Use the same asserts as before (atodorov)
+  Related: rhbz#1769525
+- tests: switch to using podman instead of docker (atodorov)
+  Related: rhbz#1769525
+- tests: Remove nested vm from tar liveimg kickstart test (bcl)
+  Related: rhbz#1769525
+- tests: Use --http0.9 for curl ssh test (bcl)
+  Related: rhbz#1769525
+- test: Boot the live-iso faster, and login using ssh key (bcl)
+  Related: rhbz#1769525
+- tests: Split testing the image into a separate script (bcl)
+  Related: rhbz#1769525
+- test: Split up the test class to allow booting other images (bcl)
+  Related: rhbz#1769525
+- [tests] Collect compose logs after each build (atodorov)
+  Related: rhbz#1769525
+- [tests] Use a function to wait for compose to finish (jikortus)
+  Related: rhbz#1769525
+- [tests] Use functions for starting and stopping lorax-composer (atodorov)
+  Related: rhbz#1769525
+- tests: Add kickstart tar installation test (jikortus)
+  Related: rhbz#1733975
+- tests: add option to disable kernel command line parameters check (jikortus)
+  Related: rhbz#1733975
+- tests: Use a loop to wait for VM and sshd to start (bcl)
+  Related: rhbz#1733975
+- tests: Drop an old bug reference (bcl) (bcl)
+
 * Thu Oct 31 2019 Brian C. Lane <bcl@redhat.com> 28.14.32-1
 - tests: Add tests for recipe checking functions (bcl)
   Related: rhbz#1716596
