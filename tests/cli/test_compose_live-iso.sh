@@ -19,7 +19,8 @@ rlJournalStart
         OPTIONAL_REPO="/etc/yum.repos.d/rhel7-rel-eng-optional.repo"
 
         if [ ! -f "$OPTIONAL_REPO" ]; then
-        cat > $OPTIONAL_REPO << __EOF__
+            composer_stop
+            cat > $OPTIONAL_REPO << __EOF__
 [rhel7-rel-eng-optional]
 gpgcheck=0
 enabled=1
@@ -27,8 +28,8 @@ skip_if_unavailable=0
 name=rhel7-rel-eng-optional
 baseurl=http://download-node-02.eng.bos.redhat.com/rhel-7/rel-eng/latest-RHEL-7/compose/Server-optional/\$basearch/os/
 __EOF__
+            composer_start
         fi
-
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
