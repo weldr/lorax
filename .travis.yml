@@ -3,6 +3,9 @@ language: python
 services:
   - docker
 
+env:
+  - DOCKER=docker
+
 script:
   - make test-in-docker
 
