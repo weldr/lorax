@@ -2,7 +2,7 @@ PYTHON ?= /usr/bin/python3
 DESTDIR ?= /
 PREFIX ?= /usr
 mandir ?= $(PREFIX)/share/man
-DOCKER ?= docker
+DOCKER ?= podman
 DOCS_VERSION ?= next
 RUN_TESTS ?= ci
 
