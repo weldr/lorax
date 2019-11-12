@@ -63,13 +63,6 @@ class MkefibootTool(Tool):
     tools = ["mkefiboot"]
 
     def run(self, isodir, tmpdir, product="Fedora"):
-        grafts = []
-        # May have already been copied and added to grafts
-        if not os.path.exists(os.path.join(tmpdir, "images")):
-            # Copy over the whole images directory because efiboot.img is changing
-            shutil.copytree(os.path.join(isodir, "images"), os.path.join(tmpdir, "images"))
-            grafts = [(os.path.join(tmpdir, "images"), "images")]
-
         cmd = ["mkefiboot", "--label=ANACONDA"]
         if log.root.level < log.INFO:
             cmd.append("--debug")
@@ -80,8 +73,6 @@ class MkefibootTool(Tool):
         except subprocess.CalledProcessError as e:
             log.error(str(e))
             raise RuntimeError("Running mkefiboot")
-
-        return grafts
 
 
 class MkmacbootTool(MkefibootTool):
@@ -388,6 +379,7 @@ class MakeKickstartISO():
         self.iso = None
         self.mkmacboot = None
         self.efimode = NO_EFI
+        self.grafts = []
 
         errors = False
         for f in [ks, input_iso] + add_paths:
@@ -403,15 +395,6 @@ class MakeKickstartISO():
             self.iso = IsoMountpoint(self.input_iso)
             self.label = self.iso.label
             log.info("Volume Id = %s", self.label)
-
-            # Get the list of files in / of the source iso, and their full paths
-            iso_files = os.listdir(self.iso.mount_dir)
-            log.info("ISO files = %s", iso_files)
-
-            # Populate the grafts with the existing ISO, except EFI, images, and isolinux
-            # which are copied to tmpdir for editing
-            skip_iso = ["EFI", "images", "isolinux", "boot.cat", "boot.catalog", "TRANS.TBL"]
-            self.grafts = [(os.path.join(self.iso.mount_dir, f), f) for f in iso_files if f not in skip_iso]
 
             if os.path.exists(os.path.join(self.iso.mount_dir, "images/efiboot.img")):
                 self.efimode = EFIBOOT
@@ -460,11 +443,9 @@ class MakeKickstartISO():
                     os.unlink(os.path.join(src, f))
 
     def run_mkefiboot(self, isodir, tmpdir):
-        grafts = self.mkefiboot.run(isodir, tmpdir)
+        self.mkefiboot.run(isodir, tmpdir)
         if self.efimode == MACBOOT:
-            grafts.extend(self.mkmacboot.run(isodir, tmpdir))
-
-        return grafts
+            self.mkmacboot.run(isodir, tmpdir)
 
     def edit_configs(self, isodir, tmpdir):
         """Find and edit any configuration files
@@ -472,12 +453,10 @@ class MakeKickstartISO():
         Add the inst.ks= argument plus extra cmdline arguments
         """
         # Note that some of these may not exist, depending on the arch being used
-        grafts = self._edit_isolinux(isodir, tmpdir)
-        grafts.extend(self._edit_efi(isodir, tmpdir))
-        grafts.extend(self._edit_ppc(isodir, tmpdir))
-        grafts.extend(self._edit_s390(isodir, tmpdir))
-
-        return grafts
+        self._edit_isolinux(isodir, tmpdir)
+        self._edit_efi(isodir, tmpdir)
+        self._edit_ppc(isodir, tmpdir)
+        self._edit_s390(isodir, tmpdir)
 
     def _edit_isolinux(self, isodir, tmpdir):
         """Copy the isolinux.cfg file and add the cmdline args"""
@@ -486,9 +465,6 @@ class MakeKickstartISO():
         if not os.path.exists(orig_cfg):
             log.warning("No isolinux/isolinux.cfg file found")
             return []
-
-        # Copy over the whole directory
-        shutil.copytree(os.path.join(isodir, "isolinux"), os.path.join(tmpdir, "isolinux"))
 
         # Edit the config file
         with open(orig_cfg, "r") as in_fp:
@@ -499,9 +475,6 @@ class MakeKickstartISO():
                         out_fp.write(" "+self.add_args)
                     out_fp.write("\n")
 
-        # Return the graft src, dest
-        return [(os.path.join(tmpdir, "isolinux"), "isolinux")]
-
     def _edit_efi(self, isodir, tmpdir):
         """Copy the efi config files and add the cmdline args"""
         # At least one of these must be present
@@ -510,10 +483,6 @@ class MakeKickstartISO():
         if not os.path.exists(os.path.join(isodir, "EFI")):
             log.warning("No EFI directory file found")
             return []
-
-        # mkefiboot needs to use the EFI/ directory along with the modified config files
-        # so start by copying the whole directory over
-        shutil.copytree(os.path.join(isodir, "EFI"), os.path.join(tmpdir, "EFI"))
 
         found_cfg = False
         for cfg in efi_cfgs:
@@ -535,18 +504,12 @@ class MakeKickstartISO():
         if not found_cfg:
             raise RuntimeError("ISO is missing the EFI config files")
 
-        # Graft the copy of the EFI directory
-        return [(os.path.join(tmpdir, "EFI"), "EFI")]
-
     def _edit_ppc(self, isodir, tmpdir):
         """Edit the boot/grub/grub.cfg file, adding the kickstart and extra arguments"""
         orig_cfg = os.path.join(isodir, "boot/grub/grub.cfg")
         if not os.path.exists(orig_cfg):
             log.warning("No boot/grub/grub.cfg file found")
             return []
-
-        # Copy over the whole directory
-        shutil.copytree(os.path.join(isodir, "boot"), os.path.join(tmpdir, "boot"))
 
         # Edit the config file
         with open(orig_cfg, "r") as in_fp:
@@ -557,9 +520,6 @@ class MakeKickstartISO():
                         out_fp.write(" "+self.add_args)
                     out_fp.write("\n")
 
-        # Graft the copy of the boot directory
-        return [(os.path.join(tmpdir, "boot"), "boot")]
-
     def _edit_s390(self, isodir, tmpdir):
         """Edit the images/generic.prm file, adding the kickstart and extra arguments"""
         orig_cfg = os.path.join(isodir, "images/generic.prm")
@@ -567,27 +527,29 @@ class MakeKickstartISO():
             log.warning("No images/generic.prm file found")
             return []
 
-        # Copy over the whole directory
-        shutil.copytree(os.path.join(isodir, "images"), os.path.join(tmpdir, "images"))
-
         # Append to the config file
         with open(os.path.join(tmpdir, "images/generic.prm"), "a") as out_fp:
             out_fp.write(self.add_args+"\n")
-
-        # Graft the copy of the images directory
-        return [(os.path.join(tmpdir, "images"), "images")]
 
     def run(self):
         """Modify the ISO"""
         try:
             # Make a temporary directory to hold modified files
             with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpdir:
+                # Copy over the top level directories and populate grafts
+                skip_iso = ["boot.cat", "boot.catalog", "TRANS.TBL"]
+                for f in [f for f in os.listdir(self.iso.mount_dir) if f not in skip_iso]:
+                    if os.path.isdir(os.path.join(self.iso.mount_dir, f)):
+                        shutil.copytree(os.path.join(self.iso.mount_dir, f), os.path.join(tmpdir, f))
+                    else:
+                        shutil.copy2(os.path.join(self.iso.mount_dir, f), os.path.join(tmpdir, f))
+                    self.grafts.append((os.path.join(tmpdir, f), f))
 
                 # Copy and edit the configuration files
-                self.grafts.extend(self.edit_configs(self.iso.mount_dir, tmpdir))
+                self.edit_configs(self.iso.mount_dir, tmpdir)
 
                 # Run the mkefiboot tool on the edited EFI directory, add the new files to the grafts
-                self.grafts.extend(self.run_mkefiboot(self.iso.mount_dir, tmpdir))
+                self.run_mkefiboot(self.iso.mount_dir, tmpdir)
 
                 # Add the kickstart to grafts
                 self.grafts.extend([(self.ks, os.path.basename(self.ks))])
