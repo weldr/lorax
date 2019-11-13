@@ -64,6 +64,11 @@ class TestLiveIso(composertest.ComposerTestCase):
             # Copy the resulting iso and shut down the VM
             self.tearDownVirt(virt_dir="/var/tmp/test-results/*", local_dir=tmpdir)
 
+            import os
+            print('******** ls -l ', tmpdir)
+            os.system("chmod a+r %s/id_rsa" % tmpdir)
+            os.system("ls -l %s" % tmpdir)
+
             # Boot the image, login using the ssh key
             self.setUpTestMachine(tmpdir + "/live.iso", tmpdir + "/id_rsa")
 
