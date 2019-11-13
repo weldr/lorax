@@ -17,6 +17,10 @@ function setup_tests {
     # due to security concerns (no root password required)
     sed -i.orig 's/^services.*/services --disabled="network" --enabled="NetworkManager,sshd"/' $share_dir/composer/live-iso.ks
 
+    echo "**************** DEBUG, show $share_dir/composer/live-iso.ks"
+    cat $share_dir/composer/live-iso.ks
+    echo "**************************"
+
     # Make the live-iso boot more quickly (isolinux.cfg)
     for cfg in "$share_dir"/live/config_files/*/isolinux.cfg; do
         sed -i.orig 's/^timeout.*/timeout 20/' "$cfg"
