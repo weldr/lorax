@@ -80,7 +80,7 @@ tag:
 docs:
 	$(MAKE) -C docs apidoc html
 
-archive: tag
+archive:
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
 	@gzip -f $(PKGNAME)-$(VERSION).tar
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
