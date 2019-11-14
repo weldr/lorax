@@ -66,7 +66,7 @@ name = "root"
 key = "$PUB_KEY"
 
 [customizations.kernel]
-append = "custom_cmdline_arg"
+append = "custom_cmdline_arg console=ttyS0,115200n8 console=tty0"
 __EOF__
 
         rlRun -t -c "$CLI blueprints push $TMP_DIR/with-ssh.toml"
