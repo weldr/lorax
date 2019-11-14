@@ -79,7 +79,7 @@ timezone America/New_York
 keyboard us
 rootpw --lock
 sshkey --username root "$PUB_KEY"
-bootloader --location=mbr
+bootloader --location=mbr --append "custom_cmdline_arg console=ttyS0,115200n8 console=tty0"
 zerombr
 clearpart --initlabel --all
 autopart
