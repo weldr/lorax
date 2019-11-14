@@ -31,9 +31,9 @@ class VirtMachineTestCase(unittest.TestCase):
     def setUpTestMachine(self, image, identity_file=None):
         self.network = testvm.VirtNetwork(0)
         if identity_file:
-            self.machine = testvm.VirtMachine(image, networking=self.network.host(), cpus=2, memory_mb=2048, identity_file=identity_file)
+            self.machine = testvm.VirtMachine(image, networking=self.network.host(), cpus=2, memory_mb=2048, identity_file=identity_file, graphics=True)
         else:
-            self.machine = testvm.VirtMachine(image, networking=self.network.host(), cpus=2, memory_mb=2048)
+            self.machine = testvm.VirtMachine(image, networking=self.network.host(), cpus=2, memory_mb=2048, graphics=True)
 
         print("Starting virtual machine '{}'".format(image))
         self.machine.start()
