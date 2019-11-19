@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.2
+Version:        32.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -262,6 +262,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Nov 18 2019 Brian C. Lane <bcl@redhat.com> 32.3-1
+- lorax-composer: Add cloud-init support to the vhd image (bcl@redhat.com)
+- tests: add docker variable to .travis.yml (jrusz@redhat.com)
+- tests: Changed Docker to podman in Makefile (jrusz@redhat.com)
+- tests: fix blueprints tag test (jrusz@redhat.com)
+- test: fix serializing repo_to_source test (jrusz@redhat.com)
+- composer-cli: Return int from handle_api_result not bool (bcl@redhat.com)
+- mkksiso: copy all the directories over to tmpdir (bcl@redhat.com)
+- Add dmidecode on supported architectures (bcl@redhat.com)
+- docs: Remove --title from list of lmc variables (bcl@redhat.com)
+- Drop old lorax.spec changelog entries (pre-F31) (bcl@redhat.com)
+
 * Tue Nov 05 2019 Brian C. Lane <bcl@redhat.com> 32.2-1
 - New lorax documentation - 32.2 (bcl@redhat.com)
 - tests: Add 'test_mkksiso' tests (bcl@redhat.com)
