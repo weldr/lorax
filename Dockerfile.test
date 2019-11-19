@@ -1,6 +1,7 @@
 FROM registry.fedoraproject.org/fedora:rawhide
 RUN  dnf -y install \
   anaconda-tui \
+  git \
   libgit2-glib \
   libselinux-python3 \
   make \
