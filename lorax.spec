@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.33
+Version:        28.14.34
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -251,6 +251,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Nov 18 2019 Brian C. Lane <bcl@redhat.com> 28.14.34-1
+- lorax-composer: Add cloud-init support to the vhd image (bcl)
+  Resolves: rhbz#1754711
+- Add dmidecode on supported architectures (bcl)
+  Related: rhbz#1714793
+
 * Mon Nov 11 2019 Brian C. Lane <bcl@redhat.com> 28.14.33-1
 - New lorax documentation - 28.14.33 (bcl)
   Related: rhbz#1761653
