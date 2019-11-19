@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.35
+Version:        19.7.36
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,117 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Nov 19 2019 Brian C. Lane <bcl@redhat.com> 19.7.36-1
+- tests: restart composer after adding optional reporsitory (atodorov)
+  Related: rhbz#1770193
+- tests: Keep beakerlib repo on the VM for tests which need it (atodorov)
+  Related: rhbz#1770193
+- tests: unskip Qcow2 scenario (atodorov)
+  Related: rhbz#1770193
+- tests: Ensure failure if beakerlib results file not found (atodorov)
+  Related: rhbz#1770193
+- tests: Documentation updates (atodorov)
+  Related: rhbz#1770193
+- tests: Use host repositories for make vm (atodorov)
+  Related: rhbz#1770193
+  Remove unused make targets (atodorov)
+  Related: rhbz#1770193
+- DRY when setting up, running & parsing results for beakerlib tests (atodorov)
+  Related: rhbz#1770193
+- tests: Fix check_root_account when used with tar liveimg test (bcl)
+  Related: rhbz#1770193
+- tests: Use the same asserts as before (atodorov)
+  Related: rhbz#1770193
+- tests: switch to using podman instead of docker (atodorov)
+  Related: rhbz#1770193
+- tests: Remove nested vm from tar liveimg kickstart test (bcl)
+  Related: rhbz#1770193
+- tests: Use --http0.9 for curl ssh test (bcl)
+  Related: rhbz#1770193
+- test: Boot the live-iso faster, and login using ssh key (bcl)
+  Related: rhbz#1770193
+- tests: Split testing the image into a separate script (bcl)
+  Related: rhbz#1770193
+- test: Split up the test class to allow booting other images (bcl)
+  Related: rhbz#1770193
+- [tests] Collect compose logs after each build (atodorov)
+  Related: rhbz#1770193
+- [tests] Use a function to wait for compose to finish (jikortus)
+  Related: rhbz#1770193
+- [tests] Use functions for starting and stopping lorax-composer (atodorov)
+  Related: rhbz#1770193
+- Update for differences from py3 in the backported code (bcl)
+  Related: rhbz#1718473
+- Remove repos.git related tests (bcl)
+  Related: rhbz#1718473
+- composer-cli: Update diff support for customizations and repos.git (bcl)
+  Related: rhbz#1718473
+- Add support for customizations and repos.git to /blueprints/diff/ (bcl)
+  Related: rhbz#1718473
+- tests: Update custom-base with customizations (bcl)
+  Related: rhbz#1718473
+- Change customizations.firewall to append items instead of replace (bcl)
+  Related: rhbz#1718473
+- Update customizations.services documentation (bcl)
+  Related: rhbz#1718473
+- lorax-composer: Add services support to blueprints (bcl)
+  Related: rhbz#1718473
+- lorax-composer: Add firewall support to blueprints (bcl)
+  Related: rhbz#1718473
+- lorax-composer: Add locale support to blueprints (bcl)
+  Related: rhbz#1718473
+- Update docs for new timezone section (bcl)
+  Related: rhbz#1718473
+- lorax-composer: Add timezone support to blueprint (bcl)
+  Related: rhbz#1718473
+- Proposal for adding to the blueprint customizations (bcl)
+  Related: rhbz#1718473
+- tests: Document Azure setup (atodorov)
+- tests: unskip Azure scenario (atodorov)
+- Support CI testing against a bots project PR (martin)
+- Makefile: Update bots target for moved GitHub project (sanne.raymaekers)
+- tests: Add kickstart tar installation test (jikortus)
+  Related: rhbz#1733504
+- tests: Increase test VM memory to 3 GB (jikortus)
+  Related: rhbz#1733504
+- tests: add option to disable kernel command line parameters check (jikortus)
+  Related: rhbz#1733504
+- tests: Use a loop to wait for VM and sshd to start (bcl)
+  Related: rhbz#1733504
+- tests: Drop sort from compose types test (bcl)
+  Related: rhbz#1749802
+- New test: assert toml files in git workspace (atodorov)
+  Related: rhbz#1749802
+- Change paths for '/api/status' calls and skip this test (atodorov)
+  Related: rhbz#1698366
+- Ignore Cockpit CI files when linting (atodorov)
+  Related: rhbz#1698366
+- Use optional repository in Live ISO test (atodorov)
+  Related: rhbz#1698366
+- Install test dependencies inside virtualenv (atodorov)
+  Related: rhbz#1698366
+- Install python2-pip in the test VM and disable EPEL repo (atodorov)
+  Related: rhbz#1698366
+- Use qemu-kvm in tests instead of qemu-system (atodorov)
+  Related: rhbz#1698366
+- Skip AWS, Azure, qcow2 and live-iso tests (atodorov)
+  Related: rhbz#1698366
+- Don't hard-code the path to toml-compare (atodorov)
+  Related: rhbz#1698366
+- Install or remove packages in the test environment (atodorov)
+  Related: rhbz#1698366
+- Install additional repositories for testing (atodorov)
+  Related: rhbz#1698366
+- Prevent ssh asking for password when testing on interactive terminal (atodorov)
+  Related: rhbz#1704209
+- Fail if number of excuted tests != number of dicovered tests (atodorov)
+  Related: rhbz#1698366
+- Fix typo from test backport (atodorov)
+  Related: rhbz#1698366
+- Use passwd --status for locked root account check (jikortus)
+  Related: rhbz#1687595
+- Backport changes for Cockpit CI (atodorov)
+  Related: rhbz#1698366
 * Mon Jun 24 2019 Brian C. Lane <bcl@redhat.com> 19.7.35-1
 - test_compose_tar: Fix docker test (lars)
   Related: rhbz#1720224
