@@ -2,6 +2,20 @@
 
 SRPM="$1"
 
+cat > /etc/yum.repos.d/scratch.repo << __EOF__
+[scratch]
+gpgcheck=0
+enabled=1
+skip_if_unavailable=0
+name=scratch
+baseurl=http://brew-task-repos.usersys.redhat.com/repos/scratch/brlane/anaconda/21.48.22.158/1.el7.bcl.1/x86_64/
+__EOF__
+
+
+rpm -qa | grep anaconda | xargs yum -y remove
+rpm -qa | grep lorax | xargs yum -y remove
+#yum -y update anaconda
+
 LATEST_REPO="/etc/yum.repos.d/rhel7-rel-eng-latest.repo"
 if [ ! -f "$LATEST_REPO" ]; then
     cat > $LATEST_REPO << __EOF__
