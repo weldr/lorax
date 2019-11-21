@@ -16,8 +16,22 @@ set -e
 
 CLI="${CLI:-./src/bin/composer-cli}"
 
-
 rlJournalStart
+    rlPhaseStartSetup
+        if [[ -n "$SUBSCRIPTION_HOSTNAME" && -n "$SUBSCRIPTION_USERNAME" && -n "$SUBSCRIPTION_PASSWORD" ]]; then
+            rlRun -t -c "cp -r /etc/yum.repos.d /etc/yum.repos.backup"
+            rlRun -t -c "rm -f /etc/yum.repos.d/*.repo"
+            rlRun -t -c "subscription-manager config --server.hostname=$SUBSCRIPTION_HOSTNAME"
+            subscription-manager register --username=$SUBSCRIPTION_USERNAME --password=$SUBSCRIPTION_PASSWORD
+            rlAssert0 "'subscription-manager register' succeeded" $?
+            rlRun -t -c "subscription-manager attach --auto"
+            rlRun -t -c "systemctl restart lorax-composer"
+            rlLogInfo "System is subscribed"
+        else
+            rlLogInfo "System is not subscribed"
+        fi
+    rlPhaseEnd
+
     rlPhaseStartTest "compose start"
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
         UUID=`$CLI compose start example-http-server ext4-filesystem`
@@ -32,6 +46,11 @@ rlJournalStart
 
     rlPhaseStartCleanup
         rlRun -t -c "$CLI compose delete $UUID"
+        if [[ -n "$SUBSCRIPTION_HOSTNAME" && -n "$SUBSCRIPTION_USERNAME" && -n "$SUBSCRIPTION_PASSWORD" ]]; then
+            rlRun -t -c "subscription-manager unregister"
+            rlRun -t -c "rm -rf /etc/yum.repos.d"
+            rlRun -t -c "mv /etc/yum.repos.backup /etc/yum.repos.d"
+        fi
     rlPhaseEnd
 
 rlJournalEnd
