@@ -110,6 +110,7 @@ ci: check test
 
 $(VM_IMAGE): TAG=HEAD
 $(VM_IMAGE): srpm bots
+	rm -f $(VM_IMAGE) $(VM_IMAGE).qcow2
 	srpm=$(shell rpm --qf '%{Name}-%{Version}-%{Release}.src.rpm\n' -q --specfile lorax.spec | head -n1) ; \
 	bots/image-customize -v \
 		--resize 20G \
