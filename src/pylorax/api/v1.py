@@ -898,7 +898,7 @@ def v1_upload_reset(upload_uuid):
 def v1_upload_cancel(upload_uuid):
     """Cancel an upload that is either queued or in progress
 
-    **DELETE /api/v1/uploads/cancel/<upload_uuid>**
+    **DELETE /api/v1/upload/cancel/<upload_uuid>**
 
       Example response::
 
