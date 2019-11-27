@@ -85,7 +85,7 @@ class ComposerTestCase(VirtMachineTestCase):
         # Upload the contents of the ./tests/ directory to the machine (it must have beakerlib already installed)
         self.machine.upload(["../tests"], "/")
 
-        print("Waiting for lorax-composer to become ready...")
+        print("Waiting for backend to become ready...")
         curl_command = ["curl", "--max-time", "360",
                                 "--silent",
                                 "--unix-socket", "/run/weldr/api.socket",
@@ -107,7 +107,7 @@ class ComposerTestCase(VirtMachineTestCase):
         return local_dir
 
     def runCliTest(self, script):
-        extra_env = []
+        extra_env = ["BACKEND=%s" % os.getenv('BACKEND', 'lorax-composer')]
         if self.sit:
             extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
 
