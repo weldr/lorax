@@ -1,6 +1,7 @@
 PYTHON ?= /usr/bin/python3
 DESTDIR ?= /
 DOCKER ?= docker
+BACKEND ?= lorax-composer
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
@@ -144,10 +145,10 @@ vm-local-repos: vm
 		$(TEST_OS)
 	bots/image-customize -v \
 		--upload $(REPOS_DIR):/etc/yum.repos.d \
-		--run-command "yum -y remove composer-cli lorax-composer" \
+		--run-command "yum -y remove composer-cli $(BACKEND)" \
 		--run-command "yum -y update" \
-		--run-command "yum -y install composer-cli lorax-composer" \
-		--run-command "systemctl enable lorax-composer" \
+		--run-command "yum -y install composer-cli $(BACKEND)" \
+		--run-command "systemctl enable $(BACKEND).socket" \
 		$(TEST_OS)
 
 vm-reset:

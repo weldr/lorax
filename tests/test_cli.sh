@@ -10,6 +10,8 @@ set -eu
 CLI="${CLI:-}"
 
 function setup_tests {
+    [ "$BACKEND" == "osbuild-composer" ] && return 0
+
     local share_dir=$1
     local blueprints_dir=$2
 
@@ -56,6 +58,8 @@ __EOF__
 }
 
 function teardown_tests {
+    [ "$BACKEND" == "osbuild-composer" ] && return 0
+
     local share_dir=$1
     local blueprints_dir=$2
 
@@ -91,7 +95,7 @@ if [ -z "$CLI" ]; then
     chmod a+rx -R $SHARE_DIR
 
     setup_tests $SHARE_DIR $BLUEPRINTS_DIR
-    # start the lorax-composer daemon
+    # start the backend daemon
     composer_start
 else
     export PACKAGE="composer-cli"
@@ -111,14 +115,14 @@ setup_beakerlib_env
 run_beakerlib_tests "$@"
 
 if [ -z "$CLI" ]; then
-    # stop lorax-composer and remove /run/weldr/api.socket
+    # stop backend and remove /run/weldr/api.socket
     # only if running against source
     composer_stop
     teardown_tests $SHARE_DIR $BLUEPRINTS_DIR
 else
     composer_stop
     teardown_tests /usr/share/lorax /var/lib/lorax/composer/blueprints
-    # start lorax-composer again so we can continue with manual or other kinds
+    # start backend again so we can continue with manual or other kinds
     # of testing on the same system
     composer_start
 fi
