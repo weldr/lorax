@@ -2,6 +2,9 @@
 
 . /usr/share/beakerlib/beakerlib.sh
 
+BACKEND="${BACKEND:-lorax-composer}"
+export BACKEND
+
 # Monkey-patch beakerlib to exit on first failure if COMPOSER_TEST_FAIL_FAST is
 # set. https://github.com/beakerlib/beakerlib/issues/42
 COMPOSER_TEST_FAIL_FAST=${COMPOSER_TEST_FAIL_FAST:-0}
@@ -97,8 +100,8 @@ composer_start() {
     else
         # socket stop/start seems to be necessary for a proper service restart
         # after a previous direct manual run for it to work properly
-        systemctl start lorax-composer.socket
-        systemctl start lorax-composer
+        systemctl start $BACKEND.socket
+        systemctl start $BACKEND
     fi
     rc=$?
 
@@ -106,7 +109,7 @@ composer_start() {
     if [ "$rc" -eq 0 ]; then
         wait_for_composer
     else
-        rlLogFail "Unable to start lorax-composer (exit code $rc)"
+        rlLogFail "Unable to start $BACKEND (exit code $rc)"
     fi
     return $rc
 }
@@ -115,15 +118,15 @@ composer_stop() {
     MANUAL=${MANUAL:-0}
     # socket stop/start seems to be necessary for a proper service restart
     # after a previous direct manual run for it to work properly
-    if systemctl list-units | grep -q lorax-composer.socket; then
-        systemctl stop lorax-composer.socket
+    if systemctl list-units | grep -q $BACKEND.socket; then
+        systemctl stop $BACKEND.socket
     fi
 
     if [[ -z "$CLI" || "$CLI" == "./src/bin/composer-cli" || "$MANUAL" == "1" ]]; then
         pkill -9 lorax-composer
         rm -f /run/weldr/api.socket
     else
-        systemctl stop lorax-composer
+        systemctl stop $BACKEND
     fi
 }
 

@@ -127,7 +127,7 @@ class ComposerTestCase(VirtMachineTestCase):
         # Upload the contents of the ./tests/ directory to the machine (it must have beakerlib already installed)
         self.machine.upload(["../tests"], "/")
 
-        print("Waiting for lorax-composer to become ready...")
+        print("Waiting for backend to become ready...")
         curl_command = ["curl", "--max-time", "360",
                                 "--silent",
                                 "--unix-socket", "/run/weldr/api.socket",
