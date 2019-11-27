@@ -1,10 +1,11 @@
 #!/bin/sh -eux
 
+BACKEND="${BACKEND:-lorax-composer}"
 SRPM="$1"
 
 # always remove older versions of these RPMs if they exist
 # to ensure newly built packages have been installed
-yum -y remove lorax lorax-composer composer-cli
+yum -y remove lorax $BACKEND composer-cli
 
 if ! rpm -q beakerlib; then
     if [ $(. /etc/os-release && echo $ID) = "rhel" ]; then
@@ -41,9 +42,12 @@ rm -rf build-results
 su builder -c "/usr/bin/mock --verbose --no-clean --resultdir build-results --rebuild $SRPM"
 
 packages=$(find build-results -name '*.rpm' -not -name '*.src.rpm')
-yum install -y $packages
+if [ "$BACKEND" == "osbuild-composer" ]; then
+    packages=$(find build-results -name '*.rpm' -not -name '*.src.rpm' -not -name '*lorax-composer*')
+fi
+yum install -y $packages $BACKEND
 
-systemctl enable lorax-composer.socket
+systemctl enable $BACKEND.socket
 
 if [ -f /usr/bin/docker ]; then
     yum remove -y $(rpm -qf /usr/bin/docker)
