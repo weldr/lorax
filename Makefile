@@ -10,7 +10,9 @@ TAG = lorax-$(VERSION)-$(RELEASE)
 IMAGE_RELEASE = rhel8-latest
 
 ifeq ($(TEST_OS),)
-TEST_OS = rhel-8-1
+OS_ID = $(shell awk -F= '/^ID=/ {print $$2}' /etc/os-release)
+OS_VERSION = $(shell awk -F= '/^VERSION_ID/ {print $$2}' /etc/os-release | tr '.' '-')
+TEST_OS = $(OS_ID)-$(OS_VERSION)
 endif
 export TEST_OS
 VM_IMAGE=$(CURDIR)/test/images/$(TEST_OS)
