@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 
+import os
+import unittest
 import composertest
 
 
+@unittest.skipIf(os.getenv("BACKEND") == "osbuild-composer", "not executed for osbuild-composer")
 class TestCloud(composertest.ComposerTestCase):
     def test_alibaba(self):
         self.runCliTest("/tests/cli/test_compose_alibaba.sh")

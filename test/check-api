@@ -1,9 +1,13 @@
 #!/usr/bin/python3
 
+import os
+import unittest
+
 import composertest
 import requests
 import subprocess
 
+@unittest.skipIf(os.getenv("BACKEND") == "osbuild-composer", "not executed for osbuild-composer")
 class TestApi(composertest.ComposerTestCase):
     """Test Composer HTTP API"""
 

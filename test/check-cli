@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-
+import os
+import unittest
 import tempfile
 import composertest
 
@@ -20,13 +21,16 @@ class TestImages(composertest.ComposerTestCase):
     def test_compose_sanity(self):
         self.runCliTest("/tests/cli/test_compose_sanity.sh")
 
+    @unittest.skipIf(os.getenv("BACKEND") == "osbuild-composer", "not executed for osbuild-composer")
     def test_ext4_filesystem(self):
         self.runCliTest("/tests/cli/test_compose_ext4-filesystem.sh")
 
+    @unittest.skipIf(os.getenv("BACKEND") == "osbuild-composer", "not executed for osbuild-composer")
     def test_partitioned_disk(self):
         self.runCliTest("/tests/cli/test_compose_partitioned-disk.sh")
 
 
+@unittest.skipIf(os.getenv("BACKEND") == "osbuild-composer", "not executed for osbuild-composer")
 class TestQcow2(composertest.ComposerTestCase):
     def tearDown(self):
         super().tearDownTestMachine()
@@ -52,6 +56,7 @@ class TestQcow2(composertest.ComposerTestCase):
             self.runImageTest("/tests/cli/test_boot_qcow2.sh")
 
 
+@unittest.skipUnless(os.getenv("BACKEND") == "lorax-composer", "requires lorax-composer")
 class TestLiveIso(composertest.ComposerTestCase):
     def tearDown(self):
         super().tearDownTestMachine()
@@ -73,11 +78,13 @@ class TestLiveIso(composertest.ComposerTestCase):
             self.runImageTest("/tests/cli/test_boot_live-iso.sh")
 
 
+@unittest.skipIf(os.getenv("BACKEND") == "osbuild-composer", "not executed for osbuild-composer")
 class TestRepos(composertest.ComposerTestCase):
     def test_repos_sanity(self):
         self.runCliTest("/tests/cli/test_repos_sanity.sh")
 
 
+@unittest.skipIf(os.getenv("BACKEND") == "osbuild-composer", "not executed for osbuild-composer")
 class TestTar(composertest.ComposerTestCase):
     def test_tar(self):
         self.runCliTest("/tests/cli/test_compose_tar.sh")
