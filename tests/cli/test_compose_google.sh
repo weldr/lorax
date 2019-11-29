@@ -16,7 +16,8 @@ CLI="${CLI:-./src/bin/composer-cli}"
 rlJournalStart
     rlPhasStartTest "compose start"
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
-        UUID=`$CLI compose start example-http-server google`
+        rlRun -t -c "$CLI blueprints push $(dirname $0)/lib/test-http-server.toml"
+        UUID=`$CLI compose start test-http-server google`
         rlAssertEquals "exit code should be zero" $? 0
 
         UUID=`echo $UUID | cut -f 2 -d ' '`
