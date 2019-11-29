@@ -13,7 +13,6 @@ function setup_tests {
     [ "$BACKEND" == "osbuild-composer" ] && return 0
 
     local share_dir=$1
-    local blueprints_dir=$2
 
     # explicitly enable sshd for live-iso b/c it is disabled by default
     # due to security concerns (no root password required)
@@ -41,27 +40,12 @@ function setup_tests {
         /%end/ && FLAG == 1 {print \"sed -i 's/.*PermitEmptyPasswords.*/PermitEmptyPasswords yes/' /etc/ssh/sshd_config\"; FLAG=2}
         {print}" \
         $share_dir/composer/live-iso.ks
-
-    # do a backup of the original blueprints directory and get rid of the git
-    # directory (otherwise all of the initial changes in blueprints would have
-    # to be done using blueprints push)
-    cp -r $blueprints_dir ${blueprints_dir}.orig
-    rm -rf $blueprints_dir/git
-
-    # append a section with additional option on kernel command line to example-http-server blueprint
-    # which is used for building of most of the images
-    cat >> $blueprints_dir/example-http-server.toml << __EOF__
-
-[customizations.kernel]
-append = "custom_cmdline_arg console=ttyS0,115200n8"
-__EOF__
 }
 
 function teardown_tests {
     [ "$BACKEND" == "osbuild-composer" ] && return 0
 
     local share_dir=$1
-    local blueprints_dir=$2
 
     mv $share_dir/composer/live-iso.ks.orig $share_dir/composer/live-iso.ks
 
@@ -69,9 +53,6 @@ function teardown_tests {
     for cfg in "$share_dir"/templates.d/99-generic/live/config_files/*/*.orig; do
         mv "$cfg" "${cfg%%.orig}"
     done
-
-    rm -rf $blueprints_dir
-    mv ${blueprints_dir}.orig $blueprints_dir
 }
 
 # cloud credentials
@@ -94,14 +75,14 @@ if [ -z "$CLI" ]; then
     cp -R ./share/* $SHARE_DIR
     chmod a+rx -R $SHARE_DIR
 
-    setup_tests $SHARE_DIR $BLUEPRINTS_DIR
+    setup_tests $SHARE_DIR
     # start the backend daemon
     composer_start
 else
     export PACKAGE="composer-cli"
     export BLUEPRINTS_DIR="/var/lib/lorax/composer/blueprints"
     composer_stop
-    setup_tests /usr/share/lorax /var/lib/lorax/composer/blueprints
+    setup_tests /usr/share/lorax
     composer_start
 fi
 
@@ -118,10 +99,10 @@ if [ -z "$CLI" ]; then
     # stop backend and remove /run/weldr/api.socket
     # only if running against source
     composer_stop
-    teardown_tests $SHARE_DIR $BLUEPRINTS_DIR
+    teardown_tests $SHARE_DIR
 else
     composer_stop
-    teardown_tests /usr/share/lorax /var/lib/lorax/composer/blueprints
+    teardown_tests /usr/share/lorax
     # start backend again so we can continue with manual or other kinds
     # of testing on the same system
     composer_start
