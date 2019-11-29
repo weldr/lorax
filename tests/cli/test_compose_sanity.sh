@@ -11,18 +11,40 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartTest "compose types"
+        TYPE_LIVE_ISO="live-iso"
+        TYPE_ALIBABA="alibaba"
+        TYPE_GOOGLE="google"
+        TYPE_HYPER_V="hyper-v"
+        TYPE_LIVEIMG="liveimg-tar"
+        TYPE_EXT4="ext4-filesystem"
+        TYPE_PARTITIONED_DISK="partitioned-disk"
+        TYPE_IOT=""
+
+        # backend specific compose type overrides
+        if [ "$BACKEND" == "osbuild-composer" ]; then
+            TYPE_LIVE_ISO=""
+            TYPE_ALIBABA=""
+            TYPE_GOOGLE=""
+            TYPE_HYPER_V=""
+            TYPE_LIVEIMG=""
+            TYPE_EXT4=""
+            TYPE_PARTITIONED_DISK=""
+            TYPE_IOT="fedora-iot-commit"
+        fi
+
+        # arch specific compose type selections
         if [ "$(uname -m)" == "x86_64" ]; then
-            rlAssertEquals "lists all supported types" \
-                    "`$CLI compose types | xargs`" "alibaba ami ext4-filesystem google hyper-v live-iso liveimg-tar openstack partitioned-disk qcow2 tar vhd vmdk"
+            SUPPORTED_TYPES="$TYPE_ALIBABA ami $TYPE_IOT $TYPE_EXT4 $TYPE_GOOGLE $TYPE_HYPER_V $TYPE_LIVE_ISO $TYPE_LIVEIMG openstack $TYPE_PARTITIONED_DISK qcow2 vhd vmdk"
         elif [ "$(uname -m)" == "aarch64" ]; then
             # ami is supported on aarch64
-            rlAssertEquals "lists all supported types" \
-                    "`$CLI compose types | xargs`" "ami ext4-filesystem live-iso liveimg-tar openstack partitioned-disk qcow2 tar"
+            SUPPORTED_TYPES="ami $TYPE_EXT4 $TYPE_LIVE_ISO $TYPE_LIVEIMG openstack $TYPE_PARTITIONED_DISK qcow2"
         else
-            # non-x86 architectures disable alibaba
-            rlAssertEquals "lists all supported types" \
-                    "`$CLI compose types | xargs`" "ext4-filesystem live-iso liveimg-tar openstack partitioned-disk qcow2 tar"
+            SUPPORTED_TYPES="$TYPE_EXT4 $TYPE_LIVE_ISO $TYPE_LIVEIMG openstack $TYPE_PARTITIONED_DISK qcow2"
         fi
+
+        # truncate white space in case some types are not available
+        SUPPORTED_TYPES=$(echo "$SUPPORTED_TYPES" | tr -s ' ' | sed 's/^[[:space:]]*//')
+        rlAssertEquals "lists all supported types" "`$CLI compose types | xargs`" "$SUPPORTED_TYPES"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
@@ -57,7 +79,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start again"
-        UUID=`$CLI compose start example-http-server tar`
+        UUID=`$CLI compose start example-http-server ami`
         rlAssertEquals "exit code should be zero" $? 0
 
         UUID=`echo $UUID | cut -f 2 -d' '`
