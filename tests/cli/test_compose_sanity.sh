@@ -16,7 +16,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
-        UUID=`$CLI --test=2 compose start example-http-server tar`
+        rlRun -t -c "$CLI blueprints push $(dirname $0)/lib/test-http-server.toml"
+        UUID=`$CLI --test=2 compose start test-http-server tar`
         rlAssertEquals "exit code should be zero" $? 0
 
         UUID=`echo $UUID | cut -f 2 -d' '`
