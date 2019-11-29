@@ -50,7 +50,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
-        UUID=`$CLI compose start example-http-server ami`
+        rlRun -t -c "$CLI blueprints push $(dirname $0)/lib/test-http-server.toml"
+        UUID=`$CLI compose start test-http-server qcow2`
         rlAssertEquals "exit code should be zero" $? 0
         UUID=`echo $UUID | cut -f 2 -d' '`
 
@@ -81,7 +82,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start again"
-        UUID=`$CLI compose start example-http-server ami`
+        UUID=`$CLI compose start test-http-server qcow2`
         rlAssertEquals "exit code should be zero" $? 0
 
         UUID=`echo $UUID | cut -f 2 -d' '`
@@ -101,12 +102,12 @@ rlJournalStart
             check_compose_status "$UUID"
 
             rlRun -t -c "$CLI compose image $UUID"
-            rlAssertExists "$UUID-root.tar.xz"
+            rlAssertExists "$UUID-disk.qcow2"
 
             # because this path is listed in the documentation
             rlAssertExists    "/var/lib/lorax/composer/results/$UUID/"
-            rlAssertExists    "/var/lib/lorax/composer/results/$UUID/root.tar.xz"
-            rlAssertNotDiffer "/var/lib/lorax/composer/results/$UUID/root.tar.xz" "$UUID-root.tar.xz"
+            rlAssertExists    "/var/lib/lorax/composer/results/$UUID/disk.qcow2"
+            rlAssertNotDiffer "/var/lib/lorax/composer/results/$UUID/disk.qcow2" "$UUID-disk.qcow2"
         fi
     rlPhaseEnd
 

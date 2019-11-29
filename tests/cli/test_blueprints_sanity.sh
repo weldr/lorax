@@ -17,13 +17,15 @@ rlJournalStart
                     "`$CLI blueprints list | grep $bp`" "$bp"
             done
         fi
+
+        rlRun -t -c "$CLI blueprints push $(dirname $0)/lib/test-http-server.toml"
     rlPhaseEnd
 
     rlPhaseStartTest "blueprints save"
-        rlRun -t -c "$CLI blueprints save example-http-server"
-        rlAssertExists "example-http-server.toml"
-        rlAssertGrep "example-http-server" "example-http-server.toml"
-        rlAssertGrep "httpd" "example-http-server.toml"
+        rlRun -t -c "$CLI blueprints save test-http-server"
+        rlAssertExists "test-http-server.toml"
+        rlAssertGrep "test-http-server" "test-http-server.toml"
+        rlAssertGrep "httpd" "test-http-server.toml"
 
         # non-existing blueprint
         rlRun -t -c "$CLI blueprints save non-existing-bp" 1
