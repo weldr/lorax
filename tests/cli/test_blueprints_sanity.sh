@@ -11,10 +11,12 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartTest "blueprints list"
-        for bp in example-http-server example-development example-atlas; do
-            rlAssertEquals "blueprint list finds $bp" \
-                "`$CLI blueprints list | grep $bp`" "$bp"
-        done
+        if [ "$BACKEND" != "osbuild-composer" ]; then
+            for bp in example-http-server example-development example-atlas; do
+                rlAssertEquals "blueprint list finds $bp" \
+                    "`$CLI blueprints list | grep $bp`" "$bp"
+            done
+        fi
     rlPhaseEnd
 
     rlPhaseStartTest "blueprints save"
