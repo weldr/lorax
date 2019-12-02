@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.36
+Version:        19.7.37
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Dec 02 2019 Brian C. Lane <bcl@redhat.com> 19.7.37-1
+- tests: If TEST_OS isn't specified then match the host OS (atodorov)
+  Related: rhbz#1770193
+- Remove all repo files & install composer-cli from host repos (atodorov)
+  Related: rhbz#1770193
+- Always remove lorax-composer & composer-cli RPMs before installing them (atodorov)
+  Related: rhbz#1770193
+- Always remove existing VM image before building new one (atodorov)
+  Related: rhbz#1770193
+- tests: enable compose_ext4 test to use CDN repos (atodorov)
+  Related: rhbz#1698366
+
 * Tue Nov 19 2019 Brian C. Lane <bcl@redhat.com> 19.7.36-1
 - tests: restart composer after adding optional reporsitory (atodorov)
   Related: rhbz#1770193
