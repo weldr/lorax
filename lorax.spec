@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.34
+Version:        28.14.35
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -251,6 +251,20 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Dec 02 2019 Brian C. Lane <bcl@redhat.com> 28.14.35-1
+- tests: If TEST_OS isn't specified then match the host OS (atodorov)
+  Related: rhbz#1769525
+- tests: enable compose_ext4 test to use CDN repos (jrusz)
+  Related: rhbz#1777265
+- Add more lines to .gitignore (jrusz)
+  Related: rhbz#1777265
+- Remove all repo files & install composer-cli from host repos (atodorov)
+  Related: rhbz#1769525
+- Always remove lorax-composer & composer-cli RPMs before installing them (atodorov)
+  Related: rhbz#1769525
+- Always remove existing VM image before building new one (atodorov)
+  Related: rhbz#1769525
+
 * Mon Nov 18 2019 Brian C. Lane <bcl@redhat.com> 28.14.34-1
 - lorax-composer: Add cloud-init support to the vhd image (bcl)
   Resolves: rhbz#1754711
