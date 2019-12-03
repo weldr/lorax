@@ -368,7 +368,7 @@ MkisofsTools = [Mkisofs_aarch64, Mkisofs_ppc, Mkisofs_ppc64le, Mkisofs_s390, Mki
 
 
 class MakeKickstartISO():
-    def __init__(self, ks, input_iso, output_iso, add_paths, cmdline=""):
+    def __init__(self, ks, input_iso, output_iso, add_paths, cmdline="", volid=None):
         self.ks = ks
         self.input_iso = input_iso
         self.output_iso = output_iso
@@ -393,7 +393,7 @@ class MakeKickstartISO():
         # Mount the iso so we can gather information from it
         try:
             self.iso = IsoMountpoint(self.input_iso)
-            self.label = self.iso.label
+            self.label = self.iso.label if volid is None else volid
             log.info("Volume Id = %s", self.label)
 
             if os.path.exists(os.path.join(self.iso.mount_dir, "images/efiboot.img")):
@@ -469,7 +469,10 @@ class MakeKickstartISO():
         # Edit the config file
         with open(orig_cfg, "r") as in_fp:
             with open(os.path.join(tmpdir, "isolinux/isolinux.cfg"), "w") as out_fp:
+                escaped_iso_label = udev_escape(self.iso.label)
                 for line in in_fp:
+                    if escaped_iso_label in line:
+                        line = line.replace(escaped_iso_label, self.escaped_label)
                     out_fp.write(line.rstrip("\n"))
                     if "append" in line:
                         out_fp.write(" "+self.add_args)
@@ -493,7 +496,12 @@ class MakeKickstartISO():
             dest_cfg = os.path.join(tmpdir, cfg)
             with open(orig_cfg, "r") as in_fp:
                 with open(dest_cfg, "w") as out_fp:
+                    escaped_iso_label = udev_escape(self.iso.label)
                     for line in in_fp:
+                        if escaped_iso_label in line:
+                            line = line.replace(escaped_iso_label, self.escaped_label)
+                        if line.strip().startswith("search"):
+                            line = line.replace(self.iso.label, self.label)
                         out_fp.write(line.rstrip("\n"))
                         # Some start with linux (aarch64), others with linuxefi (x86_64)
                         if line.strip().startswith("linux"):
@@ -514,7 +522,10 @@ class MakeKickstartISO():
         # Edit the config file
         with open(orig_cfg, "r") as in_fp:
             with open(os.path.join(tmpdir, "boot/grub/grub.cfg"), "w") as out_fp:
+                escaped_iso_label = udev_escape(self.iso.label)
                 for line in in_fp:
+                    if escaped_iso_label in line:
+                        line = line.replace(escaped_iso_label, self.escaped_label)
                     out_fp.write(line.rstrip("\n"))
                     if line.strip().startswith("linux "):
                         out_fp.write(" "+self.add_args)
@@ -582,6 +593,7 @@ def setup_args():
     parser.add_argument("ks", type=os.path.abspath, help="Kickstart to add to the ISO")
     parser.add_argument("input_iso", type=os.path.abspath, help="ISO to modify")
     parser.add_argument("output_iso", type=os.path.abspath, help="Full pathname of iso to be created")
+    parser.add_argument("-V", "--volid", dest="volid", help="Set the ISO volume id, defaults to input's", default=None)
     args = parser.parse_args()
 
     return args
@@ -597,7 +609,7 @@ def main():
 
     try:
         app = MakeKickstartISO(args.ks, args.input_iso, args.output_iso,
-                               args.add_paths, args.cmdline)
+                               args.add_paths, args.cmdline, args.volid)
         app.run()
     except RuntimeError as e:
         log.error(str(e))
