@@ -37,8 +37,8 @@ def composer_cli_parser():
                         help="Path to the socket file to listen on")
     parser.add_argument("--log", dest="logfile", default=None, metavar="LOG",
                         help="Path to logfile (./composer-cli.log)")
-    parser.add_argument("-a", "--api", dest="api_version", default="0", metavar="APIVER",
-                        help="API Version to use")
+    parser.add_argument("-a", "--api", dest="api_version", default=None, metavar="APIVER",
+                        help="API Version to use (overrides server API version)")
     parser.add_argument("--test", dest="testmode", default=0, type=int, metavar="TESTMODE",
                         help="Pass test mode to compose. 1=Mock compose with fail. 2=Mock compose with finished.")
     parser.add_argument("-V", action="store_true", dest="showver",

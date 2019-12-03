@@ -1,4 +1,4 @@
-# Copyright (C) 2018  Red Hat, Inc.
+# Copyright (C) 2018-2019 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,8 +16,9 @@
 
 # Documentation for the commands
 compose_help = """
-compose start <BLUEPRINT> <TYPE>
-    Start a compose using the selected blueprint and output type.
+compose start <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROVIDER> <PROFILE> | <IMAGE-NAME> <PROFILE.TOML>]
+    Start a compose using the selected blueprint and output type. Optionally start an upload.
+    NOTE: starting an upload is only available when using an API v1 backend.
 
 compose types
     List the supported output types.
@@ -133,4 +134,46 @@ status_help = """
 status show                         Show API server status.
 """
 
-epilog = compose_help + blueprints_help + modules_help + projects_help + sources_help + status_help
+upload_help = """
+NOTE: upload commands are only available when using an API v1 backend.
+
+upload info <UPLOAD-UUID>
+    Details about an upload
+
+upload start <BUILD-UUID> <IMAGE-NAME> [<PROVIDER> <PROFILE>|<PROFILE.TOML>]
+    Upload a build image to the selected provider.
+
+upload log <UPLOAD-UUID>
+    Show the upload log
+
+upload cancel <UPLOAD-UUID>
+    Cancel an upload with that is queued or in progress
+
+upload delete <UPLOAD-UUID>
+    Delete the upload and remove it from the build
+
+upload reset <UPLOAD-UUID>
+    Reset the upload so that it can be tried again
+"""
+
+providers_help = """
+NOTE: providers commands are only available when using an API v1 backend.
+
+providers list <PROVIDER>
+    List the available providers, or list the <provider's> available profiles
+
+providers show <PROVIDER> <PROFILE>
+    show the details of a specific provider's profile
+
+providers push <PROFILE.TOML>
+    Add a new profile, or overwrite an existing one
+
+providers save <PROVIDER> <PROFILE>
+    Save the profile's details to a TOML file named <PROFILE>.toml
+
+providers delete <PROVIDER> <PROFILE>
+    Delete a profile from a provider
+"""
+
+epilog = compose_help + blueprints_help + modules_help + projects_help \
+         + sources_help + status_help + upload_help + providers_help

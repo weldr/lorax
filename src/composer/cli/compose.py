@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018  Red Hat, Inc.
+# Copyright (C) 2018-2019 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,13 +20,14 @@ log = logging.getLogger("composer-cli")
 from datetime import datetime
 import sys
 import json
+import pytoml as toml
 
 from composer import http_client as client
 from composer.cli.help import compose_help
 from composer.cli.utilities import argify, handle_api_result, packageNEVRA
 
 def compose_cmd(opts):
-    """Process compose commands
+    """Process compose commands for API v0
 
     :param opts: Cmdline arguments
     :type opts: argparse.Namespace
@@ -49,6 +50,36 @@ def compose_cmd(opts):
         "logs":     compose_logs,
         "image":    compose_image,
         }
+    return run_command(opts, cmd_map)
+
+def compose_cmd_v1(opts):
+    """Process compose commands for API v1
+
+    :param opts: Cmdline arguments
+    :type opts: argparse.Namespace
+    :returns: Value to return from sys.exit()
+    :rtype: int
+
+    This dispatches the compose commands to a function
+    """
+    cmd_map = {
+        "list":     compose_list,
+        "status":   compose_status,
+        "types":    compose_types,
+        "start":    compose_start_v1,
+        "log":      compose_log,
+        "cancel":   compose_cancel,
+        "delete":   compose_delete,
+        "info":     compose_info,
+        "metadata": compose_metadata,
+        "results":  compose_results,
+        "logs":     compose_logs,
+        "image":    compose_image,
+        }
+    return run_command(opts, cmd_map)
+
+def run_command(opts, cmd_map):
+    """Run the command from the cmd_map"""
     if opts.args[1] == "help" or opts.args[1] == "--help":
         print(compose_help)
         return 0
@@ -237,6 +268,71 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
         return rc
 
     print("Compose %s added to the queue" % result["build_id"])
+    return rc
+
+def compose_start_v1(socket_path, api_version, args, show_json=False, testmode=0):
+    """Start a new compose using the selected blueprint and type
+
+    :param socket_path: Path to the Unix socket to use for API communication
+    :type socket_path: str
+    :param api_version: Version of the API to talk to. eg. "0"
+    :type api_version: str
+    :param args: List of remaining arguments from the cmdline
+    :type args: list of str
+    :param show_json: Set to True to show the JSON output instead of the human readable output
+    :type show_json: bool
+    :param testmode: Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.
+    :type testmode: int
+
+    compose start <blueprint-name> <compose-type> [<image-name> <provider> <profile> | <image-name> <profile.toml>]
+
+    NOTE: This version is for use with API v1 and later
+    """
+    if len(args) == 0:
+        log.error("start is missing the blueprint name and output type")
+        return 1
+    if len(args) == 1:
+        log.error("start is missing the output type")
+        return 1
+    if len(args) == 3:
+        log.error("start is missing the provider and profile details")
+        return 1
+
+    config = {
+        "blueprint_name": args[0],
+        "compose_type": args[1],
+        "branch": "master"
+        }
+    if len(args) == 4:
+        config["upload"] = {"image_name": args[2]}
+        # profile TOML file (maybe)
+        try:
+            config["upload"].update(toml.load(args[3]))
+        except toml.TomlError as e:
+            log.error(str(e))
+            return 1
+    elif len(args) == 5:
+        config["upload"] = {
+            "image_name":  args[2],
+            "provider":  args[3],
+            "profile":  args[4]
+        }
+
+    if testmode:
+        test_url = "?test=%d" % testmode
+    else:
+        test_url = ""
+    api_route = client.api_url(api_version, "/compose" + test_url)
+    result = client.post_url_json(socket_path, api_route, json.dumps(config))
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
+
+    print("Compose %s added to the queue" % result["build_id"])
+
+    if "upload_id" in result and result["upload_id"]:
+        print ("Upload %s added to the upload queue" % result["upload_id"])
+
     return rc
 
 def compose_log(socket_path, api_version, args, show_json=False, testmode=0):
