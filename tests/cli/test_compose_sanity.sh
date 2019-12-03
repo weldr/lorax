@@ -103,7 +103,9 @@ rlJournalStart
 
             rlRun -t -c "$CLI compose image $UUID"
             rlAssertExists "$UUID-disk.qcow2"
+        fi
 
+        if [ "$BACKEND" != "osbuild-composer" ]; then
             # because this path is listed in the documentation
             rlAssertExists    "/var/lib/lorax/composer/results/$UUID/"
             rlAssertExists    "/var/lib/lorax/composer/results/$UUID/disk.qcow2"
