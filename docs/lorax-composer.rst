@@ -314,13 +314,16 @@ image to work correctly, and cannot be overridden. eg. ``ami`` requires
 boot. Blueprint services are added to, not replacing, the list already in the
 templates, if any.
 
-The service names are systemd service units. You may specify any systemd unit
-file accepted by ``systemctl enable`` eg. ``cockpit.socket``::
-
     [customizations.services]
-    enabled = ["sshd", "cockpit.socket", "httpd"]
+    enabled = ["sshd", "cockpit", "httpd.service"]
     disabled = ["postfix", "telnetd"]
 
+.. note::
+
+    The service names are systemd service units. You can only specify the unit
+    name, eg. ``httpd``, or the full service name, eg. ``httpd.service`` -- but
+    not other systemd unit files. Note that this is different from newer
+    releases where you can specify any systemd unit file.
 
 Adding Output Types
 -------------------

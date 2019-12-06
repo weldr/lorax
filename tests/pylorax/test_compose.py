@@ -435,7 +435,7 @@ version = "0.0.1"
 [customizations.services]
         """
         enable_services = """
-enabled = ["sshd", "cockpit.socket", "httpd"]
+enabled = ["sshd", "cockpit", "httpd"]
         """
         disable_services = """
 disabled = ["postfix", "telnetd"]
@@ -449,7 +449,7 @@ disabled = ["postfix", "telnetd"]
 
         recipe = recipe_from_toml(blueprint2_data)
         self.assertEqual(get_services(recipe),
-                {"enabled": ["cockpit.socket", "httpd", "sshd"], "disabled": []})
+                {"enabled": ["cockpit", "httpd", "sshd"], "disabled": []})
 
         recipe = recipe_from_toml(blueprint3_data)
         self.assertEqual(get_services(recipe),
@@ -457,28 +457,28 @@ disabled = ["postfix", "telnetd"]
 
         recipe = recipe_from_toml(blueprint4_data)
         self.assertEqual(get_services(recipe),
-                {"enabled": ["cockpit.socket", "httpd", "sshd"], "disabled": ["postfix", "telnetd"]})
+                {"enabled": ["cockpit", "httpd", "sshd"], "disabled": ["postfix", "telnetd"]})
 
     def test_services_cmd(self):
         """Test services_cmd function"""
 
         self.assertEqual(services_cmd("", {"enabled": [], "disabled": []}), "")
-        self.assertEqual(services_cmd("", {"enabled": ["cockpit.socket", "httpd", "sshd"], "disabled": []}),
-                         'services --enabled="cockpit.socket,httpd,sshd"')
+        self.assertEqual(services_cmd("", {"enabled": ["cockpit", "httpd", "sshd"], "disabled": []}),
+                         'services --enabled="cockpit,httpd,sshd"')
         self.assertEqual(services_cmd("", {"enabled": [], "disabled": ["postfix", "telnetd"]}),
                          'services --disabled="postfix,telnetd"')
-        self.assertEqual(services_cmd("", {"enabled": ["cockpit.socket", "httpd", "sshd"],
+        self.assertEqual(services_cmd("", {"enabled": ["cockpit", "httpd", "sshd"],
                                            "disabled": ["postfix", "telnetd"]}),
-                         'services --disabled="postfix,telnetd" --enabled="cockpit.socket,httpd,sshd"')
-        self.assertEqual(services_cmd("services --enabled=pop3", {"enabled": ["cockpit.socket", "httpd", "sshd"],
+                         'services --disabled="postfix,telnetd" --enabled="cockpit,httpd,sshd"')
+        self.assertEqual(services_cmd("services --enabled=pop3", {"enabled": ["cockpit", "httpd", "sshd"],
                                            "disabled": ["postfix", "telnetd"]}),
-                         'services --disabled="postfix,telnetd" --enabled="cockpit.socket,httpd,pop3,sshd"')
-        self.assertEqual(services_cmd("services --disabled=imapd", {"enabled": ["cockpit.socket", "httpd", "sshd"],
+                         'services --disabled="postfix,telnetd" --enabled="cockpit,httpd,pop3,sshd"')
+        self.assertEqual(services_cmd("services --disabled=imapd", {"enabled": ["cockpit", "httpd", "sshd"],
                                            "disabled": ["postfix", "telnetd"]}),
-                         'services --disabled="imapd,postfix,telnetd" --enabled="cockpit.socket,httpd,sshd"')
-        self.assertEqual(services_cmd("services --enabled=pop3 --disabled=imapd", {"enabled": ["cockpit.socket", "httpd", "sshd"],
+                         'services --disabled="imapd,postfix,telnetd" --enabled="cockpit,httpd,sshd"')
+        self.assertEqual(services_cmd("services --enabled=pop3 --disabled=imapd", {"enabled": ["cockpit", "httpd", "sshd"],
                                            "disabled": ["postfix", "telnetd"]}),
-                         'services --disabled="imapd,postfix,telnetd" --enabled="cockpit.socket,httpd,pop3,sshd"')
+                         'services --disabled="imapd,postfix,telnetd" --enabled="cockpit,httpd,pop3,sshd"')
 
     def test_get_default_services(self):
         """Test get_default_services function"""
@@ -489,7 +489,7 @@ version = "0.0.1"
 [customizations.services]
         """
         enable_services = """
-enabled = ["sshd", "cockpit.socket", "httpd"]
+enabled = ["sshd", "cockpit", "httpd"]
         """
         disable_services = """
 disabled = ["postfix", "telnetd"]
@@ -682,7 +682,7 @@ enabled = ["ftp", "ntp", "dhcp"]
 disabled = ["telnet"]
 
 [customizations.services]
-enabled = ["sshd", "cockpit.socket", "httpd"]
+enabled = ["sshd", "cockpit", "httpd"]
 disabled = ["postfix", "telnetd"]
 """
         tz_dict = {"timezone": "US/Samoa", "ntpservers": ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]}
@@ -704,7 +704,7 @@ disabled = ["postfix", "telnetd"]
                          "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]}, line_limit=6))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("firewall")]), 1)
         self.assertTrue(self._checkServices(result,
-                        {"enabled": ["cockpit.socket", "httpd", "sshd"], "disabled": ["postfix", "telnetd"]},
+                        {"enabled": ["cockpit", "httpd", "sshd"], "disabled": ["postfix", "telnetd"]},
                         line_limit=6))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("services")]), 1)
 
@@ -761,7 +761,7 @@ disabled = ["postfix", "telnetd"]
                 errors.append(("firewall for compose_type %s failed: More than 1 entry" % compose_type, result))
 
             if not self._checkServices(result,
-                                       {"enabled": ["cockpit.socket", "httpd", "sshd"],
+                                       {"enabled": ["cockpit", "httpd", "sshd"],
                                         "disabled": ["postfix", "telnetd"]}):
                 errors.append(("services for compose_type %s failed" % compose_type, result))
             if sum([1 for l in result.splitlines() if l.startswith("services")]) != 1:

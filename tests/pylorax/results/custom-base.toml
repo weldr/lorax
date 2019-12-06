@@ -47,5 +47,5 @@ enabled = ["ftp", "ntp", "dhcp"]
 disabled = ["telnet"]
 
 [customizations.services]
-enabled = ["sshd", "cockpit.socket", "httpd"]
+enabled = ["sshd", "cockpit", "httpd"]
 disabled = ["postfix", "telnetd"]

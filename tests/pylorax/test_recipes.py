@@ -96,8 +96,8 @@ class BasicRecipeTest(unittest.TestCase):
         self.custom_firewall3 = {'firewall': {'services': {'enabled': ['ftp', 'ntp', 'dhcp'], 'disabled': ['telnet']}}}
         self.custom_firewall4 = {'firewall': {'services': {'enabled': ['ftp', 'ntp', 'dhcp']}}}
         self.custom_firewall5 = {'firewall': {'services': {'disabled': ['telnet']}}}
-        self.custom_services1 = {'services': {'enabled': ['sshd', 'cockpit.socket', 'httpd'], 'disabled': ['postfix', 'telnetd']}}
-        self.custom_services2 = {'services': {'enabled': ['sshd', 'cockpit.socket', 'httpd']}}
+        self.custom_services1 = {'services': {'enabled': ['sshd', 'cockpit', 'httpd'], 'disabled': ['postfix', 'telnetd']}}
+        self.custom_services2 = {'services': {'enabled': ['sshd', 'cockpit', 'httpd']}}
         self.custom_services3 = {'services': {'disabled': ['postfix', 'telnetd']}}
 
         self.old_custom.update(self.custom_sshkey1)
@@ -115,7 +115,7 @@ class BasicRecipeTest(unittest.TestCase):
                                'old': None},
                               {'new': {'Customizations.locale': {'keyboard': 'us', 'languages': ['en_US.UTF-8']}},
                                'old': None},
-                              {'new': {'Customizations.services': {'disabled': ['postfix', 'telnetd'], 'enabled': ['sshd', 'cockpit.socket', 'httpd']}},
+                              {'new': {'Customizations.services': {'disabled': ['postfix', 'telnetd'], 'enabled': ['sshd', 'cockpit', 'httpd']}},
                                'old': None},
                               {'new': {'Customizations.timezone': {'ntpservers': ['0.north-america.pool.ntp.org', '1.north-america.pool.ntp.org'],
                                                                    'timezone': 'US/Eastern'}},
@@ -235,7 +235,7 @@ class BasicRecipeTest(unittest.TestCase):
         new_custom = old_custom.copy()
         new_custom.update(self.custom_services1)
         new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", [], [], [], customizations=new_custom)
-        result = [{'new': {'Customizations.services': {'disabled': ['postfix', 'telnetd'], 'enabled': ['sshd', 'cockpit.socket', 'httpd']}},
+        result = [{'new': {'Customizations.services': {'disabled': ['postfix', 'telnetd'], 'enabled': ['sshd', 'cockpit', 'httpd']}},
                    'old': None}]
         self.assertEqual(recipes.customizations_diff(old_recipe, new_recipe), result)
 
@@ -247,8 +247,8 @@ class BasicRecipeTest(unittest.TestCase):
         new_custom = self.old_custom.copy()
         new_custom.update(self.custom_services2)
         new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", [], [], [], customizations=new_custom)
-        result = [{'old': {'Customizations.services': {'disabled': ['postfix', 'telnetd'], 'enabled': ['sshd', 'cockpit.socket', 'httpd']}},
-                   'new': {'Customizations.services': {'enabled': ['sshd', 'cockpit.socket', 'httpd']}}}]
+        result = [{'old': {'Customizations.services': {'disabled': ['postfix', 'telnetd'], 'enabled': ['sshd', 'cockpit', 'httpd']}},
+                   'new': {'Customizations.services': {'enabled': ['sshd', 'cockpit', 'httpd']}}}]
         self.assertEqual(recipes.customizations_diff(old_recipe, new_recipe), result)
 
         # Test removing enabled
@@ -259,7 +259,7 @@ class BasicRecipeTest(unittest.TestCase):
         new_custom = self.old_custom.copy()
         new_custom.update(self.custom_services3)
         new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", [], [], [], customizations=new_custom)
-        result = [{'old': {'Customizations.services': {'disabled': ['postfix', 'telnetd'], 'enabled': ['sshd', 'cockpit.socket', 'httpd']}},
+        result = [{'old': {'Customizations.services': {'disabled': ['postfix', 'telnetd'], 'enabled': ['sshd', 'cockpit', 'httpd']}},
                    'new': {'Customizations.services': {'disabled': ['postfix', 'telnetd']}}}]
         self.assertEqual(recipes.customizations_diff(old_recipe, new_recipe), result)
 
@@ -916,11 +916,11 @@ description = "test recipe"
 version = "0.0.1"
 
 [customizations.services]
-enabled = ["sshd", "cockpit.socket", "httpd"]
+enabled = ["sshd", "cockpit", "httpd"]
 disabled = ["postfix", "telnetd"]
 """
         ks = self._blueprint_to_ks(blueprint_data)
-        self.assertEqual(sorted(ks.handler.services.enabled), ["cockpit.socket", "httpd", "sshd"])
+        self.assertEqual(sorted(ks.handler.services.enabled), ["cockpit", "httpd", "sshd"])
         self.assertEqual(sorted(ks.handler.services.disabled), ["postfix", "telnetd"])
 
     def test_user(self):
