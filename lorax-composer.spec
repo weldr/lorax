@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.37
+Version:        19.7.38
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Dec 09 2019 Brian C. Lane <bcl@redhat.com> 19.7.38-1
+- lorax-composer: Change cockpit.socket examples to cockpit (bcl)
+  Related: rhbz#1718473
+
 * Mon Dec 02 2019 Brian C. Lane <bcl@redhat.com> 19.7.37-1
 - tests: If TEST_OS isn't specified then match the host OS (atodorov)
   Related: rhbz#1770193
