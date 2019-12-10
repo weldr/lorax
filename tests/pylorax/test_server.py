@@ -46,17 +46,17 @@ UTF8_TEST_STRING = "I ｗ𝒊ll 𝟉ο𝘁 𝛠ａ𝔰ꜱ 𝘁𝒉𝝸𝚜"
 
 
 # HELPER CONSTANTS
-HTTP_GLOB = {"name":"httpd", "version":"2.4.*"}
-OPENID_GLOB = {"name":"mod_auth_openid", "version":"0.8"}
-MODSSL_GLOB = {"name":"mod_ssl", "version":"2.4.*"}
-PHP_GLOB = {"name":"php", "version":"7.*"}
-PHPMYSQL_GLOB = {"name": "php-mysqlnd", "version":"7.*"}
-OPENSSH_GLOB = {"name":"openssh-server", "version": "8.*"}
-RSYNC_GLOB = {"name": "rsync", "version": "3.1.*"}
-SAMBA_GLOB = {"name": "samba", "version": "4.*.*"}
-TMUX_GLOB = {"name": "tmux", "version": "2.9a"}
-GLUSTERFS_GLOB = {"name": "glusterfs", "version": "7.*"}
-GLUSTERFSCLI_GLOB = {"name": "glusterfs-cli", "version": "7.*"}
+HTTP_GLOB = {"name":"httpd", "version":"*"}
+OPENID_GLOB = {"name":"mod_auth_openid", "version":"*"}
+MODSSL_GLOB = {"name":"mod_ssl", "version":"*"}
+PHP_GLOB = {"name":"php", "version":"*"}
+PHPMYSQL_GLOB = {"name": "php-mysqlnd", "version":"*"}
+OPENSSH_GLOB = {"name":"openssh-server", "version": "*"}
+RSYNC_GLOB = {"name": "rsync", "version": "*"}
+SAMBA_GLOB = {"name": "samba", "version": "*"}
+TMUX_GLOB = {"name": "tmux", "version": "*"}
+GLUSTERFS_GLOB = {"name": "glusterfs", "version": "*"}
+GLUSTERFSCLI_GLOB = {"name": "glusterfs-cli", "version": "*"}
 
 
 def get_system_repo():

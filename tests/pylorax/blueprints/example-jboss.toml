@@ -4,12 +4,12 @@ version = "0.0.1"
 
 [[modules]]
 name = "jboss-servlet-3.1-api"
-version = "1.0.*"
+version = "*"
 
 [[modules]]
 name = "jboss-interceptors-1.2-api"
-version = "1.0.*"
+version = "*"
 
 [[modules]]
 name = "java-1.8.0-openjdk"
-version = "1.8.0.*"
+version = "*"

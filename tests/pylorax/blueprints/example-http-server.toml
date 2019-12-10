@@ -4,32 +4,32 @@ version = "0.0.1"
 
 [[modules]]
 name = "httpd"
-version = "2.4.*"
+version = "*"
 
 [[modules]]
 name = "mod_auth_openid"
-version = "0.8"
+version = "*"
 
 [[modules]]
 name = "mod_ssl"
-version = "2.4.*"
+version = "*"
 
 [[modules]]
 name = "php"
-version = "7.*"
+version = "*"
 
 [[modules]]
 name = "php-mysqlnd"
-version = "7.*"
+version = "*"
 
 [[packages]]
 name = "tmux"
-version = "2.9a"
+version = "*"
 
 [[packages]]
 name = "openssh-server"
-version = "8.*"
+version = "*"
 
 [[packages]]
 name = "rsync"
-version = "3.1.*"
+version = "*"

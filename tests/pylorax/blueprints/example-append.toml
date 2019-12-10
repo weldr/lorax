@@ -4,15 +4,15 @@ version = "0.0.1"
 
 [[packages]]
 name = "tmux"
-version = "2.9a"
+version = "*"
 
 [[packages]]
 name = "openssh-server"
-version = "8.*"
+version = "*"
 
 [[packages]]
 name = "rsync"
-version = "3.1.*"
+version = "*"
 
 [customizations.kernel]
 append = "nosmt=force"

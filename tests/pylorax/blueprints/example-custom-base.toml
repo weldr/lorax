@@ -4,7 +4,7 @@ version = "0.0.1"
 
 [[packages]]
 name = "bash"
-version = "5.0.*"
+version = "*"
 
 [customizations]
 hostname = "custombase"

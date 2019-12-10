@@ -4,24 +4,24 @@ version = "0.0.1"
 
 [[modules]]
 name = "kubernetes"
-version = "1.10.*"
+version = "*"
 
 [[modules]]
 name = "docker"
-version = "1.13.*"
+version = "*"
 
 [[modules]]
 name = "docker-lvm-plugin"
-version = "1.13.*"
+version = "*"
 
 [[modules]]
 name = "etcd"
-version = "3.2.*"
+version = "*"
 
 [[modules]]
 name = "flannel"
-version = "0.9.*"
+version = "*"
 
 [[packages]]
 name = "oci-systemd-hook"
-version = "0.1.*"
+version = "*"
