@@ -227,7 +227,7 @@ def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
         return 0
 
     # output a plain list of identifiers, one per line
-    print("\n".join(t["name"] for t in result["types"]))
+    print("\n".join(t["name"] for t in result["types"] if t["enabled"]))
 
 def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
     """Start a new compose using the selected blueprint and type
