@@ -11,8 +11,14 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartTest "compose types"
-        rlAssertEquals "lists all supported types" \
-                "`$CLI compose types | xargs`" "alibaba ami ext4-filesystem google hyper-v live-iso liveimg-tar openstack partitioned-disk qcow2 tar vhd vmdk"
+        if [ "$(uname -m)" = "x86_64" ]; then
+            rlAssertEquals "lists all supported types" \
+                    "`$CLI compose types | xargs`" "alibaba ami ext4-filesystem google hyper-v live-iso liveimg-tar openstack partitioned-disk qcow2 tar vhd vmdk"
+        else
+            # non-x86 architectures disable alibaba
+            rlAssertEquals "lists all supported types" \
+                    "`$CLI compose types | xargs`" "ext4-filesystem live-iso liveimg-tar openstack partitioned-disk qcow2 tar"
+        fi
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
