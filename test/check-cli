@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import tempfile
-import unittest
 
 import composertest
 
@@ -54,7 +53,6 @@ class TestQcow2(composertest.ComposerTestCase):
             self.runImageTest("/tests/cli/test_boot_qcow2.sh")
 
 
-@unittest.skip('Disabled due to issues with nested KVM')
 class TestLiveIso(composertest.ComposerTestCase):
     def tearDown(self):
         super().tearDownTestMachine()
