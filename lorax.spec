@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.35
+Version:        28.14.36
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -251,6 +251,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Dec 10 2019 Brian C. Lane <bcl@redhat.com> 28.14.36-1
+- composer-cli: Only display the available compose types (bcl)
+  Related: rhbz#1751998
+- composer-cli: Return int from handle_api_result not bool (bcl)
+  Related: rhbz#1779301
+- Add support for API v1 commands upload, and providers (bcl)
+  Resolves: rhbz#1779301
+
 * Mon Dec 02 2019 Brian C. Lane <bcl@redhat.com> 28.14.35-1
 - tests: If TEST_OS isn't specified then match the host OS (atodorov)
   Related: rhbz#1769525
