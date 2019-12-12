@@ -70,7 +70,7 @@ def main(opts):
             # The server may not support this, but the command will handle the failure and output the server's error
             latest_version = sorted(command_map.keys())[-1]
             opts.api_version = latest_version
-            print(f"WARNING: %{backend} backend server supports newer API v{opts.api_version}, falling back to {latest_version}")
+            print(f"WARNING: {backend} backend server supports newer API v{opts.api_version}, falling back to {latest_version}")
 
     # Making sure opts.args is not empty (thus, has a command and subcommand)
     # is already handled in src/bin/composer-cli.
