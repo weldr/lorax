@@ -328,9 +328,8 @@ removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pi
 runcmd find ${root} -name "*.pyo" -type f -delete
 runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
 
-## cleanup /boot/ leaving vmlinuz, and .*hmac files
-runcmd chroot ${root} find /boot \! -name "vmlinuz*" \
-                            -and \! -name ".vmlinuz*" \
+## cleanup /boot/ leaving vmlinuz*hmac files
+runcmd chroot ${root} find /boot \! -name ".vmlinuz*hmac" \
                             -and \! -name boot -delete
 
 ## remove any broken links in /etc or /usr
