@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.36
+Version:        28.14.37
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -252,6 +252,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Dec 13 2019 Brian C. Lane <bcl@redhat.com> 28.14.37-1
+- composer-cli: Add python3-pytoml to composer-cli requirements (bcl)
+  Related: rhbz#1779301
+- composer-cli: Remove unneeded % from API WARNING message (bcl)
+  Related: rhbz#1779301
+- Use mkisofs for the s390 live-iso template (bcl)
+  Related: rhbz#1746424
+
 * Tue Dec 10 2019 Brian C. Lane <bcl@redhat.com> 28.14.36-1
 - composer-cli: Only display the available compose types (bcl)
   Related: rhbz#1751998
