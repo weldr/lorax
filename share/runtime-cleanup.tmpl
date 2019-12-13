@@ -344,6 +344,9 @@ removefrom redhat-logos /usr/share/{plymouth,backgrounds}*
 removefrom subscription-manager --allbut /etc/rhsm/* /usr/share/rhsm/* /var/log/rhsm/* \
     /etc/yum/pluginconf.d/product-id.conf /usr/lib/yum-plugins/product-id.py
 
+## OSCAP cleanups
+removefrom scap-security-guide --allbut /usr/share/xml/scap/ssg/content/ssg-rhel7-ds.xml
+
 ## cleanup_python_files()
 runcmd find ${root} -name "*.pyo" -type f -delete
 runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
