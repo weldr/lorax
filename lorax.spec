@@ -164,6 +164,7 @@ Summary: A command line tool for use with the lorax-composer API server
 
 # From Distribution
 Requires: python3-urllib3
+Requires: python3-pytoml
 
 %description -n composer-cli
 A command line tool for use with the lorax-composer API server. Examine recipes,
