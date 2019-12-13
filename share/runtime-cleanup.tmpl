@@ -15,6 +15,10 @@ removepkg alsa-*firmware* flac gstreamer-tools libsndfile pulseaudio* sound-them
 removepkg midisport-firmware
 ## no fancy video, either
 removepkg libcrystalhd crystalhd-firmware ivtv-firmware cx18-firmware
+## No iwl firmware on ppc64
+%if basearch in ("ppc", "ppc64", "ppc64le"):
+    removepkg iwl*firmware
+%endif
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
