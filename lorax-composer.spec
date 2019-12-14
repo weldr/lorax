@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.38
+Version:        19.7.39
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Dec 13 2019 Brian C. Lane <bcl@redhat.com> 19.7.39-1
+- test: Turn TestLiveIso back on (bcl)
+  Related: rhbz#1770193
+- Makefile: archive should not run git tag (bcl)
+  Related: rhbz#1770193
+- lorax-composer: Add liveuser on live-iso to wheel group (bcl)
+  Related: rhbz#1770193
+- tests: Boot the test images with graphics=True (bcl)
+  Related: rhbz#1770193
+- tests: Add serial console to images we boot in CI (bcl)
+  Related: rhbz#1770193
+
 * Mon Dec 09 2019 Brian C. Lane <bcl@redhat.com> 19.7.38-1
 - lorax-composer: Change cockpit.socket examples to cockpit (bcl)
   Related: rhbz#1718473
