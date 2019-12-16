@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.25
+Version:        19.7.26
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -120,6 +120,10 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_tmpfilesdir}/lorax.conf
 
 %changelog
+* Mon Dec 16 2019 Brian C. Lane <bcl@redhat.com> 19.7.26-1
+- Remove unneeded scap-security-guide files (bcl)
+  Related: rhbz#1779659
+
 * Tue Jun 04 2019 Brian C. Lane <bcl@redhat.com> 19.7.25-1
 - lorax: Add --rootfs-size (bcl)
   Resolves: rhbz#1715116
