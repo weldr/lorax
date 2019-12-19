@@ -30,6 +30,8 @@ Optional arguments
       -c CMDLINE, --cmdline CMDLINE
                             Arguments to add to kernel cmdline
       --debug               print debugging info
+      -V VOLID, --volid VOLID
+                            Set the ISO volume id, defaults to input's
 
 Positional arguments
 ^^^^^^^^^^^^^^^^^^^^
@@ -56,6 +58,12 @@ This will create a new iso with the kickstart in the root directory, and the
 kernel cmdline will have ``inst.ks=...`` added to it so that it will be
 executed when the iso is booted (be careful not to boot on a system you don't
 want to wipe out! There will be no prompting).
+
+By default the volume id of the iso is preserved. You can set a custom volid
+by passing ``-V`` and the string to set. The kernel cmdline will be changes, and the iso will have th custom volume id.
+eg.::
+
+    mkksiso -V "Test Only" /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
 
 
 Adding package repos to a boot.iso
