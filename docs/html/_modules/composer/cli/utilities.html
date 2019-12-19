@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli.utilities &mdash; Lorax 32.2 documentation</title>
+  <title>composer.cli.utilities &mdash; Lorax 32.4 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.2
+                32.4
               </div>
             
           
@@ -232,9 +232,9 @@
     <span class="c1"># What&#39;s the rc? If status is present, use that</span>
     <span class="c1"># If not, use length of errors</span>
     <span class="k">if</span> <span class="s2">&quot;status&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-        <span class="n">rc</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="ow">not</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">rc</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># Caller should return if showing json, or status was present and False</span>
     <span class="n">exit_now</span> <span class="o">=</span> <span class="n">show_json</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;status&quot;</span> <span class="ow">in</span> <span class="n">result</span> <span class="ow">and</span> <span class="n">rc</span><span class="p">)</span>

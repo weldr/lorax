@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "MKKSISO" "1" "Nov 05, 2019" "32.2" "Lorax"
+.TH "MKKSISO" "1" "Dec 19, 2019" "32.4" "Lorax"
 .SH NAME
 mkksiso \- Make Kickstart ISO Utility Documentation
 .
@@ -68,6 +68,9 @@ Arguments to add to kernel cmdline
 .TP
 .B \-\-debug
 print debugging info
+.TP
+.BI \-V \ VOLID\fP,\fB \ \-\-volid \ VOLID
+Set the ISO volume id, defaults to input\(aqs
 .UNINDENT
 .UNINDENT
 .UNINDENT
@@ -109,6 +112,20 @@ This will create a new iso with the kickstart in the root directory, and the
 kernel cmdline will have \fBinst.ks=...\fP added to it so that it will be
 executed when the iso is booted (be careful not to boot on a system you don\(aqt
 want to wipe out! There will be no prompting).
+.sp
+By default the volume id of the iso is preserved. You can set a custom volid
+by passing \fB\-V\fP and the string to set. The kernel cmdline will be changes, and the iso will have th custom volume id.
+eg.:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkksiso \-V "Test Only" /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SH ADDING PACKAGE REPOS TO A BOOT.ISO
 .sp
 You can add repo directories to the iso using \fB\-\-add /PATH/TO/REPO/\fP, make
