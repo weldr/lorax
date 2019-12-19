@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mkksiso &mdash; Lorax 32.2 documentation</title>
+  <title>mkksiso &mdash; Lorax 32.4 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                32.2
+                32.4
               </div>
             
           
@@ -205,6 +205,9 @@ times)</p>
 <dt><kbd><span class="option">--debug</span></kbd></dt>
 <dd><p>print debugging info</p>
 </dd>
+<dt><kbd><span class="option">-V <var>VOLID</var></span>, <span class="option">--volid <var>VOLID</var></span></kbd></dt>
+<dd><p>Set the ISO volume id, defaults to input's</p>
+</dd>
 </dl>
 </div></blockquote>
 </div>
@@ -239,6 +242,12 @@ network connection. Then run <code class="docutils literal notranslate"><span cl
 kernel cmdline will have <code class="docutils literal notranslate"><span class="pre">inst.ks=...</span></code> added to it so that it will be
 executed when the iso is booted (be careful not to boot on a system you don't
 want to wipe out! There will be no prompting).</p>
+<p>By default the volume id of the iso is preserved. You can set a custom volid
+by passing <code class="docutils literal notranslate"><span class="pre">-V</span></code> and the string to set. The kernel cmdline will be changes, and the iso will have th custom volume id.
+eg.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">-</span><span class="n">V</span> <span class="s2">&quot;Test Only&quot;</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="adding-package-repos-to-a-boot-iso">
 <h2>Adding package repos to a boot.iso<a class="headerlink" href="#adding-package-repos-to-a-boot-iso" title="Permalink to this headline">¶</a></h2>

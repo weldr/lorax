@@ -308,9 +308,6 @@ The following variables are passed to the template:
     ``networks``
     list of networks from the kickstart or []
 
-    ``title``
-    from ``--title``
-
     ``project``
     from ``--project``
 
