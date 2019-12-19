@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.toml &mdash; Lorax 31.10 documentation</title>
+  <title>pylorax.api.utils &mdash; Lorax 31.10 documentation</title>
   
 
   
@@ -140,7 +140,7 @@
         
           <li><a href="../../pylorax.html">pylorax</a> &raquo;</li>
         
-      <li>pylorax.api.toml</li>
+      <li>pylorax.api.utils</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -155,7 +155,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for pylorax.api.toml</h1><div class="highlight"><pre>
+  <h1>Source code for pylorax.api.utils</h1><div class="highlight"><pre>
 <span></span><span class="c1">#</span>
 <span class="c1"># Copyright (C) 2019  Red Hat, Inc.</span>
 <span class="c1">#</span>
@@ -171,24 +171,40 @@
 <span class="c1">#</span>
 <span class="c1"># You should have received a copy of the GNU General Public License</span>
 <span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot; API utility functions</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">RecipeError</span><span class="p">,</span> <span class="n">RecipeFileError</span><span class="p">,</span> <span class="n">read_recipe_commit</span>
 
-<span class="kn">import</span> <span class="nn">toml</span>
+<div class="viewcode-block" id="take_limits"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.utils.take_limits">[docs]</a><span class="k">def</span> <span class="nf">take_limits</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Apply offset and limit to an iterable object</span>
 
-<div class="viewcode-block" id="TomlError"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.toml.TomlError">[docs]</a><span class="k">class</span> <span class="nc">TomlError</span><span class="p">(</span><span class="n">toml</span><span class="o">.</span><span class="n">TomlDecodeError</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="sd">    :param iterable: The object to limit</span>
+<span class="sd">    :type iterable: iter</span>
+<span class="sd">    :param offset: The number of items to skip</span>
+<span class="sd">    :type offset: int</span>
+<span class="sd">    :param limit: The total number of items to return</span>
+<span class="sd">    :type limit: int</span>
+<span class="sd">    :returns: A subset of the iterable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">iterable</span><span class="p">[</span><span class="n">offset</span><span class="p">:][:</span><span class="n">limit</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="loads"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.toml.loads">[docs]</a><span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="blueprint_exists"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.utils.blueprint_exists">[docs]</a><span class="k">def</span> <span class="nf">blueprint_exists</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if the blueprint exists</span>
+
+<span class="sd">    :param api: flask object</span>
+<span class="sd">    :type api: Flask</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param recipe_name: Recipe name to read</span>
+<span class="sd">    :type recipe_name: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">toml</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">toml</span><span class="o">.</span><span class="n">TomlDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">TomlError</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">msg</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">doc</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">)</span>
 
-<div class="viewcode-block" id="dumps"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.toml.dumps">[docs]</a><span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
-    <span class="c1"># strip the result, because `toml.dumps` adds a lot of newlines</span>
-    <span class="k">return</span> <span class="n">toml</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">encoder</span><span class="o">=</span><span class="n">toml</span><span class="o">.</span><span class="n">TomlEncoder</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">RecipeError</span><span class="p">,</span> <span class="n">RecipeFileError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 </pre></div>
 
            </div>

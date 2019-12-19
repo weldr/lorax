@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.creator &mdash; Lorax 31.9 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 31.10 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.9
+                31.10
               </div>
             
           
@@ -278,8 +278,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">compression</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span> <span class="ow">or</span> <span class="s2">&quot;xz&quot;</span>
     <span class="n">arch</span> <span class="o">=</span> <span class="n">ArchData</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">arch</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">machine</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">compression</span> <span class="o">==</span> <span class="s2">&quot;xz&quot;</span> <span class="ow">and</span> <span class="n">arch</span><span class="o">.</span><span class="n">bcj</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">compression</span> <span class="o">==</span> <span class="s2">&quot;xz&quot;</span> <span class="ow">and</span> <span class="n">arch</span><span class="o">.</span><span class="n">bcj</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+        <span class="c1"># default to bcj when using xz</span>
         <span class="n">compressargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-Xbcj&quot;</span><span class="p">,</span> <span class="n">arch</span><span class="o">.</span><span class="n">bcj</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+        <span class="n">compressargs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+            <span class="n">compressargs</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">compressargs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span></div>

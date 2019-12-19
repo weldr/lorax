@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.server &mdash; Lorax 31.9 documentation</title>
+  <title>pylorax.api.server &mdash; Lorax 31.10 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.9
+                31.10
               </div>
             
           
@@ -184,6 +184,7 @@
 <span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">vernum</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="k">import</span> <span class="n">HTTP_ERROR</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.v0</span> <span class="k">import</span> <span class="n">v0_api</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.v1</span> <span class="k">import</span> <span class="n">v1_api</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
 
 <span class="n">GitLock</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;GitLock&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;repo&quot;</span><span class="p">,</span> <span class="s2">&quot;lock&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">])</span>
@@ -211,9 +212,9 @@
     <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">docs_path</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 
 <span class="nd">@server</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/status&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">v0_status</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">api_status</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `/api/v0/status`</span>
+<span class="sd">    `/api/status`</span>
 <span class="sd">    ^^^^^^^^^^^^^^^^</span>
 <span class="sd">    Return the status of the API Server::</span>
 
@@ -231,7 +232,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">,</span>
                    <span class="n">build</span><span class="o">=</span><span class="n">vernum</span><span class="p">,</span>
-                   <span class="n">api</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                   <span class="n">api</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
                    <span class="n">db_version</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
                    <span class="n">schema_version</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
                    <span class="n">db_supported</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -243,6 +244,12 @@
 
 <span class="c1"># Register the v0 API on /api/v0/</span>
 <span class="n">server</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">v0_api</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s2">&quot;/api/v0/&quot;</span><span class="p">)</span>
+
+<span class="c1"># Register the v1 API on /api/v1/</span>
+<span class="c1"># Use v0 routes by default</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">v0_api</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s2">&quot;/api/v1/&quot;</span><span class="p">,</span>
+                          <span class="n">skip_rules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/projects/source/info/&lt;source_names&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;/projects/source/new&quot;</span><span class="p">])</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">v1_api</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s2">&quot;/api/v1/&quot;</span><span class="p">)</span>
 </pre></div>
 
            </div>

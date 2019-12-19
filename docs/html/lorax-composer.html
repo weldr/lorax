@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 31.9 documentation</title>
+  <title>lorax-composer &mdash; Lorax 31.10 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                31.9
+                31.10
               </div>
             
           
@@ -279,12 +279,7 @@ images using <code class="docutils literal notranslate"><span class="pre">lorax-
 <h2>lorax-composer cmdline arguments<a class="headerlink" href="#lorax-composer-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
 <p><p>Lorax Composer API Server</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">lorax</span><span class="o">-</span><span class="n">composer</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">socket</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span> <span class="n">USER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">group</span> <span class="n">GROUP</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mockfiles</span> <span class="n">MOCKFILES</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CONFIG</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">releasever</span> <span class="n">STRING</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">repos</span><span class="p">]</span>
-                      <span class="n">BLUEPRINTS</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">lorax</span><span class="o">-</span><span class="n">composer</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">socket</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span> <span class="n">USER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">group</span> <span class="n">GROUP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mockfiles</span> <span class="n">MOCKFILES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">releasever</span> <span class="n">STRING</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">repos</span><span class="p">]</span> <span class="n">BLUEPRINTS</span>
 </pre></div>
 </div>
 <div class="section" id="Positional Arguments">
@@ -397,19 +392,37 @@ result in the new blueprint being stored as <code class="docutils literal notran
 <p>The names must match the names exactly, and the versions can be an exact match
 or a filesystem-like glob of the version using <code class="docutils literal notranslate"><span class="pre">*</span></code> wildcards and <code class="docutils literal notranslate"><span class="pre">?</span></code>
 character matching.</p>
-<p>NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
-that is planned for a future release. And currently there are no differences
-between <code class="docutils literal notranslate"><span class="pre">packages</span></code> and <code class="docutils literal notranslate"><span class="pre">modules</span></code> in <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>.</p>
+<p>NOTE: Currently there are no differences between <code class="docutils literal notranslate"><span class="pre">packages</span></code> and <code class="docutils literal notranslate"><span class="pre">modules</span></code>
+in <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>. Both are treated like an rpm package dependency.</p>
+<p>For example, to install <code class="docutils literal notranslate"><span class="pre">tmux-2.9a</span></code> and <code class="docutils literal notranslate"><span class="pre">openssh-server-8.*</span></code>, you would add
+this to your blueprint:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">packages</span><span class="p">]]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;tmux&quot;</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;2.9a&quot;</span>
+
+<span class="p">[[</span><span class="n">packages</span><span class="p">]]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;openssh-server&quot;</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;8.*&quot;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="groups">
 <h3>[[groups]]<a class="headerlink" href="#groups" title="Permalink to this headline">¶</a></h3>
-<p>These entries describe a group of packages to be installed into the image.  Package groups are
+<p>The <code class="docutils literal notranslate"><span class="pre">groups</span></code> entries describe a group of packages to be installed into the image.  Package groups are
 defined in the repository metadata.  Each group has a descriptive name used primarily for display
 in user interfaces and an ID more commonly used in kickstart files.  Here, the ID is the expected
 way of listing a group.</p>
 <p>Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
 For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
 for selecting optional packages.</p>
+<p>For example, if you want to install the <code class="docutils literal notranslate"><span class="pre">anaconda-tools</span></code> group you would add this to your
+blueprint:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">groups</span><span class="p">]]</span>
+<span class="n">name</span><span class="o">=</span><span class="s2">&quot;anaconda-tools&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">groups</span></code> is a TOML list, so each group needs to be listed separately, like <code class="docutils literal notranslate"><span class="pre">packages</span></code> but with
+no version number.</p>
 </div>
 <div class="section" id="customizations">
 <h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>

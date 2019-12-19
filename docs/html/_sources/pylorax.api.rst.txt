@@ -132,10 +132,26 @@ pylorax.api.toml module
    :undoc-members:
    :show-inheritance:
 
+pylorax.api.utils module
+------------------------
+
+.. automodule:: pylorax.api.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pylorax.api.v0 module
 ---------------------
 
 .. automodule:: pylorax.api.v0
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pylorax.api.v1 module
+---------------------
+
+.. automodule:: pylorax.api.v1
    :members:
    :undoc-members:
    :show-inheritance:

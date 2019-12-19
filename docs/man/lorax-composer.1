@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX-COMPOSER" "1" "Jul 29, 2019" "31.9" "Lorax"
+.TH "LORAX-COMPOSER" "1" "Dec 19, 2019" "31.10" "Lorax"
 .SH NAME
 lorax-composer \- Lorax Composer Documentation
 .
@@ -124,12 +124,7 @@ Lorax Composer API Server
 .sp
 .nf
 .ft C
-usage: lorax\-composer [\-h] [\-\-socket SOCKET] [\-\-user USER] [\-\-group GROUP]
-                      [\-\-log LOG] [\-\-mockfiles MOCKFILES]
-                      [\-\-sharedir SHAREDIR] [\-V] [\-c CONFIG]
-                      [\-\-releasever STRING] [\-\-tmp TMP] [\-\-proxy PROXY]
-                      [\-\-no\-system\-repos]
-                      BLUEPRINTS
+usage: lorax\-composer [\-h] [\-\-socket SOCKET] [\-\-user USER] [\-\-group GROUP] [\-\-log LOG] [\-\-mockfiles MOCKFILES] [\-\-sharedir SHAREDIR] [\-V] [\-c CONFIG] [\-\-releasever STRING] [\-\-tmp TMP] [\-\-proxy PROXY] [\-\-no\-system\-repos] BLUEPRINTS
 .ft P
 .fi
 .UNINDENT
@@ -262,12 +257,30 @@ The names must match the names exactly, and the versions can be an exact match
 or a filesystem\-like glob of the version using \fB*\fP wildcards and \fB?\fP
 character matching.
 .sp
-NOTE: As of lorax\-composer\-29.2\-1 the versions are not used for depsolving,
-that is planned for a future release. And currently there are no differences
-between \fBpackages\fP and \fBmodules\fP in \fBlorax\-composer\fP\&.
+NOTE: Currently there are no differences between \fBpackages\fP and \fBmodules\fP
+in \fBlorax\-composer\fP\&. Both are treated like an rpm package dependency.
+.sp
+For example, to install \fBtmux\-2.9a\fP and \fBopenssh\-server\-8.*\fP, you would add
+this to your blueprint:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[[packages]]
+name = "tmux"
+version = "2.9a"
+
+[[packages]]
+name = "openssh\-server"
+version = "8.*"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SS [[groups]]
 .sp
-These entries describe a group of packages to be installed into the image.  Package groups are
+The \fBgroups\fP entries describe a group of packages to be installed into the image.  Package groups are
 defined in the repository metadata.  Each group has a descriptive name used primarily for display
 in user interfaces and an ID more commonly used in kickstart files.  Here, the ID is the expected
 way of listing a group.
@@ -275,6 +288,23 @@ way of listing a group.
 Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
 For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
 for selecting optional packages.
+.sp
+For example, if you want to install the \fBanaconda\-tools\fP group you would add this to your
+blueprint:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[[groups]]
+name="anaconda\-tools"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+\fBgroups\fP is a TOML list, so each group needs to be listed separately, like \fBpackages\fP but with
+no version number.
 .SS Customizations
 .sp
 The \fB[customizations]\fP section can be used to configure the hostname of the final image. eg.:
