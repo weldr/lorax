@@ -82,8 +82,9 @@ __EOF__
 
     rlPhaseStartTest "Upload QCOW2 image to OpenStack"
         rlRun -t -c "$CLI compose image $UUID"
-        IMAGE="$UUID-disk.qcow2"
-        OS_IMAGE_NAME="Composer-$UUID-Automated-Import"
+        rlRun -t -c "mv $UUID-disk.qcow2 Composer-Test-$UUID-disk.qcow2"
+        IMAGE="Composer-Test-$UUID-disk.qcow2"
+        OS_IMAGE_NAME="Composer-Test-$UUID"
 
         response=`ansible localhost -m os_image -a "name=$OS_IMAGE_NAME filename=$IMAGE is_public=no"`
         rlAssert0 "Image upload successfull" $?
@@ -94,13 +95,13 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        VM_NAME="Composer-Auto-VM-$UUID"
+        VM_NAME="Composer-Test-VM-$UUID"
 
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
-        rlRun -t -c "ansible localhost -m os_keypair -a 'name=$VM_NAME-key public_key_file=$SSH_KEY_DIR/id_rsa.pub'"
+        rlRun -t -c "ansible localhost -m os_keypair -a \"name=Composer-Test-Key-$UUID public_key_file=$SSH_KEY_DIR/id_rsa.pub\""
 
-        response=`ansible localhost -m os_server -a "name=$VM_NAME image=$OS_IMAGE_UUID network=provider_net_cci_2 flavor=ci.m1.medium.ephemeral key_name=$VM_NAME-key auto_ip=yes"`
+        response=`ansible localhost -m os_server -a "name=$VM_NAME image=$OS_IMAGE_UUID network=provider_net_cci_2 flavor=ci.m1.medium.ephemeral key_name=Composer-Test-Key-$UUID auto_ip=yes meta='composer-test=true'"`
         rlAssert0 "VM started successfully" $?
         rlLogInfo "$response"
 
@@ -123,7 +124,7 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlRun -t -c "ansible localhost -m os_keypair -a 'name=$VM_NAME-key state=absent'"
+        rlRun -t -c "ansible localhost -m os_keypair -a 'name=Composer-Test-Key-$UUID state=absent'"
         rlRun -t -c "ansible localhost -m os_server -a 'name=$VM_NAME state=absent'"
         rlRun -t -c "ansible localhost -m os_image -a 'name=$OS_IMAGE_NAME state=absent'"
         rlRun -t -c "$CLI compose delete $UUID"
