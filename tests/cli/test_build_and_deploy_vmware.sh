@@ -103,7 +103,8 @@ __EOF__
 
     rlPhaseStartTest "Upload VMDK image in vCenter"
         rlRun -t -c "$CLI compose image $UUID"
-        IMAGE="$UUID-disk.vmdk"
+        rlRun -t -c "mv $UUID-disk.vmdk Composer-Test-$UUID-disk.vmdk"
+        IMAGE="Composer-Test-$UUID-disk.vmdk"
 
         python3 $SAMPLES/upload_file_to_datastore.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
                 -d $V_DATASTORE -l `readlink -f $IMAGE` -r $IMAGE
@@ -111,7 +112,7 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        VM_NAME="Composer-Auto-VM-$UUID"
+        VM_NAME="Composer-Test-VM-$UUID"
         INSTANCE_UUID=`python3 $SAMPLES/create_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
                         --datacenter $V_DATACENTER -c $V_CLUSTER -f $V_FOLDER -d $V_DATASTORE \
                         --portgroup $V_NETWORK -v $IMAGE -m 2048 -g rhel7_64Guest -n $VM_NAME \

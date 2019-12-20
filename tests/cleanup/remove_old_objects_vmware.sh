@@ -55,8 +55,8 @@ rlJournalStart
         rlRun -t -c 'python3 $SCRIPT_DIR/vmware_list_vms.py --host $V_HOST --user $V_USERNAME --password $V_PASSWORD --disable_ssl_verification > $TMP_DIR/vmware_vms' 0 'Getting a list of VMs'
 
         while read name uuid creation_date; do
-            # remove VMs with name starting "Composer-Auto-VM" and older than $TIMESTAMP
-            echo $name | grep ^Composer-Auto-VM > /dev/null
+            # remove VMs with name starting "Composer-Test" and older than $TIMESTAMP
+            echo $name | grep ^Composer-Test > /dev/null
             if [ $? -eq 0 -a "$creation_date" \< "$TIMESTAMP" ]; then
                 # note: vmdk disk is removed when destroying the VM
                 rlRun 'python3 $SAMPLES/destroy_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD --uuid $uuid' 0 "Delete VM: $name UUID: $uuid"
