@@ -60,12 +60,21 @@ rlJournalStart
     debug:
       var: openstack_servers
 
-  - name: Delete old VMs
+  - name: Delete old VMs by tag
     os_server:
       name: "{{item.id}}"
       state: absent
     loop: "{{openstack_servers}}"
-    when: item.created < lookup('env','TIMESTAMP') and (item.metadata.Tag is not defined or item.metadata.Tag != "keep_me")
+    when: item.created < lookup('env','TIMESTAMP') and (item.metadata.Tag is defined and item.metadata.Tag == "composer-test")
+    loop_control:
+      label: "{{item.name}} (id: {{item.id}} created: {{item.created}} metadata: {{item.metadata}})"
+
+  - name: Delete old VMs by name
+    os_server:
+      name: "{{item.id}}"
+      state: absent
+    loop: "{{openstack_servers}}"
+    when: item.created < lookup('env','TIMESTAMP') and (item.name | regex_search('Composer-Test'))
     loop_control:
       label: "{{item.name}} (id: {{item.id}} created: {{item.created}} metadata: {{item.metadata}})"
 __EOF__
@@ -92,7 +101,7 @@ __EOF__
       id: "{{item.id}}"
       state: absent
     loop: "{{openstack_image}}"
-    when: (item.created_at < lookup('env','TIMESTAMP')) and (item.name | regex_search('Composer-[a-f0-9-]{36}-Automated-Import'))
+    when: (item.created_at < lookup('env','TIMESTAMP')) and (item.name | regex_search('Composer-Test'))
     loop_control:
       label: "{{item.name}} (id: {{item.id}} created: {{item.created_at}})"
 __EOF__
@@ -131,4 +140,3 @@ __EOF__
 
 rlJournalEnd
 rlJournalPrintText
-
