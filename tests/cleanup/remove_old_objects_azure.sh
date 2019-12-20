@@ -4,12 +4,14 @@
 . /usr/share/beakerlib/beakerlib.sh
 
 
-# Delete old objects based on the $TAG_NAME tag value defined in a previous execution of the script
+# Delete old objects based on first_seen tag value
 delete_old_resources() {
     local resource_type="$1"
 
-    # list resources older than $TIMESTAMP based on the $TAG_NAME tag created in a previous run
-    rlRun -c -s 'az resource list --resource-type $resource_type --query "[?tags.$TAG_NAME < \`$TIMESTAMP\`].name" --output tsv' 0 "Get a list of $resource_type older than $TIMESTAMP"
+    # list composer-test resources older than $TIMESTAMP based on the first_seen tag
+    # timestamp tagging is done either when resources are created or by the function below
+    # Note: the query language here is called JMESPath
+    rlRun -c -s 'az resource list --resource-type $resource_type --query "[?tags.$TAG_NAME < \`$TIMESTAMP\` && tags.composer_test == \`true\`].name" --output tsv' 0 "Get a list of $resource_type older than $TIMESTAMP"
     resources_to_delete=$(cat $rlRun_LOG)
 
     if [ -n "$resources_to_delete" ]; then
@@ -21,12 +23,12 @@ delete_old_resources() {
     fi
 }
 
-# Find objects without the $TAG_NAME tag and create the tag with the current date/time value
+# Find objects without the first_seen tag and create the tag with the current date/time value
 tag_new_resources() {
     local resource_type="$1"
 
-    # list resources without the $TAG_NAME tag
-    rlRun -c -s 'az resource list --resource-type $resource_type --query "[?tags.$TAG_NAME == null].name" --output tsv' 0 "Get a list of $resource_type without the $TAG_NAME tag."
+    # list composer-test resources without the first_seen tag
+    rlRun -c -s 'az resource list --resource-type $resource_type --query "[?tags.$TAG_NAME == null && tags.composer_test == \`true\`].name" --output tsv' 0 "Get a list of $resource_type without the $TAG_NAME tag."
     resources_without_tag=$(cat $rlRun_LOG)
 
     if [ -n "$resources_without_tag" ]; then
@@ -126,7 +128,7 @@ Microsoft.Compute/images
 
     rlPhaseStartTest "Delete old blobs"
         # get a list of blobs older than $TIMESTAMP
-        rlRun -c -s 'az storage blob list --container-name $AZURE_STORAGE_CONTAINER --query "[?properties.creationTime < \`$TIMESTAMP\`].[name,properties.creationTime]" --output tsv'
+        rlRun -c -s 'az storage blob list --container-name $AZURE_STORAGE_CONTAINER --query "[?properties.creationTime < \`$TIMESTAMP\` && tags.composer_test == \`true\`].[name,properties.creationTime]" --output tsv'
         blobs_to_delete=$(cat $rlRun_LOG)
 
         if [ -n "$blobs_to_delete" ]; then

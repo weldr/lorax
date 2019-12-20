@@ -74,23 +74,27 @@ rlJournalStart
 
     rlPhaseStartTest "Upload image to Azure"
         rlRun -t -c "$CLI compose image $UUID"
-        IMAGE="$UUID-disk.vhd"
-        OS_IMAGE_NAME="Composer-$UUID-Automated-Import"
+        rlRun -t -c "mv $UUID-disk.vhd Composer-Test-$UUID-disk.vhd"
+        IMAGE="Composer-Test-$UUID-disk.vhd"
+        OS_IMAGE_NAME="Composer-Test-$UUID"
 
         rlRun -t -c "ansible localhost -m azure_rm_storageblob -a \
                     'resource_group=$AZURE_RESOURCE_GROUP \
                      storage_account_name=$AZURE_STORAGE_ACCOUNT \
                      container=$AZURE_STORAGE_CONTAINER \
-                     blob=$IMAGE src=$IMAGE blob_type=page'"
+                     blob=$IMAGE src=$IMAGE blob_type=page \
+                     tags={\"composer_test\":\"true\"}'"
 
         # create image from blob
+        now=$(date -u '+%FT%T')
         rlRun -t -c "ansible localhost -m azure_rm_image -a \
                     'resource_group=$AZURE_RESOURCE_GROUP name=$OS_IMAGE_NAME os_type=Linux location=eastus \
-                    source=https://$AZURE_STORAGE_ACCOUNT.blob.core.windows.net/$AZURE_STORAGE_CONTAINER/$IMAGE'"
+                     source=https://$AZURE_STORAGE_ACCOUNT.blob.core.windows.net/$AZURE_STORAGE_CONTAINER/$IMAGE \
+                     tags={\"composer_test\":\"true\",\"first_seen\":\"$now\"}'"
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        VM_NAME="Composer-Auto-VM-$UUID"
+        VM_NAME="Composer-Test-VM-$UUID"
 
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
@@ -120,6 +124,7 @@ rlJournalStart
           resource_group: $AZURE_RESOURCE_GROUP
         tags:
           "first_seen": "$now"
+          "composer_test": "true"
         storage_account_name: $AZURE_STORAGE_ACCOUNT
 __EOF__
 
