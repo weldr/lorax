@@ -22,6 +22,30 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
+        UUID=`$CLI compose start example-http-server ami`
+        rlAssertEquals "exit code should be zero" $? 0
+        UUID=`echo $UUID | cut -f 2 -d' '`
+
+        if [ -n "$UUID" ]; then
+            until $CLI compose info $UUID | grep 'RUNNING'; do
+                sleep 20
+                rlLogInfo "Waiting for compose to start running..."
+		if $CLI compose info $UUID | grep 'FAILED'; then
+		      rlFail "Compose FAILED!"
+		      break
+		fi	      
+            done;
+        else
+            rlFail "Compose UUID is empty!"
+        fi
+    rlPhaseEnd
+
+    rlPhaseStartTest "cancel compose"
+        rlRun -t -c "$CLI compose cancel $UUID"
+        rlRun -t -c "$CLI compose info $UUID" 1 "compose is canceled"
+    rlPhaseEnd
+
+    rlPhaseStartTest "compose start again"
         UUID=`$CLI --test=2 compose start example-http-server tar`
         rlAssertEquals "exit code should be zero" $? 0
 
