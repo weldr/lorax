@@ -308,7 +308,17 @@ def anaconda_cleanup(dirinstall_path):
 
     Attempts to cleanup may also fail. Catch these and continue trying the
     other mountpoints.
+
+    Anaconda may also leave /run/anaconda.pid behind, clean that up as well.
     """
+    # Anaconda may not clean up its /var/run/anaconda.pid file
+    # Make sure the process is really finished (it should be, since it was started from a subprocess call)
+    # and then remove the pid file.
+    if os.path.exists("/var/run/anaconda.pid"):
+        # lorax-composer runs anaconda using unshare so the pid is always 1
+        if open("/var/run/anaconda.pid").read().strip() == "1":
+            os.unlink("/var/run/anaconda.pid")
+
     rc = True
     dirinstall_path = os.path.abspath(dirinstall_path)
     # unmount filesystems
