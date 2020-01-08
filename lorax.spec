@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.37
+Version:        28.14.38
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -252,6 +252,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Jan 08 2020 Brian C. Lane <bcl@redhat.com> 28.14.38-1
+- composer-cli: Increase DELETE timeout to 120s (bcl)
+  Resolves: rhbz#1788461
+- Add test for running composer with --no-system-repos option (jikortus)
+  Related: rhbz#1785154
+
 * Fri Dec 13 2019 Brian C. Lane <bcl@redhat.com> 28.14.37-1
 - composer-cli: Add python3-pytoml to composer-cli requirements (bcl)
   Related: rhbz#1779301
