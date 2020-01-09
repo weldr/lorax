@@ -11,7 +11,7 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartTest "compose types"
-        if [ "$(uname -m)" = "x86_64" ]; then
+        if [ "$(uname -m)" == "x86_64" ]; then
             rlAssertEquals "lists all supported types" \
                     "`$CLI compose types | xargs`" "alibaba ami ext4-filesystem google live-iso openstack partitioned-disk qcow2 tar vhd vmdk"
         else

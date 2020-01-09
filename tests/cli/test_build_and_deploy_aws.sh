@@ -140,6 +140,10 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start EC2 instance"
+        INSTANCE_TYPE="t2.small"
+        if [ "$(uname -m)" == "aarch64" ]; then
+            INSTANCE_TYPE="a1.medium"
+        fi
         # generate new ssh key and import it into EC2
         KEY_NAME=composer-$UUID
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
@@ -147,7 +151,7 @@ __EOF__
         rlRun -t -c "aws ec2 import-key-pair --key-name $KEY_NAME --public-key-material file://$SSH_KEY_DIR/id_rsa.pub"
 
         # start a new instance with selected ssh key, enable ssh
-        INSTANCE_ID=`aws ec2 run-instances --image-id $AMI_ID --instance-type t2.small --key-name $KEY_NAME \
+        INSTANCE_ID=`aws ec2 run-instances --image-id $AMI_ID --instance-type $INSTANCE_TYPE --key-name $KEY_NAME \
             --security-groups allow-ssh --instance-initiated-shutdown-behavior terminate --enable-api-termination \
             --count 1| grep InstanceId | cut -f4 -d'"'`
 
