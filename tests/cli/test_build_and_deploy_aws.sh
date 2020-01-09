@@ -146,6 +146,10 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start EC2 instance"
+        INSTANCE_TYPE="t2.small"
+        if [ "$(uname -m)" == "aarch64" ]; then
+            INSTANCE_TYPE="a1.medium"
+        fi
         # generate new ssh key
         KEY_NAME=composer-$UUID
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
@@ -155,6 +159,7 @@ __EOF__
                        'key_name=$KEY_NAME \
                         ssh_key_dir=$SSH_KEY_DIR \
                         ami_id=$AMI_ID \
+                        instance_type=$INSTANCE_TYPE \
                         tmp_dir=$TMP_DIR' \
                      $PLAYBOOKS_DIR/instance.yml"
 

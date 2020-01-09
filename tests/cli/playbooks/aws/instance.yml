@@ -7,10 +7,10 @@
 
   - name: Create instance
     ec2_instance:
-      name: "{{ ami_id }}"
+      name: "Composer-Test-{{ ami_id }}"
       image_id: "{{ ami_id }}"
       key_name: "{{ key_name }}"
-      instance_type: t2.small
+      instance_type: "{{ instance_type }}"
       security_group: allow-ssh
       instance_initiated_shutdown_behavior: terminate
       state: present
