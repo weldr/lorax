@@ -877,7 +877,7 @@ def compose_types(share_dir):
     disable_map = {
         "arm": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
         "armhfp": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
-        "aarch64": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
+        "aarch64": ["alibaba", "google", "hyper-v", "vhd", "vmdk"],
         "ppc": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
         "ppc64": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],
         "ppc64le": ["alibaba", "ami", "google", "hyper-v", "vhd", "vmdk"],

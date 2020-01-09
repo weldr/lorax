@@ -14,6 +14,10 @@ rlJournalStart
         if [ "$(uname -m)" = "x86_64" ]; then
             rlAssertEquals "lists all supported types" \
                     "`$CLI compose types | xargs`" "alibaba ami ext4-filesystem google live-iso openstack partitioned-disk qcow2 tar vhd vmdk"
+        elif [ "$(uname -m)" == "aarch64" ]; then
+            # ami is supported on aarch64
+            rlAssertEquals "lists all supported types" \
+                    "`$CLI compose types | xargs`" "ami ext4-filesystem live-iso liveimg-tar openstack partitioned-disk qcow2 tar"
         else
             # non-x86 architectures disable alibaba
             rlAssertEquals "lists all supported types" \
