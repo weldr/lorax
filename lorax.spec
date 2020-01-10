@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.3
+Version:        32.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -263,6 +263,24 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Jan 10 2020 Brian C. Lane <bcl@redhat.com> 32.4-1
+- livemedia-creator: workaround glibc limitation when starting anaconda (dan@danny.cz)
+- AWS test: take into account different instance type for non x86 (atodorov@redhat.com)
+- Add test for canceling a running compose (jrusz@redhat.com)
+- composer-cli: Increase DELETE timeout to 120s (bcl@redhat.com)
+- anaconda_cleanup: Remove anaconda.pid if it is left behind (bcl@redhat.com)
+- New lorax documentation - 32.4 (bcl@redhat.com)
+- docs: Add documentation for new mkksiso --volid feature (bcl@redhat.com)
+- mkksiso: Add the option to set the ISO volume label (florian.achleitner@prime-sign.com)
+- spec: Add missing BuildRequires: make (florian.achleitner@prime-sign.com)
+- tests: Use wildcard versions for packages (bcl@redhat.com)
+- composer-cli: Only display the available compose types (bcl@redhat.com)
+- fix typo in api docstring (obudai@redhat.com)
+- Remove all repo files & install composer-cli from host repos (atodorov@redhat.com)
+- Always remove lorax-composer & composer-cli RPMs before installing them (atodorov@redhat.com)
+- Always remove existing VM image before building new one (atodorov@redhat.com)
+- Add git to Dockerfile.test (bcl@redhat.com)
+
 * Mon Nov 18 2019 Brian C. Lane <bcl@redhat.com> 32.3-1
 - lorax-composer: Add cloud-init support to the vhd image (bcl@redhat.com)
 - tests: add docker variable to .travis.yml (jrusz@redhat.com)
