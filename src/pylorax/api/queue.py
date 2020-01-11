@@ -236,7 +236,9 @@ def make_compose(cfg, results_dir):
 
     cfg_dict["lorax_templates"] = find_templates(cfg.share_dir)
     cfg_dict["tmp"] = cfg.tmp
-    cfg_dict["dracut_args"] = None                  # Use default args for dracut
+    # Use default args for dracut
+    cfg_dict["dracut_conf"] = None
+    cfg_dict["dracut_args"] = None
 
     # TODO How to support other arches?
     cfg_dict["arch"] = None

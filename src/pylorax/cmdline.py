@@ -113,12 +113,15 @@ def lorax_parser(dracut_default=""):
                           help="Use a plain squashfs filesystem for the runtime.")
 
     # dracut arguments
-    dracut_group = parser.add_argument_group("dracut arguments")
+    dracut_group = parser.add_argument_group("dracut arguments: (default: %s)" % dracut_default)
+    dracut_group.add_argument("--dracut-conf",
+                              help="Path to a dracut.conf file to use instead of the "
+                                   "default arguments. See the dracut.conf(5) manpage.")
     dracut_group.add_argument("--dracut-arg", action="append", dest="dracut_args",
                               help="Argument to pass to dracut when "
                                    "rebuilding the initramfs. Pass this "
                                    "once for each argument. NOTE: this "
-                                   "overrides the default. (default: %s)" % dracut_default)
+                                   "overrides the defaults.")
 
     # add the show version option
     parser.add_argument("-V", help="show program's version number and exit",
@@ -268,12 +271,15 @@ def lmc_parser(dracut_default=""):
                             help="RNG device for QEMU (none for no RNG)")
 
     # dracut arguments
-    dracut_group = parser.add_argument_group("dracut arguments")
+    dracut_group = parser.add_argument_group("dracut arguments: (default: %s)" % dracut_default)
+    dracut_group.add_argument("--dracut-conf",
+                              help="Path to a dracut.conf file to use instead of the "
+                                   "default arguments. See the dracut.conf(5) manpage.")
     dracut_group.add_argument("--dracut-arg", action="append", dest="dracut_args",
                               help="Argument to pass to dracut when "
                                    "rebuilding the initramfs. Pass this "
                                    "once for each argument. NOTE: this "
-                                   "overrides the default. (default: %s)" % dracut_default)
+                                   "overrides the defaults.")
 
     # pxe to live arguments
     pxelive_group = parser.add_argument_group("pxe to live arguments")

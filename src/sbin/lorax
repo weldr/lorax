@@ -111,6 +111,10 @@ def main():
         parser.error("sharedir %s doesn't exist." % opts.sharedir)
     if opts.config and not os.path.exists(opts.config):
         parser.error("config file %s doesn't exist." % opts.config)
+    if opts.dracut_args and opts.dracut_conf:
+        parser.error("argument --dracut-arg: not allowed with argument --dracut-conf")
+    if opts.dracut_conf and not os.path.exists(opts.dracut_conf):
+        parser.error("dracut config file %s doesn't exist." % opts.dracut_conf)
 
     setup_logging(opts)
     log.debug(opts)
@@ -191,6 +195,12 @@ def main():
     with open(lorax.conf.get("lorax", "logdir") + '/lorax.conf', 'w') as f:
         lorax.conf.write(f)
 
+    # Use a dracut config file instead of the default arguments
+    if opts.dracut_conf:
+        user_dracut_args = ["--conf %s" % opts.dracut_conf]
+    else:
+        user_dracut_args = opts.dracut_args
+
     lorax.run(dnfbase, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=opts.outputdir, buildarch=opts.buildarch,
@@ -202,7 +212,7 @@ def main():
               add_arch_templates=opts.add_arch_templates,
               add_arch_template_vars=parsed_add_arch_template_vars,
               remove_temp=True, verify=opts.verify,
-              user_dracut_args=opts.dracut_args,
+              user_dracut_args=user_dracut_args,
               squashfs_only=opts.squashfs_only)
 
     # Release the lock on the tempdir

@@ -47,7 +47,7 @@ from pylorax.treebuilder import findkernels
 from pylorax.sysutils import joinpaths, remove
 
 
-# Default parameters for rebuilding initramfs, override with --dracut-args
+# Default parameters for rebuilding initramfs, override with --dracut-arg or --dracut-conf
 DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live dmsquash-live-ntfs convertfs pollcdrom qemu qemu-net",
                   "--omit", "plymouth", "--no-hostonly", "--debug", "--no-early-microcode"]
 
@@ -131,6 +131,21 @@ def squashfs_args(opts):
         compressargs = []
     return (compression, compressargs)
 
+def dracut_args(opts):
+    """Return a list of the args to pass to dracut
+
+    Return the default argument list unless one of the dracut cmdline arguments
+    has been used.
+    """
+    if opts.dracut_conf:
+        return ["--conf", opts.dracut_conf]
+    elif opts.dracut_args:
+        args = []
+        for arg in opts.dracut_args:
+            args += arg.split(" ", 1)
+        return args
+    else:
+        return DRACUT_DEFAULT
 
 def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
                    vcpus=1, arch=None, title="Linux", project="Linux",
@@ -223,15 +238,10 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
     :param str sys_root_dir: Path to root of the system
     :param str results_dir: Path of directory for storing results
     """
-    if not opts.dracut_args:
-        dracut_args = DRACUT_DEFAULT
-    else:
-        dracut_args = []
-        for arg in opts.dracut_args:
-            dracut_args += arg.split(" ", 1)
-    log.info("dracut args = %s", dracut_args)
+    # cmdline dracut args override the defaults, but need to be parsed
+    log.info("dracut args = %s", dracut_args(opts))
 
-    dracut = ["dracut", "--nomdadmconf", "--nolvmconf"] + dracut_args
+    dracut = ["dracut", "--nomdadmconf", "--nolvmconf"] + dracut_args(opts)
 
     kdir = "boot"
     if opts.ostree:
@@ -367,14 +377,8 @@ def make_livecd(opts, mount_dir, work_dir):
                      templatedir=joinpaths(opts.lorax_templates,"live/"),
                      extra_boot_args=opts.extra_boot_args)
     log.info("Rebuilding initrds")
-    if not opts.dracut_args:
-        dracut_args = DRACUT_DEFAULT
-    else:
-        dracut_args = []
-        for arg in opts.dracut_args:
-            dracut_args += arg.split(" ", 1)
-    log.info("dracut args = %s", dracut_args)
-    tb.rebuild_initrds(add_args=dracut_args)
+    log.info("dracut args = %s", dracut_args(opts))
+    tb.rebuild_initrds(add_args=dracut_args(opts))
     log.info("Building boot.iso")
     tb.build()
 

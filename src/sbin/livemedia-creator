@@ -148,6 +148,9 @@ def main():
     if os.getuid() != 0:
         errors.append("You need to run this as root")
 
+    if opts.dracut_args and opts.dracut_conf:
+        errors.append("argument --dracut-arg: not allowed with argument --dracut-conf")
+
     if errors:
         list(log.error(e) for e in errors)
         sys.exit(1)

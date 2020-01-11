@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2018-2020 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 import os
 import tempfile
 import unittest
+from unittest import mock
 import xml.etree.ElementTree as ET
 
 # For kickstart check tests
@@ -27,8 +28,8 @@ from ..lib import get_file_magic
 from pylorax import find_templates
 from pylorax.base import DataHolder
 from pylorax.creator import FakeDNF, create_pxe_config, make_appliance, make_runtime, squashfs_args
-from pylorax.creator import calculate_disk_size
-from pylorax.creator import get_arch, find_ostree_root, check_kickstart
+from pylorax.creator import calculate_disk_size, dracut_args, DRACUT_DEFAULT
+from pylorax.creator import get_arch, find_ostree_root, check_kickstart, make_livecd
 from pylorax.executils import runcmd_output
 from pylorax.sysutils import joinpaths
 
@@ -67,6 +68,21 @@ class CreatorTest(unittest.TestCase):
 
         opts = DataHolder(compression="xz", compress_args=["-X32767", "-Xbcj x86"], arch="x86_64")
         self.assertEqual(squashfs_args(opts), ("xz", ["-X32767", "-Xbcj", "x86"]), (opts, squashfs_args(opts)))
+
+    def test_dracut_args(self):
+        """Test dracut_args results"""
+
+        # Use default args
+        opts = DataHolder(dracut_args=None, dracut_conf=None)
+        self.assertEqual(dracut_args(opts), DRACUT_DEFAULT)
+
+        # Use a config file from --dracut-conf
+        opts = DataHolder(dracut_args=None, dracut_conf="/var/tmp/project/lmc-dracut.conf")
+        self.assertEqual(dracut_args(opts), ["--conf", "/var/tmp/project/lmc-dracut.conf"])
+
+        # Use --dracut-arg
+        opts = DataHolder(dracut_args=["--xz",  "--omit plymouth", "--add livenet dmsquash-live dmsquash-live-ntfs"], dracut_conf=None)
+        self.assertEqual(dracut_args(opts), ["--xz",  "--omit", "plymouth", "--add", "livenet dmsquash-live dmsquash-live-ntfs"])
 
     def test_make_appliance(self):
         """Test creating the appliance description XML file"""
@@ -365,3 +381,34 @@ class CreatorTest(unittest.TestCase):
         """Test the mount_boot_part_over_root ostree function"""
         # Make a fake disk image with a / and a /boot/loader.0
         # Mount the / partition
+
+    def test_make_livecd_dracut(self):
+        """Test the make_livecd function with dracut options"""
+        with tempfile.TemporaryDirectory(prefix="lorax.test.") as tmpdir:
+            # Make a fake kernel and initrd
+            mkFakeBoot(joinpaths(tmpdir, "mount_dir"))
+            os.makedirs(joinpaths(tmpdir, "mount_dir/tmp/config_files"))
+
+            lorax_templates = os.path.abspath(find_templates("./share/"))
+            with mock.patch('pylorax.treebuilder.TreeBuilder.build'):
+                with mock.patch('pylorax.treebuilder.TreeBuilder.rebuild_initrds') as ri:
+                    # Test with no dracut args
+                    opts = DataHolder(project="Fedora", releasever="32", lorax_templates=lorax_templates, volid=None,
+                                      domacboot=False, extra_boot_args="", dracut_args=None, dracut_conf=None)
+                    make_livecd(opts, joinpaths(tmpdir, "mount_dir"), joinpaths(tmpdir, "work_dir"))
+                    ri.assert_called_with(add_args=DRACUT_DEFAULT)
+
+                    # Test with --dracut-arg
+                    opts = DataHolder(project="Fedora", releasever="32", lorax_templates=lorax_templates, volid=None,
+                                      domacboot=False, extra_boot_args="", 
+                                      dracut_args=["--xz",  "--omit plymouth", "--add livenet dmsquash-live dmsquash-live-ntfs"], dracut_conf=None)
+                    make_livecd(opts, joinpaths(tmpdir, "mount_dir"), joinpaths(tmpdir, "work_dir"))
+                    ri.assert_called_with(add_args=["--xz",  "--omit", "plymouth", "--add", "livenet dmsquash-live dmsquash-live-ntfs"])
+
+
+                    # Test with --dracut-conf
+                    opts = DataHolder(project="Fedora", releasever="32", lorax_templates=lorax_templates, volid=None,
+                                      domacboot=False, extra_boot_args="", dracut_args=None, 
+                                      dracut_conf="/var/tmp/project/lmc-dracut.conf")
+                    make_livecd(opts, joinpaths(tmpdir, "mount_dir"), joinpaths(tmpdir, "work_dir"))
+                    ri.assert_called_with(add_args=["--conf", "/var/tmp/project/lmc-dracut.conf"])
