@@ -128,7 +128,12 @@ __EOF__
         fi
 
         # create an image from the imported selected snapshot
+        AMI_ARCH="$(uname -m)"
+        if [ "$AMI_ARCH" == "aarch64" ]; then
+            AMI_ARCH="arm64"
+        fi
         AMI_ID=`aws ec2 register-image --name "Composer-Test-$UUID" --virtualization-type hvm --root-device-name /dev/sda1 \
+                    --ena-support --architecture $AMI_ARCH \
                     --block-device-mappings "[{\"DeviceName\": \"/dev/sda1\", \"Ebs\": {\"SnapshotId\": \"$SNAPSHOT_ID\"}}]" | \
                     grep ImageId | cut -f4 -d'"'`
 
