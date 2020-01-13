@@ -137,8 +137,10 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
-        # run generic tests to verify the instance
+        # run generic tests to verify the instance and check if cloud-init is installed and running
         verify_image azure-user "$IP_ADDRESS" "-i $SSH_KEY_DIR/id_rsa"
+        rlRun -t -c "ssh -o StrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa azure-user@$IP_ADDRESS 'rpm -q cloud-init'"
+        rlRun -t -c "ssh -o StrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa azure-user@$IP_ADDRESS 'systemctl status cloud-init'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
