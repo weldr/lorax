@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.38
+Version:        28.14.39
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -252,6 +252,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Jan 13 2020 Brian C. Lane <bcl@redhat.com> 28.14.39-1
+- tests: Enable Elastic Network Adapter support for AWS (atodorov)
+  Related: rhbz#1789308
+- AWS test: take into account different instance type for non x86 (atodorov)
+  Related: rhbz#1789308
+- lorax-composer: Enable ami on aarch64 (bcl)
+  Resolves: rhbz#1789308
+- Add test for canceling a running compose (jrusz)
+  Related: rhbz#1788461
+
 * Wed Jan 08 2020 Brian C. Lane <bcl@redhat.com> 28.14.38-1
 - composer-cli: Increase DELETE timeout to 120s (bcl)
   Resolves: rhbz#1788461
