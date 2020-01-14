@@ -39,7 +39,7 @@ from mako.exceptions import text_error_template
 import sys, traceback
 import struct
 import dnf
-import collections
+import collections.abc
 
 class LoraxTemplate(object):
     def __init__(self, directories=None):
@@ -163,7 +163,7 @@ class TemplateRunner(object):
             try:
                 # grab the method named in cmd and pass it the given arguments
                 f = getattr(self, cmd, None)
-                if cmd[0] == '_' or cmd == 'run' or not isinstance(f, collections.Callable):
+                if cmd[0] == '_' or cmd == 'run' or not isinstance(f, collections.abc.Callable):
                     raise ValueError("unknown command %s" % cmd)
                 f(*args)
             except Exception: # pylint: disable=broad-except
