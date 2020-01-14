@@ -51,9 +51,8 @@ check:
 
 test:
 	@echo "*** Running tests ***"
-	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
-					--cover-package=pylorax --cover-package=lifted --cover-package=composer \
-					--cover-inclusive \
+	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m pytest -v --cov-branch \
+					--cov=pylorax --cov=lifted --cov=composer \
 					./tests/pylorax/ ./tests/composer/ ./tests/lifted/
 
 	coverage3 report -m
