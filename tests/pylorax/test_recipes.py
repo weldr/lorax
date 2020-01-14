@@ -681,7 +681,7 @@ hostname = "testing-bad-recipe"
 
     def test_03_list_commits_commit_time_val_error(self):
         """Test listing recipe commits which raise CommitTimeValError"""
-        with mock.patch('pylorax.api.recipes.GLib.DateTime.to_timeval', return_value=False):
+        with mock.patch('pylorax.api.recipes.GLib.DateTime.format_iso8601', return_value=False):
             commits = recipes.list_commits(self.repo, "master", "test-recipe.toml")
         self.assertEqual(len(commits), 0, "Wrong number of commits.")
 

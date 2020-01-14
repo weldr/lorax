@@ -1044,11 +1044,9 @@ def get_commit_details(commit, revision=None):
     datetime = sig.get_time()
     # XXX What do we do with timezone?
     _timezone = sig.get_time_zone()
-    timeval = GLib.TimeVal()
-    ok = datetime.to_timeval(timeval)
-    if not ok:
+    time_str = datetime.format_iso8601()
+    if not time_str:
         raise CommitTimeValError
-    time_str = timeval.to_iso8601()
 
     return CommitDetails(commit_str, time_str, message, revision)
 
