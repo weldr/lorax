@@ -34,6 +34,10 @@ rlJournalStart
             until $CLI compose info $UUID | grep 'RUNNING'; do
                 sleep 20
                 rlLogInfo "Waiting for compose to start running..."
+                if $CLI compose info $UUID | grep 'FAILED'; then
+                    rlFail "Compose FAILED!"
+                    break
+                fi
             done;
         else
             rlFail "Compose UUID is empty!"
