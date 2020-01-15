@@ -163,13 +163,13 @@ class BasicRecipeTest(unittest.TestCase):
     def tearDownClass(self):
         pass
 
-    def toml_to_recipe_test(self):
+    def test_toml_to_recipe(self):
         """Test converting the TOML string to a Recipe object"""
         for (toml_str, recipe_dict) in self.input_toml.values():
             result = recipes.recipe_from_toml(toml_str)
             self.assertEqual(result, recipe_dict)
 
-    def toml_to_recipe_fail_test(self):
+    def test_toml_to_recipe_fail(self):
         """Test trying to convert a non-TOML string to a Recipe"""
         with self.assertRaises(TomlError):
             recipes.recipe_from_toml("This is not a TOML string\n")
@@ -177,7 +177,7 @@ class BasicRecipeTest(unittest.TestCase):
         with self.assertRaises(recipes.RecipeError):
             recipes.recipe_from_toml('name = "a failed toml string"\n')
 
-    def recipe_to_toml_test(self):
+    def test_recipe_to_toml(self):
         """Test converting a Recipe object to a TOML string"""
         # In order to avoid problems from matching strings we convert to TOML and
         # then back so compare the Recipes.
@@ -189,7 +189,7 @@ class BasicRecipeTest(unittest.TestCase):
             recipe_2 = recipes.recipe_from_toml(toml_2)
             self.assertEqual(recipe_1, recipe_2)
 
-    def recipe_bump_version_test(self):
+    def test_recipe_bump_version(self):
         """Test the Recipe's version bump function"""
 
         # Neither have a version
@@ -217,7 +217,7 @@ class BasicRecipeTest(unittest.TestCase):
         new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.1.1")
 
-    def find_field_test(self):
+    def test_find_field(self):
         """Test the find_field_value function"""
         test_list = [{"name":"dog"}, {"name":"cat"}, {"name":"squirrel"}]
 
@@ -226,7 +226,7 @@ class BasicRecipeTest(unittest.TestCase):
         self.assertIsNone(recipes.find_field_value("color", "green", test_list))
         self.assertIsNone(recipes.find_field_value("color", "green", []))
 
-    def find_name_test(self):
+    def test_find_name(self):
         """Test the find_name function"""
         test_list = [{"name":"dog"}, {"name":"cat"}, {"name":"squirrel"}]
 
@@ -234,7 +234,7 @@ class BasicRecipeTest(unittest.TestCase):
         self.assertIsNone(recipes.find_name("alien", test_list))
         self.assertIsNone(recipes.find_name("alien", []))
 
-    def find_obj_test(self):
+    def test_find_obj(self):
         """Test the find_recipe_obj function"""
         test_recipe = {"customizations": {"hostname": "foo", "users": ["root"]}, "repos": {"git": ["git-repos"]}}
 
@@ -244,7 +244,7 @@ class BasicRecipeTest(unittest.TestCase):
         self.assertEqual(recipes.find_recipe_obj(["repos", "git", "oak"], test_recipe, ""), "")
         self.assertIsNone(recipes.find_recipe_obj(["pine"], test_recipe))
 
-    def diff_lists_test(self):
+    def test_diff_lists(self):
         """Test the diff_lists function"""
         self.assertEqual(recipes.diff_lists("Modules", "name", self.old_modules, self.old_modules), [])
         self.assertEqual(recipes.diff_lists("Modules", "name", self.old_modules, self.new_modules), self.modules_result)
@@ -253,13 +253,13 @@ class BasicRecipeTest(unittest.TestCase):
         self.assertEqual(recipes.diff_lists("Repos.git", "rpmname", self.old_git, self.new_git), self.git_result)
         self.assertEqual(recipes.diff_lists("Repos.git", "rpmname", self.old_git, sorted(self.new_git, reverse=True, key=lambda o: o["rpmname"].lower())), self.git_result)
 
-    def customizations_diff_test(self):
+    def test_customizations_diff(self):
         """Test the customizations_diff function"""
         old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", [], [], [], customizations=self.old_custom)
         new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", [], [], [], customizations=self.new_custom)
         self.assertEqual(recipes.customizations_diff(old_recipe, new_recipe), self.custom_result)
 
-    def customizations_diff_services_test(self):
+    def test_customizations_diff_services(self):
         """Test the customizations_diff function with services variations"""
         # Test adding the services customization
         old_custom = self.old_custom.copy()
@@ -296,7 +296,7 @@ class BasicRecipeTest(unittest.TestCase):
                    'new': {'Customizations.services': {'disabled': ['postfix', 'telnetd']}}}]
         self.assertEqual(recipes.customizations_diff(old_recipe, new_recipe), result)
 
-    def customizations_diff_firewall_test(self):
+    def test_customizations_diff_firewall(self):
         """Test the customizations_diff function with firewall variations"""
         # Test adding the firewall customization
         old_custom = self.old_custom.copy()
@@ -360,7 +360,7 @@ class BasicRecipeTest(unittest.TestCase):
                    'new': {'Customizations.firewall': {'services': {'disabled': ['telnet']}}}}]
         self.assertEqual(recipes.customizations_diff(old_recipe, new_recipe), result)
 
-    def customizations_diff_locale_test(self):
+    def test_customizations_diff_locale(self):
         """Test the customizations_diff function with locale variations"""
         # Test adding the locale customization
         old_custom = self.old_custom.copy()
@@ -397,7 +397,7 @@ class BasicRecipeTest(unittest.TestCase):
                    'new': {'Customizations.locale': {'keyboard': 'us'}}}]
         self.assertEqual(recipes.customizations_diff(old_recipe, new_recipe), result)
 
-    def customizations_diff_timezone_test(self):
+    def test_customizations_diff_timezone(self):
         """Test the customizations_diff function with timezone variations"""
         # Test adding the timezone customization
         old_custom = self.old_custom.copy()
@@ -435,7 +435,7 @@ class BasicRecipeTest(unittest.TestCase):
         self.assertEqual(recipes.customizations_diff(old_recipe, new_recipe), result)
 
 
-    def customizations_diff_sshkey_test(self):
+    def test_customizations_diff_sshkey(self):
         """Test the customizations_diff function with sshkey variations"""
         # Test changed root ssh key
         old_custom = self.old_custom.copy()
@@ -471,7 +471,7 @@ class BasicRecipeTest(unittest.TestCase):
                    'new': None}]
         self.assertEqual(recipes.customizations_diff(old_recipe, new_recipe), result)
 
-    def customizations_diff_user_test(self):
+    def test_customizations_diff_user(self):
         """Test the customizations_diff function with user variations"""
         # Test changed admin user
         old_custom = self.old_custom.copy()
@@ -525,7 +525,7 @@ class BasicRecipeTest(unittest.TestCase):
 
 
 
-    def recipe_diff_test(self):
+    def test_recipe_diff(self):
         """Test the recipe_diff function"""
         old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", self.old_modules, self.old_packages, [], gitrepos=self.old_git)
         new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [], gitrepos=self.new_git)
@@ -592,7 +592,7 @@ class BasicRecipeTest(unittest.TestCase):
 
         self.assertEqual(recipes.recipe_diff(old_recipe, new_recipe), result)
 
-    def recipe_freeze_test(self):
+    def test_recipe_freeze(self):
         """Test the recipe freeze() function"""
         # Use the repos-git.toml test, it only has http and php in it
         deps = [{"arch": "x86_64",

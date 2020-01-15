@@ -20,7 +20,7 @@ import tempfile
 from pylorax.discinfo import DiscInfo
 
 class DiscInfoTest(unittest.TestCase):
-    def discinfo_test(self):
+    def test_discinfo(self):
         with tempfile.NamedTemporaryFile(mode="w+t") as f:
             di = DiscInfo("1.0", "x86_64")
             di.write(f.name)

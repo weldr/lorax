@@ -54,7 +54,7 @@ class GitArchiveTest(unittest.TestCase):
         finally:
             shutil.rmtree(tardir)
 
-    def git_branch_test(self):
+    def test_git_branch(self):
         """Test creating an archive from a git branch"""
         git_repo = toml.loads("""
             [[repos.git]]
@@ -69,7 +69,7 @@ class GitArchiveTest(unittest.TestCase):
         archive = GitArchiveTarball(git_repo["repos"]["git"][0])
         self._check_tar(archive, "git-rpm-test/", "branch")
 
-    def git_commit_test(self):
+    def test_git_commit(self):
         """Test creating an archive from a git commit hash"""
         git_repo = toml.loads("""
             [[repos.git]]
@@ -84,7 +84,7 @@ class GitArchiveTest(unittest.TestCase):
         archive = GitArchiveTarball(git_repo["repos"]["git"][0])
         self._check_tar(archive, "git-rpm-test/", "first")
 
-    def git_tag_test(self):
+    def test_git_tag(self):
         """Test creating an archive from a git tag"""
         git_repo = toml.loads("""
             [[repos.git]]
@@ -99,7 +99,7 @@ class GitArchiveTest(unittest.TestCase):
         archive = GitArchiveTarball(git_repo["repos"]["git"][0])
         self._check_tar(archive, "git-rpm-test/", "second")
 
-    def git_fail_repo_test(self):
+    def test_git_fail_repo(self):
         """Test creating an archive from a bad url"""
         git_repo = toml.loads("""
             [[repos.git]]
@@ -116,7 +116,7 @@ class GitArchiveTest(unittest.TestCase):
             self._check_tar(archive, "git-rpm-test/", None)
         self.assertIn("Failed to clone", str(e.exception))
 
-    def git_fail_ref_test(self):
+    def test_git_fail_ref(self):
         """Test creating an archive from a bad ref"""
         git_repo = toml.loads("""
             [[repos.git]]
@@ -162,7 +162,7 @@ class GitRpmTest(unittest.TestCase):
         # / should never be included in the rpm, doing so conflicts with the filesystem package
         self.assertFalse(any(True for f in files if f == "/"))
 
-    def git_branch_test(self):
+    def test_git_branch(self):
         """Test creating an rpm from a git branch"""
         git_repo = toml.loads("""
             [[repos.git]]
@@ -181,7 +181,7 @@ class GitRpmTest(unittest.TestCase):
         finally:
             shutil.rmtree(rpm_dir)
 
-    def git_commit_test(self):
+    def test_git_commit(self):
         """Test creating an rpm from a git commit hash"""
         git_repo = toml.loads("""
             [[repos.git]]
@@ -200,7 +200,7 @@ class GitRpmTest(unittest.TestCase):
         finally:
             shutil.rmtree(rpm_dir)
 
-    def git_tag_test(self):
+    def test_git_tag(self):
         """Test creating an rpm from a git tag"""
         git_repo = toml.loads("""
             [[repos.git]]
@@ -219,7 +219,7 @@ class GitRpmTest(unittest.TestCase):
         finally:
             shutil.rmtree(rpm_dir)
 
-    def gitrpm_repo_test(self):
+    def test_gitrpm_repo(self):
         """Test creating a dnf repo of the git rpms"""
         recipe = toml.loads("""
             [[repos.git]]
@@ -251,7 +251,7 @@ class GitRpmTest(unittest.TestCase):
         finally:
             shutil.rmtree(temp_dir)
 
-    def git_root_test(self):
+    def test_git_root(self):
         """Test creating an rpm with / as the destination """
         git_repo = toml.loads("""
             [[repos.git]]
@@ -272,14 +272,14 @@ class GitRpmTest(unittest.TestCase):
 
 
 class GitRpmBuildTest(unittest.TestCase):
-    def get_base_dir_test(self):
+    def test_get_base_dir(self):
         """Make sure base_dir is created"""
         gitRpm = GitRpmBuild("rpmtest", "1.0.0", "1", ["noarch"])
         base_dir = gitRpm.get_base_dir()
         self.assertTrue("lorax-git-rpm" in base_dir)
         gitRpm.cleanup_tmpdir()
 
-    def short_base_dir_test(self):
+    def test_short_base_dir(self):
         """Make sure cleanup of an unusually short base_dir fails"""
         gitRpm = GitRpmBuild("rpmtest", "1.0.0", "1", ["noarch"])
         gitRpm._base_dir = "/aa/"

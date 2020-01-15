@@ -30,7 +30,7 @@ class TimestampTest(unittest.TestCase):
     def tearDownClass(self):
         shutil.rmtree(self.test_dir)
 
-    def timestamp_test(self):
+    def test_timestamp(self):
         """Test writing and reading compose timestamps"""
         write_timestamp(self.test_dir, TS_CREATED)
         ts = timestamp_dict(self.test_dir)

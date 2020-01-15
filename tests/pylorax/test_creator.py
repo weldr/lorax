@@ -41,12 +41,12 @@ def mkFakeBoot(root_dir):
 
 
 class CreatorTest(unittest.TestCase):
-    def fakednf_test(self):
+    def test_fakednf(self):
         """Test FakeDNF class"""
         fake_dbo = FakeDNF(conf=DataHolder(installroot="/a/fake/install/root/"))
         self.assertEqual(fake_dbo.conf.installroot, "/a/fake/install/root/")
 
-    def squashfs_args_test(self):
+    def test_squashfs_args(self):
         """Test squashfs_args results"""
         test_arches = {"x86_64": ("xz", ["-Xbcj", "x86"]),
                        "ppc64le": ("xz", ["-Xbcj", "powerpc"]),
@@ -68,7 +68,7 @@ class CreatorTest(unittest.TestCase):
         opts = DataHolder(compression="xz", compress_args=["-X32767", "-Xbcj x86"], arch="x86_64")
         self.assertEqual(squashfs_args(opts), ("xz", ["-X32767", "-Xbcj", "x86"]), (opts, squashfs_args(opts)))
 
-    def make_appliance_test(self):
+    def test_make_appliance(self):
         """Test creating the appliance description XML file"""
         lorax_templates = find_templates("./share/")
         appliance_template = joinpaths(lorax_templates, "appliance/libvirt.tmpl")
@@ -102,7 +102,7 @@ class CreatorTest(unittest.TestCase):
                 self.assertEqual(storage.find("./disk/checksum").get("type"), "sha256")
                 self.assertEqual(storage.find("./disk/checksum").text, "90611458b33009998f73e25ccc3766b31a8b548cc6c2d84f78ae0e84d64e10a5")
 
-    def pxe_config_test(self):
+    def test_pxe_config(self):
         """Test creation of a PXE config file"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             live_image_name = "live-rootfs.squashfs.img"
@@ -122,7 +122,7 @@ class CreatorTest(unittest.TestCase):
             self.assertTrue("initramfs-4.18.13-200.fc28.x86_64.img" in pxe_config)
             self.assertTrue("/live-rootfs.squashfs.img ostree=/mnt/sysimage/" in pxe_config)
 
-    def make_runtime_squashfs_test(self):
+    def test_make_runtime_squashfs(self):
         """Test making a runtime squashfs only image"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as mount_dir:
@@ -146,7 +146,7 @@ class CreatorTest(unittest.TestCase):
 
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def make_runtime_squashfs_ext4_test(self):
+    def test_make_runtime_squashfs_ext4(self):
         """Test making a runtime squashfs+ext4 only image"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as mount_dir:
@@ -168,7 +168,7 @@ class CreatorTest(unittest.TestCase):
                 results = runcmd_output(cmd)
                 self.assertTrue("rootfs.img" in results)
 
-    def get_arch_test(self):
+    def test_get_arch(self):
         """Test getting the arch of the installed kernel"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             # Make a fake kernel and initrd
@@ -176,13 +176,13 @@ class CreatorTest(unittest.TestCase):
             arch = get_arch(work_dir)
             self.assertTrue(arch == "x86_64")
 
-    def find_ostree_root_test(self):
+    def test_find_ostree_root(self):
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             ostree_path = "ostree/boot.1/apu/c8f294c479fc948375a001f06bc524d02900d32c6a1a72061a1dc281e9e93e41/0"
             os.makedirs(joinpaths(work_dir, ostree_path))
             self.assertEqual(find_ostree_root(work_dir), ostree_path)
 
-    def good_ks_novirt_test(self):
+    def test_good_ks_novirt(self):
         """Test a good kickstart with novirt"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
         ks_version = makeVersion()
@@ -194,7 +194,7 @@ class CreatorTest(unittest.TestCase):
                                    "shutdown\n")
         self.assertEqual(check_kickstart(ks, opts), [])
 
-    def good_ks_virt_test(self):
+    def test_good_ks_virt(self):
         """Test a good kickstart with virt"""
         opts = DataHolder(no_virt=False, make_fsimage=False, make_pxe_live=False)
         ks_version = makeVersion()
@@ -206,7 +206,7 @@ class CreatorTest(unittest.TestCase):
                                    "shutdown\n")
         self.assertEqual(check_kickstart(ks, opts), [])
 
-    def nomethod_novirt_test(self):
+    def test_nomethod_novirt(self):
         """Test a kickstart with repo and no url"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
         ks_version = makeVersion()
@@ -219,7 +219,7 @@ class CreatorTest(unittest.TestCase):
         self.assertTrue("Only url, nfs and ostreesetup" in errors[0])
         self.assertTrue("repo can only be used with the url" in errors[1])
 
-    def no_network_test(self):
+    def test_no_network(self):
         """Test a kickstart with missing network command"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
         ks_version = makeVersion()
@@ -230,7 +230,7 @@ class CreatorTest(unittest.TestCase):
         errors = check_kickstart(ks, opts)
         self.assertTrue("The kickstart must activate networking" in errors[0])
 
-    def displaymode_test(self):
+    def test_displaymode(self):
         """Test a kickstart with displaymode set"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
         ks_version = makeVersion()
@@ -244,7 +244,7 @@ class CreatorTest(unittest.TestCase):
         errors = check_kickstart(ks, opts)
         self.assertTrue("must not set a display mode" in errors[0])
 
-    def autopart_test(self):
+    def test_autopart(self):
         """Test a kickstart with autopart"""
         opts = DataHolder(no_virt=True, make_fsimage=True, make_pxe_live=False)
         ks_version = makeVersion()
@@ -257,7 +257,7 @@ class CreatorTest(unittest.TestCase):
         errors = check_kickstart(ks, opts)
         self.assertTrue("Filesystem images must use a single" in errors[0])
 
-    def boot_part_test(self):
+    def test_boot_part(self):
         """Test a kickstart with a boot partition"""
         opts = DataHolder(no_virt=True, make_fsimage=True, make_pxe_live=False)
         ks_version = makeVersion()
@@ -271,7 +271,7 @@ class CreatorTest(unittest.TestCase):
         errors = check_kickstart(ks, opts)
         self.assertTrue("Filesystem images must use a single" in errors[0])
 
-    def shutdown_virt_test(self):
+    def test_shutdown_virt(self):
         """Test a kickstart with reboot instead of shutdown"""
         opts = DataHolder(no_virt=False, make_fsimage=True, make_pxe_live=False)
         ks_version = makeVersion()
@@ -284,7 +284,7 @@ class CreatorTest(unittest.TestCase):
         errors = check_kickstart(ks, opts)
         self.assertTrue("must include shutdown when using virt" in errors[0])
 
-    def disk_size_simple_test(self):
+    def test_disk_size_simple(self):
         """Test calculating the disk size with a simple / partition"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
@@ -296,7 +296,7 @@ class CreatorTest(unittest.TestCase):
                                    "shutdown\n")
         self.assertEqual(calculate_disk_size(opts, ks), 4098)
 
-    def disk_size_boot_test(self):
+    def test_disk_size_boot(self):
         """Test calculating the disk size with / and /boot partitions"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
@@ -309,7 +309,7 @@ class CreatorTest(unittest.TestCase):
                                    "shutdown\n")
         self.assertEqual(calculate_disk_size(opts, ks), 4610)
 
-    def disk_size_boot_fsimage_test(self):
+    def test_disk_size_boot_fsimage(self):
         """Test calculating the disk size with / and /boot partitions on a fsimage"""
         opts = DataHolder(no_virt=True, make_fsimage=True, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
@@ -322,7 +322,7 @@ class CreatorTest(unittest.TestCase):
                                    "shutdown\n")
         self.assertEqual(calculate_disk_size(opts, ks), 4098)
 
-    def disk_size_reqpart_test(self):
+    def test_disk_size_reqpart(self):
         """Test calculating the disk size with reqpart and a / partition"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
@@ -335,7 +335,7 @@ class CreatorTest(unittest.TestCase):
                                    "shutdown\n")
         self.assertEqual(calculate_disk_size(opts, ks), 4598)
 
-    def disk_size_reqpart_boot_test(self):
+    def test_disk_size_reqpart_boot(self):
         """Test calculating the disk size with reqpart --add-boot and a / partition"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
@@ -348,7 +348,7 @@ class CreatorTest(unittest.TestCase):
                                    "shutdown\n")
         self.assertEqual(calculate_disk_size(opts, ks), 5622)
 
-    def disk_size_align_test(self):
+    def test_disk_size_align(self):
         """Test aligning the disk size"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=1024)
         ks_version = makeVersion()
@@ -361,7 +361,7 @@ class CreatorTest(unittest.TestCase):
         self.assertEqual(calculate_disk_size(opts, ks), 5120)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def boot_over_root_test(self):
+    def test_boot_over_root(self):
         """Test the mount_boot_part_over_root ostree function"""
         # Make a fake disk image with a / and a /boot/loader.0
         # Mount the / partition

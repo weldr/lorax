@@ -22,7 +22,7 @@ import os
 from pylorax.treeinfo import TreeInfo
 
 class TreeInfoTest(unittest.TestCase):
-    def treeinfo_test(self):
+    def test_treeinfo(self):
         with tempfile.NamedTemporaryFile() as f:
             ti = TreeInfo("Lorax-Test", "1.0", "Server", "x86_64", "Packages")
             ti.add_section("images", {"initrd": "images/pxeboot/initrd.img",
@@ -43,7 +43,7 @@ class TreeInfoTest(unittest.TestCase):
             self.assertEqual(config.get("images", "initrd"), "images/pxeboot/initrd.img")
             self.assertEqual(config.get("images", "kernel"), "images/pxeboot/vmlinuz")
 
-    def source_time_test(self):
+    def test_source_time(self):
         """Test treeinfo with SOURCE_DATE_EPOCH environmental variable set"""
         os.environ["SOURCE_DATE_EPOCH"] = str(499137660)
         with tempfile.NamedTemporaryFile() as f:

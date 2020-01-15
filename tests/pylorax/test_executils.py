@@ -24,7 +24,7 @@ from pylorax.executils import execWithRedirect, execWithCapture, execReadlines
 from pylorax.executils import runcmd, runcmd_output, setenv
 
 class ExecUtilsTest(unittest.TestCase):
-    def startProgram_test(self):
+    def test_startProgram(self):
         cmd = ["python3", "-c", "import os; print(os.environ['LC_ALL'])"]
         proc = startProgram(cmd, reset_lang=True)
         (stdout, _stderr) = proc.communicate()
@@ -40,7 +40,7 @@ class ExecUtilsTest(unittest.TestCase):
         (stdout, _stderr) = proc.communicate()
         self.assertEqual(stdout.strip(), b"False")
 
-    def childenv_test(self):
+    def test_childenv(self):
         """Test setting a child environmental variable"""
         setenv("LORAX_CHILD_TEST", "mustard IS progress")
         cmd = ["python3", "-c", "import os; print(os.environ['LORAX_CHILD_TEST'])"]
@@ -49,7 +49,7 @@ class ExecUtilsTest(unittest.TestCase):
         (stdout, _stderr) = proc.communicate()
         self.assertEqual(stdout.strip(), b"mustard IS progress")
 
-    def execWithRedirect_test(self):
+    def test_execWithRedirect(self):
         import logging
         logger = logging.getLogger("pylorax")
         logger.addHandler(logging.NullHandler())
@@ -72,46 +72,46 @@ class ExecUtilsTest(unittest.TestCase):
             os.unlink(tmp_f.name)
             program_log.removeHandler(fh)
 
-    def execWithCapture_test(self):
+    def test_execWithCapture(self):
         cmd = ["python3", "-c", "import sys; print('Truffula trees.', end=''); sys.exit(0)"]
         stdout = execWithCapture(cmd[0], cmd[1:], callback=lambda p: True)
         self.assertEqual(stdout.strip(), "Truffula trees.")
 
-    def returncode_test(self):
+    def test_returncode(self):
         cmd = ["python3", "-c", "import sys; print('Truffula trees.'); sys.exit(1)"]
         with self.assertRaises(CalledProcessError):
             execWithCapture(cmd[0], cmd[1:], raise_err=True)
 
-    def exec_filter_stderr_test(self):
+    def test_exec_filter_stderr(self):
         cmd = ["python3", "-c", "import sys; print('Truffula trees.', file=sys.stderr); sys.exit(0)"]
         stdout = execWithCapture(cmd[0], cmd[1:], filter_stderr=True)
         self.assertEqual(stdout.strip(), "")
 
-    def execReadlines_test(self):
+    def test_execReadlines(self):
         cmd = ["python3", "-c", "import sys; print('Truffula trees.'); sys.exit(0)"]
         iterator = execReadlines(cmd[0], cmd[1:], callback=lambda p: True, filter_stderr=True)
         self.assertEqual(list(iterator), ["Truffula trees."])
 
-    def execReadlines_error_test(self):
+    def test_execReadlines_error(self):
         with self.assertRaises(OSError):
             execReadlines("foo-prog", [])
 
-    def del_execReadlines_test(self):
+    def test_del_execReadlines(self):
         cmd = ["python3", "-c", "import sys; print('Truffula trees.'); sys.exit(0)"]
         iterator = execReadlines(cmd[0], cmd[1:], callback=lambda p: True)
         del iterator
 
-    def runcmd_test(self):
+    def test_runcmd(self):
         cmd = ["python3", "-c", "import sys; print('Theodor Seuss Geisel'); sys.exit(0)"]
         rc = runcmd(cmd)
         self.assertEqual(rc, 0)
 
-    def runcmd_output_test(self):
+    def test_runcmd_output(self):
         cmd = ["python3", "-c", "import sys; print('Everyone needs Thneeds'); sys.exit(0)"]
         stdout = runcmd_output(cmd)
         self.assertEqual(stdout.strip(), "Everyone needs Thneeds")
 
-    def chroot_test(self):
+    def test_chroot(self):
         """Test the preexec function"""
         cmd = ["python3", "-c", "import sys; print('Failure is always an option'); sys.exit(0)"]
 
@@ -119,7 +119,7 @@ class ExecUtilsTest(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             startProgram(cmd, root="/tmp/")
 
-    def preexec_test(self):
+    def test_preexec(self):
         """Test the preexec function"""
         cmd = ["python3", "-c", "import sys; print('Failure is always an option'); sys.exit(0)"]
 

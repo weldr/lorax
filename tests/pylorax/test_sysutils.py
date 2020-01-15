@@ -23,7 +23,7 @@ from pylorax.sysutils import joinpaths, touch, replace, chown_, chmod_, remove, 
 from pylorax.sysutils import _read_file_end
 
 class SysUtilsTest(unittest.TestCase):
-    def joinpaths_test(self):
+    def test_joinpaths(self):
         self.assertEqual(joinpaths("foo", "bar", "baz"), "foo/bar/baz")
 
         with tempfile.TemporaryDirectory() as tdname:
@@ -33,14 +33,14 @@ class SysUtilsTest(unittest.TestCase):
             self.assertEqual(joinpaths(tdname, "link-file", follow_symlinks=True),
                              os.path.join(tdname, "real-file"))
 
-    def touch_test(self):
+    def test_touch(self):
         touch_file="/var/tmp/lorax-test-touch-file"
         touch(touch_file)
 
         self.assertTrue(os.path.exists(touch_file))
         os.unlink(touch_file)
 
-    def replace_test(self):
+    def test_replace(self):
         f = tempfile.NamedTemporaryFile(mode="w+t", delete=False)
         f.write("A few words to apply @AARDVARKS@ testing\n")
         f.close()
@@ -50,22 +50,22 @@ class SysUtilsTest(unittest.TestCase):
         os.unlink(f.name)
 
     @unittest.skipUnless(os.geteuid() == 0, "requires root privileges")
-    def chown_test(self):
+    def test_chown(self):
         with tempfile.NamedTemporaryFile() as f:
             chown_(f.name, "nobody", "nobody")
 
-    def chmod_test(self):
+    def test_chmod(self):
         with tempfile.NamedTemporaryFile() as f:
             chmod_(f.name, 0o777)
             self.assertEqual(os.stat(f.name).st_mode, 0o100777)
 
-    def remove_test(self):
+    def test_remove(self):
         remove_file="/var/tmp/lorax-test-remove-file"
         open(remove_file, "w").write("test was here")
         remove(remove_file)
         self.assertFalse(os.path.exists(remove_file))
 
-    def linktree_test(self):
+    def test_linktree(self):
         with tempfile.TemporaryDirectory() as tdname:
             path = os.path.join("one", "two", "three")
             os.makedirs(os.path.join(tdname, path))
@@ -86,7 +86,7 @@ class SysUtilsTest(unittest.TestCase):
         bio.seek(0)
         return bio
 
-    def read_file_end_test(self):
+    def test_read_file_end(self):
         """Test reading from the end of a file"""
         self.maxDiff = None
 

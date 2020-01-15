@@ -117,7 +117,7 @@ def mkfakediskimg(disk_img):
     return True
 
 class ImgUtilsTest(unittest.TestCase):
-    def mkcpio_test(self):
+    def test_mkcpio(self):
         """Test mkcpio function"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
@@ -128,7 +128,7 @@ class ImgUtilsTest(unittest.TestCase):
                 file_details = get_file_magic(disk_img.name)
                 self.assertTrue("cpio" in file_details, file_details)
 
-    def mktar_test(self):
+    def test_mktar(self):
         """Test mktar function"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
@@ -139,7 +139,7 @@ class ImgUtilsTest(unittest.TestCase):
                 file_details = get_file_magic(disk_img.name)
                 self.assertTrue("POSIX tar" in file_details, file_details)
 
-    def compressed_mktar_test(self):
+    def test_compressed_mktar(self):
         """Test compressed mktar function"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
@@ -155,7 +155,7 @@ class ImgUtilsTest(unittest.TestCase):
                     file_details = get_file_magic(disk_img.name)
                     self.assertTrue(magic in file_details, (compression, magic, file_details))
 
-    def mktar_single_file_test(self):
+    def test_mktar_single_file(self):
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img,\
                 tempfile.NamedTemporaryFile(prefix="lorax.test.input.") as input_file:
             mktar(input_file.name, disk_img.name, compression=None)
@@ -166,7 +166,7 @@ class ImgUtilsTest(unittest.TestCase):
             with tarfile.TarFile(disk_img.name) as t:
                 self.assertEqual(t.getnames(), [os.path.basename(input_file.name)])
 
-    def mksquashfs_test(self):
+    def test_mksquashfs(self):
         """Test mksquashfs function"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
@@ -178,13 +178,13 @@ class ImgUtilsTest(unittest.TestCase):
                 file_details = get_file_magic(disk_img.name)
                 self.assertTrue("Squashfs" in file_details, file_details)
 
-    def mksparse_test(self):
+    def test_mksparse(self):
         """Test mksparse function"""
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
             mksparse(disk_img.name, 42 * 1024**2)
             self.assertEqual(os.stat(disk_img.name).st_size, 42 * 1024**2)
 
-    def mkqcow2_test(self):
+    def test_mkqcow2(self):
         """Test mkqcow2 function"""
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
             mkqcow2(disk_img.name, 42 * 1024**2)
@@ -193,7 +193,7 @@ class ImgUtilsTest(unittest.TestCase):
             self.assertTrue(str(42 * 1024**2) in file_details, file_details)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def loop_test(self):
+    def test_loop(self):
         """Test the loop_* functions (requires loop support)"""
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
             mksparse(disk_img.name, 42 * 1024**2)
@@ -205,7 +205,7 @@ class ImgUtilsTest(unittest.TestCase):
                 loop_detach(loop_dev)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def loop_context_test(self):
+    def test_loop_context(self):
         """Test the LoopDev context manager (requires loop)"""
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
             mksparse(disk_img.name, 42 * 1024**2)
@@ -214,7 +214,7 @@ class ImgUtilsTest(unittest.TestCase):
                 self.assertEqual(loop_dev[5:], get_loop_name(disk_img.name))
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def dm_test(self):
+    def test_dm(self):
         """Test the dm_* functions (requires device-mapper support)"""
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
             mksparse(disk_img.name, 42 * 1024**2)
@@ -227,7 +227,7 @@ class ImgUtilsTest(unittest.TestCase):
                     dm_detach(dm_name)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def dmdev_test(self):
+    def test_dmdev(self):
         """Test the DMDev context manager (requires device-mapper support)"""
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
             mksparse(disk_img.name, 42 * 1024**2)
@@ -237,7 +237,7 @@ class ImgUtilsTest(unittest.TestCase):
                     self.assertTrue(dm_name is not None)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def mount_test(self):
+    def test_mount(self):
         """Test the Mount context manager (requires loop)"""
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
             mksparse(disk_img.name, 42 * 1024**2)
@@ -248,7 +248,7 @@ class ImgUtilsTest(unittest.TestCase):
                     self.assertTrue(mnt is not None)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def mkdosimg_test(self):
+    def test_mkdosimg(self):
         """Test mkdosimg function (requires loop)"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
@@ -259,7 +259,7 @@ class ImgUtilsTest(unittest.TestCase):
                 self.assertTrue("FAT " in file_details, file_details)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def mkext4img_test(self):
+    def test_mkext4img(self):
         """Test mkext4img function (requires loop)"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
@@ -271,7 +271,7 @@ class ImgUtilsTest(unittest.TestCase):
                 self.assertTrue("ext2 filesystem" in file_details, file_details)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def mkbtrfsimg_test(self):
+    def test_mkbtrfsimg(self):
         """Test mkbtrfsimg function (requires loop)"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
@@ -282,7 +282,7 @@ class ImgUtilsTest(unittest.TestCase):
                 self.assertTrue("BTRFS Filesystem" in file_details, file_details)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def mkhfsimg_test(self):
+    def test_mkhfsimg(self):
         """Test mkhfsimg function (requires loop)"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
@@ -292,14 +292,14 @@ class ImgUtilsTest(unittest.TestCase):
                 file_details = get_file_magic(disk_img.name)
                 self.assertTrue("Macintosh HFS" in file_details, file_details)
 
-    def default_image_name_test(self):
+    def test_default_image_name(self):
         """Test default_image_name function"""
         for compression, suffix in [("xz", ".xz"), ("gzip", ".gz"), ("bzip2", ".bz2"), ("lzma", ".lzma")]:
             filename = default_image_name(compression, "foobar")
             self.assertTrue(filename.endswith(suffix))
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def partition_mount_test(self):
+    def test_partition_mount(self):
         """Test PartitionMount context manager (requires loop)"""
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
             self.assertTrue(mkfakediskimg(disk_img.name))
@@ -328,7 +328,7 @@ class ImgUtilsTest(unittest.TestCase):
                 self.assertTrue(os.path.exists(joinpaths(img_mount.mount_dir, "initramfs-4.18.13-200.fc28.x86_64.img")))
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
-    def mkfsimage_from_disk_test(self):
+    def test_mkfsimage_from_disk(self):
         """Test creating a fsimage from the / partition of a disk image"""
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
             self.assertTrue(mkfakediskimg(disk_img.name))
