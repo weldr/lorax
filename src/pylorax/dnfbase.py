@@ -94,6 +94,8 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
     # actually appends. Doing this adds 'nodocs' to the existing list
     # of values, over in libdnf, it does not replace the existing values.
     conf.tsflags = ['nodocs']
+    # Log details about the solver
+    conf.debug_solver = True
 
     if proxy:
         conf.proxy = proxy
