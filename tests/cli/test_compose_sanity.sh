@@ -42,15 +42,22 @@ rlJournalStart
         else
             rlFail "Compose UUID is empty!"
         fi
+
+        # check if anaconda is really running
+        until ps -axo comm,pid | grep '^anaconda'; do
+            sleep 10
+            rlLogInfo "Waiting for anaconda to start running..."
+        done;
     rlPhaseEnd
 
     rlPhaseStartTest "cancel compose"
         rlRun -t -c "$CLI compose cancel $UUID"
         rlRun -t -c "$CLI compose info $UUID" 1 "compose is canceled"
+        rlAssertNotExists "/var/run/anaconda.pid"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start again"
-        UUID=`$CLI --test=2 compose start example-http-server tar`
+        UUID=`$CLI compose start example-http-server tar`
         rlAssertEquals "exit code should be zero" $? 0
 
         UUID=`echo $UUID | cut -f 2 -d' '`
