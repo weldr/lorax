@@ -13,7 +13,6 @@ RUN  dnf -y install \
   python3-gevent \
   python3-magic \
   python3-mako \
-  python3-mock \
   python3-pocketlint \
   python3-pycdlib \
   python3-pylint \

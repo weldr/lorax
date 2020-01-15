@@ -15,10 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import os
-import mock
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 import pylorax.api.recipes as recipes
 from pylorax.api.workspace import workspace_dir, workspace_read, workspace_write, workspace_delete

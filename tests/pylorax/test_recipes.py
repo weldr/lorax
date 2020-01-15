@@ -15,10 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import os
-import mock
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 import pylorax.api.recipes as recipes
 from pylorax.api.compose import add_customizations, customize_ks_template
