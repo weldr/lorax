@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.installer &mdash; Lorax 32.4 documentation</title>
+  <title>pylorax.installer &mdash; Lorax 32.5 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.4
+                32.5
               </div>
             
           
@@ -467,7 +467,17 @@
 
 <span class="sd">    Attempts to cleanup may also fail. Catch these and continue trying the</span>
 <span class="sd">    other mountpoints.</span>
+
+<span class="sd">    Anaconda may also leave /run/anaconda.pid behind, clean that up as well.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Anaconda may not clean up its /var/run/anaconda.pid file</span>
+    <span class="c1"># Make sure the process is really finished (it should be, since it was started from a subprocess call)</span>
+    <span class="c1"># and then remove the pid file.</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/var/run/anaconda.pid&quot;</span><span class="p">):</span>
+        <span class="c1"># lorax-composer runs anaconda using unshare so the pid is always 1</span>
+        <span class="k">if</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/var/run/anaconda.pid&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="s2">&quot;/var/run/anaconda.pid&quot;</span><span class="p">)</span>
+
     <span class="n">rc</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">dirinstall_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">)</span>
     <span class="c1"># unmount filesystems</span>
@@ -547,12 +557,14 @@
         <span class="n">cancel_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cancel_func</span><span class="p">)</span>
 
     <span class="c1"># Make sure anaconda has the right product and release</span>
+    <span class="c1"># Preload libgomp.so.1 to workaround rhbz#1722181</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running anaconda.&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">unshare_args</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;--pid&quot;</span><span class="p">,</span> <span class="s2">&quot;--kill-child&quot;</span><span class="p">,</span> <span class="s2">&quot;--mount&quot;</span><span class="p">,</span> <span class="s2">&quot;--propagation&quot;</span><span class="p">,</span> <span class="s2">&quot;unchanged&quot;</span><span class="p">,</span> <span class="s2">&quot;anaconda&quot;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">execReadlines</span><span class="p">(</span><span class="s2">&quot;unshare&quot;</span><span class="p">,</span> <span class="n">unshare_args</span><span class="p">,</span> <span class="n">reset_lang</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                   <span class="n">env_add</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ANACONDA_PRODUCTNAME&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
-                                           <span class="s2">&quot;ANACONDA_PRODUCTVERSION&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">},</span>
+                                           <span class="s2">&quot;ANACONDA_PRODUCTVERSION&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span>
+                                           <span class="s2">&quot;LD_PRELOAD&quot;</span><span class="p">:</span> <span class="s2">&quot;libgomp.so.1&quot;</span><span class="p">},</span>
                                   <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="ow">not</span> <span class="n">novirt_cancel_check</span><span class="p">(</span><span class="n">cancel_funcs</span><span class="p">,</span> <span class="n">p</span><span class="p">)):</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 

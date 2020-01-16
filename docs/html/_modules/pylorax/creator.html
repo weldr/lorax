@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.creator &mdash; Lorax 32.4 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 32.5 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.4
+                32.5
               </div>
             
           
@@ -206,7 +206,7 @@
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span>
 
 
-<span class="c1"># Default parameters for rebuilding initramfs, override with --dracut-args</span>
+<span class="c1"># Default parameters for rebuilding initramfs, override with --dracut-arg or --dracut-conf</span>
 <span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;livenet dmsquash-live dmsquash-live-ntfs convertfs pollcdrom qemu qemu-net&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;--omit&quot;</span><span class="p">,</span> <span class="s2">&quot;plymouth&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-hostonly&quot;</span><span class="p">,</span> <span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">]</span>
 
@@ -290,6 +290,21 @@
         <span class="n">compressargs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="dracut_args"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.dracut_args">[docs]</a><span class="k">def</span> <span class="nf">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of the args to pass to dracut</span>
+
+<span class="sd">    Return the default argument list unless one of the dracut cmdline arguments</span>
+<span class="sd">    has been used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_conf</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;--conf&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_conf</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_args</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">args</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">DRACUT_DEFAULT</span></div>
 
 <div class="viewcode-block" id="make_appliance"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_appliance">[docs]</a><span class="k">def</span> <span class="nf">make_appliance</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">networks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ram</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
                    <span class="n">vcpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span>
@@ -382,15 +397,10 @@
 <span class="sd">    :param str sys_root_dir: Path to root of the system</span>
 <span class="sd">    :param str results_dir: Path of directory for storing results</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_args</span><span class="p">:</span>
-        <span class="n">dracut_args</span> <span class="o">=</span> <span class="n">DRACUT_DEFAULT</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dracut_args</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_args</span><span class="p">:</span>
-            <span class="n">dracut_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut args = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dracut_args</span><span class="p">)</span>
+    <span class="c1"># cmdline dracut args override the defaults, but need to be parsed</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut args = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">))</span>
 
-    <span class="n">dracut</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dracut&quot;</span><span class="p">,</span> <span class="s2">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s2">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dracut_args</span>
+    <span class="n">dracut</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dracut&quot;</span><span class="p">,</span> <span class="s2">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s2">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
 
     <span class="n">kdir</span> <span class="o">=</span> <span class="s2">&quot;boot&quot;</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">ostree</span><span class="p">:</span>
@@ -526,14 +536,8 @@
                      <span class="n">templatedir</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">lorax_templates</span><span class="p">,</span><span class="s2">&quot;live/&quot;</span><span class="p">),</span>
                      <span class="n">extra_boot_args</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">extra_boot_args</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Rebuilding initrds&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_args</span><span class="p">:</span>
-        <span class="n">dracut_args</span> <span class="o">=</span> <span class="n">DRACUT_DEFAULT</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dracut_args</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_args</span><span class="p">:</span>
-            <span class="n">dracut_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut args = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dracut_args</span><span class="p">)</span>
-    <span class="n">tb</span><span class="o">.</span><span class="n">rebuild_initrds</span><span class="p">(</span><span class="n">add_args</span><span class="o">=</span><span class="n">dracut_args</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut args = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">))</span>
+    <span class="n">tb</span><span class="o">.</span><span class="n">rebuild_initrds</span><span class="p">(</span><span class="n">add_args</span><span class="o">=</span><span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">))</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building boot.iso&quot;</span><span class="p">)</span>
     <span class="n">tb</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 

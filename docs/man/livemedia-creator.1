@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LIVEMEDIA-CREATOR" "1" "Dec 19, 2019" "32.4" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Jan 16, 2020" "32.5" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .
@@ -82,8 +82,9 @@ usage: livemedia\-creator [\-h] (\-\-make\-iso | \-\-make\-disk | \-\-make\-fsim
                          [\-\-tmp TMP] [\-\-resultdir RESULT_DIR] [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS] [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image] [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME]
                          [\-\-tar\-disk\-name TAR_DISK_NAME] [\-\-fs\-label FS_LABEL] [\-\-image\-size\-align IMAGE_SIZE_ALIGN] [\-\-image\-type IMAGE_TYPE] [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2] [\-\-qcow2\-arg QEMU_ARGS] [\-\-compression COMPRESSION]
                          [\-\-compress\-arg COMPRESS_ARGS] [\-\-app\-name APP_NAME] [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE] [\-\-ram MEMORY] [\-\-vcpus VCPUS] [\-\-vnc VNC] [\-\-arch ARCH] [\-\-kernel\-args KERNEL_ARGS]
-                         [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi] [\-\-no\-kvm] [\-\-with\-rng WITH_RNG] [\-\-dracut\-arg DRACUT_ARGS] [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE] [\-\-live\-rootfs\-keep\-size] [\-\-oci\-config OCI_CONFIG]
-                         [\-\-oci\-runtime OCI_RUNTIME] [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE] [\-\-project PROJECT] [\-\-releasever RELEASEVER] [\-\-volid VOLID] [\-\-squashfs\-only] [\-\-timeout TIMEOUT] [\-V]
+                         [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi] [\-\-no\-kvm] [\-\-with\-rng WITH_RNG] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE] [\-\-live\-rootfs\-keep\-size]
+                         [\-\-oci\-config OCI_CONFIG] [\-\-oci\-runtime OCI_RUNTIME] [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE] [\-\-project PROJECT] [\-\-releasever RELEASEVER] [\-\-volid VOLID] [\-\-squashfs\-only]
+                         [\-\-timeout TIMEOUT] [\-V]
 .ft P
 .fi
 .UNINDENT
@@ -349,11 +350,14 @@ RNG device for QEMU (none for no RNG)
 .sp
 Default: "/dev/random"
 .UNINDENT
-.SS dracut arguments
+.SS dracut arguments: (default: )
 .INDENT 0.0
 .TP
+.B\-\-dracut\-conf
+Path to a dracut.conf file to use instead of the default arguments. See the dracut.conf(5) manpage.
+.TP
 .B\-\-dracut\-arg
-Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the default. (default: )
+Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the defaults.
 .UNINDENT
 .SS pxe to live arguments
 .INDENT 0.0
