@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.4
+Version:        32.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -263,6 +263,21 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Jan 16 2020 Brian C. Lane <bcl@redhat.com> 32.5-1
+- New lorax documentation - 32.5 (bcl@redhat.com)
+- tests: Use mock from unittest (bcl@redhat.com)
+- Add --dracut-conf cmdline argument to lorax and livemedia-creator (bcl@redhat.com)
+- Add tests for metapackages and package name globs (bcl@redhat.com)
+- executils: Drop bufsize=1 from execReadlines (bcl@redhat.com)
+- tests: unittest and pytest expect functions to start with test_ (bcl@redhat.com)
+- Update to_timeval usage to use format_iso8601 (bcl@redhat.com)
+- ltmpl: Update to use collections.abc (bcl@redhat.com)
+- test: Use pytest instead of nose (bcl@redhat.com)
+- tests: Check for cloud-init presence in azure image (jrusz@redhat.com)
+- tests: check for failed compose before trying to cancel (jrusz@redhat.com)
+- tests: Enable Elastic Network Adapter support for AWS (atodorov@redhat.com)
+- lorax-composer: Enable ami on aarch64 (bcl@redhat.com)
+
 * Fri Jan 10 2020 Brian C. Lane <bcl@redhat.com> 32.4-1
 - livemedia-creator: workaround glibc limitation when starting anaconda (dan@danny.cz)
 - AWS test: take into account different instance type for non x86 (atodorov@redhat.com)
