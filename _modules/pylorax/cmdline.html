@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.cmdline &mdash; Lorax 32.4 documentation</title>
+  <title>pylorax.cmdline &mdash; Lorax 32.5 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.4
+                32.5
               </div>
             
           
@@ -272,12 +272,15 @@
                           <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use a plain squashfs filesystem for the runtime.&quot;</span><span class="p">)</span>
 
     <span class="c1"># dracut arguments</span>
-    <span class="n">dracut_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;dracut arguments&quot;</span><span class="p">)</span>
+    <span class="n">dracut_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;dracut arguments: (default: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">dracut_default</span><span class="p">)</span>
+    <span class="n">dracut_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--dracut-conf&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to a dracut.conf file to use instead of the &quot;</span>
+                                   <span class="s2">&quot;default arguments. See the dracut.conf(5) manpage.&quot;</span><span class="p">)</span>
     <span class="n">dracut_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--dracut-arg&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dracut_args&quot;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Argument to pass to dracut when &quot;</span>
                                    <span class="s2">&quot;rebuilding the initramfs. Pass this &quot;</span>
                                    <span class="s2">&quot;once for each argument. NOTE: this &quot;</span>
-                                   <span class="s2">&quot;overrides the default. (default: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">dracut_default</span><span class="p">)</span>
+                                   <span class="s2">&quot;overrides the defaults.&quot;</span><span class="p">)</span>
 
     <span class="c1"># add the show version option</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;show program&#39;s version number and exit&quot;</span><span class="p">,</span>
@@ -427,12 +430,15 @@
                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;RNG device for QEMU (none for no RNG)&quot;</span><span class="p">)</span>
 
     <span class="c1"># dracut arguments</span>
-    <span class="n">dracut_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;dracut arguments&quot;</span><span class="p">)</span>
+    <span class="n">dracut_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;dracut arguments: (default: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">dracut_default</span><span class="p">)</span>
+    <span class="n">dracut_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--dracut-conf&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to a dracut.conf file to use instead of the &quot;</span>
+                                   <span class="s2">&quot;default arguments. See the dracut.conf(5) manpage.&quot;</span><span class="p">)</span>
     <span class="n">dracut_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--dracut-arg&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dracut_args&quot;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Argument to pass to dracut when &quot;</span>
                                    <span class="s2">&quot;rebuilding the initramfs. Pass this &quot;</span>
                                    <span class="s2">&quot;once for each argument. NOTE: this &quot;</span>
-                                   <span class="s2">&quot;overrides the default. (default: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">dracut_default</span><span class="p">)</span>
+                                   <span class="s2">&quot;overrides the defaults.&quot;</span><span class="p">)</span>
 
     <span class="c1"># pxe to live arguments</span>
     <span class="n">pxelive_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;pxe to live arguments&quot;</span><span class="p">)</span>

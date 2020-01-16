@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.recipes &mdash; Lorax 32.4 documentation</title>
+  <title>pylorax.api.recipes &mdash; Lorax 32.5 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.4
+                32.5
               </div>
             
           
@@ -1203,11 +1203,9 @@
     <span class="n">datetime</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
     <span class="c1"># XXX What do we do with timezone?</span>
     <span class="n">_timezone</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">get_time_zone</span><span class="p">()</span>
-    <span class="n">timeval</span> <span class="o">=</span> <span class="n">GLib</span><span class="o">.</span><span class="n">TimeVal</span><span class="p">()</span>
-    <span class="n">ok</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">to_timeval</span><span class="p">(</span><span class="n">timeval</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
+    <span class="n">time_str</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">format_iso8601</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">time_str</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">CommitTimeValError</span>
-    <span class="n">time_str</span> <span class="o">=</span> <span class="n">timeval</span><span class="o">.</span><span class="n">to_iso8601</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">CommitDetails</span><span class="p">(</span><span class="n">commit_str</span><span class="p">,</span> <span class="n">time_str</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">revision</span><span class="p">)</span></div>
 

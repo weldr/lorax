@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 32.4 documentation</title>
+  <title>pylorax package &mdash; Lorax 32.5 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                32.4
+                32.5
               </div>
             
           
@@ -380,6 +380,14 @@ this. Everything else should be a nop.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.dracut_args">
+<code class="sig-prename descclassname">pylorax.creator.</code><code class="sig-name descname">dracut_args</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#dracut_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.dracut_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the args to pass to dracut</p>
+<p>Return the default argument list unless one of the dracut cmdline arguments
+has been used.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1161,6 +1169,7 @@ raises CalledProcessError if umount fails.</p>
 typically be set to /mnt/sysimage/</p>
 <p>Attempts to cleanup may also fail. Catch these and continue trying the
 other mountpoints.</p>
+<p>Anaconda may also leave /run/anaconda.pid behind, clean that up as well.</p>
 </dd></dl>
 
 <dl class="function">
