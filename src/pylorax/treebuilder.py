@@ -23,6 +23,7 @@ logger = logging.getLogger("pylorax.treebuilder")
 import os, re
 from os.path import basename
 from shutil import copytree, copy2
+from subprocess import CalledProcessError
 from pathlib import Path
 import itertools
 
@@ -228,8 +229,14 @@ class RuntimeBuilder(object):
         workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")
         os.makedirs(joinpaths(workdir, "LiveOS"))
 
-        imgutils.mkrootfsimg(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
-                             "Anaconda", size=size)
+        # Catch problems with the rootfs being too small and clearly log them
+        try:
+            imgutils.mkrootfsimg(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
+                                 "Anaconda", size=size)
+        except CalledProcessError as e:
+            if e.stdout and "No space left on device" in e.stdout:
+                logger.error("The rootfs ran out of space with size=%d", size)
+            raise
 
         # squash the live rootfs and clean up workdir
         imgutils.mksquashfs(workdir, outfile, compression, compressargs)

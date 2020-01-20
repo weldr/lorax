@@ -17,6 +17,7 @@
 import glob
 import os
 import parted
+from subprocess import CalledProcessError
 import tarfile
 import tempfile
 import unittest
@@ -269,6 +270,22 @@ class ImgUtilsTest(unittest.TestCase):
                 self.assertTrue(os.path.exists(disk_img.name))
                 file_details = get_file_magic(disk_img.name)
                 self.assertTrue("ext2 filesystem" in file_details, file_details)
+
+    @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
+    def test_small_mkext4img(self):
+        """Test mkext4img error handling"""
+        with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
+            with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
+                mkfakerootdir(work_dir)
+                # Add a 8MiB file
+                with open(joinpaths(work_dir, "large-file"), "w") as f:
+                    for _ in range(5):
+                        f.write("A" * 1024**2)
+                graft = {work_dir+"/etc/yum.repos.d/": "./tests/pylorax/repos/server-2.repo"}
+                try:
+                    mkext4img(work_dir, disk_img.name, graft=graft, size=5*1024**2)
+                except CalledProcessError as e:
+                    self.assertTrue(e.stdout and "No space left on device" in e.stdout)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
     def test_mkbtrfsimg(self):
