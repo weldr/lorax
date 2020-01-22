@@ -97,7 +97,19 @@ __EOF__
         AMI="$UUID-disk.ami"
 
         # upload to S3
-        rlRun -t -c "aws s3 cp $AMI s3://$AWS_BUCKET"
+        # workaround for RequestTimeTooSkewed issue (see BZ1766785),
+        # this has to be removed once the bug has been fixed
+        if output=$(aws s3 cp $AMI s3://$AWS_BUCKET 2>&1); then
+            rlPass "Upload to S3 has been successful."
+        else
+            rlLogInfo "Upload to S3 failed: '$output'"
+            if grep -q RequestTimeTooSkewed <<< "$output"; then
+                rlLogInfo "Upload to S3 failed due to time skew (BZ1766785)"
+                rlRun -t -c "chronyc makestep" 0 "WORKAROUND: Resyncing time via NTP"
+                rlRun -t -c "aws s3 cp $AMI s3://$AWS_BUCKET 2>&1"
+            fi
+        fi
+
 
         # import image as snapshot into EC2
         cat > containers.json << __EOF__
