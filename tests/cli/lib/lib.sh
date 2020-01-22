@@ -132,7 +132,7 @@ composer_stop() {
 verify_image() {
     SSH_USER="$1"
     SSH_MACHINE="$2"
-    SSH_OPTS="-o StrictHostKeyChecking=no $3"
+    SSH_OPTS="-o StrictHostKeyChecking=no -o BatchMode=yes $3"
     rlLogInfo "verify_image: SSH_OPTS:'$SSH_OPTS' SSH_USER:'$SSH_USER' SSH_MACHINE: '$SSH_MACHINE'"
     check_root_account "$@"
     if [ "$CHECK_CMDLINE" != 0 ]; then
