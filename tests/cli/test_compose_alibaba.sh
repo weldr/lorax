@@ -170,7 +170,7 @@ __EOF__
         rlLogInfo "Running INSTANCE_ID=$INSTANCE_ID with IP_ADDRESS=$IP_ADDRESS"
     rlPhaseEnd
 
-    rlPhaseStartTest "Verify EC2 instance"
+    rlPhaseStartTest "Verify ECS instance"
         # cloud-init default config differs between RHEL and Fedora
         CLOUD_USER="cloud-user"
         if [ -f "/etc/fedora-release" ]; then
@@ -186,11 +186,11 @@ __EOF__
         rlRun -t -c "$ALI_DIR/aliyun ecs DeleteImage --Force True --ImageId $IMAGE_ID"
         rlRun -t -c "$ALI_DIR/aliyun oss rm oss://$ALICLOUD_BUCKET/$IMAGE --force"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR $ALI_DIR"
         # do this here to give time for the VM instance to be removed properly
         # also don't fail if the key is still attached to an instance which is waiting
         # to be desroyed. We're going to remove these keys in cleanup afterwards
         $ALI_DIR/aliyun ecs DeleteKeyPairs --KeyPairNames "['$KEY_NAME']" || echo
+        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR $ALI_DIR"
     rlPhaseEnd
 
 rlJournalEnd
