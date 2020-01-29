@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.39
+Version:        28.14.40
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -252,6 +252,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Jan 29 2020 Brian C. Lane <bcl@redhat.com> 28.14.40-1
+- tests: run ssh commands in batch mode (jrusz)
+  Related: rhbz#1785154
+- tests: remove --test=2 from compose_sanity (jrusz)
+  Related: rhbz#1788461
+- Add tests for metapackages and package name globs (bcl)
+  Related: rhbz#1791612
+- tests: Check for cloud-init presence in azure image (jrusz)
+  Related: rhbz#1754711
+
 * Mon Jan 13 2020 Brian C. Lane <bcl@redhat.com> 28.14.39-1
 - tests: Enable Elastic Network Adapter support for AWS (atodorov)
   Related: rhbz#1789308
