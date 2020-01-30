@@ -28,6 +28,10 @@ class LoraxLintConfig(PocketLintConfig):
     def ignoreNames(self):
         return { "bots", "rpmbuild" }
 
+    @property
+    def extraArgs(self):
+        return ["--extension-pkg-whitelist=rpm"]
+
 if __name__ == "__main__":
     conf = LoraxLintConfig()
     linter = PocketLinter(conf)
