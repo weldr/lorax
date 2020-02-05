@@ -52,7 +52,7 @@ test:
 					--cover-package=pylorax --cover-inclusive \
 					./tests/pylorax/ ./tests/composer/
 
-	coverage3 report -m
+	coverage-3 report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
 
 # need `losetup`, which needs Docker to be in privileged mode (--privileged)

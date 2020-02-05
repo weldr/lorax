@@ -1,36 +1,8 @@
-FROM registry.fedoraproject.org/fedora:28
-RUN  dnf -y install \
-  anaconda-tui \
-  libgit2-glib \
-  libselinux-python3 \
-  make \
-  pykickstart \
-  python3-coverage \
-  python3-coveralls \
-  python3-flask \
-  python3-gevent \
-  python3-magic \
-  python3-mako \
-  python3-nose \
-  python3-pocketlint \
-  python3-pylint \
-  python3-pyparted \
-  python3-pytoml \
-  python3-semantic_version \
-  python3-sphinx \
-  python3-rpmfluff \
-  python3-librepo \
-  beakerlib \
-  sudo \
-  tito \
-  rsync \
-  e2fsprogs \
-  xz-lzma-compat \
-  pbzip2 \
-  squashfs-tools \
-  qemu-img \
-  which && \
-  touch /.in-container
+FROM centos:8
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+COPY ./test-packages .
+RUN dnf -y install $(cat ./test-packages) && touch /.in-container
+RUN pip3 install pocketlint
 RUN useradd weldr
 VOLUME /lorax-ro
 VOLUME /test-results
