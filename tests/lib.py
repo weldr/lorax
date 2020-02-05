@@ -48,10 +48,11 @@ def get_file_magic(filename):
     return details
 
 def this_is_rhel():
-    """Check to see if the tests are running on RHEL
+    """Check to see if the tests are running on RHEL or CentOS
     """
+    NAMES = ["Red Hat Enterprise Linux", "CentOS"]
     release = open("/etc/system-release", "r").read()
-    return "Red Hat Enterprise Linux" in release
+    return any(True for n in NAMES if n in release)
 
 def create_git_repo():
     """Create a git repo in a tmpdir
