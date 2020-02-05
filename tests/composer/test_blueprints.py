@@ -175,7 +175,7 @@ class BlueprintsTest(unittest.TestCase):
     def test_save_0(self):
         """blueprints save example-development"""
         blueprints_save("/run/weldr/api.socket", 0, ["example-development"], show_json=False)
-        self.assertTrue(os.path.exists("example-http-server.toml"))
+        self.assertTrue(os.path.exists("example-development.toml"))
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_save_1(self):
@@ -233,7 +233,7 @@ class BlueprintsTest(unittest.TestCase):
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_tag(self):
         """blueprints tag"""
-        rc = blueprints_tag("/run/weldr/api.socket", 0, ["glusterfs"], show_json=False)
+        rc = blueprints_tag("/run/weldr/api.socket", 0, ["example-development"], show_json=False)
         self.assertTrue(rc == 0)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
@@ -253,7 +253,7 @@ class BlueprintsTest(unittest.TestCase):
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_workspace(self):
         """blueprints workspace"""
-        rc = blueprints_push("/run/weldr/api.socket", 0, ["example-http-server.toml"], show_json=False)
+        rc = blueprints_push("/run/weldr/api.socket", 0, ["example-development.toml"], show_json=False)
         self.assertTrue(rc == 0)
 
     # XXX MUST COME LAST
@@ -263,12 +263,12 @@ class BlueprintsTest(unittest.TestCase):
         """blueprints diff"""
         # Get the oldest commit, it should be 2nd to last line
         with captured_output() as (out, _):
-            rc = blueprints_changes("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
+            rc = blueprints_changes("/run/weldr/api.socket", 0, ["example-development"], show_json=False)
         output = out.getvalue().strip().splitlines()
         first_commit = output[-2].split()[1]
 
         with captured_output() as (out, _):
-            rc = blueprints_diff("/run/weldr/api.socket", 0, ["example-http-server", first_commit, "HEAD"], show_json=False)
+            rc = blueprints_diff("/run/weldr/api.socket", 0, ["example-development", first_commit, "HEAD"], show_json=False)
         output = out.getvalue().strip()
         self.assertTrue(rc == 0)
         self.assertTrue("Changed Version" in output)
