@@ -7,7 +7,9 @@
 
   - name: Create instance
     ec2_instance:
-      name: "Composer-Test-{{ ami_id }}"
+      name: "{{ vm_name }}"
+      tags:
+        composer-test: true
       image_id: "{{ ami_id }}"
       key_name: "{{ key_name }}"
       instance_type: "{{ instance_type }}"
