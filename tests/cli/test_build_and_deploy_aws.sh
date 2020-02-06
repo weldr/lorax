@@ -89,8 +89,9 @@ __EOF__
 
     rlPhaseStartTest "Import AMI image in AWS"
         rlRun -t -c "$CLI compose image $UUID"
+        rlRun -t -c "mv $UUID-disk.ami Composer-Test-$UUID-disk.ami"
 
-        AMI="$UUID-disk.ami"
+        AMI="Composer-Test-$UUID-disk.ami"
 
         # upload to S3
         rlRun -t -c "ansible localhost -m aws_s3 -a \
@@ -132,6 +133,8 @@ __EOF__
         else
             rlLogInfo "SNAPSHOT_ID=$SNAPSHOT_ID"
         fi
+        # tag snapshot
+        aws ec2 create-tags --resources $SNAPSHOT_ID --tags Key=composer-test,Value=true
 
         # create an image from the imported selected snapshot
         AMI_ARCH="$(uname -m)"
@@ -148,6 +151,9 @@ __EOF__
         else
             rlLogInfo "AMI_ID=$AMI_ID"
         fi
+
+        # tag AMI
+        aws ec2 create-tags --resources $AMI_ID --tags Key=composer-test,Value=true
     rlPhaseEnd
 
     rlPhaseStartTest "Start EC2 instance"
@@ -156,13 +162,14 @@ __EOF__
             INSTANCE_TYPE="a1.medium"
         fi
         # generate new ssh key
-        KEY_NAME=composer-$UUID
+        KEY_NAME="Composer-Test-Key-$UUID"
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
 
         rlRun -t -c "ansible-playbook  --extra-vars \
                        'key_name=$KEY_NAME \
                         ssh_key_dir=$SSH_KEY_DIR \
+                        vm_name=Composer-Test-VM-$AMI_ID \
                         ami_id=$AMI_ID \
                         instance_type=$INSTANCE_TYPE \
                         tmp_dir=$TMP_DIR' \
