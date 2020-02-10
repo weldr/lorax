@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.40
+Version:        28.14.41
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -252,6 +252,26 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Feb 10 2020 Brian C. Lane <bcl@redhat.com> 28.14.41-1
+- tests: Add new test to run 'test' and 'check' in cockpit ci (jrusz)
+  Related: rhbz#1785154
+- tests: rpm now returns str, drop decode() call (bcl)
+  Related: rhbz#1785154
+- tests: Switch to using CentOS8 for the Docker tests (bcl)
+  Related: rhbz#1785154
+- tests: Finish switch to using example-development in composer tests (bcl)
+  Related: rhbz#1785154
+- tests: this_is_rhel function return true for CentOS or RHEL (bcl)
+  Related: rhbz#1785154
+- tests: Disable pylint preexec-fn warning (bcl)
+  Related: rhbz#1785154
+- pylint: whitelist the rpm module (bcl)
+  Related: rhbz#1785154
+- tests: Use unittest.mock (bcl)
+  Related: rhbz#1785154
+- Test & cleanup script for Alibaba cloud (atodorov)
+  Related: rhbz#1785154
+
 * Wed Jan 29 2020 Brian C. Lane <bcl@redhat.com> 28.14.40-1
 - tests: run ssh commands in batch mode (jrusz)
   Related: rhbz#1785154
