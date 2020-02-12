@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.5
+Version:        32.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -263,6 +263,24 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Wed Feb 12 2020 Brian C. Lane <bcl@redhat.com> 32.6-1
+- New lorax documentation - 32.6 (bcl@redhat.com)
+- Update mock documentation to remove --old-chroot (bcl@redhat.com)
+- Use .tasks file to trigger removal of stale cloud resources (atodorov@redhat.com)
+- tests: OpenStack - apply tags and delete by tags (atodorov@redhat.com)
+- tests: Azure - apply tags and delete by tags (atodorov@redhat.com)
+- tests: VMware - delete only VMs named Composer-Test-* (atodorov@redhat.com)
+- tests: AWS - apply tags when creating resoures and delete by tags (atodorov@redhat.com)
+- Reflect fonts packages from comps (akira@tagoh.org)
+- lorax: Catch rootfs out of space failures (bcl@redhat.com)
+- pylint: whitelist the rpm module (bcl@redhat.com)
+- tests: Move the list of packages out of Dockerfile.test into a file (bcl@redhat.com)
+- tests: remove ALI_DIR after we're done using the cli (atodorov@redhat.com)
+- Test & cleanup script for Alibaba cloud (atodorov@redhat.com)
+- tests: run ssh commands in batch mode (jrusz@redhat.com)
+- lorax: Log dnf solver debug data in ./debugdata/ (bcl@redhat.com)
+- tests: remove --test=2 from compose_sanity (jrusz@redhat.com)
+
 * Thu Jan 16 2020 Brian C. Lane <bcl@redhat.com> 32.5-1
 - New lorax documentation - 32.5 (bcl@redhat.com)
 - tests: Use mock from unittest (bcl@redhat.com)
