@@ -57,8 +57,12 @@ goes onto the boot.iso, the pxeboot directory, and the boot.iso under ``./images
 Running inside of mock
 ----------------------
 
-If you are using lorax with mock v1.3.4 or later you will need to pass
-``--old-chroot`` to mock. Mock now defaults to using systemd-nspawn which cannot
+As of mock version 2.0 you no longer need to pass ``--old-chroot``. You will,
+however, need to pass ``--enable-network`` so that the mock container can download
+packages.
+
+Older versions of mock, between 1.3.4 and 2.0, will need to pass ``--old-chroot``
+to mock. These versions of mock default to using systemd-nspawn which cannot
 create the needed loop device nodes. Passing ``--old-chroot`` will use the old
 system where ``/dev/loop*`` is setup for you.
 
