@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.dnfbase &mdash; Lorax 32.5 documentation</title>
+  <title>pylorax.dnfbase &mdash; Lorax 32.6 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.5
+                32.6
               </div>
             
           
@@ -253,6 +253,8 @@
     <span class="c1"># actually appends. Doing this adds &#39;nodocs&#39; to the existing list</span>
     <span class="c1"># of values, over in libdnf, it does not replace the existing values.</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">tsflags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;nodocs&#39;</span><span class="p">]</span>
+    <span class="c1"># Log details about the solver</span>
+    <span class="n">conf</span><span class="o">.</span><span class="n">debug_solver</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">if</span> <span class="n">proxy</span><span class="p">:</span>
         <span class="n">conf</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span>

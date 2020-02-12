@@ -383,9 +383,15 @@ As of lorax version 22.2 you can use livemedia-creator and anaconda version
 22.15 inside of a mock chroot with --make-iso and --make-fsimage.
 
 .. note::
-    As of mock 1.3.4 you need to use ``--old-chroot`` with mock. Mock now defaults to using systemd-nspawn
-    which cannot create the needed loop device nodes. Passing ``--old-chroot`` will use the old system
-    where ``/dev/loop*`` is setup for you.
+    As of mock version 2.0 you no longer need to pass ``--old-chroot``. You will,
+    however, need to pass ``--enable-network`` so that the mock container can download
+    packages.
+
+    Older versions of mock, between 1.3.4 and 2.0, will need to pass
+    ``--old-chroot`` with mock. These versions of mock now default to using
+    systemd-nspawn which cannot create the needed loop device nodes. Passing
+    ``--old-chroot`` will use the old system where ``/dev/loop*`` is setup for
+    you.
 
 On the host system:
 
@@ -417,14 +423,14 @@ group.
    ``url points to the correct repo``
 
 7. Init the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --init``
+   ``mock -r fedora-rawhide-x86_64 --init``
 
 8. Copy the kickstart inside the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --copyin ./fedora-minimal.ks /root/``
+   ``mock -r fedora-rawhide-x86_64 --copyin ./fedora-minimal.ks /root/``
 
 9. Make a minimal iso::
 
-        mock -r fedora-rawhide-x86_64 --old-chroot --chroot -- livemedia-creator --no-virt \
+        mock -r fedora-rawhide-x86_64 --enable-network --chroot -- livemedia-creator --no-virt \
         --resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
         --make-iso --ks /root/fedora-minimal.ks
 
@@ -471,17 +477,17 @@ group.
    ``url points to the correct repo``
 
 7. Init the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --init``
+   ``mock -r fedora-rawhide-x86_64 --init``
 
 8. Copy the kickstart inside the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --copyin ./fedora-minimal.ks /root/``
+   ``mock -r fedora-rawhide-x86_64 --copyin ./fedora-minimal.ks /root/``
 
 9. Copy the Anaconda boot.iso inside the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --copyin ./boot.iso /root/``
+   ``mock -r fedora-rawhide-x86_64 --copyin ./boot.iso /root/``
 
 10. Make a minimal iso::
 
-        mock -r fedora-rawhide-x86_64 --old-chroot --chroot -- livemedia-creator \
+        mock -r fedora-rawhide-x86_64 --enable-network --chroot -- livemedia-creator \
         --resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
         --make-iso --ks /root/fedora-minimal.ks --iso /root/boot.iso
 
