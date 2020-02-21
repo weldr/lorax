@@ -19,7 +19,7 @@ removefrom ${product.name}-logos /usr/share/plymouth/*
 ## We also need dracut-shutdown.service and dracut-initramfs-restore to reboot
 removefrom dracut --allbut /usr/lib/dracut/modules.d/30convertfs/convertfs.sh \
                   /usr/lib/dracut/modules.d/99base/dracut-lib.sh \
-                  /usr/lib/systemd/* /usr/lib/dracut/modules.d/98systemd/*.service \
+                  /usr/lib/systemd/* /usr/lib/dracut/modules.d/98dracut-systemd/*.service \
                   /usr/lib/dracut/dracut-initramfs-restore
 ## we don't run SELinux (not in enforcing, anyway)
 removepkg checkpolicy selinux-policy libselinux-utils
@@ -28,9 +28,6 @@ removepkg checkpolicy selinux-policy libselinux-utils
 ## The removepkg above removes it, create an empty one. See rhbz#1243168
 append etc/selinux/config ""
 
-## anaconda has its own repo files
-removefrom fedora-release --allbut /etc/os-release /usr/lib/os-release \
-                                   /usr/lib/os.release.d/*
 removepkg fedora-release-rawhide
 
 ## keep enough of shadow-utils to create accounts
@@ -40,7 +37,9 @@ removefrom shadow-utils --allbut /usr/bin/chage /usr/sbin/chpasswd \
 ## remove other account management tools
 removepkg usermode usermode-gtk passwd
 ## no services to turn on/off (keep the /etc/init.d link though)
-removefrom chkconfig --allbut /etc/init.d
+removepkg chkconfig
+removefrom initscripts /usr/sbin/* /usr/share/locale/* /usr/share/doc/* /usr/share/man/*
+
 ## Miscellanous unnecessary gpg program
 removepkg pinentry
 ## no storage device monitoring
@@ -108,12 +107,9 @@ remove lib/modules/*/{build,source,*.map}
 ## remove unused themes, theme engines, icons, etc.
 removefrom gtk2 /usr/${libdir}/gtk-2.0/*/{engines,printbackends}/*
 removefrom gtk2 /usr/share/themes/*
-## clearlooks is the theme we use for gtk2
-removefrom gtk2-engines --allbut /usr/${libdir}/*/libclearlooks.so \
-                                 /usr/share/themes/Clearlooks/*
 removefrom gtk3 /usr/${libdir}/gtk-3.0/*/printbackends/*
 removefrom gtk3 /usr/share/themes/*
-removefrom metacity --allbut /usr/bin/* /usr/${libdir}/* /etc/*
+removefrom metacity --allbut /usr/bin/* /usr/${libdir}/*
 
 ## filesystem tools
 removefrom e2fsprogs /usr/share/locale/*
@@ -214,7 +210,6 @@ removefrom gtk3 /usr/${libdir}/gtk-3.0/*
 removefrom gzip /usr/bin/{gzexe,zcmp,zdiff,zegrep,zfgrep,zforce,zgrep,zless,zmore,znew}
 removefrom hwdata /etc/* /usr/share/hwdata/oui.txt /usr/share/hwdata/pnp.ids
 removefrom hwdata /usr/share/hwdata/upgradelist
-removefrom initscripts /etc/ppp/* /usr/sbin/* /usr/share/locale/*
 removefrom iproute --allbut /usr/sbin/{ip,routef,routel,rtpr}
 removefrom iscsi-initiator-utils /etc/rc.d/*
 removefrom kbd --allbut */bin/{dumpkeys,kbd_mode,loadkeys,setfont,unicode_*,chvt}
@@ -323,7 +318,7 @@ removefrom xorg-x11-drv-openchrome /usr/${libdir}/libchrome*
 removefrom xorg-x11-drv-synaptics /usr/bin/*
 removefrom xorg-x11-drv-wacom /usr/bin/*
 removefrom xorg-x11-fonts-misc --allbut /usr/share/X11/fonts/misc/{6x13,encodings,fonts,*cursor}*
-removefrom xorg-x11-server-utils --allbut /usr/bin/xrandr /usr/share/X11/rgb.txt /usr/bin/xrdb
+removefrom xorg-x11-server-utils --allbut /usr/bin/xrandr /usr/bin/xrdb
 removefrom yum /etc/* /usr/share/locale/* /usr/share/yum-cli/*
 removefrom ${product.name}-logos /etc/*
 removefrom ${product.name}-logos /usr/share/icons/{Bluecurve,oxygen}/*
@@ -351,7 +346,7 @@ runcmd chroot ${root} find -L /etc /usr -xdev -type l -and \! -name "mtab" \
 removefrom gstreamer1 --allbut /usr/${libdir}/libgstbase-1.0.* \
                                /usr/${libdir}/libgstreamer-1.0.*
 removefrom gstreamer1-plugins-base --allbut \
-        /usr/${libdir}/libgst{allocators,app,audio,badallocators,fft,gl,pbutils,tag,video}-1.0.*
+        /usr/${libdir}/libgst{allocators,app,audio,fft,gl,pbutils,tag,video}-1.0.*
 
 ## We have enough geoip libraries, thanks
 removepkg geoclue2
