@@ -26,7 +26,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
-        UUID=`$CLI compose start example-http-server ami`
+        UUID=`$CLI compose start example-http-server ext4-filesystem`
         rlAssertEquals "exit code should be zero" $? 0
         UUID=`echo $UUID | cut -f 2 -d' '`
 
