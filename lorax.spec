@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.41
+Version:        28.14.42
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -252,6 +252,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Feb 27 2020 Brian C. Lane <bcl@redhat.com> 28.14.42-1
+- lorax: Restore the 98dracut-systemd service files to the install.img (bcl)
+  Related: rhbz#1805405
+- lorax: Add eject back into the boot.iso (bcl)
+  Related: rhbz#1805405
+
 * Mon Feb 10 2020 Brian C. Lane <bcl@redhat.com> 28.14.41-1
 - tests: Add new test to run 'test' and 'check' in cockpit ci (jrusz)
   Related: rhbz#1785154
