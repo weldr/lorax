@@ -89,20 +89,29 @@ class RuntimeBuilder(object):
         self.dbo.reset()
 
     def _install_branding(self):
+        """Select the branding from the available 'system-release' packages
+        The *best* way to control this is to have a single package in the repo provide 'system-release'
+        When there are more than 1 package it will:
+        - Make a list of the available packages
+        - If variant is set look for a package ending with lower(variant) and use that
+        - If there are one or more non-generic packages, use the first one after sorting
+        """
         release = None
         q = self.dbo.sack.query()
         a = q.available()
-        for pkg in a.filter(provides='system-release'):
-            logger.debug("Found release package %s", pkg)
-            if pkg.name.startswith('generic'):
-                continue
-            else:
-                release = pkg.name
-                break
-
-        if not release:
-            logger.error('could not get the release')
+        pkgs = sorted([p.name for p in a.filter(provides='system-release')
+                                    if not p.name.startswith("generic")])
+        if not pkgs:
+            logger.error("No system-release packages found, could not get the release")
             return
+
+        logger.debug("system-release packages: %s", pkgs)
+        if self.vars.product.variant:
+            variant = [p for p in pkgs if p.endswith("-"+self.vars.product.variant.lower())]
+            if variant:
+                release = variant[0]
+        if not release:
+            release = pkgs[0]
 
         # release
         logger.info('got release: %s', release)
