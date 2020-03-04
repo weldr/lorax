@@ -110,6 +110,9 @@ class InstallBrandingTestCase(unittest.TestCase):
             pkgs = self.install_branding(repo_dir)
             self.assertEqual(pkgs, ["redhat-logos", "redhat-release"])
 
+            # Test with a variant set, but not available
+            pkgs = self.install_branding(repo_dir, variant="workstation")
+
     def test_skip_branding(self):
         """Test disabled branding"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
@@ -119,3 +122,24 @@ class InstallBrandingTestCase(unittest.TestCase):
 
             pkgs = self.install_branding(repo_dir, skip_branding=True)
             self.assertEqual(pkgs, [])
+
+    def test_three_pkgs(self):
+        """Test with a repo with generic-release, redhat-release, redhat-release-workstation package"""
+        # Three system-release packages, one with a variant suffix
+        with tempfile.TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
+            makeFakeRPM(repo_dir, "generic-release", 0, "33", "1", ["/etc/system-release"], ["system-release"])
+            makeFakeRPM(repo_dir, "redhat-release", 0, "33", "1", ["/etc/system-release"], ["system-release"])
+            makeFakeRPM(repo_dir, "redhat-logos", 0, "33", "1")
+            makeFakeRPM(repo_dir, "redhat-release-workstation", 0, "33", "1", ["/etc/system-release"], ["system-release"])
+            os.system("createrepo_c " + repo_dir)
+
+            pkgs = self.install_branding(repo_dir)
+            self.assertEqual(pkgs, ["redhat-logos", "redhat-release"])
+
+            # Test with a variant set
+            pkgs = self.install_branding(repo_dir, variant="workstation")
+            self.assertEqual(pkgs, ["redhat-logos", "redhat-release-workstation"])
+
+            # Test with a variant set, but not available
+            pkgs = self.install_branding(repo_dir, variant="server")
+            self.assertEqual(pkgs, ["redhat-logos", "redhat-release"])
