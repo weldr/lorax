@@ -1,5 +1,6 @@
 PYTHON ?= /usr/bin/python
 DESTDIR ?= /
+DOCKER ?= docker
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
@@ -73,7 +74,7 @@ local:
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
 test-in-docker:
-	sudo docker build -t welder/lorax-composer:latest -f Dockerfile.test .
+	sudo $(DOCKER) build -t welder/lorax-composer:latest -f Dockerfile.test .
 
 ci: check test
 
