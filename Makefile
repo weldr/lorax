@@ -149,6 +149,20 @@ vm-local-repos: vm
 		--run-command "systemctl enable lorax-composer" \
 		$(TEST_OS)
 
+vm-releng:
+	rm -f $(VM_IMAGE) $(VM_IMAGE).qcow2
+	bots/image-customize -v \
+		--resize 20G \
+		--upload $(CURDIR)/test/vm.install:/var/tmp/vm.install \
+		--upload $(realpath tests):/ \
+		--run-command "chmod +x /var/tmp/vm.install" \
+		--run-command "cd /var/tmp; BUILD_SRPM=0 /var/tmp/vm.install" \
+		$(TEST_OS)
+	[ -f ~/.config/lorax-test-env ] && bots/image-customize \
+		--upload ~/.config/lorax-test-env:/var/tmp/lorax-test-env \
+		$(TEST_OS) || echo
+
+
 vm-reset:
 	rm -f $(VM_IMAGE) $(VM_IMAGE).qcow2
 
