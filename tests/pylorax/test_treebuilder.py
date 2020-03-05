@@ -22,7 +22,7 @@ import tempfile
 import unittest
 
 from pylorax import ArchData, DataHolder
-from pylorax.dnfbase import get_dnf_base_object
+from pylorax.yumbase import get_yum_base_object
 from pylorax.treebuilder import RuntimeBuilder
 
 # TODO Put these into a common test library location
@@ -36,6 +36,15 @@ def in_tempdir(prefix='tmp'):
         yield
     finally:
         os.chdir(oldcwd)
+        shutil.rmtree(tmpdir)
+
+@contextmanager
+def TemporaryDirectory(prefix='tmp'):
+    """Execute a block of code with a temporary directory"""
+    tmpdir = tempfile.mkdtemp(prefix=prefix)
+    try:
+        yield tmpdir
+    finally:
         shutil.rmtree(tmpdir)
 
 def makeFakeRPM(repo_dir, name, epoch, version, release, files=None, provides=None):
@@ -64,24 +73,24 @@ def makeFakeRPM(repo_dir, name, epoch, version, release, files=None, provides=No
 class InstallBrandingTestCase(unittest.TestCase):
     def install_branding(self, repo_dir, variant=None):
         """Run the _install_branding and return the names of the installed packages"""
-        with tempfile.TemporaryDirectory(prefix="lorax.test.") as root_dir:
-            dbo = get_dnf_base_object(root_dir, ["file://"+repo_dir], enablerepos=[], disablerepos=[])
-            self.assertTrue(dbo is not None)
+        with TemporaryDirectory(prefix="lorax.test.") as root_dir:
+            ybo = get_yum_base_object(root_dir, ["file://"+repo_dir])
+            self.assertTrue(ybo is not None)
 
             product = DataHolder(name="Fedora", version="33", release="33",
                                  variant=variant, bugurl="http://none", isfinal=True)
-            arch = ArchData(os.uname().machine)
-            rb = RuntimeBuilder(product, arch, dbo)
+            arch = ArchData(os.uname()[4])
+            rb = RuntimeBuilder(product, arch, ybo)
             rb._install_branding()
-            dbo.resolve()
-            self.assertTrue(dbo.transaction is not None)
-
-            return sorted(p.name for p in dbo.transaction.install_set)
+            (rc, msg) = ybo.buildTransaction()
+            self.assertTrue(rc in [0, 1, 2])
+            ybo.tsInfo.makelists()
+            return sorted([tm.po.name for tm in ybo.tsInfo.installed + ybo.tsInfo.depinstalled])
 
     def test_no_pkgs(self):
         """Test with a repo with no system-release packages"""
         # No system-release packages
-        with tempfile.TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
+        with TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
             makeFakeRPM(repo_dir, "fake-milhouse", 0, "1.0.0", "1")
             os.system("createrepo_c " + repo_dir)
 
@@ -91,7 +100,7 @@ class InstallBrandingTestCase(unittest.TestCase):
     def test_generic_pkg(self):
         """Test with a repo with only a generic-release package"""
         # Only generic-release
-        with tempfile.TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
+        with TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
             makeFakeRPM(repo_dir, "generic-release", 0, "33", "1", ["/etc/system-release"], ["system-release"])
             os.system("createrepo_c " + repo_dir)
 
@@ -101,7 +110,7 @@ class InstallBrandingTestCase(unittest.TestCase):
     def test_two_pkgs(self):
         """Test with a repo with generic-release, and a fedora-release package"""
         # Two system-release packages
-        with tempfile.TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
+        with TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
             makeFakeRPM(repo_dir, "generic-release", 0, "33", "1", ["/etc/system-release"], ["system-release"])
             makeFakeRPM(repo_dir, "fedora-release", 0, "33", "1", ["/etc/system-release"], ["system-release"])
             makeFakeRPM(repo_dir, "fedora-logos", 0, "33", "1")
@@ -117,7 +126,7 @@ class InstallBrandingTestCase(unittest.TestCase):
     def test_three_pkgs(self):
         """Test with a repo with generic-release, fedora-release, fedora-release-workstation package"""
         # Three system-release packages, one with a variant suffix
-        with tempfile.TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
+        with TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
             makeFakeRPM(repo_dir, "generic-release", 0, "33", "1", ["/etc/system-release"], ["system-release"])
             makeFakeRPM(repo_dir, "fedora-release", 0, "33", "1", ["/etc/system-release"], ["system-release"])
             makeFakeRPM(repo_dir, "fedora-logos", 0, "33", "1")
