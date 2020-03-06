@@ -160,6 +160,9 @@ Requires: python3-boto3
 %{?systemd_requires}
 BuildRequires: systemd
 
+# Implements the weldr API
+Provides: weldr
+
 %description composer
 lorax-composer provides a REST API for building images using lorax.
 
