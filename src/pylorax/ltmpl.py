@@ -247,35 +247,31 @@ class LoraxTemplateRunner(TemplateRunner):
     def _getsize(self, *files):
         return sum(os.path.getsize(self._out(f)) for f in files if os.path.isfile(self._out(f)))
 
-    def _write_debuginfo_log(self):
+    def _write_package_log(self):
         """
-        Write a list of debuginfo packages to /root/debug-pkgs.log
+        Write the list of installed packages to /root/ on the boot.iso
 
         If lorax is called with a debug repo find the corresponding debuginfo package
         names and write them to /root/debubg-pkgs.log on the boot.iso
+        The non-debuginfo packages are written to /root/lorax-packages.log
         """
-        for repo in self.dbo.repos:
-            repo = self.dbo.repos[repo]
-            if any(True for url in repo.baseurl if "debug" in url):
-                break
-            if repo.metalink and "debug" in repo.metalink:
-                break
-            if repo.mirrorlist and "debug" in repo.mirrorlist:
-                break
-        else:
-            # No debug repos
-            return
-
+        os.makedirs(self._out("root/"), exist_ok=True)
         available = self.dbo.sack.query().available()
+        pkgs = []
         debug_pkgs = []
         for p in list(self.dbo.transaction.install_set):
+            pkgs.append(f"{p.name}-{p.epoch}:{p.version}-{p.release}")
             if available.filter(name=p.name+"-debuginfo"):
-                debug_pkgs += ["{0.name}-debuginfo-{0.epoch}:{0.version}-{0.release}".format(p)]
+                debug_pkgs.append(f"{p.name}-debuginfo-{p.epoch}:{p.version}-{p.release}")
 
-        os.makedirs(self._out("root/"), exist_ok=True)
-        with open(self._out("root/debug-pkgs.log"), "w") as f:
-            for pkg in debug_pkgs:
-                f.write("%s\n" % pkg)
+        with open(self._out("root/lorax-packages.log"), "w") as f:
+            f.write("\n".join(sorted(pkgs)))
+            f.write("\n")
+
+        if debug_pkgs:
+            with open(self._out("root/debug-pkgs.log"), "w") as f:
+                f.write("\n".join(sorted(debug_pkgs)))
+                f.write("\n")
 
     def install(self, srcglob, dest):
         '''
@@ -640,8 +636,8 @@ class LoraxTemplateRunner(TemplateRunner):
         if len(self.dbo.transaction) == 0:
             raise Exception("No packages in transaction")
 
-        # If a debug repo has been included, write out a list of debuginfo packages
-        self._write_debuginfo_log()
+        # Write out the packages installed, including debuginfo packages
+        self._write_package_log()
 
         pkgs_to_download = self.dbo.transaction.install_set
         logger.info("Downloading packages")
