@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.6
+Version:        32.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -266,6 +266,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Mar 16 2020 Brian C. Lane <bcl@redhat.com> 32.7-1
+- lorax: Write package lists in run_transaction (bcl@redhat.com)
+- Add dig and comm to the boot.iso (bcl@redhat.com)
+- lorax-composer: Add 'weldr' to indicate it supports the weldr API (bcl@redhat.com)
+- lorax: Cleanup the removefrom --allbut files (bcl@redhat.com)
+- lorax: Add eject back into the boot.iso (bcl@redhat.com)
+
 * Wed Feb 12 2020 Brian C. Lane <bcl@redhat.com> 32.6-1
 - New lorax documentation - 32.6 (bcl@redhat.com)
 - Update mock documentation to remove --old-chroot (bcl@redhat.com)
