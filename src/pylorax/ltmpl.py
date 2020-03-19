@@ -260,7 +260,7 @@ class LoraxTemplateRunner(TemplateRunner):
         pkgs = []
         debug_pkgs = []
         for p in list(self.dbo.transaction.install_set):
-            pkgs.append(f"{p.name}-{p.epoch}:{p.version}-{p.release}")
+            pkgs.append(f"{p.name}-{p.version}-{p.release}.{p.arch}")
             if available.filter(name=p.name+"-debuginfo"):
                 debug_pkgs.append(f"{p.name}-debuginfo-{p.epoch}:{p.version}-{p.release}")
 
