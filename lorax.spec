@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        33.0
+Version:        33.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -266,6 +266,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Mar 30 2020 Brian C. Lane <bcl@redhat.com> 33.1-1
+- lorax: Remove vmlinuz from install.img /boot (bcl@redhat.com)
+
 * Fri Mar 20 2020 Brian C. Lane <bcl@redhat.com> 33.0-1
 - tests: Add tests for _install_branding with and without variant (bcl@redhat.com)
 - lorax: Update how the release package is chosen (bcl@redhat.com)
