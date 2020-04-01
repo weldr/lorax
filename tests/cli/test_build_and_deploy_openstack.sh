@@ -49,7 +49,7 @@ rlJournalStart
         source $VENV/bin/activate
 
         rlRun -t -c "pip install --upgrade pip setuptools"
-        rlRun -t -c "pip install ansible openstacksdk"
+        rlRun -t -c "pip install ansible openstacksdk future"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
