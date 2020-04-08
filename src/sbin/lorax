@@ -20,10 +20,6 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 import logging
-log = logging.getLogger("lorax")
-dnf_log = logging.getLogger("dnf")
-
-
 import atexit
 import fcntl
 from glob import glob
@@ -39,6 +35,10 @@ import pylorax
 from pylorax import DRACUT_DEFAULT, log_selinux_state
 from pylorax.cmdline import lorax_parser
 from pylorax.dnfbase import get_dnf_base_object
+
+log = logging.getLogger("lorax")
+dnf_log = logging.getLogger("dnf")
+
 
 def exit_handler(tempdir):
     """Handle cleanup of tmpdir, if it still exists
@@ -63,7 +63,7 @@ def remove_tempdirs():
         if not os.path.isdir(d):
             continue
         try:
-            dir_fd = os.open(d, os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC)
+            dir_fd = os.open(d, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
             fcntl.flock(dir_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except OSError:
             # lock failed, skip this directory
@@ -81,7 +81,7 @@ def setup_logging(opts):
 
     # dnf logging
     dnf_log.setLevel(dnf.logging.DDEBUG)
-    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/dnf.log"
+    logfile = os.path.abspath(os.path.dirname(opts.logfile)) + "/dnf.log"
     fh = logging.FileHandler(filename=logfile, mode="w")
     fh.setLevel(logging.NOTSET)
     fmt = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
@@ -89,7 +89,8 @@ def setup_logging(opts):
     dnf_log.addHandler(fh)
 
     # Setup librepo logging
-    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/dnf.librepo.log"
+    logfile = os.path.abspath(
+        os.path.dirname(opts.logfile)) + "/dnf.librepo.log"
     librepo.log_set_file(logfile)
 
 
@@ -112,7 +113,8 @@ def main():
     if opts.config and not os.path.exists(opts.config):
         parser.error("config file %s doesn't exist." % opts.config)
     if opts.dracut_args and opts.dracut_conf:
-        parser.error("argument --dracut-arg: not allowed with argument --dracut-conf")
+        parser.error(
+            "argument --dracut-arg: not allowed with argument --dracut-conf")
     if opts.dracut_conf and not os.path.exists(opts.dracut_conf):
         parser.error("dracut config file %s doesn't exist." % opts.dracut_conf)
 
@@ -152,13 +154,16 @@ def main():
         os.mkdir(dnftempdir)
 
     # Obtain an exclusive lock on the tempdir
-    dir_fd = os.open(tempdir, os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC)
+    dir_fd = os.open(tempdir, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
     fcntl.flock(dir_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
-    dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist, opts.repos,
+    dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist,
+                                  opts.repos,
                                   opts.enablerepos, opts.disablerepos,
-                                  dnftempdir, opts.proxy, opts.version, opts.cachedir,
-                                  os.path.dirname(opts.logfile), not opts.noverifyssl,
+                                  dnftempdir, opts.proxy, opts.version,
+                                  opts.cachedir,
+                                  os.path.dirname(opts.logfile),
+                                  not opts.noverifyssl,
                                   opts.dnfplugins)
 
     if dnfbase is None:
@@ -181,7 +186,8 @@ def main():
         parsed_add_arch_template_vars[k] = v
 
     if 'SOURCE_DATE_EPOCH' in os.environ:
-        log.info("Using SOURCE_DATE_EPOCH=%s as the current time.", os.environ["SOURCE_DATE_EPOCH"])
+        log.info("Using SOURCE_DATE_EPOCH=%s as the current time.",
+                 os.environ["SOURCE_DATE_EPOCH"])
 
     # run lorax
     lorax = pylorax.Lorax()
@@ -203,8 +209,10 @@ def main():
 
     lorax.run(dnfbase, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
-              workdir=tempdir, outputdir=opts.outputdir, buildarch=opts.buildarch,
-              volid=opts.volid, domacboot=opts.domacboot, doupgrade=opts.doupgrade,
+              workdir=tempdir, outputdir=opts.outputdir,
+              buildarch=opts.buildarch,
+              volid=opts.volid, domacboot=opts.domacboot,
+              doupgrade=opts.doupgrade,
               installpkgs=opts.installpkgs, excludepkgs=opts.excludepkgs,
               size=opts.rootfs_size,
               add_templates=opts.add_templates,
@@ -217,6 +225,7 @@ def main():
 
     # Release the lock on the tempdir
     os.close(dir_fd)
+
 
 if __name__ == "__main__":
     main()
