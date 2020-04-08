@@ -26,6 +26,7 @@ from pylorax import vernum
 
 version = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
+
 def lorax_parser(dracut_default=""):
     """ Return the ArgumentParser for lorax"""
 
@@ -111,6 +112,8 @@ def lorax_parser(dracut_default=""):
                           help="Enable a DNF plugin by name/glob, or * to enable all of them.")
     optional.add_argument("--squashfs-only", action="store_true", default=False,
                           help="Use a plain squashfs filesystem for the runtime.")
+    optional.add_argument("--system-release", default=None, type=str,
+                          help="Specify system release package to use (e.g. 'fedora-release'")
 
     # dracut arguments
     dracut_group = parser.add_argument_group("dracut arguments: (default: %s)" % dracut_default)

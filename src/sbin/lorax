@@ -209,19 +209,25 @@ def main():
 
     lorax.run(dnfbase, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
-              workdir=tempdir, outputdir=opts.outputdir,
+              workdir=tempdir,
+              outputdir=opts.outputdir,
               buildarch=opts.buildarch,
-              volid=opts.volid, domacboot=opts.domacboot,
+              volid=opts.volid,
+              domacboot=opts.domacboot,
               doupgrade=opts.doupgrade,
-              installpkgs=opts.installpkgs, excludepkgs=opts.excludepkgs,
+              installpkgs=opts.installpkgs,
+              excludepkgs=opts.excludepkgs,
               size=opts.rootfs_size,
               add_templates=opts.add_templates,
               add_template_vars=parsed_add_template_vars,
               add_arch_templates=opts.add_arch_templates,
               add_arch_template_vars=parsed_add_arch_template_vars,
-              remove_temp=True, verify=opts.verify,
+              remove_temp=True,
+              verify=opts.verify,
               user_dracut_args=user_dracut_args,
-              squashfs_only=opts.squashfs_only)
+              squashfs_only=opts.squashfs_only,
+              system_release=opts.system_release
+              )
 
     # Release the lock on the tempdir
     os.close(dir_fd)

@@ -78,13 +78,15 @@ class RuntimeBuilder(object):
     def __init__(self, product, arch, dbo, templatedir=None,
                  installpkgs=None, excludepkgs=None,
                  add_templates=None,
-                 add_template_vars=None):
+                 add_template_vars=None,
+                 system_release='system-release'):
         root = dbo.conf.installroot
         # use a copy of product so we can modify it locally
         product = product.copy()
         product.name = product.name.lower()
         self.vars = DataHolder(arch=arch, product=product, dbo=dbo, root=root,
-                               basearch=arch.basearch, libdir=arch.libdir)
+                               basearch=arch.basearch, libdir=arch.libdir,
+                               system_release=system_release)
         self.dbo = dbo
         self._runner = LoraxTemplateRunner(inroot=root, outroot=root,
                                            dbo=dbo, templatedir=templatedir)
@@ -106,8 +108,9 @@ class RuntimeBuilder(object):
         release = None
         q = self.dbo.sack.query()
         a = q.available()
-        pkgs = sorted([p.name for p in a.filter(provides='system-release')
-                       if not p.name.startswith("generic")])
+        pkgs = sorted(
+            [p.name for p in a.filter(provides=self.vars.system_release) if
+             not p.name.startswith("generic")])
         if not pkgs:
             logger.error(
                 "No system-release packages found, could not get the release")
