@@ -44,7 +44,7 @@ rlJournalStart
         V_NETWORK="${V_NETWORK:-vMotion-Network}"
         rlLogInfo "V_NETWORK=$V_NETWORK"
 
-        V_DATASTORE="${V_DATASTORE:-iSCSI-Node2}"
+        V_DATASTORE="${V_DATASTORE:-NFS-Node1}"
         rlLogInfo "V_DATASTORE=$V_DATASTORE"
 
         V_FOLDER="${V_FOLDER:-Composer}"
