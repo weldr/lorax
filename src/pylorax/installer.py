@@ -254,7 +254,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url, cancel_func=None):
     if opts.armplatform:
         args += ["--armplatform", opts.armplatform]
 
-    if opts.make_iso or opts.make_fsimage:
+    if opts.make_iso or opts.make_fsimage or opts.make_pxe_live:
         # Make a blank fs image
         args += ["--dirinstall"]
 
