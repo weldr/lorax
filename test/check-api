@@ -7,7 +7,7 @@ import requests
 import subprocess
 
 
-@unittest.skip("Something is failing here and we're not sure what. Will debug later")
+@unittest.skip("TCP -> UNIX socket port forwarding broken, rhbz#1805238")
 class TestApi(composertest.ComposerTestCase):
     """Test Composer HTTP API"""
 
