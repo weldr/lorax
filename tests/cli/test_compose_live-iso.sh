@@ -16,17 +16,23 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartSetup
-        OPTIONAL_REPO="/etc/yum.repos.d/rhel7-rel-eng-optional.repo"
+        if grep -q "http://.*/nightly/" /etc/yum.repos.d/*; then
+            RELEASE_TYPE="nightly"
+        else
+            RELEASE_TYPE="rel-eng"
+        fi
+        
+        OPTIONAL_REPO="/etc/yum.repos.d/rhel7-${RELEASE_TYPE}-optional.repo"
 
         if [ ! -f "$OPTIONAL_REPO" ]; then
             composer_stop
             cat > $OPTIONAL_REPO << __EOF__
-[rhel7-rel-eng-optional]
+[rhel7-${RELEASE_TYPE}-optional]
 gpgcheck=0
 enabled=1
 skip_if_unavailable=0
-name=rhel7-rel-eng-optional
-baseurl=http://download-node-02.eng.bos.redhat.com/rhel-7/rel-eng/latest-RHEL-7/compose/Server-optional/\$basearch/os/
+name=rhel7-${RELEASE_TYPE}-optional
+baseurl=http://download-node-02.eng.bos.redhat.com/rhel-7/$RELEASE_TYPE/latest-RHEL-7/compose/Server-optional/\$basearch/os/
 __EOF__
             composer_start
         fi
