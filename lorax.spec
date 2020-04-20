@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.26
+Version:        19.7.27
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -120,6 +120,18 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_tmpfilesdir}/lorax.conf
 
 %changelog
+* Mon Apr 20 2020 Brian C. Lane <bcl@redhat.com> 19.7.27-1
+- Change --make-pxe-live --no-virt to use a fsimage (bcl)
+  Resolves: rhbz#1802591
+- Makefile: Add the ability to use podman instead of docker (bcl)
+  Related: rhbz#1472622
+- tests: Add tests for _install_branding with and without variant (bcl)
+  Related: rhbz#1472622
+- lorax: Move get_yum_base_object into pylorax.yumbase (bcl)
+  Related: rhbz#1472622
+- lorax: Update how the release package is chosen (bcl)
+  Resolves: rhbz#1472622
+
 * Mon Dec 16 2019 Brian C. Lane <bcl@redhat.com> 19.7.26-1
 - Remove unneeded scap-security-guide files (bcl)
   Related: rhbz#1779659
