@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.39
+Version:        19.7.40
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,24 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Apr 20 2020 Brian C. Lane <bcl@redhat.com> 19.7.40-1
+- Add --no-system-repos to lorax-composer (bcl)
+  Resolves: rhbz#1785388
+- tests: update skip message for TestApi (atodorov)
+  Related: rhbz#1785159
+- tests: remove --test=2 from compose_sanity (jrusz)
+  Related: rhbz#1789451
+- Add test for canceling a running compose (jrusz)
+  Related: rhbz#1789451
+- Update datastore for VMware testing (chrobert)
+  Related: rhbz#1785159
+- tests: pip install future (atodorov)
+  Related: rhbz#1785159
+- lorax-composer: Estimate metadata size required by Anaconda (bcl)
+  Resolves: rhbz#1761337
+- composer: Add the yum cache archive size to the size estimate (bcl)
+  Related: rhbz#1761337
+
 * Fri Dec 13 2019 Brian C. Lane <bcl@redhat.com> 19.7.39-1
 - test: Turn TestLiveIso back on (bcl)
   Related: rhbz#1770193
