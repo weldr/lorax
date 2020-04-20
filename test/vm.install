@@ -20,7 +20,7 @@ fi
 
 if ! rpm -q beakerlib; then
     if [ $(. /etc/os-release && echo $ID) = "rhel" ]; then
-        (cd /etc/yum.repos.d; curl -O -L http://download.devel.redhat.com/beakerrepos/beaker-client-RedHatEnterpriseLinux.repo)
+        (cd /etc/yum.repos.d; curl -O -L http://download.eng.bos.redhat.com/beakerrepos/beaker-client-RedHatEnterpriseLinux.repo)
         # disable sslverify b/c yum will fail to sync metadata otherwise
         sed -i "s/\(gpgcheck=0\)/\1\nsslverify=0/" /etc/yum.repos.d/beaker-client-RedHatEnterpriseLinux.repo
         # do not remove the repo file. We now have tests which use beakerlib
