@@ -186,7 +186,8 @@ class Lorax(BaseLoraxClass):
             add_arch_templates=None,
             add_arch_template_vars=None,
             verify=True,
-            user_dracut_args=None):
+            user_dracut_args=None,
+            skip_branding=False):
 
         assert self._configured
 
@@ -266,7 +267,8 @@ class Lorax(BaseLoraxClass):
                             installpkgs=installpkgs,
                             excludepkgs=excludepkgs,
                             add_templates=add_templates,
-                            add_template_vars=add_template_vars)
+                            add_template_vars=add_template_vars,
+                            skip_branding=skip_branding)
 
         logger.info("installing runtime packages")
         rb.install()

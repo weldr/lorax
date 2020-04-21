@@ -192,7 +192,8 @@ def main():
               add_arch_templates=opts.add_arch_templates,
               add_arch_template_vars=parsed_add_arch_template_vars,
               remove_temp=True, verify=opts.verify,
-              user_dracut_args=opts.dracut_args)
+              user_dracut_args=opts.dracut_args,
+              skip_branding=opts.skip_branding)
 
     # Release the lock on the tempdir
     os.close(dir_fd)
