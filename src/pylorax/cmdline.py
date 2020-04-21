@@ -107,6 +107,8 @@ def lorax_parser(dracut_default=""):
                           help="Size of root filesystem in GiB. Defaults to 3.")
     optional.add_argument("--noverifyssl", action="store_true", default=False,
                           help="Do not verify SSL certificates")
+    optional.add_argument("--skip-branding", action="store_true", default=False,
+                          help="Disable automatic branding package selection. Use --installpkgs to add custom branding.")
 
     # dracut arguments
     dracut_group = parser.add_argument_group("dracut arguments")
