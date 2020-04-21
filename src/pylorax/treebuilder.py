@@ -71,7 +71,8 @@ class RuntimeBuilder(object):
     def __init__(self, product, arch, dbo, templatedir=None,
                  installpkgs=None, excludepkgs=None,
                  add_templates=None,
-                 add_template_vars=None):
+                 add_template_vars=None,
+                 skip_branding=False):
         root = dbo.conf.installroot
         # use a copy of product so we can modify it locally
         product = product.copy()
@@ -87,6 +88,7 @@ class RuntimeBuilder(object):
         self._excludepkgs = excludepkgs or []
         self._runner.defaults = self.vars
         self.dbo.reset()
+        self._skip_branding = skip_branding
 
     def _install_branding(self):
         """Select the branding from the available 'system-release' packages
@@ -96,6 +98,9 @@ class RuntimeBuilder(object):
         - If variant is set look for a package ending with lower(variant) and use that
         - If there are one or more non-generic packages, use the first one after sorting
         """
+        if self._skip_branding:
+            return
+
         release = None
         q = self.dbo.sack.query()
         a = q.available()

@@ -62,7 +62,7 @@ def makeFakeRPM(repo_dir, name, epoch, version, release, files=None, provides=No
 
 
 class InstallBrandingTestCase(unittest.TestCase):
-    def install_branding(self, repo_dir, variant=None):
+    def install_branding(self, repo_dir, variant=None, skip_branding=False):
         """Run the _install_branding and return the names of the installed packages"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as root_dir:
             dbo = get_dnf_base_object(root_dir, ["file://"+repo_dir], enablerepos=[], disablerepos=[])
@@ -71,7 +71,7 @@ class InstallBrandingTestCase(unittest.TestCase):
             product = DataHolder(name="Fedora", version="33", release="33",
                                  variant=variant, bugurl="http://none", isfinal=True)
             arch = ArchData(os.uname().machine)
-            rb = RuntimeBuilder(product, arch, dbo)
+            rb = RuntimeBuilder(product, arch, dbo, skip_branding=skip_branding)
             rb._install_branding()
             dbo.resolve()
             self.assertTrue(dbo.transaction is not None)
@@ -134,3 +134,13 @@ class InstallBrandingTestCase(unittest.TestCase):
             # Test with a variant set, but not available
             pkgs = self.install_branding(repo_dir, variant="server")
             self.assertEqual(pkgs, ["fedora-logos", "fedora-release"])
+
+    def test_skip_branding(self):
+        """Test disabled branding"""
+        with tempfile.TemporaryDirectory(prefix="lorax.test.repo.") as repo_dir:
+            makeFakeRPM(repo_dir, "fedora-release", 0, "33", "1", ["/etc/system-release"], ["system-release"])
+            makeFakeRPM(repo_dir, "fedora-logos", 0, "33", "1")
+            os.system("createrepo_c " + repo_dir)
+
+            pkgs = self.install_branding(repo_dir, skip_branding=True)
+            self.assertEqual(pkgs, [])

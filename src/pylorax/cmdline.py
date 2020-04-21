@@ -111,6 +111,8 @@ def lorax_parser(dracut_default=""):
                           help="Enable a DNF plugin by name/glob, or * to enable all of them.")
     optional.add_argument("--squashfs-only", action="store_true", default=False,
                           help="Use a plain squashfs filesystem for the runtime.")
+    optional.add_argument("--skip-branding", action="store_true", default=False,
+                          help="Disable automatic branding package selection. Use --installpkgs to add custom branding.")
 
     # dracut arguments
     dracut_group = parser.add_argument_group("dracut arguments: (default: %s)" % dracut_default)
