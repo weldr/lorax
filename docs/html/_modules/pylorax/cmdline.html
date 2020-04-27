@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.cmdline &mdash; Lorax 28.14.33 documentation</title>
+  <title>pylorax.cmdline &mdash; Lorax 28.14.42 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                28.14.33
+                28.14.42
               </div>
             
           
@@ -265,6 +265,8 @@
                           <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Size of root filesystem in GiB. Defaults to 3.&quot;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--noverifyssl&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                           <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not verify SSL certificates&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--skip-branding&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Disable automatic branding package selection. Use --installpkgs to add custom branding.&quot;</span><span class="p">)</span>
 
     <span class="c1"># dracut arguments</span>
     <span class="n">dracut_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;dracut arguments&quot;</span><span class="p">)</span>

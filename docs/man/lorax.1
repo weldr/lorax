@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "Nov 11, 2019" "28.14.33" "Lorax"
+.TH "LORAX" "1" "Apr 27, 2020" "28.14.42" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .
@@ -67,7 +67,7 @@ usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY]
              [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify]
              [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
              [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE]
-             [\-\-noverifyssl] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
+             [\-\-noverifyssl] [\-\-skip\-branding] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -233,6 +233,11 @@ Default: 3
 Do not verify SSL certificates
 .sp
 Default: False
+.TP
+.B\-\-skip\-branding
+Disable automatic branding package selection. Use \-\-installpkgs to add custom branding.
+.sp
+Default: False
 .UNINDENT
 .SS dracut arguments
 .INDENT 0.0
@@ -265,6 +270,24 @@ override the ones in the distribution repositories.
 .sp
 Under \fB\&./results/\fP will be the release tree files: .discinfo, .treeinfo, everything that
 goes onto the boot.iso, the pxeboot directory, and the boot.iso under \fB\&./images/\fP\&.
+.SH BRANDING
+.sp
+By default lorax will search for the first package that provides \fBsystem\-release\fP
+that doesn\(aqt start with \fBgeneric\-\fP and will install it. It then selects a
+corresponding logo package by using the first part of the system\-release package and
+appending \fB\-logos\fP to it. eg. fedora\-release and fedora\-logos.
+.SS Custom Branding
+.sp
+If \fB\-\-skip\-branding\fP is passed to lorax it will skip selecting the
+\fBsystem\-release\fP, and logos packages and leave it up to the user to pass any
+branding related packages to lorax using \fB\-\-installpkgs\fP\&. When using
+\fBskip\-branding\fP you must make sure that you provide all of the expected files,
+otherwise Anaconda may not work as expected. See the contents of \fBfedora\-release\fP
+and \fBfedora\-logos\fP for examples of what to include.
+.sp
+Note that this does not prevent something else in the dependency tree from
+causing these packages to be included. Using \fB\-\-excludepkgs\fP may help if they
+are unexpectedly included.
 .SH RUNNING INSIDE OF MOCK
 .sp
 If you are using lorax with mock v1.3.4 or later you will need to pass
