@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.42
+Version:        28.14.43
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -252,6 +252,20 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Apr 27 2020 Brian C. Lane <bcl@redhat.com> 28.14.43-1
+- New lorax documentation - 28.14.43 (bcl)
+  Related: rhbz#1826479
+- tests: Add tests for variant branding detection (bcl)
+  Related: rhbz#1826479
+- lorax: Update how the release package is chosen (bcl)
+  Resolves: rhbz#1826479
+- tests: Add tests for branding (bcl)
+  Related: rhbz#1826479
+- Move get_dnf_base_object into a module (bcl)
+  Related: rhbz#1826479
+- lorax: Add --skip-branding cmdline argument (bcl)
+  Resolves: rhbz#1826479
+
 * Thu Feb 27 2020 Brian C. Lane <bcl@redhat.com> 28.14.42-1
 - lorax: Restore the 98dracut-systemd service files to the install.img (bcl)
   Related: rhbz#1805405
