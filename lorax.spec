@@ -114,6 +114,7 @@ Summary:  livemedia-creator no-virt dependencies
 Requires: lorax = %{version}-%{release}
 Requires: anaconda-core
 Requires: anaconda-tui
+Requires: anaconda-install-env-deps
 Requires: system-logos
 
 %description lmc-novirt
