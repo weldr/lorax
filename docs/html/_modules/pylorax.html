@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax &mdash; Lorax 32.6 documentation</title>
+  <title>pylorax &mdash; Lorax 33.2 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.6
+                33.2
               </div>
             
           
@@ -340,7 +340,8 @@
             <span class="n">add_arch_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">verify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">user_dracut_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">squashfs_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">squashfs_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">skip_branding</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span>
 
@@ -420,7 +421,8 @@
                             <span class="n">installpkgs</span><span class="o">=</span><span class="n">installpkgs</span><span class="p">,</span>
                             <span class="n">excludepkgs</span><span class="o">=</span><span class="n">excludepkgs</span><span class="p">,</span>
                             <span class="n">add_templates</span><span class="o">=</span><span class="n">add_templates</span><span class="p">,</span>
-                            <span class="n">add_template_vars</span><span class="o">=</span><span class="n">add_template_vars</span><span class="p">)</span>
+                            <span class="n">add_template_vars</span><span class="o">=</span><span class="n">add_template_vars</span><span class="p">,</span>
+                            <span class="n">skip_branding</span><span class="o">=</span><span class="n">skip_branding</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;installing runtime packages&quot;</span><span class="p">)</span>
         <span class="n">rb</span><span class="o">.</span><span class="n">install</span><span class="p">()</span>
