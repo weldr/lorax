@@ -34,19 +34,20 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Run lorax-composer with --no-system-repos and manually created content in repos.d"
-    echo '[server]
+        RHEL_VERSION=$(. /etc/os-release; echo $VERSION_ID)
+        echo "[server]
 name=Server
-baseurl=http://download.devel.redhat.com/rhel-7/nightly/RHEL-7/latest-RHEL-7/compose/Server/$basearch/os/
+baseurl=http://download.devel.redhat.com/rhel-7/nightly/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server/\$basearch/os/
 enabled=1
 gpgcheck=0
 
 [server-optional]
 name=Server-optional
-baseurl=http://download.devel.redhat.com/rhel-7/nightly/RHEL-7/latest-RHEL-7/compose/Server-optional/$basearch/os/
+baseurl=http://download.devel.redhat.com/rhel-7/nightly/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server-optional/\$basearch/os/
 enabled=1
 gpgcheck=0
 
-' > /var/lib/lorax/composer/repos.d/test.repo
+" > /var/lib/lorax/composer/repos.d/test.repo
 
         composer_start --no-system-repos
         present_repos=$(ls /var/lib/lorax/composer/repos.d/)

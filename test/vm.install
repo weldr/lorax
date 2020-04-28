@@ -8,13 +8,14 @@ yum -y remove lorax lorax-composer composer-cli
 
 LATEST_REPO="/etc/yum.repos.d/rhel7-rel-eng-latest.repo"
 if [ ! -f "$LATEST_REPO" ]; then
+    RHEL_VERSION=$(. /etc/os-release; echo $VERSION_ID)
     cat > $LATEST_REPO << __EOF__
 [rhel7-rel-eng-latest]
 gpgcheck=0
 enabled=1
 skip_if_unavailable=0
 name=rhel7-rel-eng-latest
-baseurl=http://download-node-02.eng.bos.redhat.com/rhel-7/rel-eng/latest-RHEL-7/compose/Server/\$basearch/os/
+baseurl=http://download.devel.redhat.com/rhel-7/rel-eng/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server/\$basearch/os/
 __EOF__
 fi
 
