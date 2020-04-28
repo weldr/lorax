@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 32.6 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 33.2 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                32.6
+                33.2
               </div>
             
           
@@ -690,7 +690,7 @@ with whatever options are relevant.</p>
 <span id="pylorax-api-config-module"></span><h2>pylorax.api.config module<a class="headerlink" href="#module-pylorax.api.config" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pylorax.api.config.ComposerConfig">
-<em class="property">class </em><code class="sig-prename descclassname">pylorax.api.config.</code><code class="sig-name descname">ComposerConfig</code><span class="sig-paren">(</span><em class="sig-param">defaults=None</em>, <em class="sig-param">dict_type=&lt;class 'dict'&gt;</em>, <em class="sig-param">allow_no_value=False</em>, <em class="sig-param">*</em>, <em class="sig-param">delimiters=('='</em>, <em class="sig-param">':')</em>, <em class="sig-param">comment_prefixes=('#'</em>, <em class="sig-param">';')</em>, <em class="sig-param">inline_comment_prefixes=None</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">empty_lines_in_values=True</em>, <em class="sig-param">default_section='DEFAULT'</em>, <em class="sig-param">interpolation=&lt;object object&gt;</em>, <em class="sig-param">converters=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/config.html#ComposerConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.ComposerConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pylorax.api.config.</code><code class="sig-name descname">ComposerConfig</code><span class="sig-paren">(</span><em class="sig-param">defaults=None</em>, <em class="sig-param">dict_type=&lt;class 'collections.OrderedDict'&gt;</em>, <em class="sig-param">allow_no_value=False</em>, <em class="sig-param">*</em>, <em class="sig-param">delimiters=('='</em>, <em class="sig-param">':')</em>, <em class="sig-param">comment_prefixes=('#'</em>, <em class="sig-param">';')</em>, <em class="sig-param">inline_comment_prefixes=None</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">empty_lines_in_values=True</em>, <em class="sig-param">default_section='DEFAULT'</em>, <em class="sig-param">interpolation=&lt;object object&gt;</em>, <em class="sig-param">converters=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/config.html#ComposerConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.ComposerConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/configparser.html#configparser.ConfigParser" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">configparser.ConfigParser</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.api.config.ComposerConfig.get_default">
@@ -3099,21 +3099,21 @@ If the commit has already been tagged it will return false.</p>
 <dt id="pylorax.api.server.GitLock">
 <em class="property">class </em><code class="sig-prename descclassname">pylorax.api.server.</code><code class="sig-name descname">GitLock</code><span class="sig-paren">(</span><em class="sig-param">repo</em>, <em class="sig-param">lock</em>, <em class="sig-param">dir</em><span class="sig-paren">)</span><a class="headerlink" href="#pylorax.api.server.GitLock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
-<dl class="attribute">
+<dl class="method">
 <dt id="pylorax.api.server.GitLock.dir">
-<code class="sig-name descname">dir</code><a class="headerlink" href="#pylorax.api.server.GitLock.dir" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">dir</code><a class="headerlink" href="#pylorax.api.server.GitLock.dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 2</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="pylorax.api.server.GitLock.lock">
-<code class="sig-name descname">lock</code><a class="headerlink" href="#pylorax.api.server.GitLock.lock" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">lock</code><a class="headerlink" href="#pylorax.api.server.GitLock.lock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="pylorax.api.server.GitLock.repo">
-<code class="sig-name descname">repo</code><a class="headerlink" href="#pylorax.api.server.GitLock.repo" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">repo</code><a class="headerlink" href="#pylorax.api.server.GitLock.repo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
