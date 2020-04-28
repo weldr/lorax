@@ -54,6 +54,29 @@ Under ``./results/`` will be the release tree files: .discinfo, .treeinfo, every
 goes onto the boot.iso, the pxeboot directory, and the boot.iso under ``./images/``.
 
 
+Branding
+--------
+
+By default lorax will search for the first package that provides ``system-release``
+that doesn't start with ``generic-`` and will install it. It then selects a
+corresponding logo package by using the first part of the system-release package and
+appending ``-logos`` to it. eg. fedora-release and fedora-logos.
+
+Custom Branding
+~~~~~~~~~~~~~~~
+
+If ``--skip-branding`` is passed to lorax it will skip selecting the
+``system-release``, and logos packages and leave it up to the user to pass any
+branding related packages to lorax using ``--installpkgs``. When using
+``skip-branding`` you must make sure that you provide all of the expected files,
+otherwise Anaconda may not work as expected. See the contents of ``fedora-release``
+and ``fedora-logos`` for examples of what to include.
+
+Note that this does not prevent something else in the dependency tree from
+causing these packages to be included. Using ``--excludepkgs`` may help if they
+are unexpectedly included.
+
+
 Running inside of mock
 ----------------------
 

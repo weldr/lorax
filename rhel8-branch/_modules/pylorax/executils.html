@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.executils &mdash; Lorax 28.14.33 documentation</title>
+  <title>pylorax.executils &mdash; Lorax 28.14.42 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                28.14.33
+                28.14.42
               </div>
             
           
@@ -273,6 +273,7 @@
     <span class="k">if</span> <span class="n">env_add</span><span class="p">:</span>
         <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env_add</span><span class="p">)</span>
 
+    <span class="c1"># pylint: disable=subprocess-popen-preexec-fn</span>
     <span class="k">return</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span>
                             <span class="n">stdin</span><span class="o">=</span><span class="n">stdin</span><span class="p">,</span>
                             <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="p">,</span>

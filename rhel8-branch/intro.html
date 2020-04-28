@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Introduction to Lorax &mdash; Lorax 28.14.33 documentation</title>
+  <title>Introduction to Lorax &mdash; Lorax 28.14.42 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                28.14.33
+                28.14.42
               </div>
             
           
@@ -178,21 +178,20 @@ with something more flexible.</p>
 scripts to do the image building and data generation.  Here’s how it
 currently looks:</p>
 <blockquote>
-<div><dl class="docutils">
-<dt>-&gt; buildinstall</dt>
-<dd><ul class="first simple">
-<li>process command line options</li>
-<li>write temporary yum.conf to point to correct repo</li>
-<li>find anaconda release RPM</li>
-<li>unpack RPM, pull in those versions of upd-instroot, mk-images,
-maketreeinfo.py, makestamp.py, and buildinstall</li>
+<div><dl>
+<dt>-&gt; buildinstall</dt><dd><ul class="simple">
+<li><p>process command line options</p></li>
+<li><p>write temporary yum.conf to point to correct repo</p></li>
+<li><p>find anaconda release RPM</p></li>
+<li><p>unpack RPM, pull in those versions of upd-instroot, mk-images,
+maketreeinfo.py, makestamp.py, and buildinstall</p></li>
 </ul>
 <p>-&gt; call upd-instroot</p>
 <p>-&gt; call maketreeinfo.py</p>
 <p>-&gt; call mk-images (which figures out which mk-images.ARCH to call)</p>
 <p>-&gt; call makestamp.py</p>
-<ul class="last simple">
-<li>clean up</li>
+<ul class="simple">
+<li><p>clean up</p></li>
 </ul>
 </dd>
 </dl>
