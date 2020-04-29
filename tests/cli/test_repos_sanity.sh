@@ -35,15 +35,23 @@ rlJournalStart
 
     rlPhaseStartTest "Run lorax-composer with --no-system-repos and manually created content in repos.d"
         RHEL_VERSION=$(. /etc/os-release; echo $VERSION_ID)
+        if grep -qE "https?://.*/nightly/" /etc/yum.repos.d/*; then
+            RELEASE_TYPE="nightly"
+            # there are only -latest symlinks with major version for nightlies
+            RHEL_VERSION=7
+        else
+            RELEASE_TYPE="rel-eng"
+        fi
+
         echo "[server]
 name=Server
-baseurl=http://download.devel.redhat.com/rhel-7/nightly/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server/\$basearch/os/
+baseurl=http://download.devel.redhat.com/rhel-7/$RELEASE_TYPE/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server/\$basearch/os/
 enabled=1
 gpgcheck=0
 
 [server-optional]
 name=Server-optional
-baseurl=http://download.devel.redhat.com/rhel-7/nightly/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server-optional/\$basearch/os/
+baseurl=http://download.devel.redhat.com/rhel-7/$RELEASE_TYPE/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server-optional/\$basearch/os/
 enabled=1
 gpgcheck=0
 

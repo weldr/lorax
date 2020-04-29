@@ -6,16 +6,26 @@ SRPM="$1"
 # to ensure newly built packages have been installed
 yum -y remove lorax lorax-composer composer-cli
 
-LATEST_REPO="/etc/yum.repos.d/rhel7-rel-eng-latest.repo"
-if [ ! -f "$LATEST_REPO" ]; then
-    RHEL_VERSION=$(. /etc/os-release; echo $VERSION_ID)
+RHEL_VERSION=$(. /etc/os-release; echo $VERSION_ID)
+if grep -qE "https?://.*/nightly/" /etc/yum.repos.d/*; then
+    RELEASE_TYPE="nightly"
+    # there are only -latest symlinks with major version for nightlies
+    RHEL_VERSION=7
+else
+    RELEASE_TYPE="rel-eng"
+fi
+
+# add nightly/rel-eng repo only if it's not already present (it is by default in bots images)
+LATEST_REPO="/etc/yum.repos.d/rhel7-$RELEASE_TYPE-latest.repo"
+if ! grep -qE "https?://.*redhat\.com/rhel-7/$RELEASE_TYPE/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server/\$basearch/os/" \
+    /etc/yum.repos.d/*; then
     cat > $LATEST_REPO << __EOF__
-[rhel7-rel-eng-latest]
+[rhel7-$RELEASE_TYPE-latest]
 gpgcheck=0
 enabled=1
 skip_if_unavailable=0
-name=rhel7-rel-eng-latest
-baseurl=http://download.devel.redhat.com/rhel-7/rel-eng/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server/\$basearch/os/
+name=rhel7-$RELEASE_TYPE-latest
+baseurl=http://download.devel.redhat.com/rhel-7/$RELEASE_TYPE/RHEL-7/latest-RHEL-$RHEL_VERSION/compose/Server/\$basearch/os/
 __EOF__
 fi
 
