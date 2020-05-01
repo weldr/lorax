@@ -139,7 +139,7 @@ class Upload:
         if self.is_cancellable():
             raise RuntimeError(f"Can't reset, status is {self.status}!")
         if not self.image_path:
-            raise RuntimeError(f"Can't reset, no image supplied yet!")
+            raise RuntimeError("Can't reset, no image supplied yet!")
         # self.error = None
         self._log("Resetting state")
         self.set_status("READY", status_callback)
