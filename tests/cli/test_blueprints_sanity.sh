@@ -51,7 +51,8 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "blueprints show"
-        rlAssertEquals "show displays blueprint in TOML" "`$CLI blueprints show $BLUEPRINT_NAME`" "`cat $BLUEPRINT_NAME.toml`"
+        $CLI blueprints show $BLUEPRINT_NAME > shown-$BLUEPRINT_NAME.toml
+        rlRun -t -c "$(dirname $0)/lib/toml-compare $BLUEPRINT_NAME.toml shown-$BLUEPRINT_NAME.toml"
     rlPhaseEnd
 
     rlPhaseStartTest "SemVer .patch version is incremented automatically"
