@@ -19,6 +19,14 @@ if ! rpm -q beakerlib; then
     yum install -y beakerlib
 fi
 
+if ! rpm -q python36; then
+    yum -y install python36
+fi
+
+if ! rpm -q python3-pytoml; then
+    yum -y install python3-pytoml
+fi
+
 if ! rpm -q git; then
     yum install -y git
 fi
