@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.8
+Version:        32.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -266,6 +266,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue May 05 2020 Brian C. Lane <bcl@redhat.com> 32.9-1
+- Dockerfile.test: Switch to using F32 for testing (bcl@redhat.com)
+- Don't use f-string without interpolation (atodorov@redhat.com)
+- lorax: Add --skip-branding cmdline argument (bcl@redhat.com)
+- tests: Add tests for _install_branding with and without variant (bcl@redhat.com)
+- lorax: Update how the release package is chosen (bcl@redhat.com)
+
 * Fri Mar 20 2020 Brian C. Lane <bcl@redhat.com> 32.8-1
 - ltmpl: Fix package logging format (bcl@redhat.com)
   Resolves: rhbz#1815000
