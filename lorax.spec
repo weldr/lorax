@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        33.2
+Version:        33.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -267,6 +267,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue May 05 2020 Brian C. Lane <bcl@redhat.com> 33.3-1
+- Don't use f-string without interpolation (atodorov@redhat.com)
+- lmc-no-virt: Add requirement on anaconda-install-env-deps (bcl@redhat.com)
+- rsyslog: Disable journal ratelimits during install (bcl@redhat.com)
+
 * Tue Apr 28 2020 Brian C. Lane <bcl@redhat.com> 33.2-1
 - New lorax documentation - 33.2 (bcl@redhat.com)
 - test: Work around invalid fedora baseurls (marusak.matej@gmail.com)
