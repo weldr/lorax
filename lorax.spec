@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.43
+Version:        28.14.44
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -252,6 +252,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue May 05 2020 Brian C. Lane <bcl@redhat.com> 28.14.44-1
+- rsyslog: Disable journal ratelimits during install (bcl)
+  Resolves: rhbz#1752754
+- Update datastore for VMware testing (chrobert)
+  Related: rhbz#1825190
+
 * Mon Apr 27 2020 Brian C. Lane <bcl@redhat.com> 28.14.43-1
 - New lorax documentation - 28.14.43 (bcl)
   Related: rhbz#1826479
