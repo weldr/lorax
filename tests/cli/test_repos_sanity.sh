@@ -10,9 +10,9 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartSetup
-        repodir_backup=$(mktemp -d composerrepos-XXXXX)
+        # as opposed to RHEL-8, the system repos aren't copied over to lorax-composes repos.d,
+        # directory, so handling of those files was removed in RHEL-7 test (see rhbz#1830897)
         composer_stop
-        rlRun -t -c "mv /var/lib/lorax/composer/repos.d/* $repodir_backup"
     rlPhaseEnd
 
     rlPhaseStartTest "Run lorax-composer with --no-system-repos option and empty repos.d"
@@ -71,8 +71,7 @@ gpgcheck=0
     rlPhaseStartCleanup
         $CLI compose delete $UUID
         MANUAL=1 composer_stop
-        rlRun -t -c "rm -rf /var/lib/lorax/composer/repos.d"
-        rlRun -t -c "mv $repodir_backup /var/lib/lorax/composer/repos.d"
+        rlRun -t -c "rm -rf /var/lib/lorax/composer/repos.d/*"
         composer_start
     rlPhaseEnd
 rlJournalEnd
