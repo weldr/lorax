@@ -234,7 +234,7 @@ class RuntimeBuilder(object):
         os.makedirs(os.path.dirname(outfile))
 
         # squash the rootfs
-        imgutils.mksquashfs(self.vars.root, outfile, compression, compressargs)
+        return imgutils.mksquashfs(self.vars.root, outfile, compression, compressargs)
 
     def create_ext4_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=None, size=2):
         """Create a squashfs compressed ext4 runtime"""
@@ -253,8 +253,9 @@ class RuntimeBuilder(object):
             raise
 
         # squash the live rootfs and clean up workdir
-        imgutils.mksquashfs(workdir, outfile, compression, compressargs)
+        rc = imgutils.mksquashfs(workdir, outfile, compression, compressargs)
         remove(workdir)
+        return rc
 
     def finished(self):
         """ Done using RuntimeBuilder

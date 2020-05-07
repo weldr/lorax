@@ -205,6 +205,8 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
     :param str mount_dir: Directory tree to compress
     :param str work_dir: Output compressed image to work_dir+images/install.img
     :param int size: Size of disk image, in GiB
+    :returns: rc of squashfs creation
+    :rtype: int
     """
     kernel_arch = get_arch(mount_dir)
 
@@ -221,12 +223,12 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
 
     if opts.squashfs_only:
         log.info("Creating a squashfs only runtime")
-        rb.create_squashfs_runtime(joinpaths(work_dir, RUNTIME), size=size,
-                                   compression=compression, compressargs=compressargs)
+        return rb.create_squashfs_runtime(joinpaths(work_dir, RUNTIME), size=size,
+                  compression=compression, compressargs=compressargs)
     else:
         log.info("Creating a squashfs+ext4 runtime")
-        rb.create_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
-                          compression=compression, compressargs=compressargs)
+        return rb.create_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
+                  compression=compression, compressargs=compressargs)
 
 
 def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
@@ -573,7 +575,10 @@ def make_live_images(opts, work_dir, disk_img):
     add_pxe_args = []
     live_image_name = "live-rootfs.squashfs.img"
     compression, compressargs = squashfs_args(opts)
-    mksquashfs(squashfs_root_dir, joinpaths(work_dir, live_image_name), compression, compressargs)
+    rc = mksquashfs(squashfs_root_dir, joinpaths(work_dir, live_image_name), compression, compressargs)
+    if rc != 0:
+        log.error("mksquashfs failed to create %s", live_image_name)
+        return None
 
     log.info("Rebuilding initramfs for live")
     with Mount(rootfs_img, opts="loop") as mnt_dir:
@@ -691,9 +696,10 @@ def run_creator(opts, cancel_func=None):
             # Create iso from a filesystem image
             disk_img = opts.fs_image or disk_img
             with Mount(disk_img, opts="loop") as mount_dir:
-                # TODO check rc
-                make_runtime(opts, mount_dir, work_dir, calculate_disk_size(opts, ks)/1024.0)
-
+                rc = make_runtime(opts, mount_dir, work_dir, calculate_disk_size(opts, ks)/1024.0)
+                if rc != 0:
+                    log.error("make_runtime failed with rc = %d. See program.log", rc)
+                    raise RuntimeError("make_runtime failed with rc = %d" % rc)
                 if cancel_func and cancel_func():
                     raise RuntimeError("ISO creation canceled")
 
@@ -703,7 +709,10 @@ def run_creator(opts, cancel_func=None):
             disk_img = opts.disk_image or disk_img
             with PartitionMount(disk_img) as img_mount:
                 if img_mount and img_mount.mount_dir:
-                    make_runtime(opts, img_mount.mount_dir, work_dir, calculate_disk_size(opts, ks)/1024.0)
+                    rc = make_runtime(opts, img_mount.mount_dir, work_dir, calculate_disk_size(opts, ks)/1024.0)
+                    if rc != 0:
+                        log.error("make_runtime failed with rc = %d. See program.log", rc)
+                        raise RuntimeError("make_runtime failed with rc = %d" % rc)
                     result_dir = make_livecd(opts, img_mount.mount_dir, work_dir)
 
         # --iso-only removes the extra build artifacts, keeping only the boot.iso
