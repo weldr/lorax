@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.40
+Version:        19.7.41
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,19 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon May 11 2020 Brian C. Lane <bcl@redhat.com> 19.7.41-1
+- [tests] Fix repos files handling in test_repos_sanity.sh (jikortus)
+  Related: rhbz#1828808
+- [tests] update glusterfs version to 6 (jikortus)
+  Related: rhbz#1828808
+- [tests] Use rel-eng/nightly repo in test_repos_sanity.sh and vm.install (jikortus)
+  Related: rhbz#1828808
+- [tests] Update download server URLs in tests (jikortus)
+  Related: rhbz#1828808
+- Add test for running composer with --no-system-repos option (jikortus)
+  Related: rhbz#1785159
+- [tests] don't add only rel-eng optional repo for live-iso (jikortus)
+  Resolves: rhbz#rhbz#1826029
 * Mon Apr 20 2020 Brian C. Lane <bcl@redhat.com> 19.7.40-1
 - Add --no-system-repos to lorax-composer (bcl)
   Resolves: rhbz#1785388
