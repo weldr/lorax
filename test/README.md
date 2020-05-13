@@ -41,14 +41,6 @@ To delete the generated image, run
 Base images are stored in `bots/images`. Set `TEST_DATA` to override this
 directory.
 
-To configure the image with all repositories found on the host system use
-
-    $ make vm-local-repos
-
-You may also define `REPOS_DIR` variable to point to another directory
-containing yum .repo files. By default the value is `/etc/yum.repos.d`!
-This is mostly useful when running tests by hand on a downstream snapshot!
-
 If you need to run the tests on a particular rel-eng RHEL compose, you can
 create the image by using [image-create-rhel-compose](https://github.com/cockpit-project/bots/blob/master/image-create-rhel-compose)
 script from bots repo. By default it uses the `-latest` extras rel-eng repo,
