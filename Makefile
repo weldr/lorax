@@ -17,10 +17,6 @@ endif
 export TEST_OS
 VM_IMAGE=$(CURDIR)/test/images/$(TEST_OS)
 
-ifeq ($(REPOS_DIR),)
-REPOS_DIR = /etc/yum.repos.d
-endif
-
 default: all
 
 src/composer/version.py:
@@ -133,21 +129,6 @@ $(VM_IMAGE): srpm bots
 # convenience target for the above
 vm: $(VM_IMAGE)
 	echo $(VM_IMAGE)
-
-# grab all repositories from the host system, overwriting what's inside the VM
-# and update the image. Mostly used when testing downstream snapshots to make
-# sure VM_IMAGE is as close as possible to the host!
-vm-local-repos: vm
-	bots/image-customize -v \
-		--run-command "rm -rf /etc/yum.repos.d" \
-		$(TEST_OS)
-	bots/image-customize -v \
-		--upload $(REPOS_DIR):/etc/yum.repos.d \
-		--run-command "yum -y remove composer-cli lorax-composer" \
-		--run-command "yum -y update" \
-		--run-command "yum -y install composer-cli lorax-composer" \
-		--run-command "systemctl enable lorax-composer" \
-		$(TEST_OS)
 
 vm-releng:
 	rm -f $(VM_IMAGE) $(VM_IMAGE).qcow2
