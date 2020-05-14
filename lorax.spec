@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.27
+Version:        19.7.28
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -120,6 +120,10 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_tmpfilesdir}/lorax.conf
 
 %changelog
+* Thu May 14 2020 Brian C. Lane <bcl@redhat.com> 19.7.28-1
+- rhel7-livemedia: Increase the rootfilesystem size (bcl)
+  Resolves: rhbz#1829204
+
 * Mon Apr 20 2020 Brian C. Lane <bcl@redhat.com> 19.7.27-1
 - Change --make-pxe-live --no-virt to use a fsimage (bcl)
   Resolves: rhbz#1802591
