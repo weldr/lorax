@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.41
+Version:        19.7.42
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon May 18 2020 Brian C. Lane <bcl@redhat.com> 19.7.42-1
+- [tests] Remove vm-local-repos Makefile target (jikortus)
+  Related: rhbz#1810711
+- [tests] Enable handling of rel-eng images (jikortus)
+  Related: rhbz#1810711
+- tests: Unskip AWS test scenario (atodorov)
+  Related: rhbz#1785159
+
 * Mon May 11 2020 Brian C. Lane <bcl@redhat.com> 19.7.41-1
 - [tests] Fix repos files handling in test_repos_sanity.sh (jikortus)
   Related: rhbz#1828808
