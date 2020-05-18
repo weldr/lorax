@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.44
+Version:        28.14.45
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon May 18 2020 Brian C. Lane <bcl@redhat.com> 28.14.45-1
+- lmc-no-virt: Add requirement on anaconda-install-env-deps (bcl)
+  Resolves: rhbz#1827911
+- Fix cherry-pick of extra multipath.conf line (bcl)
+  Related: rhbz#1676777
+- Use smarter multipath detection logic. (dlehman)
+  Resolves: rhbz#1676777
+
 * Tue May 05 2020 Brian C. Lane <bcl@redhat.com> 28.14.44-1
 - rsyslog: Disable journal ratelimits during install (bcl)
   Resolves: rhbz#1752754
