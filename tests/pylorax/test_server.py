@@ -52,8 +52,8 @@ OPENSSH_GLOB = {"name":"openssh-server", "version": "8.*"}
 RSYNC_GLOB = {"name": "rsync", "version": "3.1.*"}
 SAMBA_GLOB = {"name": "samba", "version": "4.*.*"}
 TMUX_GLOB = {"name": "tmux", "version": "2.9a"}
-GLUSTERFS_GLOB = {"name": "glusterfs", "version": "6.*"}
-GLUSTERFSCLI_GLOB = {"name": "glusterfs-cli", "version": "6.*"}
+GLUSTERFS_GLOB = {"name": "glusterfs", "version": "7.*"}
+GLUSTERFSCLI_GLOB = {"name": "glusterfs-cli", "version": "7.*"}
 
 
 def get_system_repo():
