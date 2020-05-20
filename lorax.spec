@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.10
+Version:        31.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -254,6 +254,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Wed May 20 2020 Brian C. Lane <bcl@redhat.com> 31.11-1
+- tests: Change glusterfs to v7.* (bcl@redhat.com)
+- Revert "tests: Update gpg key to fedora 32" (bcl@redhat.com)
+- Dockerfile.test: Use fedora:31 for tests (bcl@redhat.com)
+- test: Disable pylint subprocess check check (bcl@redhat.com)
+- composer-cli: Bump the default API version to 1 (bcl@redhat.com)
+- New lorax documentation - 31.10 (bcl@redhat.com)
+
 * Tue Aug 20 2019 Brian C. Lane <bcl@redhat.com> 31.10-1
 - tests: Update gpg key to fedora 32 (bcl@redhat.com)
 - tests: Fix the order of liveimg-tar live-iso (bcl@redhat.com)
