@@ -35,7 +35,8 @@ removepkg fedora-release-rawhide
 
 ## keep enough of shadow-utils to create accounts
 removefrom shadow-utils --allbut /usr/bin/chage /usr/sbin/chpasswd \
-                        /usr/sbin/groupadd /usr/sbin/useradd
+                        /usr/sbin/groupadd /usr/sbin/useradd \
+                        /etc/default/useradd
 
 ## remove other account management tools
 removepkg usermode usermode-gtk passwd
