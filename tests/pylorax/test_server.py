@@ -1530,6 +1530,9 @@ class ServerAPIV0TestCase(unittest.TestCase):
         resp = self.server.post("/api/v0/blueprints/undo/" + UTF8_TEST_STRING + "/deadbeef")
         self.assertInputError(resp)
 
+        resp = self.server.post("/api/v0/blueprints/undo/example-http-server/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
         resp = self.server.post("/api/v0/blueprints/undo/example-http-server/deadbeef?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 

@@ -507,6 +507,9 @@ def v0_blueprints_undo(blueprint_name, commit):
     if VALID_BLUEPRINT_NAME.match(blueprint_name) is None:
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
+    if VALID_BLUEPRINT_NAME.match(commit) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
     branch = request.args.get("branch", "master")
     if VALID_API_STRING.match(branch) is None:
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
