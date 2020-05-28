@@ -1649,6 +1649,11 @@ def v0_compose_status(uuids):
     status = request.args.get("status", None)
     compose_type = request.args.get("type", None)
 
+    # Check the arguments for invalid characters
+    for a in [blueprint, status, compose_type]:
+        if a is not None and VALID_API_STRING.match(a) is None:
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
     results = []
     errors = []
 

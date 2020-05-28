@@ -1638,6 +1638,15 @@ class ServerAPIV0TestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/compose/status/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
+        resp = self.server.get("/api/v0/compose/status/*?blueprint=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+        resp = self.server.get("/api/v0/compose/status/*?status=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+        resp = self.server.get("/api/v0/compose/status/*?type=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
     def test_compose_cancel_input(self):
         """Test the compose/cancel input character checking"""
         resp = self.server.delete("/api/v0/compose/cancel/" + UTF8_TEST_STRING)
