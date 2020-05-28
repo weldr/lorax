@@ -71,7 +71,7 @@ from pylorax.api.recipes import tag_recipe_commit, recipe_diff, RecipeFileError
 from pylorax.api.regexes import VALID_API_STRING, VALID_BLUEPRINT_NAME
 import pylorax.api.toml as toml
 from pylorax.api.utils import take_limits, blueprint_exists
-from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
+from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete, workspace_exists
 
 # The API functions don't actually get called by any code here
 # pylint: disable=unused-variable
@@ -481,6 +481,9 @@ def v0_blueprints_delete_workspace(blueprint_name):
 
     try:
         with api.config["GITLOCK"].lock:
+            if not workspace_exists(api.config["GITLOCK"].repo, branch, blueprint_name):
+                raise Exception("Unknown blueprint: %s" % blueprint_name)
+
             workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
     except Exception as e:
         log.error("(v0_blueprints_delete_workspace) %s", str(e))

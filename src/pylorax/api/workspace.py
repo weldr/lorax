@@ -81,6 +81,37 @@ def workspace_write(repo, branch, recipe):
     open(filename, 'wb').write(recipe.toml().encode("UTF-8"))
 
 
+def workspace_filename(repo, branch, recipe_name):
+    """Return the path and filename of the workspace recipe
+
+    :param repo: Open repository
+    :type repo: Git.Repository
+    :param branch: Branch name
+    :type branch: str
+    :param recipe_name: The name of the recipe
+    :type recipe_name: str
+    :returns: workspace recipe path and filename
+    :rtype: str
+    """
+    ws_dir = workspace_dir(repo, branch)
+    return joinpaths(ws_dir, recipe_filename(recipe_name))
+
+
+def workspace_exists(repo, branch, recipe_name):
+    """Return true of the workspace recipe exists
+
+    :param repo: Open repository
+    :type repo: Git.Repository
+    :param branch: Branch name
+    :type branch: str
+    :param recipe_name: The name of the recipe
+    :type recipe_name: str
+    :returns: True if the file exists
+    :rtype: bool
+    """
+    return os.path.exists(workspace_filename(repo, branch, recipe_name))
+
+
 def workspace_delete(repo, branch, recipe_name):
     """Delete the recipe from the workspace
 
@@ -93,7 +124,6 @@ def workspace_delete(repo, branch, recipe_name):
     :returns: None
     :raises: IO related errors
     """
-    ws_dir = workspace_dir(repo, branch)
-    filename = joinpaths(ws_dir, recipe_filename(recipe_name))
+    filename = workspace_filename(repo, branch, recipe_name)
     if os.path.exists(filename):
         os.unlink(filename)

@@ -401,6 +401,13 @@ class ServerAPIV0TestCase(unittest.TestCase):
         self.assertEqual(len(changes), 1)
         self.assertEqual(changes[0], {"name":"example-glusterfs", "changed":True})
 
+    def test_09_blueprints_unknown_ws_delete(self):
+        """Test DELETE /api/v0/blueprints/workspace/missing-blueprint"""
+        resp = self.server.delete("/api/v0/blueprints/workspace/missing-blueprint")
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], False)
+
     def test_09_blueprints_ws_delete(self):
         """Test DELETE /api/v0/blueprints/workspace/<blueprint_name>"""
         # Write to the workspace first, just use the test_blueprints_ws_json test for this
@@ -2041,6 +2048,13 @@ class ServerAPIV1TestCase(unittest.TestCase):
         changes = data.get("changes")
         self.assertEqual(len(changes), 1)
         self.assertEqual(changes[0], {"name":"example-glusterfs", "changed":True})
+
+    def test_09_blueprints_unknown_ws_delete(self):
+        """Test DELETE /api/v1/blueprints/workspace/missing-blueprint"""
+        resp = self.server.delete("/api/v1/blueprints/workspace/missing-blueprint")
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], False)
 
     def test_09_blueprints_ws_delete(self):
         """Test DELETE /api/v1/blueprints/workspace/<blueprint_name>"""
