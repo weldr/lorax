@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.45
+Version:        28.14.46
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Jun 01 2020 Brian C. Lane <bcl@redhat.com> 28.14.46-1
+- Keep /etc/default/useradd in install.img (honza.stodola)
+  Resolves: rhbz#1838677
+
 * Mon May 18 2020 Brian C. Lane <bcl@redhat.com> 28.14.45-1
 - lmc-no-virt: Add requirement on anaconda-install-env-deps (bcl)
   Resolves: rhbz#1827911
