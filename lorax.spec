@@ -41,7 +41,7 @@ Requires:       xz-lzma-compat
 Requires:       xz
 Requires:       pigz
 Requires:       pbzip2
-Requires:       dracut >= 050
+Requires:       dracut >= 030
 Requires:       kpartx
 
 # Python modules
