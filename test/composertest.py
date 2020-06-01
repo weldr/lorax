@@ -35,10 +35,11 @@ class VirtMachineTestCase(unittest.TestCase):
 
     def setUpTestMachine(self, image=testvm.DEFAULT_IMAGE, identity_file=None):
         self.network = testvm.VirtNetwork(0)
-        if identity_file:
-            self.machine = testvm.VirtMachine(image, networking=self.network.host(), cpus=2, memory_mb=2048, identity_file=identity_file)
-        else:
-            self.machine = testvm.VirtMachine(image, networking=self.network.host(), cpus=2, memory_mb=2048)
+        # default overlay directory is not big enough to hold the large composed trees; thus put overlay into /var/tmp/
+        self.machine = testvm.VirtMachine(image, networking=self.network.host(),
+                                          cpus=2, memory_mb=2048,
+                                          overlay_dir="/var/tmp",
+                                          identity_file=identity_file)
 
         print("Starting virtual machine '{}'".format(image))
         self.machine.start()
