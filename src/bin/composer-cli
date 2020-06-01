@@ -82,8 +82,8 @@ if __name__ == '__main__':
 
     # Check to see if the socket exists and can be accessed
     if not os.access(opts.socket, os.R_OK|os.W_OK):
-        errors.append("Cannot access '%s'. Is lorax-composer running and "
-                      "this user allowed to access it?" % opts.socket)
+        errors.append("Cannot access '%s'. Is a WELDR API server (lorax-composer or "
+                      "osbuild-composer) running, and is this user allowed to access it?" % opts.socket)
 
     # No point in continuing if there are errors
     if errors:
