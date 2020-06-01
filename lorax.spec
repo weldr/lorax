@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        33.3
+Version:        33.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -267,6 +267,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Jun 01 2020 Brian C. Lane <bcl@redhat.com> 33.4-1
+- Revert "lorax: Remove vmlinuz from install.img /boot" (bcl@redhat.com)
+- composer-cli: Add osbuild-composer to connection failure message (bcl@redhat.com)
+- composer-cli: Update docs to mention osbuild-composer and debug options (bcl@redhat.com)
+- lorax-composer: Check compose/status for invalid characters (bcl@redhat.com)
+- lorax-composer: deleting an unknown workspace should return an error (bcl@redhat.com)
+- lorax-composer: Check for valid characters in the undo commit (bcl@redhat.com)
+- drop 32-bit support from ppc live image grub.cfg (dan@danny.cz)
+- mksquashfs: Catch errors with mksquashfs and report them (bcl@redhat.com)
+
 * Tue May 05 2020 Brian C. Lane <bcl@redhat.com> 33.3-1
 - Don't use f-string without interpolation (atodorov@redhat.com)
 - lmc-no-virt: Add requirement on anaconda-install-env-deps (bcl@redhat.com)
