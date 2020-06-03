@@ -307,7 +307,7 @@ def compose_start_v1(socket_path, api_version, args, show_json=False, testmode=0
         config["upload"] = {"image_name": args[2]}
         # profile TOML file (maybe)
         try:
-            config["upload"].update(toml.load(args[3]))
+            config["upload"].update(toml.load(open(args[3])))
         except toml.TomlError as e:
             log.error(str(e))
             return 1
