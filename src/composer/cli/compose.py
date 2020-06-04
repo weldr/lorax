@@ -89,6 +89,36 @@ def run_command(opts, cmd_map):
 
     return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json, opts.testmode)
 
+def get_size(args):
+    """Return optional size argument, and remaining args
+
+    :param api: Details about the API server, "version" and "backend"
+    :type api: dict
+    :returns: (args, size)
+    :rtype: tuple
+
+    - check size argument for int
+    - check other args for --size in wrong place
+    - raise error? Or just return 0?
+    - no size returns 0 in size
+    - multiply by 1024**2 to make it easier on users to specify large sizes
+
+    """
+    if len(args) == 0:
+        return (args, 0)
+
+    if args[0] != "--size" and "--size" in args[1:]:
+        raise RuntimeError("--size must be first argument after the command")
+    if args[0] != "--size":
+        return (args, 0)
+
+    if len(args) < 2:
+        return (args, 0)
+
+    # Let this raise an error for non-digit input
+    size = int(args[1])
+    return (args[2:], size * 1024**2)
+
 def compose_list(socket_path, api_version, args, show_json=False, testmode=0):
     """Return a simple list of compose identifiers"""
 
@@ -284,10 +314,17 @@ def compose_start_v1(socket_path, api_version, args, show_json=False, testmode=0
     :param testmode: Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.
     :type testmode: int
 
-    compose start <blueprint-name> <compose-type> [<image-name> <provider> <profile> | <image-name> <profile.toml>]
+    compose start [--size XXX] <blueprint-name> <compose-type> [<image-name> <provider> <profile> | <image-name> <profile.toml>]
 
     NOTE: This version is for use with API v1 and later
     """
+    # Get the optional size before checking other parameters
+    try:
+        args, size = get_size(args)
+    except (RuntimeError, ValueError) as e:
+        log.error(str(e))
+        return 1
+
     if len(args) == 0:
         log.error("start is missing the blueprint name and output type")
         return 1
@@ -303,6 +340,9 @@ def compose_start_v1(socket_path, api_version, args, show_json=False, testmode=0
         "compose_type": args[1],
         "branch": "master"
         }
+    if size > 0:
+        config["size"] = size
+
     if len(args) == 4:
         config["upload"] = {"image_name": args[2]}
         # profile TOML file (maybe)
