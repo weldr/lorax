@@ -16,8 +16,9 @@
 
 # Documentation for the commands
 compose_help = """
-compose start <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROVIDER> <PROFILE> | <IMAGE-NAME> <PROFILE.TOML>]
+compose start [--size XXXX] <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROVIDER> <PROFILE> | <IMAGE-NAME> <PROFILE.TOML>]
     Start a compose using the selected blueprint and output type. Optionally start an upload.
+    --size is supported by osbuild-composer, and is in MiB.
 
 compose types
     List the supported output types.

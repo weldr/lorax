@@ -35,7 +35,18 @@ def compose_cmd(opts):
     :rtype: int
 
     This dispatches the compose commands to a function
+
+    compose_cmd expects api to be passed. eg.
+
+        {"version": 1, "backend": "lorax-composer"}
+
     """
+    result = client.get_url_json(opts.socket, "/api/status")
+    # Get the api version and fall back to 0 if it fails.
+    api_version = result.get("api", "0")
+    backend = result.get("backend", "unknown")
+    api = {"version": api_version, "backend": backend}
+
     cmd_map = {
         "list":     compose_list,
         "status":   compose_status,
@@ -57,9 +68,39 @@ def compose_cmd(opts):
         log.error("Unknown compose command: %s", opts.args[1])
         return 1
 
-    return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json, opts.testmode)
+    return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json, opts.testmode, api=api)
 
-def compose_list(socket_path, api_version, args, show_json=False, testmode=0):
+def get_size(args):
+    """Return optional size argument, and remaining args
+
+    :param api: Details about the API server, "version" and "backend"
+    :type api: dict
+    :returns: (args, size)
+    :rtype: tuple
+
+    - check size argument for int
+    - check other args for --size in wrong place
+    - raise error? Or just return 0?
+    - no size returns 0 in size
+    - multiply by 1024**2 to make it easier on users to specify large sizes
+
+    """
+    if len(args) == 0:
+        return (args, 0)
+
+    if args[0] != "--size" and "--size" in args[1:]:
+        raise RuntimeError("--size must be first argument after the command")
+    if args[0] != "--size":
+        return (args, 0)
+
+    if len(args) < 2:
+        return (args, 0)
+
+    # Let this raise an error for non-digit input
+    size = int(args[1])
+    return (args[2:], size * 1024**2)
+
+def compose_list(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Return a simple list of compose identifiers"""
 
     states = ("running", "waiting", "finished", "failed")
@@ -103,7 +144,7 @@ def compose_list(socket_path, api_version, args, show_json=False, testmode=0):
 
     return 0
 
-def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_status(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Return the status of all known composes
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -173,7 +214,7 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
                                                 c["version"], c["compose_type"], image_size))
 
 
-def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_types(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Return information about the supported compose types
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -199,7 +240,7 @@ def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
     # output a plain list of identifiers, one per line
     print("\n".join(t["name"] for t in result["types"] if t["enabled"]))
 
-def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_start(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Start a new compose using the selected blueprint and type
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -212,9 +253,22 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
     :type show_json: bool
     :param testmode: Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.
     :type testmode: int
+    :param api: Details about the API server, "version" and "backend"
+    :type api: dict
 
-    compose start <blueprint-name> <compose-type> [<image-name> <provider> <profile> | <image-name> <profile.toml>]
+    compose start [--size XXX] <blueprint-name> <compose-type> [<image-name> <provider> <profile> | <image-name> <profile.toml>]
     """
+    if api == None:
+        log.error("Missing api version/backend")
+        return 1
+
+    # Get the optional size before checking other parameters
+    try:
+        args, size = get_size(args)
+    except (RuntimeError, ValueError) as e:
+        log.error(str(e))
+        return 1
+
     if len(args) == 0:
         log.error("start is missing the blueprint name and output type")
         return 1
@@ -230,6 +284,12 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
         "compose_type": args[1],
         "branch": "master"
         }
+    if size > 0:
+        if api["backend"] == "lorax-composer":
+            log.warning("lorax-composer does not support --size, it will be ignored.")
+        else:
+            config["size"] = size
+
     if len(args) == 4:
         config["upload"] = {"image_name": args[2]}
         # profile TOML file (maybe)
@@ -262,7 +322,7 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
 
     return rc
 
-def compose_log(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_log(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Show the last part of the compose log
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -303,7 +363,7 @@ def compose_log(socket_path, api_version, args, show_json=False, testmode=0):
     print(result)
     return 0
 
-def compose_cancel(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_cancel(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Cancel a running compose
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -329,7 +389,7 @@ def compose_cancel(socket_path, api_version, args, show_json=False, testmode=0):
     result = client.delete_url_json(socket_path, api_route)
     return handle_api_result(result, show_json)[0]
 
-def compose_delete(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_delete(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Delete a finished compose's results
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -356,7 +416,7 @@ def compose_delete(socket_path, api_version, args, show_json=False, testmode=0):
     result = client.delete_url_json(socket_path, api_route)
     return handle_api_result(result, show_json)[0]
 
-def compose_info(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_info(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Return detailed information about the compose
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -410,7 +470,7 @@ def compose_info(socket_path, api_version, args, show_json=False, testmode=0):
 
     return rc
 
-def compose_metadata(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_metadata(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Download a tar file of the compose's metadata
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -441,7 +501,7 @@ def compose_metadata(socket_path, api_version, args, show_json=False, testmode=0
 
     return rc
 
-def compose_results(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_results(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Download a tar file of the compose's results
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -473,7 +533,7 @@ def compose_results(socket_path, api_version, args, show_json=False, testmode=0)
 
     return rc
 
-def compose_logs(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_logs(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Download a tar of the compose's logs
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -504,7 +564,7 @@ def compose_logs(socket_path, api_version, args, show_json=False, testmode=0):
 
     return rc
 
-def compose_image(socket_path, api_version, args, show_json=False, testmode=0):
+def compose_image(socket_path, api_version, args, show_json=False, testmode=0, api=None):
     """Download the compose's output image
 
     :param socket_path: Path to the Unix socket to use for API communication
