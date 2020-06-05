@@ -3,7 +3,7 @@
 __composer_cli_flags="-h --help -j --json -s --socket --log -a --api --test -V"
 
 declare -A __composer_cli_cmds=(
-  [compose]="list start types status log cancel delete info metadata logs results image"
+  [compose]="list start start-ostree types status log cancel delete info metadata logs results image"
   [blueprints]="list show changes diff save delete depsolve push freeze tag undo workspace"
   [modules]="list"
   [projects]="list info"
@@ -99,7 +99,7 @@ _composer_cli() {
             blueprints:freeze)
                 COMPREPLY=($(compgen -W "$(__composer_blueprints) show save" -- "${cur}"))
             ;;
-            compose:start|blueprints:*)
+            compose:start|compose:start-ostree|blueprints:*)
                 COMPREPLY=($(compgen -W "$(__composer_blueprints)" -- "${cur}"))
             ;;
             compose:cancel)
@@ -124,9 +124,24 @@ _composer_cli() {
             compose:delete)
                 COMPREPLY=($(compgen -W "$(__composer_composes finished failed)" -- "${cur}"))
             ;;
-            compose:start)
+            compose:start|compose:start-ostree)
+                subpos="$subcmd:$cmd_cword"
                 if [ "$cmd_cword" == 3 ]; then
                     COMPREPLY=($(compgen -W "$(__composer_compose_types)" -- "${cur}"))
+                elif [ "$subpos" == "start:5" ] || [ "$subpos" == "start-ostree:7" ]; then
+                    # If they have typed something looking like a path, use file completion
+                    # otherwise suggest providers.
+                    case "${cur}" in
+                        */*)
+                            compopt -o filenames
+                            COMPREPLY=($(compgen -f -- "${cur}"))
+                        ;;
+                        *)
+                            COMPREPLY=($(compgen -W "$(__composer_provider_list)" -- "${cur}"))
+                        ;;
+                    esac
+                elif [ "$subpos" == "start:6" ] || [ "$subpos" == "start-ostree:8" ]; then
+                    COMPREPLY=($(compgen -W "$(__composer_profile_list ${prev})" -- "${cur}"))
                 fi
             ;;
             # TODO: blueprints:diff and blueprints:undo want commits
