@@ -60,6 +60,7 @@ def compose_cmd(opts):
         "results":  compose_results,
         "logs":     compose_logs,
         "image":    compose_image,
+        "start-ostree":    compose_ostree,
         }
     if opts.args[1] == "help" or opts.args[1] == "--help":
         print(compose_help)
@@ -303,6 +304,96 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0, a
             "image_name":  args[2],
             "provider":  args[3],
             "profile":  args[4]
+        }
+
+    if testmode:
+        test_url = "?test=%d" % testmode
+    else:
+        test_url = ""
+    api_route = client.api_url(api_version, "/compose" + test_url)
+    result = client.post_url_json(socket_path, api_route, json.dumps(config))
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
+
+    print("Compose %s added to the queue" % result["build_id"])
+
+    if "upload_id" in result and result["upload_id"]:
+        print ("Upload %s added to the upload queue" % result["upload_id"])
+
+    return rc
+
+def compose_ostree(socket_path, api_version, args, show_json=False, testmode=0, api=None):
+    """Start a new compose using the selected blueprint and type
+
+    :param socket_path: Path to the Unix socket to use for API communication
+    :type socket_path: str
+    :param api_version: Version of the API to talk to. eg. "0"
+    :type api_version: str
+    :param args: List of remaining arguments from the cmdline
+    :type args: list of str
+    :param show_json: Set to True to show the JSON output instead of the human readable output
+    :type show_json: bool
+    :param testmode: Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.
+    :type testmode: int
+    :param api: Details about the API server, "version" and "backend"
+    :type api: dict
+
+    compose start [--size XXX] <blueprint-name> <compose-type> <ostree-ref> <ostree-parent> [<image-name> <provider> <profile> | <image-name> <profile.toml>]
+    """
+    if api == None:
+        log.error("Missing api version/backend")
+        return 1
+
+    if api["backend"] == "lorax-composer":
+        log.warning("lorax-composer doesn not support start-ostree.")
+        return 1
+
+    # Get the optional size before checking other parameters
+    try:
+        args, size = get_size(args)
+    except (RuntimeError, ValueError) as e:
+        log.error(str(e))
+        return 1
+
+    if len(args) == 0:
+        log.error("start-ostree is missing the blueprint name, output type, and ostree details")
+        return 1
+    if len(args) == 1:
+        log.error("start-ostree is missing the output type")
+        return 1
+    if len(args) == 2:
+        log.error("start-ostree is missing the ostree reference")
+        return 1
+    if len(args) == 3:
+        log.error("start-ostree is missing the ostree parent")
+        return 1
+    if len(args) == 5:
+        log.error("start-ostree is missing the provider and profile details")
+        return 1
+
+    config = {
+        "blueprint_name": args[0],
+        "compose_type": args[1],
+        "branch": "master",
+        "ostree": {"ref": args[2], "parent": args[3]},
+        }
+    if size > 0:
+        config["size"] = size
+
+    if len(args) == 6:
+        config["upload"] = {"image_name": args[4]}
+        # profile TOML file (maybe)
+        try:
+            config["upload"].update(toml.load(args[5]))
+        except toml.TomlDecodeError as e:
+            log.error(str(e))
+            return 1
+    elif len(args) == 7:
+        config["upload"] = {
+            "image_name":  args[4],
+            "provider":  args[5],
+            "profile":  args[6]
         }
 
     if testmode:
