@@ -53,6 +53,10 @@ class MyUnixServer(UnixStreamServer):
 class APIHTTPHandler(BaseHTTPRequestHandler):
     STATUS = {}
 
+    def log_request(self, code='-', size='-'):
+        # Don't log requests
+        return
+
     def send_json_response(self, status, d):
         """Send a 200 with a JSON body"""
         body = json.dumps(d).encode("UTF-8")
@@ -147,7 +151,7 @@ class OsBuildAPIv1HTTPHandler(APIHTTPHandler):
 
 
 class ComposeTestCase(unittest.TestCase):
-    def run_test(self, args):
+    def run_args(self, args):
         global LAST_REQUEST
         LAST_REQUEST = {}
         p = composer_cli_parser()
@@ -182,7 +186,7 @@ class ComposeLoraxV0TestCase(ComposeTestCase):
         self.assertEqual(result, LoraxAPIv0HTTPHandler.STATUS)
 
     def test_compose_start_plain(self):
-        result = self.run_test(["--socket", self.socket, "--api", "0", "compose", "start", "http-server", "qcow2"])
+        result = self.run_args(["--socket", self.socket, "--api", "0", "compose", "start", "http-server", "qcow2"])
         self.assertTrue(result is not None)
         self.assertTrue("body" in result)
         self.assertGreater(len(result["body"]), 0)
@@ -216,7 +220,7 @@ class ComposeLoraxV1TestCase(ComposeTestCase):
         self.assertEqual(result, LoraxAPIv1HTTPHandler.STATUS)
 
     def test_compose_start_plain(self):
-        result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2"])
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2"])
         self.assertTrue(result is not None)
         self.assertTrue("body" in result)
         self.assertGreater(len(result["body"]), 0)
@@ -227,7 +231,7 @@ class ComposeLoraxV1TestCase(ComposeTestCase):
         with tempfile.NamedTemporaryFile(prefix="composer-cli.test.") as f:
             f.write(PROFILE_TOML.encode("UTF-8"))
             f.seek(0)
-            result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2", "httpimage", f.name])
+            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2", "httpimage", f.name])
             self.assertTrue(result is not None)
             self.assertTrue("body" in result)
             self.assertGreater(len(result["body"]), 0)
@@ -237,7 +241,7 @@ class ComposeLoraxV1TestCase(ComposeTestCase):
                 "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
 
     def test_compose_start_provider(self):
-        result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2", "httpimage", "aws", "production"])
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2", "httpimage", "aws", "production"])
         self.assertTrue(result is not None)
         self.assertTrue("body" in result)
         self.assertGreater(len(result["body"]), 0)
@@ -271,7 +275,7 @@ class ComposeOsBuildV0TestCase(ComposeTestCase):
         self.assertEqual(result, OsBuildAPIv0HTTPHandler.STATUS)
 
     def test_compose_start_plain(self):
-        result = self.run_test(["--socket", self.socket, "--api", "0", "compose", "start", "http-server", "qcow2"])
+        result = self.run_args(["--socket", self.socket, "--api", "0", "compose", "start", "http-server", "qcow2"])
         self.assertTrue(result is not None)
         self.assertTrue("body" in result)
         self.assertGreater(len(result["body"]), 0)
@@ -304,7 +308,7 @@ class ComposeOsBuildV1TestCase(ComposeTestCase):
         self.assertEqual(result, OsBuildAPIv1HTTPHandler.STATUS)
 
     def test_compose_start_plain(self):
-        result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2"])
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2"])
         self.assertTrue(result is not None)
         self.assertTrue("body" in result)
         self.assertGreater(len(result["body"]), 0)
@@ -315,7 +319,7 @@ class ComposeOsBuildV1TestCase(ComposeTestCase):
         with tempfile.NamedTemporaryFile(prefix="composer-cli.test.") as f:
             f.write(PROFILE_TOML.encode("UTF-8"))
             f.seek(0)
-            result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2", "httpimage", f.name])
+            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start", "http-server", "qcow2", "httpimage", f.name])
             self.assertTrue(result is not None)
             self.assertTrue("body" in result)
             self.assertGreater(len(result["body"]), 0)
@@ -325,7 +329,7 @@ class ComposeOsBuildV1TestCase(ComposeTestCase):
                 "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
 
     def test_compose_start_plain_size(self):
-        result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start", "--size", "1776", "http-server", "qcow2"])
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start", "--size", "1776", "http-server", "qcow2"])
         self.assertTrue(result is not None)
         self.assertTrue("body" in result)
         self.assertGreater(len(result["body"]), 0)
@@ -336,7 +340,7 @@ class ComposeOsBuildV1TestCase(ComposeTestCase):
         with tempfile.NamedTemporaryFile(prefix="composer-cli.test.") as f:
             f.write(PROFILE_TOML.encode("UTF-8"))
             f.seek(0)
-            result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start", "--size", "1791", "http-server", "qcow2", "httpimage", f.name])
+            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start", "--size", "1791", "http-server", "qcow2", "httpimage", f.name])
             self.assertTrue(result is not None)
             self.assertTrue("body" in result)
             self.assertGreater(len(result["body"]), 0)
@@ -346,7 +350,7 @@ class ComposeOsBuildV1TestCase(ComposeTestCase):
                 "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
 
     def test_compose_start_ostree(self):
-        result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "http-server", "fedora-iot-commit", "referenceid", "parenturl"])
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "http-server", "fedora-iot-commit", "referenceid", "parenturl"])
         self.assertTrue(result is not None)
         self.assertTrue("body" in result)
         self.assertGreater(len(result["body"]), 0)
@@ -358,7 +362,7 @@ class ComposeOsBuildV1TestCase(ComposeTestCase):
         with tempfile.NamedTemporaryFile(prefix="composer-cli.test.") as f:
             f.write(PROFILE_TOML.encode("UTF-8"))
             f.seek(0)
-            result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "http-server", "fedora-iot-commit", "referenceid", "parenturl", "httpimage", f.name])
+            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "http-server", "fedora-iot-commit", "referenceid", "parenturl", "httpimage", f.name])
             self.assertTrue(result is not None)
             self.assertTrue("body" in result)
             self.assertGreater(len(result["body"]), 0)
