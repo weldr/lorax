@@ -81,6 +81,7 @@ runcmd xorrisofs ${isoargs} -o ${outroot}/images/boot.iso \
        -boot-load-size 4 -no-emul-boot \
        -R -J -V '${isolabel}' -graft-points \
        .discinfo=${outroot}/.discinfo \
+       generic.ins=${outroot}/generic.ins \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${filegraft}
 treeinfo images-${basearch} boot.iso images/boot.iso
