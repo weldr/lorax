@@ -72,6 +72,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/cdboot.img -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -no-emul-boot \
        -R -J -V '${isolabel}' -T -graft-points \
+       generic.ins=${outroot}/generic.ins \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${filegraft}
 treeinfo images-${basearch} boot.iso images/boot.iso
