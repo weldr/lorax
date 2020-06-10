@@ -95,7 +95,7 @@ def get_size(args):
         return (args, 0)
 
     if len(args) < 2:
-        return (args, 0)
+        raise RuntimeError("--size is missing the value, in MiB")
 
     # Let this raise an error for non-digit input
     size = int(args[1])
