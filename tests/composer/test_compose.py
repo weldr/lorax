@@ -27,6 +27,7 @@ import unittest
 from composer import http_client as client
 import composer.cli as cli
 from composer.cli.cmdline import composer_cli_parser
+from composer.cli.compose import get_size
 
 # Use a GLOBAL record the request data for use in the test
 # because there is no way to access the request handler class from the test methods
@@ -371,3 +372,27 @@ class ComposeOsBuildV1TestCase(ComposeTestCase):
                 "ostree": {"ref": "referenceid", "parent": "parenturl"},
                 "upload": {"image_name": "httpimage", "provider": "aws",
                 "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
+
+class SizeTest(unittest.TestCase):
+    def test_empty(self):
+        self.assertEqual(get_size([]), ([], 0))
+
+    def test_no_size(self):
+        self.assertEqual(get_size(["blueprint", "type", "imagename", "profile"]),
+                         (["blueprint", "type", "imagename", "profile"], 0))
+
+    def test_size_later(self):
+        with self.assertRaises(RuntimeError):
+            get_size(["blueprint", "--size", "100", "type"])
+
+    def test_size_no_value(self):
+        with self.assertRaises(RuntimeError):
+            get_size(["--size"])
+
+    def test_size_nonint(self):
+        with self.assertRaises(ValueError):
+            get_size(["--size", "abc"])
+
+    def test_get_size(self):
+        self.assertEqual(get_size(["--size", "1912", "blueprint", "type"]),
+                         (["blueprint", "type"], 2004877312))
