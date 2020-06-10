@@ -26,8 +26,11 @@ from composer.cli.projects import projects_cmd
 from composer.cli.compose import compose_cmd, compose_cmd_v1
 from composer.cli.sources import sources_cmd
 from composer.cli.status import status_cmd
-from composer.cli.upload import upload_cmd
-from composer.cli.providers import providers_cmd
+
+
+def upload_cmd_unavailable(opts):
+    print("This command is not supported. You can upload images as part of the compose command")
+    return 1
 
 command_map = {
     "0": {
@@ -45,10 +48,12 @@ command_map = {
         "compose":    compose_cmd_v1,
         "sources":    sources_cmd,
         "status":     status_cmd,
-        "upload":     upload_cmd,
-        "providers":  providers_cmd
+        "upload":     upload_cmd_unavailable,
+        "providers":  upload_cmd_unavailable
     }
 }
+
+
 
 
 def main(opts):
