@@ -4,7 +4,7 @@ lorax-composer
 :Authors:
     Brian C. Lane <bcl@redhat.com>
 
-``lorax-composer`` is an API server that allows you to build disk images using
+``lorax-composer`` is a WELDR API server that allows you to build disk images using
 `Blueprints`_ to describe the package versions to be installed into the image.
 It is compatible with the Weldr project's bdcs-api REST protocol. More
 information on Weldr can be found `on the Weldr blog <http://www.weldr.io>`_.
@@ -12,6 +12,15 @@ information on Weldr can be found `on the Weldr blog <http://www.weldr.io>`_.
 Behind the scenes it uses `livemedia-creator <livemedia-creator.html>`_ and
 `Anaconda <https://anaconda-installer.readthedocs.io/en/latest/>`_ to handle the
 installation and configuration of the images.
+
+.. note::
+
+    ``lorax-composer`` is now deprecated. It is being replaced by the
+    ``osbuild-composer`` WELDR API server which implements more features (eg.
+    ostree, image uploads, etc.) You can still use ``composer-cli`` and
+    ``cockpit-composer`` with ``osbuild-composer``. See the documentation or
+    the `osbuild website <https://www.osbuild.org/>`_ for more information.
+
 
 Important Things To Note
 ------------------------
