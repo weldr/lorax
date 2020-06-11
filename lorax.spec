@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        33.4
+Version:        33.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -267,6 +267,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Jun 11 2020 Brian C. Lane <bcl@redhat.com> 33.5-1
+- lorax-composer: Add deprecation notice to documentation (bcl@redhat.com)
+- composer-cli: Return a better error with no value (bcl@redhat.com)
+- tests: Add tests for composer-cli compose start JSON POST (bcl@redhat.com)
+- composer-cli: Update bash completion for start-ostree (bcl@redhat.com)
+- composer-cli: Add new start-ostree command (bcl@redhat.com)
+- composer-cli: Add support for --size to compose start (bcl@redhat.com)
+- include generic.ins for s390 boot iso (dan@danny.cz)
+- test: Put VM image overlay into /var/tmp (martin@piware.de)
+
 * Mon Jun 01 2020 Brian C. Lane <bcl@redhat.com> 33.4-1
 - Revert "lorax: Remove vmlinuz from install.img /boot" (bcl@redhat.com)
 - composer-cli: Add osbuild-composer to connection failure message (bcl@redhat.com)
