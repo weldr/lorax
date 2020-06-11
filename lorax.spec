@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.46
+Version:        28.14.47
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,29 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Jun 11 2020 Brian C. Lane <bcl@redhat.com> 28.14.47-1
+- lorax-composer: Add deprecation notice to documentation (bcl)
+  Related: rhbz#1844649
+- composer-cli: Add documentation for uploads and osbuild-composer (bcl)
+  Related: rhbz#1844649
+- composer-cli: Remove the upload and providers commands (bcl)
+  Related: rhbz#1844649
+- composer-cli: Return a better error with no value (bcl)
+  Related: rhbz#1844649
+- tests: rhel8-branch uses nose not pytest (bcl)
+  Related: rhbz#1844649
+- tests: Add tests for composer-cli compose start JSON POST (bcl)
+  Related: rhbz#1844649
+- composer-cli: Update bash completion for start-ostree (bcl)
+  Related: rhbz#1844649
+- composer-cli: Add new start-ostree command (bcl)
+  Resolves: rhbz#1844649
+- composer-cli: Add support for --size to compose start (bcl)
+  Related: rhbz#1844649
+- composer-cli: pytoml load() needs an open file not a string (bcl)
+  Resolves: rhbz#1843704
+- test: Put VM image overlay into /var/tmp (martin) (martin)
+  Related: rhbz#1825190
 * Mon Jun 01 2020 Brian C. Lane <bcl@redhat.com> 28.14.46-1
 - Keep /etc/default/useradd in install.img (honza.stodola)
   Resolves: rhbz#1838677
