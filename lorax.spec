@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.9
+Version:        32.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -266,6 +266,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Jun 11 2020 Brian C. Lane <bcl@redhat.com> 32.10-1
+- composer-cli: Return a better error with no value (bcl@redhat.com)
+- tests: Add tests for composer-cli compose start JSON POST (bcl@redhat.com)
+- composer-cli: Update bash completion for start-ostree (bcl@redhat.com)
+- composer-cli: Add new start-ostree command (bcl@redhat.com)
+- composer-cli: Add support for --size to compose start (bcl@redhat.com)
+
 * Tue May 05 2020 Brian C. Lane <bcl@redhat.com> 32.9-1
 - Dockerfile.test: Switch to using F32 for testing (bcl@redhat.com)
 - Don't use f-string without interpolation (atodorov@redhat.com)
