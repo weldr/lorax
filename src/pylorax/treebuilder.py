@@ -309,6 +309,7 @@ class TreeBuilder(object):
             raise Exception("No kernels found, cannot rebuild_initrds")
 
         # Hush some dracut warnings. TODO: bind-mount proc in place?
+        os.makedirs(joinpaths(self.vars.inroot, "/proc"), exist_ok=True)
         open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
         for kernel in self.kernels:
             if prefix:

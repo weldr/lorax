@@ -256,6 +256,7 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
         raise Exception("No initrds found, cannot rebuild_initrds")
 
     # Hush some dracut warnings. TODO: bind-mount proc in place?
+    os.makedirs(joinpaths(sys_root_dir, "/proc"), exist_ok=True)
     open(joinpaths(sys_root_dir,"/proc/modules"),"w")
 
     if opts.ostree:
