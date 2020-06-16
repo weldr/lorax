@@ -26,7 +26,7 @@ import urllib3
 # https://github.com/docker/docker-py/blob/master/docker/transport/unixconn.py
 class UnixHTTPConnection(httplib.HTTPConnection, object):
 
-    def __init__(self, socket_path, timeout=60):
+    def __init__(self, socket_path, timeout=60*5):
         """Create an HTTP connection to a unix domain socket
 
         :param socket_path: The path to the Unix domain socket
@@ -48,7 +48,7 @@ class UnixHTTPConnection(httplib.HTTPConnection, object):
 
 class UnixHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
 
-    def __init__(self, socket_path, timeout=60):
+    def __init__(self, socket_path, timeout=60*5):
         """Create a connection pool using a Unix domain socket
 
         :param socket_path: The path to the Unix domain socket
