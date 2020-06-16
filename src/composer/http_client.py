@@ -126,7 +126,7 @@ def get_url_json_unlimited(socket_path, url, total_fn=None):
     r_unlimited = http.request("GET", unlimited_url)
     return json.loads(r_unlimited.data.decode('utf-8'))
 
-def delete_url_json(socket_path, url, timeout=120):
+def delete_url_json(socket_path, url):
     """Send a DELETE request to the url and return JSON response
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -136,7 +136,7 @@ def delete_url_json(socket_path, url, timeout=120):
     :returns: The json response from the server
     :rtype: dict
     """
-    http = UnixHTTPConnectionPool(socket_path, timeout=timeout)
+    http = UnixHTTPConnectionPool(socket_path)
     r = http.request("DELETE", url)
     return json.loads(r.data.decode("utf-8"))
 
