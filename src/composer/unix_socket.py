@@ -53,8 +53,10 @@ class UnixHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
 
         :param socket_path: The path to the Unix domain socket
         :param timeout: Number of seconds to timeout the connection
+
+        NOTE: retries are disabled for these connections, they are never useful
         """
-        super(UnixHTTPConnectionPool, self).__init__('localhost', timeout=timeout)
+        super(UnixHTTPConnectionPool, self).__init__('localhost', timeout=timeout, retries=False)
         self.socket_path = socket_path
 
     def _new_conn(self):
