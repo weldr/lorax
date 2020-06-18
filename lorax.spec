@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        32.10
+Version:        32.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -267,6 +267,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Jun 18 2020 Brian C. Lane <bcl@redhat.com> 32.11-1
+- lorax.spec: Add psmisc for fuser debugging of failed umounts in pylorax.imgutils (bcl@redhat.com)
+- composer-cli: Disable retry counter on connection timeout (bcl@redhat.com)
+- composer-cli: Change timeout to 5 minutes (bcl@redhat.com)
+
 * Thu Jun 11 2020 Brian C. Lane <bcl@redhat.com> 32.10-1
 - composer-cli: Return a better error with no value (bcl@redhat.com)
 - tests: Add tests for composer-cli compose start JSON POST (bcl@redhat.com)
