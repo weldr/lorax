@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.42
+Version:        19.7.43
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Jun 18 2020 Brian C. Lane <bcl@redhat.com> 19.7.43-1
+- composer-cli: Change timeout to 5 minutes (bcl)
+  Related: rhbz#1847490
+- composer-cli: Disable retry counter on connection timeout (bcl)
+  Resolves: rhbz#1847490
+- test: Put VM image overlay into /var/tmp (martin) (martin)
+  Related: rhbz#1825190
 * Mon May 18 2020 Brian C. Lane <bcl@redhat.com> 19.7.42-1
 - [tests] Remove vm-local-repos Makefile target (jikortus)
   Related: rhbz#1810711
