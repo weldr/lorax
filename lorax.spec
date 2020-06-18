@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.47
+Version:        28.14.48
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Jun 18 2020 Brian C. Lane <bcl@redhat.com> 28.14.48-1
+- composer-cli: Disable retry counter on connection timeout (bcl)
+  Related: rhbz#1844649
+- composer-cli: Change timeout to 5 minutes (bcl)
+  Related: rhbz#1844649
+
 * Thu Jun 11 2020 Brian C. Lane <bcl@redhat.com> 28.14.47-1
 - lorax-composer: Add deprecation notice to documentation (bcl)
   Related: rhbz#1844649
