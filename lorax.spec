@@ -43,6 +43,7 @@ Requires:       pigz
 Requires:       pbzip2
 Requires:       dracut >= 030
 Requires:       kpartx
+Requires:       psmisc
 
 # Python modules
 Requires:       libselinux-python3
