@@ -255,9 +255,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %changelog
 * Thu Jun 18 2020 Brian C. Lane <bcl@redhat.com> 28.14.48-1
 - composer-cli: Disable retry counter on connection timeout (bcl)
-  Related: rhbz#1844649
+  Related: rhbz#1848727
 - composer-cli: Change timeout to 5 minutes (bcl)
-  Related: rhbz#1844649
+  Resolves: rhbz#1848727
 
 * Thu Jun 11 2020 Brian C. Lane <bcl@redhat.com> 28.14.47-1
 - lorax-composer: Add deprecation notice to documentation (bcl)
