@@ -308,8 +308,6 @@ class TreeBuilder(object):
         if not self.kernels:
             raise Exception("No kernels found, cannot rebuild_initrds")
 
-        # Hush some dracut warnings. TODO: bind-mount proc in place?
-        open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
         for kernel in self.kernels:
             if prefix:
                 idir = os.path.dirname(kernel.path)
@@ -327,8 +325,6 @@ class TreeBuilder(object):
                     os.rename(initrd, initrd + backup)
             cmd = dracut + [outfile, kernel.version]
             runcmd(cmd, root=self.vars.inroot)
-
-        os.unlink(joinpaths(self.vars.inroot,"/proc/modules"))
 
     def build(self):
         templatefile = templatemap[self.vars.arch.basearch]

@@ -255,9 +255,6 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
     if not kernels:
         raise Exception("No initrds found, cannot rebuild_initrds")
 
-    # Hush some dracut warnings. TODO: bind-mount proc in place?
-    open(joinpaths(sys_root_dir,"/proc/modules"),"w")
-
     if opts.ostree:
         # Dracut assumes to have some dirs in disk image
         # /var/tmp for temp files
@@ -294,7 +291,6 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
         shutil.copy2(joinpaths(sys_root_dir, kernel.path), results_dir)
     umount(joinpaths(sys_root_dir, "var/tmp"), delete=False)
     umount(joinpaths(sys_root_dir, "results"), delete=False)
-    os.unlink(joinpaths(sys_root_dir,"/proc/modules"))
 
 def create_pxe_config(template, images_dir, live_image_name, add_args = None):
     """
