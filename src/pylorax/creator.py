@@ -282,9 +282,9 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
             # Construct an initrd from the kernel name
             outfile = os.path.basename(kernel.path.replace("vmlinuz-", "initrd-") + ".img")
         log.info("rebuilding %s", outfile)
+        log.info("dracut warnings about /proc are safe to ignore")
 
         kver = kernel.version
-
         cmd = dracut + ["/results/"+outfile, kver]
         runcmd(cmd, root=sys_root_dir)
 

@@ -319,6 +319,8 @@ class TreeBuilder(object):
                 # Construct an initrd from the kernel name
                 outfile = kernel.path.replace("vmlinuz-", "initrd-") + ".img"
             logger.info("rebuilding %s", outfile)
+            logger.info("dracut warnings about /proc are safe to ignore")
+
             if backup:
                 initrd = joinpaths(self.vars.inroot, outfile)
                 if os.path.exists(initrd):
