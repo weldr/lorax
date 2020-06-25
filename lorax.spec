@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.48
+Version:        28.14.49
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Jun 25 2020 Brian C. Lane <bcl@redhat.com> 28.14.49-1
+- include generic.ins for s390 boot iso (dan)
+  Related: rhbz#1844517
+- Fix the bug referenced in the last build (bcl)
+  Resolves: rhbz#1848727
+
 * Thu Jun 18 2020 Brian C. Lane <bcl@redhat.com> 28.14.48-1
 - composer-cli: Disable retry counter on connection timeout (bcl)
   Related: rhbz#1848727
