@@ -145,7 +145,8 @@ __EOF__
         # run generic tests to verify the instance and check if cloud-init is installed and running
         verify_image azure-user "$IP_ADDRESS" "-i $SSH_KEY_DIR/id_rsa"
         rlRun -t -c "ssh -o StrictHostKeyChecking=no -o BatchMode=yes -i $SSH_KEY_DIR/id_rsa azure-user@$IP_ADDRESS 'rpm -q cloud-init'"
-        rlRun -t -c "ssh -o StrictHostKeyChecking=no -o BatchMode=yes -i $SSH_KEY_DIR/id_rsa azure-user@$IP_ADDRESS 'systemctl status cloud-init'"
+# disabled cloud-init check, see https://github.com/osbuild/osbuild-composer/issues/698
+#        rlRun -t -c "ssh -o StrictHostKeyChecking=no -o BatchMode=yes -i $SSH_KEY_DIR/id_rsa azure-user@$IP_ADDRESS 'systemctl status cloud-init'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
