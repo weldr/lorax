@@ -69,7 +69,9 @@ rlJournalStart
 
     rlPhaseStartTest "cancel compose"
         rlRun -t -c "$CLI compose cancel $UUID"
-        rlRun -t -c "$CLI compose info $UUID" 1 "compose is canceled"
+        if [ "$BACKEND" == "lorax-composer" ]; then
+            rlRun -t -c "$CLI compose info $UUID" 1 "compose is canceled"
+        fi
     rlPhaseEnd
 
     rlPhaseStartTest "compose start again"
