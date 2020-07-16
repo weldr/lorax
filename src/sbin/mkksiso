@@ -279,7 +279,7 @@ class Xorrisofs_aarch64(MakeISOTool):
                "-R", "-J", "-V", volume_name]
         if log.root.level < log.INFO:
             cmd.append("--verbose")
-        if efimode == EFIBOOT:
+        if efimode >= EFIBOOT:
             cmd.extend(["-eltorito-alt-boot", "-e", "images/efiboot.img", "-no-emul-boot"])
         if efimode == MACBOOT:
             cmd.extend(["-eltorito-alt-boot", "-e", "images/macboot.img", "-no-emul-boot"])
@@ -348,7 +348,7 @@ class Xorrisofs_x86_64(MakeISOTool):
                "-boot-load-size", "4", "-boot-info-table", "-no-emul-boot"]
         if log.root.level < log.INFO:
             cmd.append("--verbose")
-        if efimode == EFIBOOT:
+        if efimode >= EFIBOOT:
             cmd.extend(["-eltorito-alt-boot", "-e", "images/efiboot.img", "-no-emul-boot", "-isohybrid-gpt-basdat"])
         if efimode == MACBOOT:
             cmd.extend(["-eltorito-alt-boot", "-e", "images/macboot.img", "-no-emul-boot", "-isohybrid-gpt-hfsplus"])
