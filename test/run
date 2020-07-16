@@ -15,6 +15,11 @@ if [ -n "$TEST_SCENARIO" ]; then
     test/check-cli TestTar
   elif [ "$TEST_SCENARIO" == "lorax" ]; then
     test/check-lorax TestLorax
+  elif [ "$TEST_SCENARIO" == "osbuild-composer" ]; then
+    rm -rf ./test/images/*
+    export BACKEND="osbuild-composer"
+    make BACKEND=osbuild-composer vm
+    test/check-cli TestImages
   else
     test/check-cloud TestCloud.test_$TEST_SCENARIO
   fi

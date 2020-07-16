@@ -5,7 +5,10 @@ mandir ?= $(PREFIX)/share/man
 DOCKER ?= podman
 DOCS_VERSION ?= next
 RUN_TESTS ?= ci
-BACKEND ?= lorax-composer
+ifeq ($(BACKEND),)
+    BACKEND ?= lorax-composer
+endif
+
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
