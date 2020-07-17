@@ -4,7 +4,12 @@
 
 export BACKEND="${BACKEND:-lorax-composer}"
 
-make vm
+if [ "$BACKEND" == "osbuild-composer" ] || [ "$TEST_SCENARIO" == "osbuild-composer" ]; then
+    rm -rf ./test/images/*
+    make BACKEND=osbuild-composer vm
+else
+    make vm
+fi
 
 if [ -n "$TEST_SCENARIO" ]; then
   if [ "$TEST_SCENARIO" == "live-iso" ]; then
@@ -16,9 +21,7 @@ if [ -n "$TEST_SCENARIO" ]; then
   elif [ "$TEST_SCENARIO" == "lorax" ]; then
     test/check-lorax TestLorax
   elif [ "$TEST_SCENARIO" == "osbuild-composer" ]; then
-    rm -rf ./test/images/*
     export BACKEND="osbuild-composer"
-    make BACKEND=osbuild-composer vm
     test/check-cli TestImages
   else
     test/check-cloud TestCloud.test_$TEST_SCENARIO

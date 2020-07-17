@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -134,6 +135,19 @@ class ComposerTestCase(VirtMachineTestCase):
                                 "http://localhost/api/status"]
         r = subprocess.run(self.ssh_command + curl_command, stdout=subprocess.DEVNULL)
         self.assertEqual(r.returncode, 0)
+
+        # Make sure the right backend is running
+        print("Checking to make sure backend is %s" % os.getenv("BACKEND"))
+        curl_command = ["curl", "--max-time", "360",
+                                "--silent",
+                                "--unix-socket", "/run/weldr/api.socket",
+                                "http://localhost/api/status"]
+        r = subprocess.run(self.ssh_command + curl_command, stdout=subprocess.PIPE)
+        self.assertEqual(r.returncode, 0)
+        status = json.loads(r.stdout)
+        print(status)
+        self.assertTrue("backend" in status)
+        self.assertEqual(os.getenv("BACKEND"), status["backend"])
 
     def tearDown(self):
         self.tearDownVirt()
