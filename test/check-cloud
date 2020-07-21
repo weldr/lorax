@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 
+import unittest
+
 import composertest
 
 
+@unittest.skip("Image building is now tested by osbuild-composer test suite")
 class TestCloud(composertest.ComposerTestCase):
     def test_alibaba(self):
         self.runCliTest("/tests/cli/test_compose_alibaba.sh")
