@@ -1,9 +1,13 @@
 #!/usr/bin/python3
 
+import unittest
+
 import composertest
 import requests
 import subprocess
 
+
+@unittest.skip("API is now tested by osbuild-composer test suite")
 class TestApi(composertest.ComposerTestCase):
     """Test Composer HTTP API"""
 
