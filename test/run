@@ -5,18 +5,9 @@
 make vm
 
 if [ -n "$TEST_SCENARIO" ]; then
-  if [ "$TEST_SCENARIO" == "live-iso" ]; then
-    test/check-cli TestLiveIso
-  elif [ "$TEST_SCENARIO" == "qcow2" ]; then
-    test/check-cli TestQcow2
-  elif [ "$TEST_SCENARIO" == "tar" ]; then
-    test/check-cli TestTar
-  elif [ "$TEST_SCENARIO" == "ci" ]; then
+  if [ "$TEST_SCENARIO" == "ci" ]; then
 	test/check-cli TestPylint 
-  else
-    test/check-cloud TestCloud.test_$TEST_SCENARIO
   fi
 else
   test/check-cli TestImages
-  test/check-cli TestRepos
 fi
