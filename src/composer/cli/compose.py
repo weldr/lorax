@@ -24,7 +24,7 @@ import pytoml as toml
 
 from composer import http_client as client
 from composer.cli.help import compose_help
-from composer.cli.utilities import argify, handle_api_result, packageNEVRA
+from composer.cli.utilities import argify, handle_api_result, packageNEVRA, get_arg
 
 def compose_cmd(opts):
     """Process compose commands for API v0
@@ -93,8 +93,8 @@ def run_command(opts, cmd_map):
 def get_size(args):
     """Return optional size argument, and remaining args
 
-    :param api: Details about the API server, "version" and "backend"
-    :type api: dict
+    :param args: list of arguments
+    :type args: list of strings
     :returns: (args, size)
     :rtype: tuple
 
@@ -105,20 +105,10 @@ def get_size(args):
     - multiply by 1024**2 to make it easier on users to specify large sizes
 
     """
-    if len(args) == 0:
-        return (args, 0)
+    args, value = get_arg(args, "--size", int)
+    value = value * 1024**2 if value is not None else 0
+    return (args, value)
 
-    if args[0] != "--size" and "--size" in args[1:]:
-        raise RuntimeError("--size must be first argument after the command")
-    if args[0] != "--size":
-        return (args, 0)
-
-    if len(args) < 2:
-        raise RuntimeError("--size is missing the value, in MiB")
-
-    # Let this raise an error for non-digit input
-    size = int(args[1])
-    return (args[2:], size * 1024**2)
 
 def compose_list(socket_path, api_version, args, show_json=False, testmode=0):
     """Return a simple list of compose identifiers"""
