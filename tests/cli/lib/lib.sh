@@ -93,9 +93,9 @@ composer_start() {
     local rc
     local params="$@"
 
-    if [[ -z "$CLI" || "$CLI" == "./src/bin/composer-cli" ]]; then
+    if [ "$BACKEND" == "lorax-composer" ] && [[ -z "$CLI" || "$CLI" == "./src/bin/composer-cli" ]]; then
         ./src/sbin/lorax-composer $params --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
-    elif [ -n "$params" ]; then
+    elif [ "$BACKEND" == "lorax-composer" ] && [ -n "$params" ]; then
         /usr/sbin/lorax-composer $params /var/lib/lorax/composer/blueprints &
     else
         # socket stop/start seems to be necessary for a proper service restart

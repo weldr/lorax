@@ -125,7 +125,7 @@ $(VM_IMAGE): srpm bots
 		--upload $(CURDIR)/test/vm.install:/var/tmp/vm.install \
 		--upload $(realpath tests):/ \
 		--run-command "chmod +x /var/tmp/vm.install" \
-		--run-command "cd /var/tmp; /var/tmp/vm.install $$srpm" \
+		--run-command "cd /var/tmp; BACKEND=$(BACKEND) /var/tmp/vm.install $$srpm" \
 		$(TEST_OS)
 	[ -f ~/.config/lorax-test-env ] && bots/image-customize \
 		--upload ~/.config/lorax-test-env:/var/tmp/lorax-test-env \

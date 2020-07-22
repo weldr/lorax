@@ -4,12 +4,16 @@
 
 export BACKEND="${BACKEND:-lorax-composer}"
 
-make vm
-
-if [ -n "$TEST_SCENARIO" ]; then
-  if [ "$TEST_SCENARIO" == "ci" ]; then
-	test/check-cli TestPylint 
-  fi
+if [ "$BACKEND" == "osbuild-composer" ] || [ "$TEST_SCENARIO" == "osbuild-composer" ]; then
+    rm -rf ./test/images/*
+    export BACKEND="osbuild-composer"
+    make BACKEND=osbuild-composer vm
 else
-  test/check-cli TestImages
+    make vm
+fi
+
+if [ "$TEST_SCENARIO" == "ci" ]; then
+    test/check-cli TestPylint
+else
+    test/check-cli TestImages
 fi
