@@ -382,8 +382,7 @@ class SizeTest(unittest.TestCase):
                          (["blueprint", "type", "imagename", "profile"], 0))
 
     def test_size_later(self):
-        with self.assertRaises(RuntimeError):
-            get_size(["blueprint", "--size", "100", "type"])
+        self.assertEqual(get_size(["start", "--size", "100", "type"]), (["start", "type"], 104857600))
 
     def test_size_no_value(self):
         with self.assertRaises(RuntimeError):
