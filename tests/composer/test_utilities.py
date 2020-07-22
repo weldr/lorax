@@ -18,7 +18,7 @@ import unittest
 
 from pylorax.api.errors import INVALID_CHARS
 from composer.cli.utilities import argify, toml_filename, frozen_toml_filename, packageNEVRA
-from composer.cli.utilities import handle_api_result
+from composer.cli.utilities import handle_api_result, get_arg
 
 class CliUtilitiesTest(unittest.TestCase):
     def test_argify(self):
@@ -94,3 +94,37 @@ class CliUtilitiesTest(unittest.TestCase):
         """Test a result with show_json=True, errors=[], and no status field"""
         result = {"foo": "bar", "errors": []}
         self.assertEqual(handle_api_result(result, show_json=True), (0, True))
+
+    def test_get_arg_empty(self):
+        """Test get_arg with no arguments"""
+        self.assertEqual(get_arg([], "--size"), ([], None))
+
+    def test_get_arg_no_arg(self):
+        """Test get_arg with no argument in the list"""
+        self.assertEqual(get_arg(["first", "second"], "--size"), (["first", "second"], None))
+
+    def test_get_arg_notype(self):
+        """Test get_arg with no argtype set"""
+        self.assertEqual(get_arg(["first", "--size", "100", "second"], "--size"), (["first", "second"], "100"))
+
+    def test_get_arg_string(self):
+        """Test get_arg with a string argument"""
+        self.assertEqual(get_arg(["first", "--size", "100", "second"], "--size", str), (["first", "second"], "100"))
+
+    def test_get_arg_int(self):
+        """Test get_arg with an int argument"""
+        self.assertEqual(get_arg(["first", "--size", "100", "second"], "--size", int), (["first", "second"], 100))
+
+    def test_get_arg_short(self):
+        """Test get_arg error handling with a short list"""
+        with self.assertRaises(RuntimeError):
+            get_arg(["first", "--size", ], "--size", int)
+
+    def test_get_arg_start(self):
+        """Test get_arg with the argument at the start of the list"""
+        self.assertEqual(get_arg(["--size", "100", "first", "second"], "--size", int), (["first", "second"], 100))
+
+    def test_get_arg_wrong_type(self):
+        """Test get_arg with the wrong type"""
+        with self.assertRaises(ValueError):
+            get_arg(["first", "--size", "abc", "second"], "--size", int)

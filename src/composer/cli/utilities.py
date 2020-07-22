@@ -93,3 +93,31 @@ def packageNEVRA(pkg):
         return "%s-%s:%s-%s.%s" % (pkg["name"], pkg["epoch"], pkg["version"], pkg["release"], pkg["arch"])
     else:
         return "%s-%s-%s.%s" % (pkg["name"], pkg["version"], pkg["release"], pkg["arch"])
+
+def get_arg(args, name, argtype=None):
+    """Return optional value from args, and remaining args
+
+    :param args: list of arguments
+    :type args: list of strings
+    :param name: The argument to remove from the args list
+    :type name: string
+    :param argtype: Type to use for checking the argument value
+    :type argtype: type
+    :returns (args, value)
+    :rtype: tuple
+
+    This removes the optional argument and value from the argument list, returns the new list,
+    and the value of the argument.
+    """
+    try:
+        idx = args.index(name)
+        if len(args) < idx+2:
+            raise RuntimeError(f"{name} is missing the value")
+        value = args[idx+1]
+    except ValueError:
+        return (args, None)
+
+    if argtype:
+        value = argtype(value)
+
+    return (args[:idx]+args[idx+2:], value)
