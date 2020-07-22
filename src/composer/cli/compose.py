@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2019 Red Hat, Inc.
+# Copyright (C) 2018-2020 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ def run_command(opts, cmd_map):
     return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json, opts.testmode)
 
 def get_size(args):
-    """Return optional size argument, and remaining args
+    """Return optional --size argument, and remaining args
 
     :param args: list of arguments
     :type args: list of strings
@@ -109,6 +109,29 @@ def get_size(args):
     value = value * 1024**2 if value is not None else 0
     return (args, value)
 
+def get_parent(args):
+    """Return optional --parent argument, and remaining args
+
+    :param args: list of arguments
+    :type args: list of strings
+    :returns: (args, parent)
+    :rtype: tuple
+    """
+    args, value = get_arg(args, "--parent")
+    value = value if value is not None else ""
+    return (args, value)
+
+def get_ref(args):
+    """Return optional --ref argument, and remaining args
+
+    :param args: list of arguments
+    :type args: list of strings
+    :returns: (args, parent)
+    :rtype: tuple
+    """
+    args, value = get_arg(args, "--ref")
+    value = value if value is not None else ""
+    return (args, value)
 
 def compose_list(socket_path, api_version, args, show_json=False, testmode=0):
     """Return a simple list of compose identifiers"""
@@ -367,7 +390,7 @@ def compose_start_v1(socket_path, api_version, args, show_json=False, testmode=0
     return rc
 
 def compose_ostree(socket_path, api_version, args, show_json=False, testmode=0):
-    """Start a new compose using the selected blueprint and type
+    """Start a new ostree compose using the selected blueprint and type
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -382,11 +405,13 @@ def compose_ostree(socket_path, api_version, args, show_json=False, testmode=0):
     :param api: Details about the API server, "version" and "backend"
     :type api: dict
 
-    compose start [--size XXX] <blueprint-name> <compose-type> <ostree-ref> <ostree-parent> [<image-name> <provider> <profile> | <image-name> <profile.toml>]
+    compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROFILE.TOML>]
     """
     # Get the optional size before checking other parameters
     try:
         args, size = get_size(args)
+        args, parent = get_parent(args)
+        args, ref = get_ref(args)
     except (RuntimeError, ValueError) as e:
         log.error(str(e))
         return 1
@@ -397,39 +422,27 @@ def compose_ostree(socket_path, api_version, args, show_json=False, testmode=0):
     if len(args) == 1:
         log.error("start-ostree is missing the output type")
         return 1
-    if len(args) == 2:
-        log.error("start-ostree is missing the ostree reference")
-        return 1
     if len(args) == 3:
-        log.error("start-ostree is missing the ostree parent")
-        return 1
-    if len(args) == 5:
-        log.error("start-ostree is missing the provider and profile details")
+        log.error("start-ostree is missing the provider TOML file")
         return 1
 
     config = {
         "blueprint_name": args[0],
         "compose_type": args[1],
         "branch": "master",
-        "ostree": {"ref": args[2], "parent": args[3]},
+        "ostree": {"ref": ref, "parent": parent},
         }
     if size > 0:
         config["size"] = size
 
-    if len(args) == 6:
-        config["upload"] = {"image_name": args[4]}
+    if len(args) == 4:
+        config["upload"] = {"image_name": args[2]}
         # profile TOML file (maybe)
         try:
-            config["upload"].update(toml.load(open(args[5])))
+            config["upload"].update(toml.load(open(args[3])))
         except toml.TomlError as e:
             log.error(str(e))
             return 1
-    elif len(args) == 7:
-        config["upload"] = {
-            "image_name":  args[4],
-            "provider":  args[5],
-            "profile":  args[6]
-        }
 
     if testmode:
         test_url = "?test=%d" % testmode

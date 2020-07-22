@@ -157,7 +157,8 @@ class ComposeTestCase(unittest.TestCase):
         LAST_REQUEST = {}
         p = composer_cli_parser()
         opts = p.parse_args(args)
-        cli.main(opts)
+        status = cli.main(opts)
+        LAST_REQUEST["cli_status"] = status
         return LAST_REQUEST
 
 
@@ -350,26 +351,136 @@ class ComposeOsBuildV1TestCase(ComposeTestCase):
                 "upload": {"image_name": "httpimage", "provider": "aws",
                 "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
 
-    def test_compose_start_ostree(self):
-        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "http-server", "fedora-iot-commit", "referenceid", "parenturl"])
+    def test_compose_start_ostree_noargs(self):
+        """Test start-ostree with no parent and no ref"""
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "http-server", "fedora-iot-commit"])
         self.assertTrue(result is not None)
         self.assertTrue("body" in result)
         self.assertGreater(len(result["body"]), 0)
         jd = json.loads(result["body"])
         self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
-            "ostree": {"ref": "referenceid", "parent": "parenturl"}})
+            "ostree": {"ref": "", "parent": ""}})
 
-    def test_compose_start_ostree_upload(self):
+    def test_compose_start_ostree_parent(self):
+        """Test start-ostree with --parent"""
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--parent", "parenturl", "http-server", "fedora-iot-commit"])
+        self.assertTrue(result is not None)
+        self.assertTrue("body" in result)
+        self.assertGreater(len(result["body"]), 0)
+        jd = json.loads(result["body"])
+        self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
+            "ostree": {"ref": "", "parent": "parenturl"}})
+
+    def test_compose_start_ostree_ref(self):
+        """Test start-ostree with --ref"""
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--ref", "refid", "http-server", "fedora-iot-commit"])
+        self.assertTrue(result is not None)
+        self.assertTrue("body" in result)
+        self.assertGreater(len(result["body"]), 0)
+        jd = json.loads(result["body"])
+        self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
+            "ostree": {"ref": "refid", "parent": ""}})
+
+    def test_compose_start_ostree_refparent(self):
+        """Test start-ostree with --ref and --parent"""
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--ref", "refid", "--parent", "parenturl", "http-server", "fedora-iot-commit"])
+        self.assertTrue(result is not None)
+        self.assertTrue("body" in result)
+        self.assertGreater(len(result["body"]), 0)
+        jd = json.loads(result["body"])
+        self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
+            "ostree": {"ref": "refid", "parent": "parenturl"}})
+
+    def test_compose_start_ostree_size(self):
+        """Test start-ostree with --size, --ref and --parent"""
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--size", "2048", "--ref", "refid", "--parent", "parenturl", "http-server", "fedora-iot-commit"])
+        self.assertTrue(result is not None)
+        self.assertTrue("body" in result)
+        self.assertGreater(len(result["body"]), 0)
+        jd = json.loads(result["body"])
+        self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
+            "size": 2147483648,
+            "ostree": {"ref": "refid", "parent": "parenturl"}})
+
+    def test_compose_start_ostree_missing(self):
+        """Test start-ostree with missing argument"""
+        result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "http-server"])
+        self.assertTrue(result is not None)
+        self.assertTrue("cli_status" in result)
+        self.assertEqual(result["cli_status"], 1)
+
+    def test_compose_start_ostree_upload_parent(self):
+        """Test start-ostree upload with --parent"""
         with tempfile.NamedTemporaryFile(prefix="composer-cli.test.") as f:
             f.write(PROFILE_TOML.encode("UTF-8"))
             f.seek(0)
-            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "http-server", "fedora-iot-commit", "referenceid", "parenturl", "httpimage", f.name])
+            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--parent", "parenturl", "http-server", "fedora-iot-commit", "httpimage", f.name])
             self.assertTrue(result is not None)
             self.assertTrue("body" in result)
             self.assertGreater(len(result["body"]), 0)
             jd = json.loads(result["body"])
             self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
-                "ostree": {"ref": "referenceid", "parent": "parenturl"},
+                "ostree": {"ref": "", "parent": "parenturl"},
+                "upload": {"image_name": "httpimage", "provider": "aws",
+                "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
+
+    def test_compose_start_ostree_upload_ref(self):
+        """Test start-ostree upload with --ref"""
+        with tempfile.NamedTemporaryFile(prefix="composer-cli.test.") as f:
+            f.write(PROFILE_TOML.encode("UTF-8"))
+            f.seek(0)
+            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--ref", "refid", "http-server", "fedora-iot-commit", "httpimage", f.name])
+            self.assertTrue(result is not None)
+            self.assertTrue("body" in result)
+            self.assertGreater(len(result["body"]), 0)
+            jd = json.loads(result["body"])
+            self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
+                "ostree": {"ref": "refid", "parent": ""},
+                "upload": {"image_name": "httpimage", "provider": "aws",
+                "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
+
+    def test_compose_start_ostree_upload_refparent(self):
+        """Test start-ostree upload with --ref and --parent"""
+        with tempfile.NamedTemporaryFile(prefix="composer-cli.test.") as f:
+            f.write(PROFILE_TOML.encode("UTF-8"))
+            f.seek(0)
+            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--parent", "parenturl", "--ref", "refid", "http-server", "fedora-iot-commit", "httpimage", f.name])
+            self.assertTrue(result is not None)
+            self.assertTrue("body" in result)
+            self.assertGreater(len(result["body"]), 0)
+            jd = json.loads(result["body"])
+            self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
+                "ostree": {"ref": "refid", "parent": "parenturl"},
+                "upload": {"image_name": "httpimage", "provider": "aws",
+                "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
+
+    def test_compose_start_ostree_upload_size(self):
+        """Test start-ostree upload with --size, --ref and --parent"""
+        with tempfile.NamedTemporaryFile(prefix="composer-cli.test.") as f:
+            f.write(PROFILE_TOML.encode("UTF-8"))
+            f.seek(0)
+            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--size", "2048", "--parent", "parenturl", "--ref", "refid", "http-server", "fedora-iot-commit", "httpimage", f.name])
+            self.assertTrue(result is not None)
+            self.assertTrue("body" in result)
+            self.assertGreater(len(result["body"]), 0)
+            jd = json.loads(result["body"])
+            self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
+                "size": 2147483648,
+                "ostree": {"ref": "refid", "parent": "parenturl"},
+                "upload": {"image_name": "httpimage", "provider": "aws",
+                "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
+
+    def test_compose_start_ostree_upload(self):
+        with tempfile.NamedTemporaryFile(prefix="composer-cli.test.") as f:
+            f.write(PROFILE_TOML.encode("UTF-8"))
+            f.seek(0)
+            result = self.run_args(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "http-server", "fedora-iot-commit", "httpimage", f.name])
+            self.assertTrue(result is not None)
+            self.assertTrue("body" in result)
+            self.assertGreater(len(result["body"]), 0)
+            jd = json.loads(result["body"])
+            self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
+                "ostree": {"ref": "", "parent": ""},
                 "upload": {"image_name": "httpimage", "provider": "aws",
                 "settings": {"aws_access_key": "AWS Access Key", "aws_bucket": "AWS Bucket", "aws_region": "AWS Region", "aws_secret_key": "AWS Secret Key"}}})
 
