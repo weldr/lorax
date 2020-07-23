@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.49
+Version:        28.14.50
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Jul 23 2020 Brian C. Lane <bcl@redhat.com> 28.14.50-1
+- composer-cli: Make start-ostree parent and ref optional (bcl)
+  Resolves: rhbz#1859680
+- composer-cli: Add a get_arg function (bcl)
+  Related: rhbz#1859680
+
 * Thu Jun 25 2020 Brian C. Lane <bcl@redhat.com> 28.14.49-1
 - include generic.ins for s390 boot iso (dan)
   Related: rhbz#1844517
