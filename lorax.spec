@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        33.7
+Version:        33.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -268,6 +268,22 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Jul 23 2020 Brian C. Lane <bcl@redhat.com> 33.8-1
+- composer-cli: Make start-ostree parent and ref optional (bcl@redhat.com)
+- composer-cli: Add a get_arg function (bcl@redhat.com)
+- Set BACKEND=osbuild-composer if running that test scenario (atodorov@redhat.com)
+- tests: Don't check info after compose cancel with osbuild-composer (atodorov@redhat.com)
+- tests: Compare blueprints as TOML objects, not strings (atodorov@redhat.com)
+- tests: Remove lorax-composer specific checks (atodorov@redhat.com)
+- tests: Remove compose after we're done (atodorov@redhat.com)
+- tests: don't use beakerlib in blueprint (lars@karlitski.net)
+- tests: don't depend on internal state of composer (lars@karlitski.net)
+- tests: Do not rely on example blueprints (atodorov@redhat.com)
+- tests: Special case compose types for osbuild-composer (atodorov@redhat.com)
+- tests: Don't check example blueprints if we don't have to (atodorov@redhat.com)
+- tests: Use BACKEND env variable instead of hard-coded values (atodorov@redhat.com)
+- tests: Disable non-cli test scenarios b/c osbuild-composer (atodorov@redhat.com)
+
 * Mon Jul 20 2020 Brian C. Lane <bcl@redhat.com> 33.7-1
 - Add log entry about dracut and /proc (bcl@redhat.com)
 - Skip creating empty /proc/modules for dracut (bcl@redhat.com)
