@@ -76,19 +76,12 @@ rlJournalStart
         fi
     rlPhaseEnd
 
+if [ -z "$SKIP_IMAGE_BUILD" ]; then
     rlPhaseStartTest "compose start again"
         UUID=`$CLI compose start test-http-server qcow2`
         rlAssertEquals "exit code should be zero" $? 0
 
         UUID=`echo $UUID | cut -f 2 -d' '`
-    rlPhaseEnd
-
-    rlPhaseStartTest "compose info"
-        if [ -n "$UUID" ]; then
-            rlRun -t -c "$CLI compose info $UUID | egrep 'RUNNING|WAITING'"
-        else
-            rlFail "Compose UUID is empty!"
-        fi
     rlPhaseEnd
 
     rlPhaseStartTest "compose image"
@@ -107,9 +100,14 @@ rlJournalStart
             rlAssertNotDiffer "/var/lib/lorax/composer/results/$UUID/disk.qcow2" "$UUID-disk.qcow2"
         fi
     rlPhaseEnd
+else
+    rlLogInfo "Skipping image build phases"
+fi
 
     rlPhaseStartCleanup
-        rlRun -t -c "$CLI compose delete $UUID"
+        if [ "$($CLI compose list | grep -c $UUID)" == "1" ]; then
+            rlRun -t -c "$CLI compose delete $UUID"
+        fi
     rlPhaseEnd
 
 rlJournalEnd
