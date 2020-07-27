@@ -93,6 +93,13 @@ composer_start() {
     local rc
     local params="$@"
 
+    if [ "$BACKEND" == "osbuild-composer" ]; then
+        # configure the repositories for latest rel-eng b/c defaults point to CDN!
+        # and/or internal Fedora URLs instead of mirrors
+        mkdir -p /etc/osbuild-composer/repositories/
+        cp $(dirname $0)/cli/lib/rhel-8.json /etc/osbuild-composer/repositories/
+    fi
+
     if [ "$BACKEND" == "lorax-composer" ] && [[ -z "$CLI" || "$CLI" == "./src/bin/composer-cli" ]]; then
         ./src/sbin/lorax-composer $params --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
     elif [ "$BACKEND" == "lorax-composer" ] && [ -n "$params" ]; then
