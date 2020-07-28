@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.50
+Version:        28.14.51
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,36 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Jul 28 2020 Brian C. Lane <bcl@redhat.com> 28.14.51-1
+- tests: Overwrite rhel-8.json when testing with osbuild-composer (atodorov)
+  Related: rhbz#1825190
+- tests: Allow skipping image build in compose sanity test (atodorov)
+  Related: rhbz#1825190
+- Set BACKEND=osbuild-composer if running that test scenario (atodorov)
+  Related: rhbz#1825190
+- tests: Don't check info after compose cancel with osbuild-composer (atodorov)
+  Related: rhbz#1825190
+- tests: Compare blueprints as TOML objects, not strings (atodorov)
+  Related: rhbz#1825190
+- tests: Remove lorax-composer specific checks (atodorov)
+  Related: rhbz#1825190
+- tests: Remove compose after we're done (atodorov)
+  Related: rhbz#1825190
+- tests: don't use beakerlib in blueprint (lars)
+  Related: rhbz#1825190
+- tests: don't depend on internal state of composer (lars)
+  Related: rhbz#1825190
+- tests: Do not rely on example blueprints (atodorov)
+  Related: rhbz#1825190
+- tests: Special case compose types for osbuild-composer (atodorov)
+  Related: rhbz#1825190
+- tests: Don't check example blueprints if we don't have to (atodorov)
+  Related: rhbz#1825190
+- tests: Use BACKEND env variable instead of hard-coded values (atodorov)
+  Related: rhbz#1825190
+- tests: Disable non-cli test scenarios b/c osbuild-composer (atodorov)
+  Related: rhbz#1825190
+
 * Thu Jul 23 2020 Brian C. Lane <bcl@redhat.com> 28.14.50-1
 - composer-cli: Make start-ostree parent and ref optional (bcl)
   Resolves: rhbz#1859680
