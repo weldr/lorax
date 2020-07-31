@@ -39,10 +39,10 @@ rlJournalStart
         V_DATACENTER="${V_DATACENTER:-RH_Engineering}"
         rlLogInfo "V_DATACENTER=$V_DATACENTER"
 
-        V_CLUSTER="${V_CLUSTER:-vMotion-Cluster}"
+        V_CLUSTER="${V_CLUSTER:-Satellite-Engineering}"
         rlLogInfo "V_CLUSTER=$V_CLUSTER"
 
-        V_NETWORK="${V_NETWORK:-vMotion-Network}"
+        V_NETWORK="${V_NETWORK:-VLAN-204}"
         rlLogInfo "V_NETWORK=$V_NETWORK"
 
         V_DATASTORE="${V_DATASTORE:-NFS-Node1}"
