@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.51
+Version:        28.14.52
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Aug 03 2020 Brian C. Lane <bcl@redhat.com> 28.14.52-1
+- Skip test_z_diff() if runninga against for osbuild-composer (atodorov)
+  Related: rhbz#1825190
+
 * Tue Jul 28 2020 Brian C. Lane <bcl@redhat.com> 28.14.51-1
 - tests: Overwrite rhel-8.json when testing with osbuild-composer (atodorov)
   Related: rhbz#1825190
