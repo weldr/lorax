@@ -62,7 +62,7 @@ rlJournalStart
         rlRun -t -c "virtualenv $VENV"
         source $VENV/bin/activate
 
-        rlRun -t -c "pip install --upgrade pip setuptools"
+        rlRun -t -c "pip install pip setuptools"
         rlRun -t -c "pip install ansible[azure] futures"
     rlPhaseEnd
 
