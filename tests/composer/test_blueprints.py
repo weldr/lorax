@@ -121,6 +121,16 @@ dict_name_results3 = "/root, /home/norm, /home/cliff"
 
 
 class BlueprintsTest(unittest.TestCase):
+    @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Setup requires a running API server")
+    @classmethod
+    def setUpClass(cls):
+        """
+            Make sure that example blueprints are pushed to the server!
+        """
+        rc = blueprints_push("/run/weldr/api.socket", 0,
+                             ["example-http-server.toml", "example-development.toml"], show_json=False)
+        assert rc == 0
+
     def test_pretty_diff_entry(self):
         """Return a nice representation of a diff entry"""
         self.assertEqual([pretty_diff_entry(entry) for entry in diff_entries], diff_result)
