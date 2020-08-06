@@ -394,10 +394,12 @@ firefox
 gnome-terminal
 aajohan-comfortaa-fonts
 anaconda
+anaconda-live
 dracut-config-generic
 dracut-live
 glibc-all-langpacks
 grub2-efi
+grub2-pc-modules
 kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
 kernel-modules
@@ -407,5 +409,6 @@ syslinux
 -@dial-up
 -@input-methods
 -gfs2-utils
+-dracut-config-rescue
 
 %end
