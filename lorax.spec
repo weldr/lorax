@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.52
+Version:        28.14.53
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Aug 07 2020 Brian C. Lane <bcl@redhat.com> 28.14.53-1
+- tests: Push example blueprints b/c they may not exist (atodorov)
+  Related: rhbz#1825190
+- rhel-livemedia.ks: Add anaconda-live package to the example kickstart (bcl)
+  Related: rhbz#1691319
+- Switch VMware testing env to improve stability results (chrobert)
+  Related: rhbz#1825190
+
 * Mon Aug 03 2020 Brian C. Lane <bcl@redhat.com> 28.14.52-1
 - Skip test_z_diff() if runninga against for osbuild-composer (atodorov)
   Related: rhbz#1825190
