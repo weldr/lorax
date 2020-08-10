@@ -268,7 +268,7 @@ class BlueprintsTest(unittest.TestCase):
 
     # XXX MUST COME LAST
     # XXX which is what _z_ ensures
-    @unittest.skipIf(os.getenv("COMPOSER_BACKEND") == "osbuild-composer",
+    @unittest.skipIf(os.getenv("BACKEND") == "osbuild-composer",
                      "Skipped for osbuild-composer, see https://github.com/osbuild/osbuild-composer/issues/903")
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_z_diff(self):
