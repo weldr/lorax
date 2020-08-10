@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.53
+Version:        28.14.54
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Aug 10 2020 Brian C. Lane <bcl@redhat.com> 28.14.54-1
+- tests: Fix diff test BACKEND check (bcl)
+  Related: rhbz#1825190
+
 * Fri Aug 07 2020 Brian C. Lane <bcl@redhat.com> 28.14.53-1
 - tests: Push example blueprints b/c they may not exist (atodorov)
   Related: rhbz#1825190
