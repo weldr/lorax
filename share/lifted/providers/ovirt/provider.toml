@@ -1,0 +1,40 @@
+display = "oVirt"
+supported_types = [
+        "partitioned-disk",
+]
+
+[settings-info]
+# This provider has no settings.
+[settings-info.auth_url]
+display = "Authentication URL"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.username]
+display = "Username"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.password]
+display = "Password"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.storagedomain]
+display = "Storage Domain"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.cafile]
+display = "oVirt CA File"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.insecure]
+display = "Insecure"
+type = "boolean"

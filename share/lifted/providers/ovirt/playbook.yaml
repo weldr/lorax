@@ -1,0 +1,19 @@
+- hosts: localhost
+  connection: local
+  tasks:
+  - stat:
+     path: "{{ image_path }}"
+    register: image_stat
+  - set_fact:
+      image_id: "{{ image_name }}-{{ image_stat['stat']['checksum'] }}.qcow2"
+  - name: Upload image to oVirt/RHV
+    ovirt_disk:
+      auth:
+        url: "{{ auth_url }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        insecure: "{{ insecure }}"
+        ca_file: "{{ cafile }}"
+      storage_domain: "{{ storagedomain }}"
+      name: "{{ image_id }}"
+      upload_image_path: "{{ image_path }}"
