@@ -5,7 +5,7 @@
      path: "{{ image_path }}"
     register: image_stat
   - set_fact:
-      image_id: "{{ image_name }}-{{ image_stat['stat']['checksum'] }}.qcow2"
+      image_id: "{{ image_name }}-{{ image_stat['stat']['checksum'] }}.img"
   - name: Upload image to oVirt/RHV
     ovirt_disk:
       auth:
