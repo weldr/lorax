@@ -13,6 +13,7 @@ class LoraxLintConfig(PocketLintConfig):
                                 FalsePositive(r"Module 'composer' has no 'version' member"),
                                 # See https://bugzilla.redhat.com/show_bug.cgi?id=1739167
                                 FalsePositive(r"Module 'rpm' has no '.*' member"),
+                                FalsePositive(r"raise-missing-from"),
                               ]
 
     @property
