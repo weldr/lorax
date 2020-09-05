@@ -115,6 +115,10 @@ installpkg libblockdev-lvm-dbus
 installpkg volume_key
 installpkg nss-tools
 
+## blivet-gui-runtime requires PolicyKit-authentication-agent, if we
+## don't tell dnf what to pick it picks lxpolkit, which drags in gtk2
+installpkg polkit-gnome
+
 ## enable swap on zram
 installpkg zram-generator-defaults
 
