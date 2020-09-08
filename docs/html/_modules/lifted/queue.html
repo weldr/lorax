@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lifted.queue &mdash; Lorax 33.2 documentation</title>
+  <title>lifted.queue &mdash; Lorax 34.0 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                34.0
               </div>
             
           
@@ -172,29 +172,29 @@
 <span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">#</span>
 
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 
 <span class="c1"># We use a multiprocessing Pool for uploads so that we can cancel them with a</span>
 <span class="c1"># simple SIGINT, which should bubble down to subprocesses.</span>
-<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Pool</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span>
 
 <span class="c1"># multiprocessing.dummy is to threads as multiprocessing is to processes.</span>
 <span class="c1"># Since daemonic processes can&#39;t have children, we use a thread to monitor the</span>
 <span class="c1"># upload pool.</span>
-<span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="k">import</span> <span class="n">Process</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="kn">import</span> <span class="n">Process</span>
 
-<span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">attrgetter</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">stat</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">pylorax.api.toml</span> <span class="k">as</span> <span class="nn">toml</span>
 
-<span class="kn">from</span> <span class="nn">lifted.upload</span> <span class="k">import</span> <span class="n">Upload</span>
-<span class="kn">from</span> <span class="nn">lifted.providers</span> <span class="k">import</span> <span class="n">resolve_playbook_path</span><span class="p">,</span> <span class="n">validate_settings</span>
+<span class="kn">from</span> <span class="nn">lifted.upload</span> <span class="kn">import</span> <span class="n">Upload</span>
+<span class="kn">from</span> <span class="nn">lifted.providers</span> <span class="kn">import</span> <span class="n">resolve_playbook_path</span><span class="p">,</span> <span class="n">validate_settings</span>
 
 <span class="c1"># the maximum number of simultaneous uploads</span>
 <span class="n">SIMULTANEOUS_UPLOADS</span> <span class="o">=</span> <span class="mi">1</span>
@@ -216,7 +216,7 @@
     <span class="c1"># Make sure no path elements are present</span>
     <span class="n">uuid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">uuid</span><span class="p">)</span>
 
-    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_get_queue_path</span><span class="p">(</span><span class="n">ucfg</span><span class="p">),</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{uuid}</span><span class="s2">.toml&quot;</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_get_queue_path</span><span class="p">(</span><span class="n">ucfg</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">.toml&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">write</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -261,10 +261,10 @@
             <span class="k">return</span> <span class="n">Upload</span><span class="p">(</span><span class="o">**</span><span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">upload_file</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_missing</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Could not find upload </span><span class="si">{uuid}</span><span class="s2">!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find upload </span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
     <span class="k">except</span> <span class="n">toml</span><span class="o">.</span><span class="n">TomlError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_corrupt</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Could not parse upload </span><span class="si">{uuid}</span><span class="s2">!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span></div>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not parse upload </span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span></div>
 
 
 <div class="viewcode-block" id="get_uploads"><a class="viewcode-back" href="../../lifted.html#lifted.queue.get_uploads">[docs]</a><span class="k">def</span> <span class="nf">get_uploads</span><span class="p">(</span><span class="n">ucfg</span><span class="p">,</span> <span class="n">uuids</span><span class="p">):</span>

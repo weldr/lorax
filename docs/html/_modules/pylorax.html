@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax &mdash; Lorax 33.2 documentation</title>
+  <title>pylorax &mdash; Lorax 34.0 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                34.0
               </div>
             
           
@@ -189,22 +189,22 @@
 <span class="kn">import</span> <span class="nn">configparser</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">locale</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">CalledProcessError</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">CalledProcessError</span>
 <span class="kn">import</span> <span class="nn">selinux</span>
-<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">BaseLoraxClass</span><span class="p">,</span> <span class="n">DataHolder</span>
+<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">BaseLoraxClass</span><span class="p">,</span> <span class="n">DataHolder</span>
 <span class="kn">import</span> <span class="nn">pylorax.output</span> <span class="k">as</span> <span class="nn">output</span>
 
 <span class="kn">import</span> <span class="nn">dnf</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span><span class="p">,</span> <span class="n">linktree</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span><span class="p">,</span> <span class="n">linktree</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="k">import</span> <span class="n">RuntimeBuilder</span><span class="p">,</span> <span class="n">TreeBuilder</span>
-<span class="kn">from</span> <span class="nn">pylorax.buildstamp</span> <span class="k">import</span> <span class="n">BuildStamp</span>
-<span class="kn">from</span> <span class="nn">pylorax.treeinfo</span> <span class="k">import</span> <span class="n">TreeInfo</span>
-<span class="kn">from</span> <span class="nn">pylorax.discinfo</span> <span class="k">import</span> <span class="n">DiscInfo</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span>
+<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="kn">import</span> <span class="n">RuntimeBuilder</span><span class="p">,</span> <span class="n">TreeBuilder</span>
+<span class="kn">from</span> <span class="nn">pylorax.buildstamp</span> <span class="kn">import</span> <span class="n">BuildStamp</span>
+<span class="kn">from</span> <span class="nn">pylorax.treeinfo</span> <span class="kn">import</span> <span class="n">TreeInfo</span>
+<span class="kn">from</span> <span class="nn">pylorax.discinfo</span> <span class="kn">import</span> <span class="n">DiscInfo</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span>
 
 
 <span class="c1"># get lorax version</span>
@@ -226,7 +226,7 @@
                     <span class="n">ppc64le</span><span class="o">=</span><span class="s2">&quot;powerpc&quot;</span><span class="p">,</span>
                     <span class="n">arm</span><span class="o">=</span><span class="s2">&quot;arm&quot;</span><span class="p">,</span> <span class="n">armhfp</span><span class="o">=</span><span class="s2">&quot;arm&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buildarch</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buildarch</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ArchData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buildarch</span> <span class="o">=</span> <span class="n">buildarch</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basearch</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">rpm</span><span class="o">.</span><span class="n">basearch</span><span class="p">(</span><span class="n">buildarch</span><span class="p">)</span>
@@ -235,7 +235,7 @@
 
 <div class="viewcode-block" id="Lorax"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax">[docs]</a><span class="k">class</span> <span class="nc">Lorax</span><span class="p">(</span><span class="n">BaseLoraxClass</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">BaseLoraxClass</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">=</span> <span class="kc">None</span>
@@ -476,14 +476,18 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;no BCJ filter for arch </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">squashfs_only</span><span class="p">:</span>
             <span class="c1"># Create an ext4 rootfs.img and compress it with squashfs</span>
-            <span class="n">rb</span><span class="o">.</span><span class="n">create_squashfs_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span><span class="n">runtime</span><span class="p">),</span>
-                <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">,</span>
-                <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">rc</span> <span class="o">=</span> <span class="n">rb</span><span class="o">.</span><span class="n">create_squashfs_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span><span class="n">runtime</span><span class="p">),</span>
+                    <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">,</span>
+                    <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Create an ext4 rootfs.img and compress it with squashfs</span>
-            <span class="n">rb</span><span class="o">.</span><span class="n">create_ext4_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span><span class="n">runtime</span><span class="p">),</span>
-                <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">,</span>
-                <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">rc</span> <span class="o">=</span> <span class="n">rb</span><span class="o">.</span><span class="n">create_ext4_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span><span class="n">runtime</span><span class="p">),</span>
+                    <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">,</span>
+                    <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;rootfs.img creation failed. See program.log&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
         <span class="n">rb</span><span class="o">.</span><span class="n">finished</span><span class="p">()</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;preparing to build output tree and boot images&quot;</span><span class="p">)</span>

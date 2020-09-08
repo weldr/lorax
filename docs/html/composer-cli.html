@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer-cli &mdash; Lorax 33.2 documentation</title>
+  <title>composer-cli &mdash; Lorax 34.0 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                33.2
+                34.0
               </div>
             
           
@@ -108,6 +108,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#profiles">Profiles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#build-an-image-and-upload-results">Build an image and upload results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#upload-an-existing-image">Upload an existing image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mkksiso.html">mkksiso</a></li>
@@ -184,17 +185,19 @@
 <dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
 </dd>
 </dl>
-<p><code class="docutils literal notranslate"><span class="pre">composer-cli</span></code> is used to interact with the <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> API server, managing blueprints, exploring available packages, and building new images.</p>
-<p>It requires <a class="reference external" href="lorax-composer.html">lorax-composer</a> to be installed on the
-local system, and the user running it needs to be a member of the <code class="docutils literal notranslate"><span class="pre">weldr</span></code>
-group. They do not need to be root, but all of the <a class="reference external" href="lorax-composer.html#security">security precautions</a> apply.</p>
+<p><code class="docutils literal notranslate"><span class="pre">composer-cli</span></code> is an interactive tool for use with a WELDR API server,
+managing blueprints, exploring available packages, and building new images.
+<cite>lorax-composer &lt;lorax-composer.html&gt;</cite> and <cite>osbuild-composer
+&lt;https://osbuild.org&gt;</cite> both implement compatible servers.</p>
+<p>It requires the server  to be installed on the local system, and the user
+running it needs to be a member of the <code class="docutils literal notranslate"><span class="pre">weldr</span></code> group. They do not need to be
+root, but all of the <a class="reference external" href="lorax-composer.html#security">security precautions</a>
+apply.</p>
 <div class="section" id="composer-cli-cmdline-arguments">
 <h2>composer-cli cmdline arguments<a class="headerlink" href="#composer-cli-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
 <p><p>Lorax Composer commandline tool</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">j</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">APIVER</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">test</span> <span class="n">TESTMODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
-                    <span class="o">...</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">j</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">APIVER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span> <span class="n">TESTMODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="o">...</span>
 </pre></div>
 </div>
 <div class="section" id="Positional Arguments">
@@ -233,7 +236,11 @@ group. They do not need to be root, but all of the <a class="reference external"
 </dl>
 </div>
 <p><dl class="simple">
-<dt>compose start &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROVIDER&gt; &lt;PROFILE&gt; | &lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</dt><dd><p>Start a compose using the selected blueprint and output type. Optionally start an upload.</p>
+<dt>compose start [--size XXXX] &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROVIDER&gt; &lt;PROFILE&gt; | &lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</dt><dd><p>Start a compose using the selected blueprint and output type. Optionally start an upload.
+--size is supported by osbuild-composer, and is in MiB.</p>
+</dd>
+<dt>compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</dt><dd><p>Start an ostree compose using the selected blueprint and output type. Optionally start an upload. This command
+is only supported by osbuild-composer. --size is in MiB.</p>
 </dd>
 <dt>compose types</dt><dd><p>List the supported output types.</p>
 </dd>
@@ -377,6 +384,9 @@ by using <code class="docutils literal notranslate"><span class="pre">composer-c
 with <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">upload</span> <span class="pre">start</span> <span class="pre">...</span></code>. In order to access the service you need
 to pass authentication details to composer-cli using a TOML file, or reference
 a previously saved profile.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> and <code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code> handle this differently, with
+<code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code> you can currently only specify upload targets during the
+compose process.</p>
 </div>
 <div class="section" id="providers">
 <h2>Providers<a class="headerlink" href="#providers" title="Permalink to this headline">¶</a></h2>
@@ -466,6 +476,19 @@ can monitor with <code class="docutils literal notranslate"><span class="pre">co
 </div>
 <p>This will output the UUID of the upload, which can then be used to monitor the status in the same way
 described above.</p>
+</div>
+<div class="section" id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
+<p>There are a couple of arguments that can be helpful when debugging problems.
+These are only meant for debugging and should not be used to script access to
+the API. If you need to do that you can communicate with it directly in the
+language of your choice.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--json</span></code> will return the server's response as a nicely formatted json output
+instead of printing what the command would usually print.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--test=1</span></code> will cause a compose start to start creating an image, and then
+end with a failed state.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--test=2</span></code> will cause a compose to start and then end with a finished state,
+without actually composing anything.</p>
 </div>
 </div>
 

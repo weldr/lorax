@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.creator &mdash; Lorax 33.2 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 34.0 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                34.0
               </div>
             
           
@@ -184,26 +184,26 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 
 <span class="c1"># Use Mako templates for appliance builder descriptions</span>
-<span class="kn">from</span> <span class="nn">mako.template</span> <span class="k">import</span> <span class="n">Template</span>
-<span class="kn">from</span> <span class="nn">mako.exceptions</span> <span class="k">import</span> <span class="n">text_error_template</span>
+<span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">from</span> <span class="nn">mako.exceptions</span> <span class="kn">import</span> <span class="n">text_error_template</span>
 
 <span class="c1"># Use pykickstart to calculate disk image size</span>
-<span class="kn">from</span> <span class="nn">pykickstart.parser</span> <span class="k">import</span> <span class="n">KickstartParser</span>
-<span class="kn">from</span> <span class="nn">pykickstart.constants</span> <span class="k">import</span> <span class="n">KS_SHUTDOWN</span>
-<span class="kn">from</span> <span class="nn">pykickstart.version</span> <span class="k">import</span> <span class="n">makeVersion</span>
+<span class="kn">from</span> <span class="nn">pykickstart.parser</span> <span class="kn">import</span> <span class="n">KickstartParser</span>
+<span class="kn">from</span> <span class="nn">pykickstart.constants</span> <span class="kn">import</span> <span class="n">KS_SHUTDOWN</span>
+<span class="kn">from</span> <span class="nn">pykickstart.version</span> <span class="kn">import</span> <span class="n">makeVersion</span>
 
 <span class="c1"># Use the Lorax treebuilder branch for iso creation</span>
-<span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">ArchData</span>
-<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">DataHolder</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">execWithRedirect</span><span class="p">,</span> <span class="n">runcmd</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">PartitionMount</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span><span class="p">,</span> <span class="n">Mount</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">mksquashfs</span><span class="p">,</span> <span class="n">mkrootfsimg</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">copytree</span>
-<span class="kn">from</span> <span class="nn">pylorax.installer</span> <span class="k">import</span> <span class="n">novirt_install</span><span class="p">,</span> <span class="n">virt_install</span><span class="p">,</span> <span class="n">InstallError</span>
-<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="k">import</span> <span class="n">TreeBuilder</span><span class="p">,</span> <span class="n">RuntimeBuilder</span>
-<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="k">import</span> <span class="n">findkernels</span>
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span>
+<span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">ArchData</span>
+<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithRedirect</span><span class="p">,</span> <span class="n">runcmd</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">PartitionMount</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span><span class="p">,</span> <span class="n">Mount</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mksquashfs</span><span class="p">,</span> <span class="n">mkrootfsimg</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">copytree</span>
+<span class="kn">from</span> <span class="nn">pylorax.installer</span> <span class="kn">import</span> <span class="n">novirt_install</span><span class="p">,</span> <span class="n">virt_install</span><span class="p">,</span> <span class="n">InstallError</span>
+<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="kn">import</span> <span class="n">TreeBuilder</span><span class="p">,</span> <span class="n">RuntimeBuilder</span>
+<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="kn">import</span> <span class="n">findkernels</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span>
 
 
 <span class="c1"># Default parameters for rebuilding initramfs, override with --dracut-arg or --dracut-conf</span>
@@ -220,7 +220,7 @@
 <span class="sd">    templates, so the the installroot config value is the important part of</span>
 <span class="sd">    this. Everything else should be a nop.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">conf</span>
 
 <div class="viewcode-block" id="FakeDNF.reset"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.FakeDNF.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -364,6 +364,8 @@
 <span class="sd">    :param str mount_dir: Directory tree to compress</span>
 <span class="sd">    :param str work_dir: Output compressed image to work_dir+images/install.img</span>
 <span class="sd">    :param int size: Size of disk image, in GiB</span>
+<span class="sd">    :returns: rc of squashfs creation</span>
+<span class="sd">    :rtype: int</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">kernel_arch</span> <span class="o">=</span> <span class="n">get_arch</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">)</span>
 
@@ -380,12 +382,12 @@
 
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">squashfs_only</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a squashfs only runtime&quot;</span><span class="p">)</span>
-        <span class="n">rb</span><span class="o">.</span><span class="n">create_squashfs_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                                   <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rb</span><span class="o">.</span><span class="n">create_squashfs_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                  <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a squashfs+ext4 runtime&quot;</span><span class="p">)</span>
-        <span class="n">rb</span><span class="o">.</span><span class="n">create_ext4_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                          <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">rb</span><span class="o">.</span><span class="n">create_ext4_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                  <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="rebuild_initrds_for_live"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.rebuild_initrds_for_live">[docs]</a><span class="k">def</span> <span class="nf">rebuild_initrds_for_live</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">results_dir</span><span class="p">):</span>
@@ -411,9 +413,6 @@
     <span class="n">kernels</span> <span class="o">=</span> <span class="p">[</span><span class="n">kernel</span> <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">findkernels</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">kdir</span><span class="p">)]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">kernels</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No initrds found, cannot rebuild_initrds&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Hush some dracut warnings. TODO: bind-mount proc in place?</span>
-    <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span><span class="s2">&quot;/proc/modules&quot;</span><span class="p">),</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">ostree</span><span class="p">:</span>
         <span class="c1"># Dracut assumes to have some dirs in disk image</span>
@@ -442,16 +441,15 @@
             <span class="c1"># Construct an initrd from the kernel name</span>
             <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;vmlinuz-&quot;</span><span class="p">,</span> <span class="s2">&quot;initrd-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.img&quot;</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;rebuilding </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut warnings about /proc are safe to ignore&quot;</span><span class="p">)</span>
 
         <span class="n">kver</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span>
-
         <span class="n">cmd</span> <span class="o">=</span> <span class="n">dracut</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;/results/&quot;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kver</span><span class="p">]</span>
         <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">sys_root_dir</span><span class="p">)</span>
 
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">results_dir</span><span class="p">)</span>
     <span class="n">umount</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;var/tmp&quot;</span><span class="p">),</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">umount</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">),</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span><span class="s2">&quot;/proc/modules&quot;</span><span class="p">))</span></div>
+    <span class="n">umount</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">),</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="create_pxe_config"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.create_pxe_config">[docs]</a><span class="k">def</span> <span class="nf">create_pxe_config</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">images_dir</span><span class="p">,</span> <span class="n">live_image_name</span><span class="p">,</span> <span class="n">add_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -732,7 +730,10 @@
     <span class="n">add_pxe_args</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">live_image_name</span> <span class="o">=</span> <span class="s2">&quot;live-rootfs.squashfs.img&quot;</span>
     <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
-    <span class="n">mksquashfs</span><span class="p">(</span><span class="n">squashfs_root_dir</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">live_image_name</span><span class="p">),</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">mksquashfs</span><span class="p">(</span><span class="n">squashfs_root_dir</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">live_image_name</span><span class="p">),</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;mksquashfs failed to create </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">live_image_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Rebuilding initramfs for live&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">Mount</span><span class="p">(</span><span class="n">rootfs_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;loop&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mnt_dir</span><span class="p">:</span>
@@ -850,9 +851,10 @@
             <span class="c1"># Create iso from a filesystem image</span>
             <span class="n">disk_img</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">fs_image</span> <span class="ow">or</span> <span class="n">disk_img</span>
             <span class="k">with</span> <span class="n">Mount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;loop&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mount_dir</span><span class="p">:</span>
-                <span class="c1"># TODO check rc</span>
-                <span class="n">make_runtime</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span><span class="o">/</span><span class="mf">1024.0</span><span class="p">)</span>
-
+                <span class="n">rc</span> <span class="o">=</span> <span class="n">make_runtime</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span><span class="o">/</span><span class="mf">1024.0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;make_runtime failed with rc = </span><span class="si">%d</span><span class="s2">. See program.log&quot;</span><span class="p">,</span> <span class="n">rc</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;make_runtime failed with rc = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rc</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
                     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;ISO creation canceled&quot;</span><span class="p">)</span>
 
@@ -862,7 +864,10 @@
             <span class="n">disk_img</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">disk_image</span> <span class="ow">or</span> <span class="n">disk_img</span>
             <span class="k">with</span> <span class="n">PartitionMount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">)</span> <span class="k">as</span> <span class="n">img_mount</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">img_mount</span> <span class="ow">and</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">:</span>
-                    <span class="n">make_runtime</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span><span class="o">/</span><span class="mf">1024.0</span><span class="p">)</span>
+                    <span class="n">rc</span> <span class="o">=</span> <span class="n">make_runtime</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span><span class="o">/</span><span class="mf">1024.0</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;make_runtime failed with rc = </span><span class="si">%d</span><span class="s2">. See program.log&quot;</span><span class="p">,</span> <span class="n">rc</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;make_runtime failed with rc = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rc</span><span class="p">)</span>
                     <span class="n">result_dir</span> <span class="o">=</span> <span class="n">make_livecd</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">)</span>
 
         <span class="c1"># --iso-only removes the extra build artifacts, keeping only the boot.iso</span>
