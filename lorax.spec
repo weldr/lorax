@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        33.8
+Version:        33.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -268,6 +268,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Sep 08 2020 Brian C. Lane <bcl@redhat.com> 33.9-1
+- config_files: Update aarch64, ppc, and sparc timeouts to 60s (bcl@redhat.com)
+- templates: Ensure nano is installed for the runtime environment (ngompa13@gmail.com)
+- tests: Ignore W0707 raise-missing-from warnings (bcl@redhat.com)
+- Switch VMware testing env to improve stability results (chrobert@redhat.com)
+- tests: Allow skipping image build in compose sanity test (atodorov@redhat.com)
+
 * Thu Jul 23 2020 Brian C. Lane <bcl@redhat.com> 33.8-1
 - composer-cli: Make start-ostree parent and ref optional (bcl@redhat.com)
 - composer-cli: Add a get_arg function (bcl@redhat.com)
