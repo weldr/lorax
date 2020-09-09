@@ -1,6 +1,7 @@
 # Live ISO Image
 # NOTE: This example is for creating a live-iso, eg.
-# livemedia-creator --project RHEL --releasever 8 --make-iso --ks=rhel-livemedia.ks --no-virt
+#       livemedia-creator --project RHEL --releasever 8 --make-iso --ks=rhel-livemedia.ks --no-virt
+# NOTE: This example does not include Anaconda and cannot be installed to a harddrive.
 
 # X Window System configuration information
 xconfig  --startxonboot
@@ -393,8 +394,6 @@ EOF
 firefox
 gnome-terminal
 aajohan-comfortaa-fonts
-anaconda
-anaconda-live
 dracut-config-generic
 dracut-live
 glibc-all-langpacks
