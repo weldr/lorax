@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.54
+Version:        28.14.55
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Sep 10 2020 Brian C. Lane <bcl@redhat.com> 28.14.55-1
+- docs: Remove anaconda from rhel-livemedia.ks example (bcl)
+  Resolves: rhbz#1876563
+
 * Mon Aug 10 2020 Brian C. Lane <bcl@redhat.com> 28.14.54-1
 - tests: Fix diff test BACKEND check (bcl)
   Related: rhbz#1825190
