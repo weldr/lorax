@@ -353,6 +353,7 @@ removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pi
 
 ## cleanup_python_files()
 runcmd find ${root} -name "*.pyo" -type f -delete
+runcmd find ${root} -name "*.opt-?.pyc" -type f -delete
 runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
 
 ## cleanup /boot/ leaving vmlinuz, and .*hmac files
