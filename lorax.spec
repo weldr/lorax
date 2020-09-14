@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.0
+Version:        34.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -268,6 +268,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Sep 14 2020 Brian C. Lane <bcl@redhat.com> 34.1-1
+- Fix broken single-item tuples in a few places (awilliam@redhat.com)
+- Drop dpaa2 firmware on non-aarch64 arches (awilliam@redhat.com)
+- Drop firmware for Mellanox Spectrum (awilliam@redhat.com)
+- runtime-cleanup: big refresh of stale things (awilliam@redhat.com)
+
 * Tue Sep 08 2020 Brian C. Lane <bcl@redhat.com> 34.0-1
 - New lorax documentation - 34.0 (bcl@redhat.com)
 - runtime-cleanup: strip a bunch of unnecessary firmwares (awilliam@redhat.com)
