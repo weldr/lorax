@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        33.9
+Version:        33.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -268,6 +268,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Sep 14 2020 Brian C. Lane <bcl@redhat.com> 33.10-1
+- Fix broken single-item tuples in a few places (awilliam@redhat.com)
+- Drop dpaa2 firmware on non-aarch64 arches (awilliam@redhat.com)
+- Drop firmware for Mellanox Spectrum (awilliam@redhat.com)
+- runtime-cleanup: strip a bunch of unnecessary firmwares (awilliam@redhat.com)
+- runtime-install: specify polkit-gnome to avoid lxpolkit and GTK2 (awilliam@redhat.com)
+- runtime-install: exclude gnome-firmware and sigrok-firmware (awilliam@redhat.com)
+- runtime-cleanup: Drop video playback acceleration drivers (awilliam@redhat.com)
+- runtime-install: don't install notification-daemon (awilliam@redhat.com)
+
 * Tue Sep 08 2020 Brian C. Lane <bcl@redhat.com> 33.9-1
 - config_files: Update aarch64, ppc, and sparc timeouts to 60s (bcl@redhat.com)
 - templates: Ensure nano is installed for the runtime environment (ngompa13@gmail.com)
