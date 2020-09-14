@@ -241,7 +241,7 @@ removefrom mt-st /usr/sbin/*
 removefrom mtools /etc/*
 removefrom ncurses-libs /usr/${libdir}/libform*
 ## libmenu.so is needed by lp_diag binary from ppc64-diag which is a PowerPC specific package
-%if basearch not in ("ppc64le"):
+%if basearch != "ppc64le":
     removefrom ncurses-libs /usr/${libdir}/libmenu*
 %endif
 removefrom ncurses-libs /usr/${libdir}/libpanel.* /usr/${libdir}/libtic*

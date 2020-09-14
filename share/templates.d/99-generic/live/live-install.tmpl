@@ -21,7 +21,7 @@
     installpkg biosdevname memtest86+ syslinux
     installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
 %endif
-%if basearch in ("ppc64le"):
+%if basearch == "ppc64le":
     installpkg powerpc-utils
     installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
     installpkg grub2-${basearch}
