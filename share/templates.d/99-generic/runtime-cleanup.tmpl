@@ -309,10 +309,6 @@ removefrom ${product.name}-logos /etc/*
 removefrom ${product.name}-logos /usr/share/icons/{Bluecurve,oxygen}/*
 removefrom ${product.name}-logos /usr/share/{firstboot,kde4,pixmaps}/*
 
-## cleanup_python_files()
-runcmd find ${root} -name "*.pyo" -type f -delete
-runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
-
 ## cleanup /boot/ leaving vmlinuz, and .*hmac files
 runcmd chroot ${root} find /boot \! -name "vmlinuz*" \
                             -and \! -name ".vmlinuz*" \
@@ -324,6 +320,10 @@ runcmd chroot ${root} find /boot \! -name "vmlinuz*" \
 ## NOTE: Excluding /etc/mtab which links to /proc/self/mounts for systemd
 runcmd chroot ${root} find -L /etc /usr -xdev -type l -and \! -name "mtab" \
                 -printf "removing broken symbolic link %p -> %l\n" -delete
+
+## Remove compiled python files, they are recreated as needed anyway
+runcmd find ${root} -name "*.pyo" -type f -delete
+runcmd find ${root} -name "*.pyc" -type f -delete
 
 ## Clean up some of the mess pulled in by webkitgtk via yelp
 ## libwebkit2gtk links to a handful of libraries in gstreamer and
