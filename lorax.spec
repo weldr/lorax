@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.1
+Version:        34.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -268,6 +268,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Sep 29 2020 Brian C. Lane <bcl@redhat.com> 34.2-1
+- runtime-cleanup: Remove ncurses package (bcl@redhat.com)
+
 * Mon Sep 14 2020 Brian C. Lane <bcl@redhat.com> 34.1-1
 - Fix broken single-item tuples in a few places (awilliam@redhat.com)
 - Drop dpaa2 firmware on non-aarch64 arches (awilliam@redhat.com)
