@@ -7,11 +7,7 @@ import sys
 
 # config file
 data_files = [("/etc/lorax", ["etc/lorax.conf"]),
-              ("/etc/lorax", ["etc/composer.conf"]),
-              ("/usr/lib/systemd/system", ["systemd/lorax-composer.service",
-                                           "systemd/lorax-composer.socket"]),
-              ("/usr/lib/tmpfiles.d/", ["systemd/lorax-composer.conf",
-                                        "systemd/lorax.conf"])]
+              ("/usr/lib/tmpfiles.d/", ["systemd/lorax.conf"])]
 
 # shared files
 for root, dnames, fnames in os.walk("share"):
@@ -21,8 +17,7 @@ for root, dnames, fnames in os.walk("share"):
 
 # executable
 data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
-                                 "src/sbin/livemedia-creator", "src/sbin/lorax-composer",
-                                 "src/sbin/mkksiso"]))
+                                 "src/sbin/livemedia-creator", "src/sbin/mkksiso"]))
 data_files.append(("/usr/bin",  ["src/bin/image-minimizer",
                                  "src/bin/mk-s390-cdboot",
                                  "src/bin/composer-cli"]))
@@ -48,7 +43,7 @@ setup(name="lorax",
       url="http://www.github.com/weldr/lorax/",
       download_url="http://www.github.com/weldr/lorax/releases/",
       license="GPLv2+",
-      packages=["pylorax", "pylorax.api", "composer", "composer.cli", "lifted"],
+      packages=["pylorax", "composer", "composer.cli"],
       package_dir={"" : "src"},
       data_files=data_files
       )

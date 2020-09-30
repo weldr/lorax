@@ -16,9 +16,10 @@
 #
 import unittest
 
-from pylorax.api.errors import INVALID_CHARS
 from composer.cli.utilities import argify, toml_filename, frozen_toml_filename, packageNEVRA
 from composer.cli.utilities import handle_api_result, get_arg
+
+INVALID_CHARS = "InvalidChars"
 
 class CliUtilitiesTest(unittest.TestCase):
     def test_argify(self):

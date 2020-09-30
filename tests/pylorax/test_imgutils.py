@@ -265,7 +265,7 @@ class ImgUtilsTest(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
                 mkfakerootdir(work_dir)
-                graft = {work_dir+"/etc/yum.repos.d/": "./tests/pylorax/repos/server-2.repo"}
+                graft = {work_dir+"/ext4test/": "./tests/pylorax/templates/install-cmd.tmpl"}
                 mkext4img(work_dir, disk_img.name, graft=graft)
                 self.assertTrue(os.path.exists(disk_img.name))
                 file_details = get_file_magic(disk_img.name)
@@ -281,7 +281,7 @@ class ImgUtilsTest(unittest.TestCase):
                 with open(joinpaths(work_dir, "large-file"), "w") as f:
                     for _ in range(5):
                         f.write("A" * 1024**2)
-                graft = {work_dir+"/etc/yum.repos.d/": "./tests/pylorax/repos/server-2.repo"}
+                graft = {work_dir+"/ext4test/": "./tests/pylorax/templates/install-cmd.tmpl"}
                 try:
                     mkext4img(work_dir, disk_img.name, graft=graft, size=5*1024**2)
                 except CalledProcessError as e:

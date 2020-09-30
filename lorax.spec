@@ -94,8 +94,7 @@ Summary: Lorax html documentation
 Requires: lorax = %{version}-%{release}
 
 %description docs
-Includes the full html documentation for lorax, livemedia-creator, lorax-composer and the
-pylorax library.
+Includes the full html documentation for lorax, livemedia-creator, and the pylorax library.
 
 %package lmc-virt
 Summary:  livemedia-creator libvirt dependencies
@@ -132,42 +131,6 @@ Provides: lorax-templates = %{version}-%{release}
 Lorax templates for creating the boot.iso and live isos are placed in
 /usr/share/lorax/templates.d/99-generic
 
-%package composer
-Summary: Lorax Image Composer API Server
-# For Sphinx documentation build
-BuildRequires: python3-flask python3-gobject libgit2-glib python3-toml python3-semantic_version
-
-Requires: lorax = %{version}-%{release}
-Requires(pre): /usr/bin/getent
-Requires(pre): /usr/sbin/groupadd
-Requires(pre): /usr/sbin/useradd
-
-Requires: python3-toml
-Requires: python3-semantic_version
-Requires: libgit2
-Requires: libgit2-glib
-Requires: python3-flask
-Requires: python3-gevent
-Requires: anaconda-tui >= 29.19-1
-Requires: qemu-img
-Requires: tar
-Requires: python3-rpmfluff
-Requires: git
-Requires: xz
-Requires: createrepo_c
-Requires: python3-ansible-runner
-# For AWS playbook support
-Requires: python3-boto3
-
-%{?systemd_requires}
-BuildRequires: systemd
-
-# Implements the weldr API
-Provides: weldr
-
-%description composer
-lorax-composer provides a REST API for building images using lorax.
-
 %package -n composer-cli
 Summary: A command line tool for use with the lorax-composer API server
 
@@ -187,29 +150,6 @@ build images, etc. from the command line.
 %install
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
-
-# Install example blueprints from the test suite.
-# This path MUST match the lorax-composer.service blueprint path.
-mkdir -p $RPM_BUILD_ROOT/var/lib/lorax/composer/blueprints/
-for bp in example-http-server.toml example-development.toml example-atlas.toml; do
-    cp ./tests/pylorax/blueprints/$bp $RPM_BUILD_ROOT/var/lib/lorax/composer/blueprints/
-done
-
-%pre composer
-getent group weldr >/dev/null 2>&1 || groupadd -r weldr >/dev/null 2>&1 || :
-getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin -c "User for lorax-composer" weldr >/dev/null 2>&1 || :
-
-%post composer
-%systemd_post lorax-composer.service
-%systemd_post lorax-composer.socket
-
-%preun composer
-%systemd_preun lorax-composer.service
-%systemd_preun lorax-composer.socket
-
-%postun composer
-%systemd_postun_with_restart lorax-composer.service
-%systemd_postun_with_restart lorax-composer.socket
 
 %files
 %defattr(-,root,root,-)
@@ -244,22 +184,6 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %files templates-generic
 %dir %{_datadir}/lorax/templates.d
 %{_datadir}/lorax/templates.d/*
-
-%files composer
-%config(noreplace) %{_sysconfdir}/lorax/composer.conf
-%{python3_sitelib}/pylorax/api/*
-%{python3_sitelib}/lifted/*
-%{_sbindir}/lorax-composer
-%{_unitdir}/lorax-composer.service
-%{_unitdir}/lorax-composer.socket
-%dir %{_datadir}/lorax/composer
-%{_datadir}/lorax/composer/*
-%{_datadir}/lorax/lifted/*
-%{_tmpfilesdir}/lorax-composer.conf
-%dir %attr(0771, root, weldr) %{_sharedstatedir}/lorax/composer/
-%dir %attr(0771, root, weldr) %{_sharedstatedir}/lorax/composer/blueprints/
-%attr(0771, weldr, weldr) %{_sharedstatedir}/lorax/composer/blueprints/*
-%{_mandir}/man1/lorax-composer.1*
 
 %files -n composer-cli
 %{_bindir}/composer-cli

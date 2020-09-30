@@ -1,7 +1,0 @@
-name = "rawhide"
-id = "rawhide"
-url = "file:///tmp/lorax-empty-repo/"
-type = "yum-baseurl"
-check_ssl = false
-check_gpg = true
-gpgkey_urls = []

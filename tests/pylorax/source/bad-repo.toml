@@ -1,6 +1,0 @@
-name = "bad-repo-1"
-url = "file:///tmp/not-a-repo/"
-type = "yum-baseurl"
-check_ssl = true
-check_gpg = true
-gpgkey_urls = ["file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch"]

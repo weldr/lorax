@@ -2,16 +2,12 @@ anaconda-tui
 beakerlib
 e2fsprogs
 git
-libgit2-glib
 libselinux-python3
 make
 pbzip2
 pykickstart
-python3-ansible-runner
 python3-coverage
 python3-coveralls
-python3-flask
-python3-gevent
 python3-librepo
 python3-magic
 python3-mako
@@ -34,4 +30,3 @@ squashfs-tools
 sudo
 which
 xz-lzma-compat
-yamllint

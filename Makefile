@@ -5,7 +5,7 @@ mandir ?= $(PREFIX)/share/man
 DOCKER ?= podman
 DOCS_VERSION ?= next
 RUN_TESTS ?= ci
-BACKEND ?= lorax-composer
+BACKEND ?= osbuild-composer
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
@@ -47,14 +47,12 @@ install: all
 check:
 	@echo "*** Running pylint ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ ./tests/pylint/runpylint.py
-	@echo "*** Running yamllint ***"
-	./tests/lint-playbooks.sh
 
 test:
 	@echo "*** Running tests ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m pytest -v --cov-branch \
-					--cov=pylorax --cov=lifted --cov=composer \
-					./tests/pylorax/ ./tests/composer/ ./tests/lifted/
+					--cov=pylorax --cov=composer \
+					./tests/pylorax/ ./tests/composer/
 
 	coverage3 report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo

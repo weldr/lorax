@@ -43,15 +43,15 @@ class TemplateFunctionsTestCase(unittest.TestCase):
 
     def test_rglob(self):
         """Test rglob function"""
-        self.assertEqual(list(rglob("*http*toml", "./tests/pylorax/blueprints", fatal=False)), ["example-http-server.toml"])
+        self.assertEqual(list(rglob("chmod*tmpl", "./tests/pylorax/templates", fatal=False)), ["chmod-cmd.tmpl"])
         self.assertEqual(list(rglob("einstein", "./tests/pylorax/blueprints", fatal=False)), [])
         with self.assertRaises(IOError):
             list(rglob("einstein", "./tests/pylorax/blueprints", fatal=True))
 
     def test_rexists(self):
         """Test rexists function"""
-        self.assertTrue(rexists("*http*toml", "./tests/pylorax/blueprints"))
-        self.assertFalse(rexists("einstein", "./tests/pylorax/blueprints"))
+        self.assertTrue(rexists("chmod*tmpl", "./tests/pylorax/templates"))
+        self.assertFalse(rexists("einstein", "./tests/pylorax/templates"))
 
 class LoraxTemplateTestCase(unittest.TestCase):
     @classmethod
