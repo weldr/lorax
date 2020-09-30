@@ -2,9 +2,7 @@
 # This is the expected entry point for Cockpit CI; will be called without
 # arguments but with an appropriate $TEST_OS, and optionally $TEST_SCENARIO
 
-export BACKEND="${BACKEND:-lorax-composer}"
-
-if [ "$BACKEND" == "osbuild-composer" ] || [ "$TEST_SCENARIO" == "osbuild-composer" ]; then
+if [ "$TEST_SCENARIO" == "osbuild-composer" ]; then
     rm -rf ./test/images/*
     export BACKEND="osbuild-composer"
     make BACKEND=osbuild-composer vm

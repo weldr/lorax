@@ -149,7 +149,7 @@ class ComposerTestCase(VirtMachineTestCase):
         return local_dir
 
     def runCliTest(self, script):
-        extra_env = ["BACKEND=%s" % os.getenv('BACKEND', 'lorax-composer')]
+        extra_env = ["BACKEND=%s" % os.getenv('BACKEND', 'osbuild-composer')]
         if self.sit:
             extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
 
@@ -158,16 +158,6 @@ class ComposerTestCase(VirtMachineTestCase):
                           "PACKAGE=composer-cli",
                           *extra_env,
                           "/tests/test_cli.sh", script])
-        self.assertEqual(r.returncode, 0)
-
-    def runImageTest(self, script):
-        extra_env = []
-        if self.sit:
-            extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
-
-        r = self.execute(["TEST=" + self.id(),
-                          *extra_env,
-                          "/tests/test_image.sh", script])
         self.assertEqual(r.returncode, 0)
 
 
