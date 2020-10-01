@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.dnfbase &mdash; Lorax 33.2 documentation</title>
+  <title>pylorax.dnfbase &mdash; Lorax 33.10 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                33.10
               </div>
             
           
@@ -179,8 +179,8 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
-<span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">DEFAULT_PLATFORM_ID</span>
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">flatconfig</span>
+<span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">DEFAULT_PLATFORM_ID</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">flatconfig</span>
 
 <div class="viewcode-block" id="get_dnf_base_object"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfbase.get_dnf_base_object">[docs]</a><span class="k">def</span> <span class="nf">get_dnf_base_object</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">mirrorlists</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">enablerepos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disablerepos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

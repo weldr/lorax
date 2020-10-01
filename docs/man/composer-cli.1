@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "COMPOSER-CLI" "1" "Apr 28, 2020" "33.2" "Lorax"
+.TH "COMPOSER-CLI" "1" "Oct 01, 2020" "33.10" "Lorax"
 .SH NAME
 composer-cli \- Composer Cmdline Utility Documentation
 .
@@ -36,11 +36,15 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 Brian C. Lane <\fI\%bcl@redhat.com\fP>
 .UNINDENT
 .sp
-\fBcomposer\-cli\fP is used to interact with the \fBlorax\-composer\fP API server, managing blueprints, exploring available packages, and building new images.
+\fBcomposer\-cli\fP is an interactive tool for use with a WELDR API server,
+managing blueprints, exploring available packages, and building new images.
+\fIlorax\-composer <lorax\-composer.html>\fP and \fIosbuild\-composer
+<https://osbuild.org>\fP both implement compatible servers.
 .sp
-It requires \fI\%lorax\-composer\fP to be installed on the
-local system, and the user running it needs to be a member of the \fBweldr\fP
-group. They do not need to be root, but all of the \fI\%security precautions\fP apply.
+It requires the server  to be installed on the local system, and the user
+running it needs to be a member of the \fBweldr\fP group. They do not need to be
+root, but all of the \fI\%security precautions\fP
+apply.
 .SH COMPOSER-CLI CMDLINE ARGUMENTS
 .sp
 Lorax Composer commandline tool
@@ -50,9 +54,7 @@ Lorax Composer commandline tool
 .sp
 .nf
 .ft C
-usage: composer\-cli [\-h] [\-j] [\-s SOCKET] [\-\-log LOG] [\-a APIVER]
-                    [\-\-test TESTMODE] [\-V]
-                    ...
+usage: composer\-cli [\-h] [\-j] [\-s SOCKET] [\-\-log LOG] [\-a APIVER] [\-\-test TESTMODE] [\-V] ...
 .ft P
 .fi
 .UNINDENT
@@ -96,8 +98,13 @@ Default: False
 .sp
 .INDENT 0.0
 .TP
-.B compose start <BLUEPRINT> <TYPE> [<IMAGE\-NAME> <PROVIDER> <PROFILE> | <IMAGE\-NAME> <PROFILE.TOML>]
+.B compose start [\-\-size XXXX] <BLUEPRINT> <TYPE> [<IMAGE\-NAME> <PROVIDER> <PROFILE> | <IMAGE\-NAME> <PROFILE.TOML>]
 Start a compose using the selected blueprint and output type. Optionally start an upload.
+\-\-size is supported by osbuild\-composer, and is in MiB.
+.TP
+.B compose start\-ostree [\-\-size XXXX] [\-\-parent PARENT] [\-\-ref REF] <BLUEPRINT> <TYPE> [<IMAGE\-NAME> <PROFILE.TOML>]
+Start an ostree compose using the selected blueprint and output type. Optionally start an upload. This command
+is only supported by osbuild\-composer. \-\-size is in MiB.
 .TP
 .B compose types
 List the supported output types.
@@ -291,6 +298,10 @@ by using \fBcomposer\-cli compose start ...\fP or an existing image can be uploa
 with \fBcomposer\-cli upload start ...\fP\&. In order to access the service you need
 to pass authentication details to composer\-cli using a TOML file, or reference
 a previously saved profile.
+.sp
+\fBlorax\-composer\fP and \fBosbuild\-composer\fP handle this differently, with
+\fBosbuild\-composer\fP you can currently only specify upload targets during the
+compose process.
 .SH PROVIDERS
 .sp
 Providers are the services providers with Ansible playbook support under
@@ -442,6 +453,21 @@ composer\-cli upload start <UUID> "http\-image" aws\-settings.toml
 .sp
 This will output the UUID of the upload, which can then be used to monitor the status in the same way
 described above.
+.SH DEBUGGING
+.sp
+There are a couple of arguments that can be helpful when debugging problems.
+These are only meant for debugging and should not be used to script access to
+the API. If you need to do that you can communicate with it directly in the
+language of your choice.
+.sp
+\fB\-\-json\fP will return the server\(aqs response as a nicely formatted json output
+instead of printing what the command would usually print.
+.sp
+\fB\-\-test=1\fP will cause a compose start to start creating an image, and then
+end with a failed state.
+.sp
+\fB\-\-test=2\fP will cause a compose to start and then end with a finished state,
+without actually composing anything.
 .SH AUTHOR
 Weldr Team
 .SH COPYRIGHT

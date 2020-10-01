@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.server &mdash; Lorax 33.2 documentation</title>
+  <title>pylorax.api.server &mdash; Lorax 33.10 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                33.10
               </div>
             
           
@@ -176,17 +176,17 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">send_from_directory</span>
-<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">send_from_directory</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">werkzeug</span>
 
-<span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">vernum</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="k">import</span> <span class="n">HTTP_ERROR</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.v0</span> <span class="k">import</span> <span class="n">v0_api</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.v1</span> <span class="k">import</span> <span class="n">v1_api</span>
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
+<span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">vernum</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="kn">import</span> <span class="n">HTTP_ERROR</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.v0</span> <span class="kn">import</span> <span class="n">v0_api</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.v1</span> <span class="kn">import</span> <span class="n">v1_api</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span>
 
 <span class="n">GitLock</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;GitLock&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;repo&quot;</span><span class="p">,</span> <span class="s2">&quot;lock&quot;</span><span class="p">,</span> <span class="s2">&quot;dir&quot;</span><span class="p">])</span>
 

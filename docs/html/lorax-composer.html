@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 33.2 documentation</title>
+  <title>lorax-composer &mdash; Lorax 33.10 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                33.2
+                33.10
               </div>
             
           
@@ -204,13 +204,21 @@
 <dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
 </dd>
 </dl>
-<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is an API server that allows you to build disk images using
+<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is a WELDR API server that allows you to build disk images using
 <a class="reference internal" href="#blueprints">Blueprints</a> to describe the package versions to be installed into the image.
 It is compatible with the Weldr project's bdcs-api REST protocol. More
 information on Weldr can be found <a class="reference external" href="http://www.weldr.io">on the Weldr blog</a>.</p>
 <p>Behind the scenes it uses <a class="reference external" href="livemedia-creator.html">livemedia-creator</a> and
 <a class="reference external" href="https://anaconda-installer.readthedocs.io/en/latest/">Anaconda</a> to handle the
 installation and configuration of the images.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is now deprecated. It is being replaced by the
+<code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code> WELDR API server which implements more features (eg.
+ostree, image uploads, etc.) You can still use <code class="docutils literal notranslate"><span class="pre">composer-cli</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cockpit-composer</span></code> with <code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code>. See the documentation or
+the <a class="reference external" href="https://www.osbuild.org/">osbuild website</a> for more information.</p>
+</div>
 <div class="section" id="important-things-to-note">
 <h2>Important Things To Note<a class="headerlink" href="#important-things-to-note" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -280,10 +288,8 @@ images using <code class="docutils literal notranslate"><span class="pre">lorax-
 <h2>lorax-composer cmdline arguments<a class="headerlink" href="#lorax-composer-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
 <p><p>Lorax Composer API Server</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">lorax</span><span class="o">-</span><span class="n">composer</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">socket</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span> <span class="n">USER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">group</span> <span class="n">GROUP</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mockfiles</span> <span class="n">MOCKFILES</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CONFIG</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">releasever</span> <span class="n">STRING</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">lorax</span><span class="o">-</span><span class="n">composer</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">socket</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span> <span class="n">USER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">group</span> <span class="n">GROUP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mockfiles</span> <span class="n">MOCKFILES</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">releasever</span> <span class="n">STRING</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">repos</span><span class="p">]</span>
                       <span class="n">BLUEPRINTS</span>
 </pre></div>
@@ -610,12 +616,12 @@ these are currently available via <code class="docutils literal notranslate"><sp
 lorax-composer a kickstart file needs to be added to <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code>. The
 name of the kickstart is what will be used by the <code class="docutils literal notranslate"><span class="pre">/compose/types</span></code> route, and the
 <code class="docutils literal notranslate"><span class="pre">compose_type</span></code> field of the POST to start a compose. It also needs to have
-code added to the <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a> function. The
+code added to the <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code> function. The
 <code class="docutils literal notranslate"><span class="pre">_MAP</span></code> entry in this function defines what lorax-composer will pass to
 <a class="reference internal" href="pylorax.html#pylorax.installer.novirt_install" title="pylorax.installer.novirt_install"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.installer.novirt_install()</span></code></a> when it runs the compose.  When the
 compose is finished the output files need to be copied out of the build
 directory (<code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/results/&lt;UUID&gt;/compose/</span></code>),
-<a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> handles this for each type.
+<code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> handles this for each type.
 You should move them instead of copying to save space.</p>
 <p>If the new output type does not have support in livemedia-creator it should be
 added there first. This will make the output available to the widest number of
@@ -627,8 +633,8 @@ via the <code class="docutils literal notranslate"><span class="pre">--make-disk
 needs 3 things:</p>
 <ul class="simple">
 <li><p>A <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> file in <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code></p></li>
-<li><p>A new entry in the _MAP in <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a></p></li>
-<li><p>Add a bit of code to <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> to move the disk image from
+<li><p>A new entry in the _MAP in <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></p></li>
+<li><p>Add a bit of code to <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> to move the disk image from
 the compose directory to the results directory.</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> is pretty similar to the example minimal kickstart

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.v0 &mdash; Lorax 33.2 documentation</title>
+  <title>pylorax.api.v0 &mdash; Lorax 33.10 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                33.10
               </div>
             
           
@@ -211,26 +211,26 @@
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">send_file</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">current_app</span> <span class="k">as</span> <span class="n">api</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">send_file</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">current_app</span> <span class="k">as</span> <span class="n">api</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.checkparams</span> <span class="k">import</span> <span class="n">checkparams</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="k">import</span> <span class="n">start_build</span><span class="p">,</span> <span class="n">compose_types</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="k">import</span> <span class="o">*</span>                               <span class="c1"># pylint: disable=wildcard-import,unused-wildcard-import</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.flask_blueprint</span> <span class="k">import</span> <span class="n">BlueprintSkip</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">projects_list</span><span class="p">,</span> <span class="n">projects_info</span><span class="p">,</span> <span class="n">projects_depsolve</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">modules_list</span><span class="p">,</span> <span class="n">modules_info</span><span class="p">,</span> <span class="n">ProjectsError</span><span class="p">,</span> <span class="n">repo_to_source</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">get_repo_sources</span><span class="p">,</span> <span class="n">delete_repo_source</span><span class="p">,</span> <span class="n">new_repo_source</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="k">import</span> <span class="n">queue_status</span><span class="p">,</span> <span class="n">build_status</span><span class="p">,</span> <span class="n">uuid_delete</span><span class="p">,</span> <span class="n">uuid_status</span><span class="p">,</span> <span class="n">uuid_info</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="k">import</span> <span class="n">uuid_tar</span><span class="p">,</span> <span class="n">uuid_image</span><span class="p">,</span> <span class="n">uuid_cancel</span><span class="p">,</span> <span class="n">uuid_log</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">list_branch_files</span><span class="p">,</span> <span class="n">read_recipe_commit</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">,</span> <span class="n">list_commits</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">recipe_from_dict</span><span class="p">,</span> <span class="n">recipe_from_toml</span><span class="p">,</span> <span class="n">commit_recipe</span><span class="p">,</span> <span class="n">delete_recipe</span><span class="p">,</span> <span class="n">revert_recipe</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">tag_recipe_commit</span><span class="p">,</span> <span class="n">recipe_diff</span><span class="p">,</span> <span class="n">RecipeFileError</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.regexes</span> <span class="k">import</span> <span class="n">VALID_API_STRING</span><span class="p">,</span> <span class="n">VALID_BLUEPRINT_NAME</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.checkparams</span> <span class="kn">import</span> <span class="n">checkparams</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="kn">import</span> <span class="n">start_build</span><span class="p">,</span> <span class="n">compose_types</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="kn">import</span> <span class="o">*</span>                               <span class="c1"># pylint: disable=wildcard-import,unused-wildcard-import</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.flask_blueprint</span> <span class="kn">import</span> <span class="n">BlueprintSkip</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="kn">import</span> <span class="n">projects_list</span><span class="p">,</span> <span class="n">projects_info</span><span class="p">,</span> <span class="n">projects_depsolve</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="kn">import</span> <span class="n">modules_list</span><span class="p">,</span> <span class="n">modules_info</span><span class="p">,</span> <span class="n">ProjectsError</span><span class="p">,</span> <span class="n">repo_to_source</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="kn">import</span> <span class="n">get_repo_sources</span><span class="p">,</span> <span class="n">delete_repo_source</span><span class="p">,</span> <span class="n">new_repo_source</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="kn">import</span> <span class="n">queue_status</span><span class="p">,</span> <span class="n">build_status</span><span class="p">,</span> <span class="n">uuid_delete</span><span class="p">,</span> <span class="n">uuid_status</span><span class="p">,</span> <span class="n">uuid_info</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="kn">import</span> <span class="n">uuid_tar</span><span class="p">,</span> <span class="n">uuid_image</span><span class="p">,</span> <span class="n">uuid_cancel</span><span class="p">,</span> <span class="n">uuid_log</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="kn">import</span> <span class="n">list_branch_files</span><span class="p">,</span> <span class="n">read_recipe_commit</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">,</span> <span class="n">list_commits</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="kn">import</span> <span class="n">recipe_from_dict</span><span class="p">,</span> <span class="n">recipe_from_toml</span><span class="p">,</span> <span class="n">commit_recipe</span><span class="p">,</span> <span class="n">delete_recipe</span><span class="p">,</span> <span class="n">revert_recipe</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="kn">import</span> <span class="n">tag_recipe_commit</span><span class="p">,</span> <span class="n">recipe_diff</span><span class="p">,</span> <span class="n">RecipeFileError</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.regexes</span> <span class="kn">import</span> <span class="n">VALID_API_STRING</span><span class="p">,</span> <span class="n">VALID_BLUEPRINT_NAME</span>
 <span class="kn">import</span> <span class="nn">pylorax.api.toml</span> <span class="k">as</span> <span class="nn">toml</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.utils</span> <span class="k">import</span> <span class="n">take_limits</span><span class="p">,</span> <span class="n">blueprint_exists</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.workspace</span> <span class="k">import</span> <span class="n">workspace_read</span><span class="p">,</span> <span class="n">workspace_write</span><span class="p">,</span> <span class="n">workspace_delete</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.utils</span> <span class="kn">import</span> <span class="n">take_limits</span><span class="p">,</span> <span class="n">blueprint_exists</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.workspace</span> <span class="kn">import</span> <span class="n">workspace_read</span><span class="p">,</span> <span class="n">workspace_write</span><span class="p">,</span> <span class="n">workspace_delete</span><span class="p">,</span> <span class="n">workspace_exists</span>
 
 <span class="c1"># The API functions don&#39;t actually get called by any code here</span>
 <span class="c1"># pylint: disable=unused-variable</span>
@@ -640,6 +640,9 @@
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">workspace_exists</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unknown blueprint: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">blueprint_name</span><span class="p">)</span>
+
             <span class="n">workspace_delete</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_delete_workspace) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -664,6 +667,9 @@
 <span class="sd">      error response with it set to false and an error message included.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
+
+    <span class="k">if</span> <span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">commit</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
@@ -1801,6 +1807,11 @@
     <span class="n">blueprint</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;blueprint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">status</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">compose_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Check the arguments for invalid characters</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">[</span><span class="n">blueprint</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>

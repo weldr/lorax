@@ -164,7 +164,6 @@ pylorax.api.workspace module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

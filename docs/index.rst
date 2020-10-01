@@ -23,6 +23,7 @@ Contents:
 Documentation for other Lorax Branches
 ======================================
 
+* `Fedora 32 <f32-branch/>`_
 * `Fedora 31 <f31-branch/>`_
 * `Fedora 30 <f30-branch/>`_
 * `Fedora 29 <f29-branch/>`_

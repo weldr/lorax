@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lifted.providers &mdash; Lorax 33.2 documentation</title>
+  <title>lifted.providers &mdash; Lorax 33.10 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                33.10
               </div>
             
           
@@ -172,7 +172,7 @@
 <span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">#</span>
 
-<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">stat</span>
@@ -206,9 +206,9 @@
     <span class="c1"># create the settings directory if it doesn&#39;t exist</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{profile}</span><span class="s2">.toml&quot;</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2">.toml&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">exists</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Couldn</span><span class="se">\&#39;</span><span class="s1">t find profile &quot;</span><span class="si">{profile}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldn</span><span class="se">\&#39;</span><span class="s1">t find profile &quot;</span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
@@ -238,7 +238,7 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">provider_file</span><span class="p">:</span>
             <span class="n">provider</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">provider_file</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Couldn</span><span class="se">\&#39;</span><span class="s1">t find provider &quot;</span><span class="si">{provider_name}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldn</span><span class="se">\&#39;</span><span class="s1">t find provider &quot;</span><span class="si">{</span><span class="n">provider_name</span><span class="si">}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
 
     <span class="k">return</span> <span class="n">provider</span></div>
 
@@ -283,7 +283,7 @@
 
     <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ucfg</span><span class="p">[</span><span class="s2">&quot;providers_dir&quot;</span><span class="p">],</span> <span class="n">provider_name</span><span class="p">,</span> <span class="s2">&quot;playbook.yaml&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Couldn</span><span class="se">\&#39;</span><span class="s1">t find playbook for &quot;</span><span class="si">{provider_name}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldn</span><span class="se">\&#39;</span><span class="s1">t find playbook for &quot;</span><span class="si">{</span><span class="n">provider_name</span><span class="si">}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">path</span></div>
 
 
@@ -319,16 +319,16 @@
     <span class="n">settings_info</span> <span class="o">=</span> <span class="n">resolve_provider</span><span class="p">(</span><span class="n">ucfg</span><span class="p">,</span> <span class="n">provider_name</span><span class="p">)[</span><span class="s2">&quot;settings-info&quot;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings_info</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Received unexpected setting: &quot;</span><span class="si">{key}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Received unexpected setting: &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span>
         <span class="n">setting_type</span> <span class="o">=</span> <span class="n">settings_info</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
         <span class="n">correct_type</span> <span class="o">=</span> <span class="n">type_map</span><span class="p">[</span><span class="n">setting_type</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">correct_type</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">&#39;Expected a </span><span class="si">{correct_type}</span><span class="s1"> for &quot;</span><span class="si">{key}</span><span class="s1">&quot;, received a {type(value)}!&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Expected a </span><span class="si">{</span><span class="n">correct_type</span><span class="si">}</span><span class="s1"> for &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot;, received a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s1">!&#39;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">setting_type</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span> <span class="ow">and</span> <span class="s2">&quot;regex&quot;</span> <span class="ow">in</span> <span class="n">settings_info</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">settings_info</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;regex&quot;</span><span class="p">],</span> <span class="n">value</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Value &quot;</span><span class="si">{value}</span><span class="s1">&quot; is invalid for setting &quot;</span><span class="si">{key}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span></div>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Value &quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot; is invalid for setting &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="save_settings"><a class="viewcode-back" href="../../lifted.html#lifted.providers.save_settings">[docs]</a><span class="k">def</span> <span class="nf">save_settings</span><span class="p">(</span><span class="n">ucfg</span><span class="p">,</span> <span class="n">provider_name</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>

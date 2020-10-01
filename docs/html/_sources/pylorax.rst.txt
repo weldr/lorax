@@ -5,6 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    pylorax.api
 
@@ -154,7 +155,6 @@ pylorax.treeinfo module
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 Module contents
 ---------------

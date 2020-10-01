@@ -5,6 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    composer.cli
 
@@ -26,7 +27,6 @@ composer.unix\_socket module
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 Module contents
 ---------------

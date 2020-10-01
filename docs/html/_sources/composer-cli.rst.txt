@@ -4,12 +4,15 @@ composer-cli
 :Authors:
     Brian C. Lane <bcl@redhat.com>
 
-``composer-cli`` is used to interact with the ``lorax-composer`` API server, managing blueprints, exploring available packages, and building new images.
+``composer-cli`` is an interactive tool for use with a WELDR API server,
+managing blueprints, exploring available packages, and building new images.
+`lorax-composer <lorax-composer.html>` and `osbuild-composer
+<https://osbuild.org>` both implement compatible servers.
 
-It requires `lorax-composer <lorax-composer.html>`_ to be installed on the
-local system, and the user running it needs to be a member of the ``weldr``
-group. They do not need to be root, but all of the `security precautions
-<lorax-composer.html#security>`_ apply.
+It requires the server  to be installed on the local system, and the user
+running it needs to be a member of the ``weldr`` group. They do not need to be
+root, but all of the `security precautions <lorax-composer.html#security>`_
+apply.
 
 composer-cli cmdline arguments
 ------------------------------
@@ -75,6 +78,10 @@ by using ``composer-cli compose start ...`` or an existing image can be uploaded
 with ``composer-cli upload start ...``. In order to access the service you need
 to pass authentication details to composer-cli using a TOML file, or reference
 a previously saved profile.
+
+``lorax-composer`` and ``osbuild-composer`` handle this differently, with
+``osbuild-composer`` you can currently only specify upload targets during the
+compose process.
 
 
 Providers
@@ -176,3 +183,21 @@ Or if you have the settings stored in a TOML file::
 
 This will output the UUID of the upload, which can then be used to monitor the status in the same way
 described above.
+
+
+Debugging
+---------
+
+There are a couple of arguments that can be helpful when debugging problems.
+These are only meant for debugging and should not be used to script access to
+the API. If you need to do that you can communicate with it directly in the
+language of your choice.
+
+``--json`` will return the server's response as a nicely formatted json output
+instead of printing what the command would usually print.
+
+``--test=1`` will cause a compose start to start creating an image, and then
+end with a failed state.
+
+``--test=2`` will cause a compose to start and then end with a finished state,
+without actually composing anything.
