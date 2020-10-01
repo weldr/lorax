@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.unix_socket &mdash; Lorax 32.6 documentation</title>
+  <title>composer.unix_socket &mdash; Lorax 32.12 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.6
+                32.12
               </div>
             
           
@@ -183,7 +183,7 @@
 <span class="c1"># https://github.com/docker/docker-py/blob/master/docker/transport/unixconn.py</span>
 <div class="viewcode-block" id="UnixHTTPConnection"><a class="viewcode-back" href="../../composer.html#composer.unix_socket.UnixHTTPConnection">[docs]</a><span class="k">class</span> <span class="nc">UnixHTTPConnection</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create an HTTP connection to a unix domain socket</span>
 
 <span class="sd">        :param socket_path: The path to the Unix domain socket</span>
@@ -205,13 +205,15 @@
 
 <div class="viewcode-block" id="UnixHTTPConnectionPool"><a class="viewcode-back" href="../../composer.html#composer.unix_socket.UnixHTTPConnectionPool">[docs]</a><span class="k">class</span> <span class="nc">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">urllib3</span><span class="o">.</span><span class="n">connectionpool</span><span class="o">.</span><span class="n">HTTPConnectionPool</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a connection pool using a Unix domain socket</span>
 
 <span class="sd">        :param socket_path: The path to the Unix domain socket</span>
 <span class="sd">        :param timeout: Number of seconds to timeout the connection</span>
+
+<span class="sd">        NOTE: retries are disabled for these connections, they are never useful</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">UnixHTTPConnectionPool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UnixHTTPConnectionPool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">socket_path</span> <span class="o">=</span> <span class="n">socket_path</span>
 
     <span class="k">def</span> <span class="nf">_new_conn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.ltmpl &mdash; Lorax 32.6 documentation</title>
+  <title>pylorax.ltmpl &mdash; Lorax 32.12 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.6
+                32.12
               </div>
             
           
@@ -406,35 +406,31 @@
     <span class="k">def</span> <span class="nf">_getsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">files</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">f</span><span class="p">)))</span>
 
-    <span class="k">def</span> <span class="nf">_write_debuginfo_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_write_package_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Write a list of debuginfo packages to /root/debug-pkgs.log</span>
+<span class="sd">        Write the list of installed packages to /root/ on the boot.iso</span>
 
 <span class="sd">        If lorax is called with a debug repo find the corresponding debuginfo package</span>
 <span class="sd">        names and write them to /root/debubg-pkgs.log on the boot.iso</span>
+<span class="sd">        The non-debuginfo packages are written to /root/lorax-packages.log</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="p">:</span>
-            <span class="n">repo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="p">[</span><span class="n">repo</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="kc">True</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span> <span class="k">if</span> <span class="s2">&quot;debug&quot;</span> <span class="ow">in</span> <span class="n">url</span><span class="p">):</span>
-                <span class="k">break</span>
-            <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span> <span class="ow">and</span> <span class="s2">&quot;debug&quot;</span> <span class="ow">in</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span><span class="p">:</span>
-                <span class="k">break</span>
-            <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span> <span class="ow">and</span> <span class="s2">&quot;debug&quot;</span> <span class="ow">in</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">:</span>
-                <span class="k">break</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># No debug repos</span>
-            <span class="k">return</span>
-
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="s2">&quot;root/&quot;</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">available</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
+        <span class="n">pkgs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">debug_pkgs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">install_set</span><span class="p">):</span>
+            <span class="n">pkgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{p.name}</span><span class="s2">-</span><span class="si">{p.version}</span><span class="s2">-</span><span class="si">{p.release}</span><span class="s2">.</span><span class="si">{p.arch}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">available</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot;-debuginfo&quot;</span><span class="p">):</span>
-                <span class="n">debug_pkgs</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">{0.name}</span><span class="s2">-debuginfo-</span><span class="si">{0.epoch}</span><span class="s2">:</span><span class="si">{0.version}</span><span class="s2">-</span><span class="si">{0.release}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+                <span class="n">debug_pkgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{p.name}</span><span class="s2">-debuginfo-</span><span class="si">{p.epoch}</span><span class="s2">:</span><span class="si">{p.version}</span><span class="s2">-</span><span class="si">{p.release}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="s2">&quot;root/&quot;</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="s2">&quot;root/debug-pkgs.log&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">debug_pkgs</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">pkg</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="s2">&quot;root/lorax-packages.log&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">pkgs</span><span class="p">)))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">debug_pkgs</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="s2">&quot;root/debug-pkgs.log&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">debug_pkgs</span><span class="p">)))</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LoraxTemplateRunner.install"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.install">[docs]</a>    <span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcglob</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -799,8 +795,8 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">transaction</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No packages in transaction&quot;</span><span class="p">)</span>
 
-        <span class="c1"># If a debug repo has been included, write out a list of debuginfo packages</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_write_debuginfo_log</span><span class="p">()</span>
+        <span class="c1"># Write out the packages installed, including debuginfo packages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_package_log</span><span class="p">()</span>
 
         <span class="n">pkgs_to_download</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">install_set</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading packages&quot;</span><span class="p">)</span>

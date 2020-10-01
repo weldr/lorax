@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer-cli &mdash; Lorax 32.6 documentation</title>
+  <title>composer-cli &mdash; Lorax 32.12 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                32.6
+                32.12
               </div>
             
           
@@ -231,7 +231,11 @@ group. They do not need to be root, but all of the <a class="reference external"
 </dl>
 </div>
 <p><dl class="simple">
-<dt>compose start &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROVIDER&gt; &lt;PROFILE&gt; | &lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</dt><dd><p>Start a compose using the selected blueprint and output type. Optionally start an upload.</p>
+<dt>compose start [--size XXXX] &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROVIDER&gt; &lt;PROFILE&gt; | &lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</dt><dd><p>Start a compose using the selected blueprint and output type. Optionally start an upload.
+--size is supported by osbuild-composer, and is in MiB.</p>
+</dd>
+<dt>compose start-ostree [--size XXXX] &lt;BLUEPRINT&gt; &lt;TYPE&gt; &lt;REF&gt; &lt;PARENT&gt; [&lt;IMAGE-NAME&gt; &lt;PROVIDER&gt; &lt;PROFILE&gt; | &lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</dt><dd><p>Start an ostree compose using the selected blueprint and output type. Optionally start an upload. This command
+is only supported by osbuild-composer, and requires the ostree REF and PARENT. --size is in MiB.</p>
 </dd>
 <dt>compose types</dt><dd><p>List the supported output types.</p>
 </dd>

@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "Feb 12, 2020" "32.6" "Lorax"
+.TH "LORAX" "1" "Oct 01, 2020" "32.12" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .
@@ -62,7 +62,8 @@ usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-rep
              [\-\-add\-template\-var ADD_TEMPLATE_VARS] [\-\-add\-arch\-template ADD_ARCH_TEMPLATES]
              [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify] [\-\-sharedir SHAREDIR]
              [\-\-enablerepo [repo]] [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl]
-             [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
+             [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only] [\-\-skip\-branding] [\-\-dracut\-conf DRACUT_CONF]
+             [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -238,6 +239,11 @@ Default: []
 Use a plain squashfs filesystem for the runtime.
 .sp
 Default: False
+.TP
+.B\-\-skip\-branding
+Disable automatic branding package selection. Use \-\-installpkgs to add custom branding.
+.sp
+Default: False
 .UNINDENT
 .SS dracut arguments: (default: )
 .INDENT 0.0
@@ -273,6 +279,33 @@ override the ones in the distribution repositories.
 .sp
 Under \fB\&./results/\fP will be the release tree files: .discinfo, .treeinfo, everything that
 goes onto the boot.iso, the pxeboot directory, and the boot.iso under \fB\&./images/\fP\&.
+.SH BRANDING
+.sp
+By default lorax will search for the first package that provides \fBsystem\-release\fP
+that doesn\(aqt start with \fBgeneric\-\fP and will install it. It then selects a
+corresponding logo package by using the first part of the system\-release package and
+appending \fB\-logos\fP to it. eg. fedora\-release and fedora\-logos.
+.SS Variants
+.sp
+If a \fBvariant\fP is passed to lorax it will select a \fBsystem\-release\fP package that
+ends with the variant name. eg. Passing \fB\-\-variant workstation\fP will select the
+\fBfedora\-release\-workstation\fP package if it exists. It will select a logo package
+the same way it does for non\-variants. eg. \fBfedora\-logos\fP\&.
+.sp
+If there is no package ending with the variant name it will fall back to using the
+first non\-generic package providing \fBsystem\-release\fP\&.
+.SS Custom Branding
+.sp
+If \fB\-\-skip\-branding\fP is passed to lorax it will skip selecting the
+\fBsystem\-release\fP, and logos packages and leave it up to the user to pass any
+branding related packages to lorax using \fB\-\-installpkgs\fP\&. When using
+\fBskip\-branding\fP you must make sure that you provide all of the expected files,
+otherwise Anaconda may not work as expected. See the contents of \fBfedora\-release\fP
+and \fBfedora\-logos\fP for examples of what to include.
+.sp
+Note that this does not prevent something else in the dependency tree from
+causing these packages to be included. Using \fB\-\-excludepkgs\fP may help if they
+are unexpectedly included.
 .SH RUNNING INSIDE OF MOCK
 .sp
 As of mock version 2.0 you no longer need to pass \fB\-\-old\-chroot\fP\&. You will,

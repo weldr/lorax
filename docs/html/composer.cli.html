@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli package &mdash; Lorax 32.6 documentation</title>
+  <title>composer.cli package &mdash; Lorax 32.12 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                32.6
+                32.12
               </div>
             
           
@@ -525,7 +525,7 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <span id="composer-cli-compose-module"></span><h2>composer.cli.compose module<a class="headerlink" href="#module-composer.cli.compose" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="composer.cli.compose.compose_cancel">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_cancel</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_cancel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_cancel</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_cancel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cancel a running compose</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -558,11 +558,15 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 </dd>
 </dl>
 <p>This dispatches the compose commands to a function</p>
+<p>compose_cmd expects api to be passed. eg.</p>
+<blockquote>
+<div><p>{&quot;version&quot;: 1, &quot;backend&quot;: &quot;lorax-composer&quot;}</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_delete">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_delete</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_delete</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a finished compose's results</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -582,7 +586,7 @@ or failed, not a running compose.</p>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_image">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_image</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_image" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_image</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_image" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download the compose's output image</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -602,7 +606,7 @@ of compose that was selected.</p>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_info">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_info</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_info</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return detailed information about the compose</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -621,13 +625,13 @@ of compose that was selected.</p>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_list">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a simple list of compose identifiers</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_log">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_log</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_log</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show the last part of the compose log</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -647,7 +651,7 @@ during the build.</p>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_logs">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_logs</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_logs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_logs</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_logs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download a tar of the compose's logs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -666,7 +670,7 @@ during the build.</p>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_metadata">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_metadata</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_metadata" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_metadata</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download a tar file of the compose's metadata</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -684,8 +688,27 @@ during the build.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="composer.cli.compose.compose_ostree">
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_ostree</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_ostree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_ostree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a new compose using the selected blueprint and type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.</p></li>
+<li><p><strong>api</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Details about the API server, &quot;version&quot; and &quot;backend&quot;</p></li>
+</ul>
+</dd>
+</dl>
+<p>compose start [--size XXX] &lt;blueprint-name&gt; &lt;compose-type&gt; &lt;ostree-ref&gt; &lt;ostree-parent&gt; [&lt;image-name&gt; &lt;provider&gt; &lt;profile&gt; | &lt;image-name&gt; &lt;profile.toml&gt;]</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="composer.cli.compose.compose_results">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_results</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_results</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download a tar file of the compose's results</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -705,7 +728,7 @@ It is saved as uuid.tar</p>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_start">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_start</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_start" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_start</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start a new compose using the selected blueprint and type</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -715,15 +738,16 @@ It is saved as uuid.tar</p>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
 <li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 <li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.</p></li>
+<li><p><strong>api</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Details about the API server, &quot;version&quot; and &quot;backend&quot;</p></li>
 </ul>
 </dd>
 </dl>
-<p>compose start &lt;blueprint-name&gt; &lt;compose-type&gt; [&lt;image-name&gt; &lt;provider&gt; &lt;profile&gt; | &lt;image-name&gt; &lt;profile.toml&gt;]</p>
+<p>compose start [--size XXX] &lt;blueprint-name&gt; &lt;compose-type&gt; [&lt;image-name&gt; &lt;provider&gt; &lt;profile&gt; | &lt;image-name&gt; &lt;profile.toml&gt;]</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_status">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_status</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_status</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the status of all known composes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -742,7 +766,7 @@ and failed so raw JSON output is not available.</p>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_types">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_types</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_types" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_types</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em>, <em class="sig-param">api=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return information about the supported compose types</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -757,6 +781,30 @@ and failed so raw JSON output is not available.</p>
 </dl>
 <p>Add additional details to types that are known to composer-cli. Raw JSON output does not
 include this extra information.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.compose.get_size">
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">get_size</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#get_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.get_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return optional size argument, and remaining args</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>api</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Details about the API server, &quot;version&quot; and &quot;backend&quot;</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(args, size)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>check size argument for int</p></li>
+<li><p>check other args for --size in wrong place</p></li>
+<li><p>raise error? Or just return 0?</p></li>
+<li><p>no size returns 0 in size</p></li>
+<li><p>multiply by 1024**2 to make it easier on users to specify large sizes</p></li>
+</ul>
 </dd></dl>
 
 </div>

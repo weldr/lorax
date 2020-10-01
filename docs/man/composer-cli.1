@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "COMPOSER-CLI" "1" "Feb 12, 2020" "32.6" "Lorax"
+.TH "COMPOSER-CLI" "1" "Oct 01, 2020" "32.12" "Lorax"
 .SH NAME
 composer-cli \- Composer Cmdline Utility Documentation
 .
@@ -94,8 +94,13 @@ Default: False
 .sp
 .INDENT 0.0
 .TP
-.B compose start <BLUEPRINT> <TYPE> [<IMAGE\-NAME> <PROVIDER> <PROFILE> | <IMAGE\-NAME> <PROFILE.TOML>]
+.B compose start [\-\-size XXXX] <BLUEPRINT> <TYPE> [<IMAGE\-NAME> <PROVIDER> <PROFILE> | <IMAGE\-NAME> <PROFILE.TOML>]
 Start a compose using the selected blueprint and output type. Optionally start an upload.
+\-\-size is supported by osbuild\-composer, and is in MiB.
+.TP
+.B compose start\-ostree [\-\-size XXXX] <BLUEPRINT> <TYPE> <REF> <PARENT> [<IMAGE\-NAME> <PROVIDER> <PROFILE> | <IMAGE\-NAME> <PROFILE.TOML>]
+Start an ostree compose using the selected blueprint and output type. Optionally start an upload. This command
+is only supported by osbuild\-composer, and requires the ostree REF and PARENT. \-\-size is in MiB.
 .TP
 .B compose types
 List the supported output types.

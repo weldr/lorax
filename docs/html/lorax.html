@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Lorax &mdash; Lorax 32.6 documentation</title>
+  <title>Lorax &mdash; Lorax 32.12 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                32.6
+                32.12
               </div>
             
           
@@ -97,6 +97,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#branding">Branding</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#variants">Variants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-branding">Custom Branding</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#running-inside-of-mock">Running inside of mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-it-works">How it works</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#runtime-install-tmpl">runtime-install.tmpl</a></li>
@@ -206,7 +211,8 @@ repositories.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">var</span> <span class="n">ADD_TEMPLATE_VARS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">arch</span><span class="o">-</span><span class="n">template</span> <span class="n">ADD_ARCH_TEMPLATES</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">arch</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">var</span> <span class="n">ADD_ARCH_TEMPLATE_VARS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">noverify</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">enablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">disablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">rootfs</span><span class="o">-</span><span class="n">size</span> <span class="n">ROOTFS_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">noverifyssl</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">dnfplugin</span> <span class="n">DNFPLUGINS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">squashfs</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">conf</span> <span class="n">DRACUT_CONF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">arg</span> <span class="n">DRACUT_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">dnfplugin</span> <span class="n">DNFPLUGINS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">squashfs</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">branding</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">conf</span> <span class="n">DRACUT_CONF</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">arg</span> <span class="n">DRACUT_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
              <span class="n">OUTPUTDIR</span>
 </pre></div>
 </div>
@@ -363,6 +369,10 @@ repositories.</p>
 <dd><p>Use a plain squashfs filesystem for the runtime.</p>
 <p>Default: False</p>
 </dd>
+<dt><kbd>--skip-branding</kbd></dt>
+<dd><p>Disable automatic branding package selection. Use --installpkgs to add custom branding.</p>
+<p>Default: False</p>
+</dd>
 </dl>
 </div>
 <div class="section" id="dracut arguments: (default: )">
@@ -393,6 +403,34 @@ repositories.</p>
 override the ones in the distribution repositories.</p>
 <p>Under <code class="docutils literal notranslate"><span class="pre">./results/</span></code> will be the release tree files: .discinfo, .treeinfo, everything that
 goes onto the boot.iso, the pxeboot directory, and the boot.iso under <code class="docutils literal notranslate"><span class="pre">./images/</span></code>.</p>
+</div>
+<div class="section" id="branding">
+<h2>Branding<a class="headerlink" href="#branding" title="Permalink to this headline">¶</a></h2>
+<p>By default lorax will search for the first package that provides <code class="docutils literal notranslate"><span class="pre">system-release</span></code>
+that doesn't start with <code class="docutils literal notranslate"><span class="pre">generic-</span></code> and will install it. It then selects a
+corresponding logo package by using the first part of the system-release package and
+appending <code class="docutils literal notranslate"><span class="pre">-logos</span></code> to it. eg. fedora-release and fedora-logos.</p>
+<div class="section" id="variants">
+<h3>Variants<a class="headerlink" href="#variants" title="Permalink to this headline">¶</a></h3>
+<p>If a <code class="docutils literal notranslate"><span class="pre">variant</span></code> is passed to lorax it will select a <code class="docutils literal notranslate"><span class="pre">system-release</span></code> package that
+ends with the variant name. eg. Passing <code class="docutils literal notranslate"><span class="pre">--variant</span> <span class="pre">workstation</span></code> will select the
+<code class="docutils literal notranslate"><span class="pre">fedora-release-workstation</span></code> package if it exists. It will select a logo package
+the same way it does for non-variants. eg. <code class="docutils literal notranslate"><span class="pre">fedora-logos</span></code>.</p>
+<p>If there is no package ending with the variant name it will fall back to using the
+first non-generic package providing <code class="docutils literal notranslate"><span class="pre">system-release</span></code>.</p>
+</div>
+<div class="section" id="custom-branding">
+<h3>Custom Branding<a class="headerlink" href="#custom-branding" title="Permalink to this headline">¶</a></h3>
+<p>If <code class="docutils literal notranslate"><span class="pre">--skip-branding</span></code> is passed to lorax it will skip selecting the
+<code class="docutils literal notranslate"><span class="pre">system-release</span></code>, and logos packages and leave it up to the user to pass any
+branding related packages to lorax using <code class="docutils literal notranslate"><span class="pre">--installpkgs</span></code>. When using
+<code class="docutils literal notranslate"><span class="pre">skip-branding</span></code> you must make sure that you provide all of the expected files,
+otherwise Anaconda may not work as expected. See the contents of <code class="docutils literal notranslate"><span class="pre">fedora-release</span></code>
+and <code class="docutils literal notranslate"><span class="pre">fedora-logos</span></code> for examples of what to include.</p>
+<p>Note that this does not prevent something else in the dependency tree from
+causing these packages to be included. Using <code class="docutils literal notranslate"><span class="pre">--excludepkgs</span></code> may help if they
+are unexpectedly included.</p>
+</div>
 </div>
 <div class="section" id="running-inside-of-mock">
 <h2>Running inside of mock<a class="headerlink" href="#running-inside-of-mock" title="Permalink to this headline">¶</a></h2>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.treebuilder &mdash; Lorax 32.6 documentation</title>
+  <title>pylorax.treebuilder &mdash; Lorax 32.12 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.6
+                32.12
               </div>
             
           
@@ -230,7 +230,8 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">dbo</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">installpkgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludepkgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">add_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">skip_branding</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">root</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">installroot</span>
         <span class="c1"># use a copy of product so we can modify it locally</span>
         <span class="n">product</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -246,22 +247,35 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_excludepkgs</span> <span class="o">=</span> <span class="n">excludepkgs</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_branding</span> <span class="o">=</span> <span class="n">skip_branding</span>
 
     <span class="k">def</span> <span class="nf">_install_branding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Select the branding from the available &#39;system-release&#39; packages</span>
+<span class="sd">        The *best* way to control this is to have a single package in the repo provide &#39;system-release&#39;</span>
+<span class="sd">        When there are more than 1 package it will:</span>
+<span class="sd">        - Make a list of the available packages</span>
+<span class="sd">        - If variant is set look for a package ending with lower(variant) and use that</span>
+<span class="sd">        - If there are one or more non-generic packages, use the first one after sorting</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skip_branding</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="n">release</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">provides</span><span class="o">=</span><span class="s1">&#39;system-release&#39;</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found release package </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pkg</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;generic&#39;</span><span class="p">):</span>
-                <span class="k">continue</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">release</span> <span class="o">=</span> <span class="n">pkg</span><span class="o">.</span><span class="n">name</span>
-                <span class="k">break</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">release</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;could not get the release&#39;</span><span class="p">)</span>
+        <span class="n">pkgs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">provides</span><span class="o">=</span><span class="s1">&#39;system-release&#39;</span><span class="p">)</span>
+                                    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;generic&quot;</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgs</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No system-release packages found, could not get the release&quot;</span><span class="p">)</span>
             <span class="k">return</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;system-release packages: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">variant</span><span class="p">:</span>
+            <span class="n">variant</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">variant</span><span class="o">.</span><span class="n">lower</span><span class="p">())]</span>
+            <span class="k">if</span> <span class="n">variant</span><span class="p">:</span>
+                <span class="n">release</span> <span class="o">=</span> <span class="n">variant</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">release</span><span class="p">:</span>
+            <span class="n">release</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="c1"># release</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;got release: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">release</span><span class="p">)</span>

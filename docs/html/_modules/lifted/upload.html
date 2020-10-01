@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lifted.upload &mdash; Lorax 32.6 documentation</title>
+  <title>lifted.upload &mdash; Lorax 32.12 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                32.6
+                32.12
               </div>
             
           
@@ -296,7 +296,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancellable</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Can&#39;t reset, status is </span><span class="si">{self.status}</span><span class="s2">!&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_path</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Can&#39;t reset, no image supplied yet!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t reset, no image supplied yet!&quot;</span><span class="p">)</span>
         <span class="c1"># self.error = None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s2">&quot;Resetting state&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="s2">&quot;READY&quot;</span><span class="p">,</span> <span class="n">status_callback</span><span class="p">)</span></div>

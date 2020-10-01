@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 32.6 documentation</title>
+  <title>lorax-composer &mdash; Lorax 32.12 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                32.6
+                32.12
               </div>
             
           
@@ -204,13 +204,21 @@
 <dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
 </dd>
 </dl>
-<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is an API server that allows you to build disk images using
+<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is a WELDR API server that allows you to build disk images using
 <a class="reference internal" href="#blueprints">Blueprints</a> to describe the package versions to be installed into the image.
 It is compatible with the Weldr project's bdcs-api REST protocol. More
 information on Weldr can be found <a class="reference external" href="http://www.weldr.io">on the Weldr blog</a>.</p>
 <p>Behind the scenes it uses <a class="reference external" href="livemedia-creator.html">livemedia-creator</a> and
 <a class="reference external" href="https://anaconda-installer.readthedocs.io/en/latest/">Anaconda</a> to handle the
 installation and configuration of the images.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is now deprecated. It is being replaced by the
+<code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code> WELDR API server which implements more features (eg.
+ostree, image uploads, etc.) You can still use <code class="docutils literal notranslate"><span class="pre">composer-cli</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cockpit-composer</span></code> with <code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code>. See the documentation or
+the <a class="reference external" href="https://www.osbuild.org/">osbuild website</a> for more information.</p>
+</div>
 <div class="section" id="important-things-to-note">
 <h2>Important Things To Note<a class="headerlink" href="#important-things-to-note" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
