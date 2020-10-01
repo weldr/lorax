@@ -5,14 +5,12 @@ composer-cli
     Brian C. Lane <bcl@redhat.com>
 
 ``composer-cli`` is an interactive tool for use with a WELDR API server,
-managing blueprints, exploring available packages, and building new images.
-`lorax-composer <lorax-composer.html>` and `osbuild-composer
-<https://osbuild.org>` both implement compatible servers.
+managing blueprints, exploring available packages, and building new images.  As
+of Fedora 34, `osbuild-composer <https://osbuild.org>` is the recommended
+server.
 
 It requires the server  to be installed on the local system, and the user
-running it needs to be a member of the ``weldr`` group. They do not need to be
-root, but all of the `security precautions <lorax-composer.html#security>`_
-apply.
+running it needs to be a member of the ``weldr`` group.
 
 composer-cli cmdline arguments
 ------------------------------
@@ -79,9 +77,9 @@ with ``composer-cli upload start ...``. In order to access the service you need
 to pass authentication details to composer-cli using a TOML file, or reference
 a previously saved profile.
 
-``lorax-composer`` and ``osbuild-composer`` handle this differently, with
-``osbuild-composer`` you can currently only specify upload targets during the
-compose process.
+.. note::
+    With ``osbuild-composer`` you can only specify upload targets during
+    the compose process.
 
 
 Providers

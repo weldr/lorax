@@ -14,7 +14,6 @@ Contents:
    intro
    lorax
    livemedia-creator
-   lorax-composer
    composer-cli
    mkksiso
    product-images
