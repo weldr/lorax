@@ -1,14 +1,6 @@
 pylorax package
 ===============
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   pylorax.api
-
 Submodules
 ----------
 

@@ -90,10 +90,11 @@ You can use the kickstart `liveimg command
 to install a pre-generated disk image or tar to the system the iso is booting
 on.
 
-Create a disk image or tar with ``lorax-composer`` or ``livemedia-creator``,
+Create a disk image or tar with ``osbuild-composer`` or ``livemedia-creator``,
 make sure the image includes tools expected by ``anaconda``, as well as the
-kernel and bootloader support.  In ``lorax-composer`` use the ``liveimg-tar``
-image type.  If you plan to install it to a UEFI machine make sure to include
+kernel and bootloader support.  In ``osbuild-composer`` use the ``tar`` image
+type and make sure to include the ``kernel``, ``grub2``, and ``grub2-tools``
+packages.  If you plan to install it to a UEFI machine make sure to include
 ``grub2-efi`` and ``efibootmgr`` in the blueprint.
 
 Add the ``root.tar.xz`` file to the iso using ``--add /PATH/TO/ROOT.TAR.XZ``,

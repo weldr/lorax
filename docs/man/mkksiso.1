@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "MKKSISO" "1" "Sep 08, 2020" "34.0" "Lorax"
+.TH "MKKSISO" "1" "Oct 01, 2020" "34.3" "Lorax"
 .SH NAME
 mkksiso \- Make Kickstart ISO Utility Documentation
 .
@@ -161,10 +161,11 @@ You can use the kickstart \fI\%liveimg command\fP,
 to install a pre\-generated disk image or tar to the system the iso is booting
 on.
 .sp
-Create a disk image or tar with \fBlorax\-composer\fP or \fBlivemedia\-creator\fP,
+Create a disk image or tar with \fBosbuild\-composer\fP or \fBlivemedia\-creator\fP,
 make sure the image includes tools expected by \fBanaconda\fP, as well as the
-kernel and bootloader support.  In \fBlorax\-composer\fP use the \fBliveimg\-tar\fP
-image type.  If you plan to install it to a UEFI machine make sure to include
+kernel and bootloader support.  In \fBosbuild\-composer\fP use the \fBtar\fP image
+type and make sure to include the \fBkernel\fP, \fBgrub2\fP, and \fBgrub2\-tools\fP
+packages.  If you plan to install it to a UEFI machine make sure to include
 \fBgrub2\-efi\fP and \fBefibootmgr\fP in the blueprint.
 .sp
 Add the \fBroot.tar.xz\fP file to the iso using \fB\-\-add /PATH/TO/ROOT.TAR.XZ\fP,

@@ -202,10 +202,7 @@ without actually composing anything.
 
 
 Blueprint Reference
-===================
-
-Blueprints
-----------
+-------------------
 
 Blueprints are simple text files in `TOML <https://github.com/toml-lang/toml>`_ format that describe
 which packages, and what versions, to install into the image. They can also define a limited set
@@ -234,7 +231,7 @@ set to ``0.1.0`` when the existing blueprint ``version`` is ``0.0.1`` will
 result in the new blueprint being stored as ``version 0.1.0``.
 
 [[packages]] and [[modules]]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 These entries describe the package names and matching version glob to be installed into the image.
 
@@ -260,7 +257,7 @@ this to your blueprint::
 
 
 [[groups]]
-~~~~~~~~~~
+^^^^^^^^^^
 
 The ``groups`` entries describe a group of packages to be installed into the image.  Package groups are
 defined in the repository metadata.  Each group has a descriptive name used primarily for display
@@ -282,7 +279,7 @@ no version number.
 
 
 Customizations
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^
 
 The ``[customizations]`` section can be used to configure the hostname of the final image. eg.::
 
@@ -484,7 +481,11 @@ repository with a large amount of history may take a while to clone and use a si
 amount of disk space. The clone is temporary and is removed once the rpm is created.
 
 Example Blueprint
-=================
+-----------------
+
+This example blueprint will install the ``tmux``, ``git``, and ``vim-enhanced``
+packages. It will set the ``root`` ssh key, add the ``widget`` and ``admin``
+users as well as a ``students`` group::
 
     name = "example-custom-base"
     description = "A base system with customizations"
