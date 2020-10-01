@@ -1,0 +1,5 @@
+To build the docs for this branch run:
+make test-in-docker
+make docs-in-docker
+
+If you already have a welder/lorax-composer:latest docker image you can skip running 'test-in-docker'.

@@ -1,0 +1,544 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>composer-cli &mdash; Lorax 33.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mkksiso" href="mkksiso.html" />
+    <link rel="prev" title="lorax-composer" href="lorax-composer.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                33.10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">composer-cli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#composer-cli-cmdline-arguments">composer-cli cmdline arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#edit-a-blueprint">Edit a Blueprint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-an-image">Build an image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#monitor-the-build-status">Monitor the build status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-the-image">Download the image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#image-uploads">Image Uploads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#providers">Providers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aws">AWS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#profiles">Profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-an-image-and-upload-results">Build an image and upload results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#upload-an-existing-image">Upload an existing image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mkksiso.html">mkksiso</a></li>
+<li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">src</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lorax</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>composer-cli</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/composer-cli.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="composer-cli">
+<h1>composer-cli<a class="headerlink" href="#composer-cli" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Authors</dt>
+<dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">composer-cli</span></code> is an interactive tool for use with a WELDR API server,
+managing blueprints, exploring available packages, and building new images.
+<cite>lorax-composer &lt;lorax-composer.html&gt;</cite> and <cite>osbuild-composer
+&lt;https://osbuild.org&gt;</cite> both implement compatible servers.</p>
+<p>It requires the server  to be installed on the local system, and the user
+running it needs to be a member of the <code class="docutils literal notranslate"><span class="pre">weldr</span></code> group. They do not need to be
+root, but all of the <a class="reference external" href="lorax-composer.html#security">security precautions</a>
+apply.</p>
+<div class="section" id="composer-cli-cmdline-arguments">
+<h2>composer-cli cmdline arguments<a class="headerlink" href="#composer-cli-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p><p>Lorax Composer commandline tool</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">j</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">APIVER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">test</span> <span class="n">TESTMODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>args</kbd></dt>
+<dd></dd>
+</dl>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-j, --json</kbd></dt>
+<dd><p>Output the raw JSON response instead of the normal output.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-s, --socket</kbd></dt>
+<dd><p>Path to the socket file to listen on</p>
+<p>Default: &quot;/run/weldr/api.socket&quot;</p>
+</dd>
+<dt><kbd>--log</kbd></dt>
+<dd><p>Path to logfile (./composer-cli.log)</p>
+</dd>
+<dt><kbd>-a, --api</kbd></dt>
+<dd><p>API Version to use</p>
+<p>Default: &quot;1&quot;</p>
+</dd>
+<dt><kbd>--test</kbd></dt>
+<dd><p>Pass test mode to compose. 1=Mock compose with fail. 2=Mock compose with finished.</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>-V</kbd></dt>
+<dd><p>show program's version number and exit</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<p><dl class="simple">
+<dt>compose start [--size XXXX] &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROVIDER&gt; &lt;PROFILE&gt; | &lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</dt><dd><p>Start a compose using the selected blueprint and output type. Optionally start an upload.
+--size is supported by osbuild-composer, and is in MiB.</p>
+</dd>
+<dt>compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</dt><dd><p>Start an ostree compose using the selected blueprint and output type. Optionally start an upload. This command
+is only supported by osbuild-composer. --size is in MiB.</p>
+</dd>
+<dt>compose types</dt><dd><p>List the supported output types.</p>
+</dd>
+<dt>compose status</dt><dd><p>List the status of all running and finished composes.</p>
+</dd>
+<dt>compose list [waiting|running|finished|failed]</dt><dd><p>List basic information about composes.</p>
+</dd>
+<dt>compose log &lt;UUID&gt; [&lt;SIZE&gt;]</dt><dd><p>Show the last SIZE kB of the compose log.</p>
+</dd>
+<dt>compose cancel &lt;UUID&gt;</dt><dd><p>Cancel a running compose and delete any intermediate results.</p>
+</dd>
+<dt>compose delete &lt;UUID,...&gt;</dt><dd><p>Delete the listed compose results.</p>
+</dd>
+<dt>compose info &lt;UUID&gt;</dt><dd><p>Show detailed information on the compose.</p>
+</dd>
+<dt>compose metadata &lt;UUID&gt;</dt><dd><p>Download the metadata use to create the compose to &lt;uuid&gt;-metadata.tar</p>
+</dd>
+<dt>compose logs &lt;UUID&gt;</dt><dd><p>Download the compose logs to &lt;uuid&gt;-logs.tar</p>
+</dd>
+<dt>compose results &lt;UUID&gt;</dt><dd><p>Download all of the compose results; metadata, logs, and image to &lt;uuid&gt;.tar</p>
+</dd>
+<dt>compose image &lt;UUID&gt;</dt><dd><p>Download the output image from the compose. Filename depends on the type.</p>
+</dd>
+<dt>blueprints list</dt><dd><p>List the names of the available blueprints.</p>
+</dd>
+<dt>blueprints show &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the blueprint in TOML format.</p>
+</dd>
+<dt>blueprints changes &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the changes for each blueprint.</p>
+</dd>
+<dt>blueprints diff &lt;BLUEPRINT&gt; &lt;FROM-COMMIT&gt; &lt;TO-COMMIT&gt;</dt><dd><p>Display the differences between 2 versions of a blueprint.
+FROM-COMMIT can be a commit hash or NEWEST
+TO-COMMIT  can be a commit hash, NEWEST, or WORKSPACE</p>
+</dd>
+<dt>blueprints save &lt;BLUEPRINT,...&gt;</dt><dd><p>Save the blueprint to a file, &lt;BLUEPRINT&gt;.toml</p>
+</dd>
+<dt>blueprints delete &lt;BLUEPRINT&gt;</dt><dd><p>Delete a blueprint from the server</p>
+</dd>
+<dt>blueprints depsolve &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the packages needed to install the blueprint.</p>
+</dd>
+<dt>blueprints push &lt;BLUEPRINT&gt;</dt><dd><p>Push a blueprint TOML file to the server.</p>
+</dd>
+<dt>blueprints freeze &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the frozen blueprint's modules and packages.</p>
+</dd>
+<dt>blueprints freeze show &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the frozen blueprint in TOML format.</p>
+</dd>
+<dt>blueprints freeze save &lt;BLUEPRINT,...&gt;</dt><dd><p>Save the frozen blueprint to a file, &lt;blueprint-name&gt;.frozen.toml.</p>
+</dd>
+<dt>blueprints tag &lt;BLUEPRINT&gt;</dt><dd><p>Tag the most recent blueprint commit as a release.</p>
+</dd>
+<dt>blueprints undo &lt;BLUEPRINT&gt; &lt;COMMIT&gt;</dt><dd><p>Undo changes to a blueprint by reverting to the selected commit.</p>
+</dd>
+<dt>blueprints workspace &lt;BLUEPRINT&gt;</dt><dd><p>Push the blueprint TOML to the temporary workspace storage.</p>
+</dd>
+<dt>modules list</dt><dd><p>List the available modules.</p>
+</dd>
+<dt>projects list</dt><dd><p>List the available projects.</p>
+</dd>
+<dt>projects info &lt;PROJECT,...&gt;</dt><dd><p>Show details about the listed projects.</p>
+</dd>
+<dt>sources list</dt><dd><p>List the available sources</p>
+</dd>
+<dt>sources info &lt;SOURCE-NAME,...&gt;</dt><dd><p>Details about the source.</p>
+</dd>
+<dt>sources add &lt;SOURCE.TOML&gt;</dt><dd><p>Add a package source to the server.</p>
+</dd>
+<dt>sources change &lt;SOURCE.TOML&gt;</dt><dd><p>Change an existing source</p>
+</dd>
+<dt>sources delete &lt;SOURCE-NAME&gt;</dt><dd><p>Delete a package source.</p>
+</dd>
+</dl>
+<p>status show                         Show API server status.</p>
+<dl class="simple">
+<dt>upload info &lt;UPLOAD-UUID&gt;</dt><dd><p>Details about an upload</p>
+</dd>
+<dt>upload start &lt;BUILD-UUID&gt; &lt;IMAGE-NAME&gt; [&lt;PROVIDER&gt; &lt;PROFILE&gt;|&lt;PROFILE.TOML&gt;]</dt><dd><p>Upload a build image to the selected provider.</p>
+</dd>
+<dt>upload log &lt;UPLOAD-UUID&gt;</dt><dd><p>Show the upload log</p>
+</dd>
+<dt>upload cancel &lt;UPLOAD-UUID&gt;</dt><dd><p>Cancel an upload with that is queued or in progress</p>
+</dd>
+<dt>upload delete &lt;UPLOAD-UUID&gt;</dt><dd><p>Delete the upload and remove it from the build</p>
+</dd>
+<dt>upload reset &lt;UPLOAD-UUID&gt;</dt><dd><p>Reset the upload so that it can be tried again</p>
+</dd>
+<dt>providers list &lt;PROVIDER&gt;</dt><dd><p>List the available providers, or list the &lt;provider's&gt; available profiles</p>
+</dd>
+<dt>providers show &lt;PROVIDER&gt; &lt;PROFILE&gt;</dt><dd><p>show the details of a specific provider's profile</p>
+</dd>
+<dt>providers push &lt;PROFILE.TOML&gt;</dt><dd><p>Add a new profile, or overwrite an existing one</p>
+</dd>
+<dt>providers save &lt;PROVIDER&gt; &lt;PROFILE&gt;</dt><dd><p>Save the profile's details to a TOML file named &lt;PROFILE&gt;.toml</p>
+</dd>
+<dt>providers delete &lt;PROVIDER&gt; &lt;PROFILE&gt;</dt><dd><p>Delete a profile from a provider</p>
+</dd>
+</dl>
+</p>
+</div>
+<div class="section" id="edit-a-blueprint">
+<h2>Edit a Blueprint<a class="headerlink" href="#edit-a-blueprint" title="Permalink to this headline">¶</a></h2>
+<p>Start out by listing the available blueprints using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">blueprints</span>
+<span class="pre">list</span></code>, pick one and save it to the local directory by running <code class="docutils literal notranslate"><span class="pre">composer-cli</span>
+<span class="pre">blueprints</span> <span class="pre">save</span> <span class="pre">http-server</span></code>. If there are no blueprints available you can
+copy one of the examples <a class="reference external" href="https://github.com/weldr/lorax/tree/master/tests/pylorax/blueprints/">from the test suite</a>.</p>
+<p>Edit the file (it will be saved with a .toml extension) and change the
+description, add a package or module to it. Send it back to the server by
+running <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">blueprints</span> <span class="pre">push</span> <span class="pre">http-server.toml</span></code>. You can verify that it was
+saved by viewing the changelog - <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">blueprints</span> <span class="pre">changes</span> <span class="pre">http-server</span></code>.</p>
+</div>
+<div class="section" id="build-an-image">
+<h2>Build an image<a class="headerlink" href="#build-an-image" title="Permalink to this headline">¶</a></h2>
+<p>Build a <code class="docutils literal notranslate"><span class="pre">qcow2</span></code> disk image from this blueprint by running <code class="docutils literal notranslate"><span class="pre">composer-cli</span>
+<span class="pre">compose</span> <span class="pre">start</span> <span class="pre">http-server</span> <span class="pre">qcow2</span></code>. It will print a UUID that you can use to
+keep track of the build. You can also cancel the build if needed.</p>
+<p>The available types of images is displayed by <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">types</span></code>.
+Currently this consists of: alibaba, ami, ext4-filesystem, google, hyper-v,
+live-iso, openstack, partitioned-disk, qcow2, tar, vhd, vmdk</p>
+<p>You can optionally start an upload of the finished image, see <a class="reference internal" href="#image-uploads">Image Uploads</a> for
+more information.</p>
+</div>
+<div class="section" id="monitor-the-build-status">
+<h2>Monitor the build status<a class="headerlink" href="#monitor-the-build-status" title="Permalink to this headline">¶</a></h2>
+<p>Monitor it using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">status</span></code>, which will show the status of
+all the builds on the system. You can view the end of the anaconda build logs
+once it is in the <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code> state using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">log</span> <span class="pre">UUID</span></code>
+where UUID is the UUID returned by the start command.</p>
+<p>Once the build is in the <code class="docutils literal notranslate"><span class="pre">FINISHED</span></code> state you can download the image.</p>
+</div>
+<div class="section" id="download-the-image">
+<h2>Download the image<a class="headerlink" href="#download-the-image" title="Permalink to this headline">¶</a></h2>
+<p>Downloading the final image is done with <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">image</span> <span class="pre">UUID</span></code> and it will
+save the qcow2 image as <code class="docutils literal notranslate"><span class="pre">UUID-disk.qcow2</span></code> which you can then use to boot a VM like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qemu</span><span class="o">-</span><span class="n">kvm</span> <span class="o">--</span><span class="n">name</span> <span class="n">test</span><span class="o">-</span><span class="n">image</span> <span class="o">-</span><span class="n">m</span> <span class="mi">1024</span> <span class="o">-</span><span class="n">hda</span> <span class="o">./</span><span class="n">UUID</span><span class="o">-</span><span class="n">disk</span><span class="o">.</span><span class="n">qcow2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="image-uploads">
+<h2>Image Uploads<a class="headerlink" href="#image-uploads" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">composer-cli</span></code> can upload the images to a number of services, including AWS,
+OpenStack, and vSphere. The upload can be started when the build is finished,
+by using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">start</span> <span class="pre">...</span></code> or an existing image can be uploaded
+with <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">upload</span> <span class="pre">start</span> <span class="pre">...</span></code>. In order to access the service you need
+to pass authentication details to composer-cli using a TOML file, or reference
+a previously saved profile.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> and <code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code> handle this differently, with
+<code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code> you can currently only specify upload targets during the
+compose process.</p>
+</div>
+<div class="section" id="providers">
+<h2>Providers<a class="headerlink" href="#providers" title="Permalink to this headline">¶</a></h2>
+<p>Providers are the services providers with Ansible playbook support under
+<code class="docutils literal notranslate"><span class="pre">/usr/share/lorax/lifted/providers/</span></code>, you will need to gather some provider
+specific information in order to authenticate with it. You can view the
+required fields using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">providers</span> <span class="pre">template</span> <span class="pre">&lt;PROVIDER&gt;</span></code>, eg. for AWS
+you would run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="n">upload</span> <span class="n">template</span> <span class="n">aws</span>
+</pre></div>
+</div>
+<p>The output looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">provider</span> <span class="o">=</span> <span class="s2">&quot;aws&quot;</span>
+
+<span class="p">[</span><span class="n">settings</span><span class="p">]</span>
+<span class="n">aws_access_key</span> <span class="o">=</span> <span class="s2">&quot;AWS Access Key&quot;</span>
+<span class="n">aws_bucket</span> <span class="o">=</span> <span class="s2">&quot;AWS Bucket&quot;</span>
+<span class="n">aws_region</span> <span class="o">=</span> <span class="s2">&quot;AWS Region&quot;</span>
+<span class="n">aws_secret_key</span> <span class="o">=</span> <span class="s2">&quot;AWS Secret Key&quot;</span>
+</pre></div>
+</div>
+<p>Save this into an <code class="docutils literal notranslate"><span class="pre">aws-credentials.toml</span></code> file and use it when running <code class="docutils literal notranslate"><span class="pre">start</span></code>.</p>
+<div class="section" id="aws">
+<h3>AWS<a class="headerlink" href="#aws" title="Permalink to this headline">¶</a></h3>
+<p>The access key and secret key can be created by going to the
+<code class="docutils literal notranslate"><span class="pre">IAM-&gt;Users-&gt;Security</span> <span class="pre">Credentials</span></code> section and creating a new access key. The
+secret key will only be shown when it is first created so make sure to record
+it in a secure place. The region should be the region that you want to use the
+AMI in, and the bucket can be an existing bucket, or a new one, following the
+normal AWS bucket naming rules. It will be created if it doesn't already exist.</p>
+<p>When uploading the image it is first uploaded to the s3 bucket, and then
+converted to an AMI.  If the conversion is successful the s3 object will be
+deleted. If it fails, re-trying after correcting the problem will re-use the
+object if you have not deleted it in the meantime, speeding up the process.</p>
+</div>
+</div>
+<div class="section" id="profiles">
+<h2>Profiles<a class="headerlink" href="#profiles" title="Permalink to this headline">¶</a></h2>
+<p>Profiles store the authentication settings associated with a specific provider.
+Providers can have multiple profiles, as long as their names are unique. For
+example, you may have one profile for testing and another for production
+uploads.</p>
+<p>Profiles are created by pushing the provider settings template to the server using
+<code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">providers</span> <span class="pre">push</span> <span class="pre">&lt;PROFILE.TOML&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">PROFILE.TOML</span></code> is the same as the
+provider template, but with the addition of a <code class="docutils literal notranslate"><span class="pre">profile</span></code> field. For example, an AWS
+profile named <code class="docutils literal notranslate"><span class="pre">test-uploads</span></code> would look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">provider</span> <span class="o">=</span> <span class="s2">&quot;aws&quot;</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="s2">&quot;test-uploads&quot;</span>
+
+<span class="p">[</span><span class="n">settings</span><span class="p">]</span>
+<span class="n">aws_access_key</span> <span class="o">=</span> <span class="s2">&quot;AWS Access Key&quot;</span>
+<span class="n">aws_bucket</span> <span class="o">=</span> <span class="s2">&quot;AWS Bucket&quot;</span>
+<span class="n">aws_region</span> <span class="o">=</span> <span class="s2">&quot;AWS Region&quot;</span>
+<span class="n">aws_secret_key</span> <span class="o">=</span> <span class="s2">&quot;AWS Secret Key&quot;</span>
+</pre></div>
+</div>
+<p>You can view the profile by using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">providers</span> <span class="pre">aws</span> <span class="pre">test-uploads</span></code>.</p>
+</div>
+<div class="section" id="build-an-image-and-upload-results">
+<h2>Build an image and upload results<a class="headerlink" href="#build-an-image-and-upload-results" title="Permalink to this headline">¶</a></h2>
+<p>If you have a profile named <code class="docutils literal notranslate"><span class="pre">test-uploads</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="n">compose</span> <span class="n">start</span> <span class="n">example</span><span class="o">-</span><span class="n">http</span><span class="o">-</span><span class="n">server</span> <span class="n">ami</span> <span class="s2">&quot;http image&quot;</span> <span class="n">aws</span> <span class="n">test</span><span class="o">-</span><span class="n">uploads</span>
+</pre></div>
+</div>
+<p>Or if you have the settings stored in a TOML file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="n">compose</span> <span class="n">start</span> <span class="n">example</span><span class="o">-</span><span class="n">http</span><span class="o">-</span><span class="n">server</span> <span class="n">ami</span> <span class="s2">&quot;http image&quot;</span> <span class="n">aws</span><span class="o">-</span><span class="n">settings</span><span class="o">.</span><span class="n">toml</span>
+</pre></div>
+</div>
+<p>It will return the UUID of the image build, and the UUID of the upload. Once
+the build has finished successfully it will start the upload process, which you
+can monitor with <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">upload</span> <span class="pre">info</span> <span class="pre">&lt;UPLOAD-UUID&gt;</span></code></p>
+<p>You can also view the upload logs from the Ansible playbook with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>``composer-cli upload log &lt;UPLOAD-UUID&gt;``
+</pre></div>
+</div>
+<p>The type of the image must match the type supported by the provider.</p>
+</div>
+<div class="section" id="upload-an-existing-image">
+<h2>Upload an existing image<a class="headerlink" href="#upload-an-existing-image" title="Permalink to this headline">¶</a></h2>
+<p>You can upload previously built images, as long as they are in the <code class="docutils literal notranslate"><span class="pre">FINISHED</span></code> state, using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">upload</span> <span class="pre">start</span> <span class="pre">...`</span></code>. If you have a profile named <code class="docutils literal notranslate"><span class="pre">test-uploads</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="n">upload</span> <span class="n">start</span> <span class="o">&lt;</span><span class="n">UUID</span><span class="o">&gt;</span> <span class="s2">&quot;http-image&quot;</span> <span class="n">aws</span> <span class="n">test</span><span class="o">-</span><span class="n">uploads</span>
+</pre></div>
+</div>
+<p>Or if you have the settings stored in a TOML file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="n">upload</span> <span class="n">start</span> <span class="o">&lt;</span><span class="n">UUID</span><span class="o">&gt;</span> <span class="s2">&quot;http-image&quot;</span> <span class="n">aws</span><span class="o">-</span><span class="n">settings</span><span class="o">.</span><span class="n">toml</span>
+</pre></div>
+</div>
+<p>This will output the UUID of the upload, which can then be used to monitor the status in the same way
+described above.</p>
+</div>
+<div class="section" id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
+<p>There are a couple of arguments that can be helpful when debugging problems.
+These are only meant for debugging and should not be used to script access to
+the API. If you need to do that you can communicate with it directly in the
+language of your choice.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--json</span></code> will return the server's response as a nicely formatted json output
+instead of printing what the command would usually print.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--test=1</span></code> will cause a compose start to start creating an image, and then
+end with a failed state.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--test=2</span></code> will cause a compose to start and then end with a finished state,
+without actually composing anything.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mkksiso.html" class="btn btn-neutral float-right" title="mkksiso" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="lorax-composer.html" class="btn btn-neutral float-left" title="lorax-composer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Red Hat, Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
