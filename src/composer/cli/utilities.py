@@ -103,7 +103,7 @@ def get_arg(args, name, argtype=None):
     :type name: string
     :param argtype: Type to use for checking the argument value
     :type argtype: type
-    :returns (args, value)
+    :returns: (args, value)
     :rtype: tuple
 
     This removes the optional argument and value from the argument list, returns the new list,
