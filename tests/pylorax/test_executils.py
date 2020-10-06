@@ -97,11 +97,6 @@ class ExecUtilsTest(unittest.TestCase):
         with self.assertRaises(OSError):
             execReadlines("foo-prog", [])
 
-    def test_del_execReadlines(self):
-        cmd = ["python3", "-c", "import sys; print('Truffula trees.'); sys.exit(0)"]
-        iterator = execReadlines(cmd[0], cmd[1:], callback=lambda p: True)
-        del iterator
-
     def test_runcmd(self):
         cmd = ["python3", "-c", "import sys; print('Theodor Seuss Geisel'); sys.exit(0)"]
         rc = runcmd(cmd)
