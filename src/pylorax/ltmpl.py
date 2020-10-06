@@ -717,7 +717,7 @@ class LoraxTemplateRunner(TemplateRunner):
           to search and one KEEPGLOB to keep. The KEEPGLOB is expanded to be *KEEPGLOB*
           so that it will match anywhere in the path.
 
-          This only removes files from under /lib/modules/\*/kernel/
+          This only removes files from under /lib/modules/\\*/kernel/
 
           Examples:
             removekmod sound drivers/media drivers/hwmon drivers/video
