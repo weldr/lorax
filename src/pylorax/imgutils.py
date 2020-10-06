@@ -77,9 +77,20 @@ def compress(command, root, outfile, compression="xz", compressargs=None):
             archive.stdin.write(os.path.basename(root).encode("utf-8") + b"\0")
             archive.stdin.close()
 
-        comp = Popen([compression] + compressargs,
-                     stdin=archive.stdout, stdout=open(outfile, "wb"))
-        comp.wait()
+        with open(outfile, "wb") as fout:
+            comp = Popen([compression] + compressargs,
+                         stdin=archive.stdout, stdout=fout)
+            comp.wait()
+
+        # Clean up the open fds and processes
+        if find:
+            find.wait()
+            find.stdout.close()
+        archive.wait()
+        if archive.stdin:
+            archive.stdin.close()
+        if archive.stdout:
+            archive.stdout.close()
         return comp.returncode
     except OSError as e:
         logger.error(e)
@@ -129,8 +140,8 @@ def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
 
 def mksparse(outfile, size):
     '''use os.ftruncate to create a sparse file of the given size.'''
-    fobj = open(outfile, "w")
-    os.ftruncate(fobj.fileno(), size)
+    with open(outfile, "w") as fobj:
+        os.ftruncate(fobj.fileno(), size)
 
 def mkqcow2(outfile, size, options=None):
     '''use qemu-img to create a file of the given size.
