@@ -27,7 +27,8 @@ class SysUtilsTest(unittest.TestCase):
         self.assertEqual(joinpaths("foo", "bar", "baz"), "foo/bar/baz")
 
         with tempfile.TemporaryDirectory() as tdname:
-            open(os.path.join(tdname, "real-file"), "w").write("lorax test file")
+            with open(os.path.join(tdname, "real-file"), "w") as f:
+                f.write("lorax test file")
             os.symlink(os.path.join(tdname, "real-file"), os.path.join(tdname, "link-file"))
 
             self.assertEqual(joinpaths(tdname, "link-file", follow_symlinks=True),
@@ -46,7 +47,9 @@ class SysUtilsTest(unittest.TestCase):
         f.close()
         replace(f.name, "@AARDVARKS@", "ant eaters")
 
-        self.assertEqual(open(f.name).readline(), "A few words to apply ant eaters testing\n")
+        with open(f.name) as fr:
+            line = fr.readline()
+        self.assertEqual(line, "A few words to apply ant eaters testing\n")
         os.unlink(f.name)
 
     @unittest.skipUnless(os.geteuid() == 0, "requires root privileges")
@@ -61,7 +64,8 @@ class SysUtilsTest(unittest.TestCase):
 
     def test_remove(self):
         remove_file="/var/tmp/lorax-test-remove-file"
-        open(remove_file, "w").write("test was here")
+        with open(remove_file, "w") as f:
+            f.write("test was here")
         remove(remove_file)
         self.assertFalse(os.path.exists(remove_file))
 
@@ -69,7 +73,8 @@ class SysUtilsTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tdname:
             path = os.path.join("one", "two", "three")
             os.makedirs(os.path.join(tdname, path))
-            open(os.path.join(tdname, path, "lorax-link-test-file"), "w").write("test was here")
+            with open(os.path.join(tdname, path, "lorax-link-test-file"), "w") as f:
+                f.write("test was here")
 
             linktree(os.path.join(tdname, "one"), os.path.join(tdname, "copy"))
 

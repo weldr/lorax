@@ -96,7 +96,8 @@ def create_git_repo():
         test_results["second"].append(os.path.join("only-bps/", f))
 
     # Add a dotfile as well
-    open(os.path.join(repodir, "only-bps/.bpsrc"), "w").write("dotfile test\n")
+    with open(os.path.join(repodir, "only-bps/.bpsrc"), "w") as f:
+        f.write("dotfile test\n")
     test_results["second"].append("only-bps/.bpsrc")
     test_results["second"] = sorted(test_results["second"])
 

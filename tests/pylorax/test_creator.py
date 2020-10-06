@@ -37,8 +37,10 @@ from pylorax.sysutils import joinpaths
 def mkFakeBoot(root_dir):
     """Create a fake kernel and initrd"""
     os.makedirs(joinpaths(root_dir, "boot"))
-    open(joinpaths(root_dir, "boot", "vmlinuz-4.18.13-200.fc28.x86_64"), "w").write("I AM A FAKE KERNEL")
-    open(joinpaths(root_dir, "boot", "initramfs-4.18.13-200.fc28.x86_64.img"), "w").write("I AM A FAKE INITRD")
+    with open(joinpaths(root_dir, "boot", "vmlinuz-4.18.13-200.fc28.x86_64"), "w") as f:
+        f.write("I AM A FAKE KERNEL")
+    with open(joinpaths(root_dir, "boot", "initramfs-4.18.13-200.fc28.x86_64.img"), "w") as f:
+        f.write("I AM A FAKE INITRD")
 
 
 class CreatorTest(unittest.TestCase):
@@ -92,13 +94,15 @@ class CreatorTest(unittest.TestCase):
 
         # A fake disk image
         with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
-            open(disk_img.name, "wb").write(b"THIS IS A FAKE DISK IMAGE FILE")
+            with open(disk_img.name, "wb") as f:
+                f.write(b"THIS IS A FAKE DISK IMAGE FILE")
             with tempfile.NamedTemporaryFile(prefix="lorax.test.appliance.") as output_xml:
                 make_appliance(disk_img.name, "test-appliance", appliance_template, output_xml.name,
                               ["eth0", "eth1"], ram=4096, vcpus=8, arch="x86_64",
                               title="Lorax Test", project="Fedora", releasever="30")
 
-                print(open(output_xml.name).read())
+                with open(output_xml.name) as f:
+                    print(f.read())
                 # Parse the XML and check for known fields
                 tree = ET.parse(output_xml.name)
                 image = tree.getroot()
@@ -127,13 +131,16 @@ class CreatorTest(unittest.TestCase):
             template = joinpaths(lorax_templates, "pxe-live/pxe-config.tmpl")
 
             # Make a fake kernel and initrd
-            open(joinpaths(work_dir, "vmlinuz-4.18.13-200.fc28.x86_64"), "w").write("I AM A FAKE KERNEL")
-            open(joinpaths(work_dir, "initramfs-4.18.13-200.fc28.x86_64.img"), "w").write("I AM A FAKE INITRD")
+            with open(joinpaths(work_dir, "vmlinuz-4.18.13-200.fc28.x86_64"), "w") as f:
+                f.write("I AM A FAKE KERNEL")
+            with open(joinpaths(work_dir, "initramfs-4.18.13-200.fc28.x86_64.img"), "w") as f:
+                f.write("I AM A FAKE INITRD")
 
             # Create the PXE_CONFIG in work_dir
             create_pxe_config(template, work_dir, live_image_name, add_pxe_args)
-            print(open(joinpaths(work_dir, "PXE_CONFIG")).read())
-            pxe_config = open(joinpaths(work_dir, "PXE_CONFIG")).read()
+            with open(joinpaths(work_dir, "PXE_CONFIG")) as f:
+                pxe_config = f.read()
+            print(pxe_config)
             self.assertTrue("vmlinuz-4.18.13-200.fc28.x86_64" in pxe_config)
             self.assertTrue("initramfs-4.18.13-200.fc28.x86_64.img" in pxe_config)
             self.assertTrue("/live-rootfs.squashfs.img ostree=/mnt/sysimage/" in pxe_config)
