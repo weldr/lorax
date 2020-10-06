@@ -50,7 +50,7 @@ check:
 
 test:
 	@echo "*** Running tests ***"
-	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m pytest -v --cov-branch \
+	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -X dev -m pytest -v --cov-branch \
 					--cov=pylorax --cov=composer \
 					./tests/pylorax/ ./tests/composer/
 
