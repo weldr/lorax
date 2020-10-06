@@ -45,7 +45,8 @@ def mkfakerootdir(rootdir):
     for f in files:
         if not os.path.isdir(joinpaths(rootdir, os.path.dirname(f))):
             os.makedirs(joinpaths(rootdir, os.path.dirname(f)))
-        open(joinpaths(rootdir, f), "w").write("I AM FAKE FILE %s" % f.upper())
+        with open(joinpaths(rootdir, f), "w") as ff:
+            ff.write("I AM FAKE FILE %s" % f.upper())
 
 def mkfakebootdir(bootdir):
     """Populate a fake /boot directory with a kernel and initrd
@@ -53,8 +54,10 @@ def mkfakebootdir(bootdir):
     :param bootdir: An existing directory to create files/dirs under
     :type bootdir: str
     """
-    open(joinpaths(bootdir, "vmlinuz-4.18.13-200.fc28.x86_64"), "w").write("I AM A FAKE KERNEL")
-    open(joinpaths(bootdir, "initramfs-4.18.13-200.fc28.x86_64.img"), "w").write("I AM A FAKE INITRD")
+    with open(joinpaths(bootdir, "vmlinuz-4.18.13-200.fc28.x86_64"), "w") as f:
+        f.write("I AM A FAKE KERNEL")
+    with open(joinpaths(bootdir, "initramfs-4.18.13-200.fc28.x86_64.img"), "w") as f:
+        f.write("I AM A FAKE INITRD")
 
 def mkfakediskimg(disk_img):
     """Create a fake partitioned disk image

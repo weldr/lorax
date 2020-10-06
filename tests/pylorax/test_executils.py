@@ -66,7 +66,8 @@ class ExecUtilsTest(unittest.TestCase):
             self.assertEqual(rc, 1)
 
             tmp_f.file.close()
-            logged_text = open(tmp_f.name, "r").readlines()[-1].strip()
+            with open(tmp_f.name, "r") as f:
+                logged_text = f.readlines()[-1].strip()
             self.assertEqual(logged_text, "The Once-ler was here.")
         finally:
             os.unlink(tmp_f.name)

@@ -45,8 +45,8 @@ def joinpaths(*args, **kwargs):
 
 
 def touch(fname):
-    # python closes the file when it goes out of scope
-    open(fname, "w").write("")
+    with open(fname, "w") as f:
+        f.write("")
 
 
 def replace(fname, find, sub):

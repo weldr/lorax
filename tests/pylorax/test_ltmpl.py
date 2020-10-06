@@ -177,7 +177,9 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         """Test append, and install template commands"""
         self.runner.run("install-cmd.tmpl")
         self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/etc/lorax-test")))
-        self.assertEqual(open(joinpaths(self.root_dir, "/etc/lorax-test")).read(), "TESTING LORAX TEMPLATES\n")
+        with open(joinpaths(self.root_dir, "/etc/lorax-test")) as f:
+            data = f.read()
+        self.assertEqual(data, "TESTING LORAX TEMPLATES\n")
         self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/etc/lorax-test-dest")))
 
     def test_installimg(self):
@@ -194,7 +196,9 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         """Test append, and replace template command"""
         self.runner.run("replace-cmd.tmpl")
         self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/etc/lorax-replace")))
-        self.assertEqual(open(joinpaths(self.root_dir, "/etc/lorax-replace")).read(), "Running 1.2.3 for lorax\n")
+        with open(joinpaths(self.root_dir, "/etc/lorax-replace")) as f:
+            data = f.read()
+        self.assertEqual(data, "Running 1.2.3 for lorax\n")
 
     def test_treeinfo(self):
         """Test treeinfo template command"""
