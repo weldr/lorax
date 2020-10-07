@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.2
+Version:        34.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -192,6 +192,22 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Wed Oct 07 2020 Brian C. Lane <bcl@redhat.com> 34.3-1
+- composer: Fix open file warnings (bcl@redhat.com)
+- ltmpl: Fix deprecated escape in docstring (bcl@redhat.com)
+- tests: Fix open file warning in test_execWithRedirect (bcl@redhat.com)
+- Cleanup imgutil open files and processes (bcl@redhat.com)
+- tests: Remove test_del_execReadlines (bcl@redhat.com)
+- Fix unclosed files (bcl@redhat.com)
+- test: Use Python dev mode during testing (bcl@redhat.com)
+- tests: Update composer-cli blueprint server tests (bcl@redhat.com)
+- runtime-cleanup: Delete .pyc files (bcl@redhat.com)
+- New lorax documentation - 34.3 (bcl@redhat.com)
+- doc: Add Blueprint documentation and example to composer-cli.rst (bcl@redhat.com)
+- docs: Update docs for lorax-composer removal (bcl@redhat.com)
+- tests: Remove unused lorax-composer tests (bcl@redhat.com)
+- Remove lorax-composer, it has been replaced by osbuild-composer (bcl@redhat.com)
+
 * Tue Sep 29 2020 Brian C. Lane <bcl@redhat.com> 34.2-1
 - runtime-cleanup: Remove ncurses package (bcl@redhat.com)
 
