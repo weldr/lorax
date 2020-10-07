@@ -17,6 +17,7 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
 BuildRequires:  make
+BuildRequires:  systemd-rpm-macros
 
 Requires:       lorax-templates
 
