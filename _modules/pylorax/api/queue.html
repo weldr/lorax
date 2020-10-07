@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.queue &mdash; Lorax 33.2 documentation</title>
+  <title>pylorax.api.queue &mdash; Lorax 34.3 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                34.3
               </div>
             
           
@@ -87,7 +87,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../livemedia-creator.html">livemedia-creator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lorax-composer.html">lorax-composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../product-images.html">Product and Updates Images</a></li>
@@ -180,24 +179,24 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">grp</span>
-<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
 <span class="kn">import</span> <span class="nn">pwd</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">find_templates</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="k">import</span> <span class="n">move_compose_results</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">recipe_from_file</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.timestamp</span> <span class="k">import</span> <span class="n">TS_CREATED</span><span class="p">,</span> <span class="n">TS_STARTED</span><span class="p">,</span> <span class="n">TS_FINISHED</span><span class="p">,</span> <span class="n">write_timestamp</span><span class="p">,</span> <span class="n">timestamp_dict</span>
+<span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">find_templates</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="kn">import</span> <span class="n">move_compose_results</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="kn">import</span> <span class="n">recipe_from_file</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.timestamp</span> <span class="kn">import</span> <span class="n">TS_CREATED</span><span class="p">,</span> <span class="n">TS_STARTED</span><span class="p">,</span> <span class="n">TS_FINISHED</span><span class="p">,</span> <span class="n">write_timestamp</span><span class="p">,</span> <span class="n">timestamp_dict</span>
 <span class="kn">import</span> <span class="nn">pylorax.api.toml</span> <span class="k">as</span> <span class="nn">toml</span>
-<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">DataHolder</span>
-<span class="kn">from</span> <span class="nn">pylorax.creator</span> <span class="k">import</span> <span class="n">run_creator</span>
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">read_tail</span>
+<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
+<span class="kn">from</span> <span class="nn">pylorax.creator</span> <span class="kn">import</span> <span class="n">run_creator</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">read_tail</span>
 
-<span class="kn">from</span> <span class="nn">lifted.queue</span> <span class="k">import</span> <span class="n">create_upload</span><span class="p">,</span> <span class="n">get_uploads</span><span class="p">,</span> <span class="n">ready_upload</span><span class="p">,</span> <span class="n">delete_upload</span>
+<span class="kn">from</span> <span class="nn">lifted.queue</span> <span class="kn">import</span> <span class="n">create_upload</span><span class="p">,</span> <span class="n">get_uploads</span><span class="p">,</span> <span class="n">ready_upload</span><span class="p">,</span> <span class="n">delete_upload</span>
 
 <div class="viewcode-block" id="check_queues"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.check_queues">[docs]</a><span class="k">def</span> <span class="nf">check_queues</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Check to make sure the new and run queue symlinks are correct</span>
@@ -634,7 +633,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">results_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">results_dir</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;&quot;</span><span class="si">{uuid}</span><span class="s1">&quot; is not a valid build uuid!&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s1">&quot; is not a valid build uuid!&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;UPLOADS&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="uuid_schedule_upload"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_schedule_upload">[docs]</a><span class="k">def</span> <span class="nf">uuid_schedule_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">provider_name</span><span class="p">,</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
@@ -656,7 +655,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;&quot;</span><span class="si">{uuid}</span><span class="s1">&quot; is not a valid build uuid!&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s1">&quot; is not a valid build uuid!&#39;</span><span class="p">)</span>
 
     <span class="n">upload</span> <span class="o">=</span> <span class="n">create_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">provider_name</span><span class="p">,</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
     <span class="n">uuid_add_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">upload</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
@@ -719,7 +718,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">uploads_file</span><span class="p">)</span>
         <span class="k">return</span>
 
-    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{upload_uuid}</span><span class="s2"> is not a valid upload id!&quot;</span><span class="p">)</span></div>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">upload_uuid</span><span class="si">}</span><span class="s2"> is not a valid upload id!&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="uuid_ready_upload"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_ready_upload">[docs]</a><span class="k">def</span> <span class="nf">uuid_ready_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">upload_uuid</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Set an upload to READY if the build is in FINISHED state</span>
@@ -736,9 +735,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{uuid}</span><span class="s2"> is not a valid build id!&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> is not a valid build id!&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Build </span><span class="si">{uuid}</span><span class="s2"> is not finished!&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Build </span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> is not finished!&quot;</span><span class="p">)</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">image_path</span> <span class="o">=</span> <span class="n">uuid_image</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="n">ready_upload</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">upload_uuid</span><span class="p">,</span> <span class="n">image_path</span><span class="p">)</span></div>
 

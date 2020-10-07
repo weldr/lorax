@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.installer &mdash; Lorax 33.2 documentation</title>
+  <title>pylorax.installer &mdash; Lorax 34.3 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                34.3
               </div>
             
           
@@ -87,7 +87,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../lorax-composer.html">lorax-composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
@@ -178,7 +177,7 @@
 
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">ceil</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
@@ -186,14 +185,14 @@
 <span class="kn">import</span> <span class="nn">tempfile</span>
 
 <span class="c1"># Use the Lorax treebuilder branch for iso creation</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">execWithRedirect</span><span class="p">,</span> <span class="n">execReadlines</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">PartitionMount</span><span class="p">,</span> <span class="n">mksparse</span><span class="p">,</span> <span class="n">mkext4img</span><span class="p">,</span> <span class="n">loop_detach</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">get_loop_name</span><span class="p">,</span> <span class="n">dm_detach</span><span class="p">,</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">mkqemu_img</span><span class="p">,</span> <span class="n">mktar</span><span class="p">,</span> <span class="n">mkcpio</span><span class="p">,</span> <span class="n">mkfsimage_from_disk</span>
-<span class="kn">from</span> <span class="nn">pylorax.monitor</span> <span class="k">import</span> <span class="n">LogMonitor</span>
-<span class="kn">from</span> <span class="nn">pylorax.mount</span> <span class="k">import</span> <span class="n">IsoMountpoint</span>
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
-<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="k">import</span> <span class="n">udev_escape</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithRedirect</span><span class="p">,</span> <span class="n">execReadlines</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">PartitionMount</span><span class="p">,</span> <span class="n">mksparse</span><span class="p">,</span> <span class="n">mkext4img</span><span class="p">,</span> <span class="n">loop_detach</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">get_loop_name</span><span class="p">,</span> <span class="n">dm_detach</span><span class="p">,</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mkqemu_img</span><span class="p">,</span> <span class="n">mktar</span><span class="p">,</span> <span class="n">mkcpio</span><span class="p">,</span> <span class="n">mkfsimage_from_disk</span>
+<span class="kn">from</span> <span class="nn">pylorax.monitor</span> <span class="kn">import</span> <span class="n">LogMonitor</span>
+<span class="kn">from</span> <span class="nn">pylorax.mount</span> <span class="kn">import</span> <span class="n">IsoMountpoint</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span>
+<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="kn">import</span> <span class="n">udev_escape</span>
 
 
 <span class="n">ROOT_PATH</span> <span class="o">=</span> <span class="s2">&quot;/mnt/sysimage/&quot;</span>
@@ -302,7 +301,7 @@
                  <span class="s2">&quot;ppc64le&quot;</span><span class="p">:</span> <span class="s2">&quot;qemu-system-ppc64&quot;</span>
                 <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">iso</span><span class="p">,</span> <span class="n">ks_paths</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">iso</span><span class="p">,</span> <span class="n">ks_paths</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
                  <span class="n">kernel_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">vcpus</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vnc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
                  <span class="n">image_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ovmf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

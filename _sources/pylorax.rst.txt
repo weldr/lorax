@@ -1,13 +1,6 @@
 pylorax package
 ===============
 
-Subpackages
------------
-
-.. toctree::
-
-   pylorax.api
-
 Submodules
 ----------
 
@@ -154,7 +147,6 @@ pylorax.treeinfo module
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 Module contents
 ---------------

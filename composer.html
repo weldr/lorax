@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer package &mdash; Lorax 33.2 documentation</title>
+  <title>composer package &mdash; Lorax 34.3 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                33.2
+                34.3
               </div>
             
           
@@ -89,7 +89,6 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
@@ -105,7 +104,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-composer">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="lifted.html">lifted package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.html">pylorax package</a></li>
 </ul>
 </li>
@@ -205,9 +203,9 @@
 </div>
 <div class="section" id="module-composer.http_client">
 <span id="composer-http-client-module"></span><h2>composer.http_client module<a class="headerlink" href="#module-composer.http_client" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.api_url">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">api_url</code><span class="sig-paren">(</span><em class="sig-param">api_version</em>, <em class="sig-param">url</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#api_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.api_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">api_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">url</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#api_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.api_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the versioned path to the API route</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -225,9 +223,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.append_query">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">append_query</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">query</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#append_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.append_query" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">append_query</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">query</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#append_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.append_query" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a query argument to a URL</p>
 <p>The query should be of the form &quot;param1=what&amp;param2=ever&quot;, i.e., no
 leading '?'. The new query data will be appended to any existing
@@ -248,9 +246,9 @@ query string.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.delete_url_json">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">delete_url_json</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">url</em>, <em class="sig-param">timeout=120</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#delete_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.delete_url_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">delete_url_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">url</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#delete_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.delete_url_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a DELETE request to the url and return JSON response</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -268,9 +266,9 @@ query string.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.download_file">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">download_file</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">url</em>, <em class="sig-param">progress=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#download_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.download_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">download_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">progress</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#download_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.download_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download a file, saving it to the CWD with the included filename</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -282,9 +280,9 @@ query string.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.get_filename">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">get_filename</code><span class="sig-paren">(</span><em class="sig-param">headers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#get_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_filename" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">get_filename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">headers</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#get_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the filename from the response header</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -302,9 +300,9 @@ query string.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.get_url_json">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">get_url_json</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">url</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#get_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">get_url_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">url</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#get_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the JSON results of a GET request</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -322,9 +320,9 @@ query string.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.get_url_json_unlimited">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">get_url_json_unlimited</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">url</em>, <em class="sig-param">total_fn=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#get_url_json_unlimited"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_json_unlimited" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">get_url_json_unlimited</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">total_fn</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#get_url_json_unlimited"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_json_unlimited" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the JSON results of a GET request</p>
 <p>For URLs that use offset/limit arguments, this command will
 fetch all results for the given request.</p>
@@ -344,9 +342,9 @@ fetch all results for the given request.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.get_url_raw">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">get_url_raw</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">url</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#get_url_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_raw" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">get_url_raw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">url</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#get_url_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_raw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the raw results of a GET request</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -364,9 +362,9 @@ fetch all results for the given request.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.post_url">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">post_url</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">url</em>, <em class="sig-param">body</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#post_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.post_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">post_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#post_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.post_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>POST raw data to the URL</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -385,9 +383,9 @@ fetch all results for the given request.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.post_url_json">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">post_url_json</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">url</em>, <em class="sig-param">body</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#post_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.post_url_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">post_url_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#post_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.post_url_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>POST some JSON data to the URL</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -406,9 +404,9 @@ fetch all results for the given request.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.http_client.post_url_toml">
-<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">post_url_toml</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">url</em>, <em class="sig-param">body</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#post_url_toml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.post_url_toml" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.http_client.</code><code class="sig-name descname">post_url_toml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/http_client.html#post_url_toml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.post_url_toml" title="Permalink to this definition">¶</a></dt>
 <dd><p>POST a TOML string to the URL</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -430,11 +428,11 @@ fetch all results for the given request.</p>
 </div>
 <div class="section" id="module-composer.unix_socket">
 <span id="composer-unix-socket-module"></span><h2>composer.unix_socket module<a class="headerlink" href="#module-composer.unix_socket" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="composer.unix_socket.UnixHTTPConnection">
-<em class="property">class </em><code class="sig-prename descclassname">composer.unix_socket.</code><code class="sig-name descname">UnixHTTPConnection</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">timeout=60</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/unix_socket.html#UnixHTTPConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.unix_socket.UnixHTTPConnection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">composer.unix_socket.</code><code class="sig-name descname">UnixHTTPConnection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">300</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/unix_socket.html#UnixHTTPConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.unix_socket.UnixHTTPConnection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/http.client.html#http.client.HTTPConnection" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">http.client.HTTPConnection</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="composer.unix_socket.UnixHTTPConnection.connect">
 <code class="sig-name descname">connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/unix_socket.html#UnixHTTPConnection.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.unix_socket.UnixHTTPConnection.connect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect to the host and port specified in __init__.</p>
@@ -442,9 +440,9 @@ fetch all results for the given request.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="composer.unix_socket.UnixHTTPConnectionPool">
-<em class="property">class </em><code class="sig-prename descclassname">composer.unix_socket.</code><code class="sig-name descname">UnixHTTPConnectionPool</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">timeout=60</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/unix_socket.html#UnixHTTPConnectionPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.unix_socket.UnixHTTPConnectionPool" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">composer.unix_socket.</code><code class="sig-name descname">UnixHTTPConnectionPool</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">300</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/unix_socket.html#UnixHTTPConnectionPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.unix_socket.UnixHTTPConnectionPool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">urllib3.connectionpool.HTTPConnectionPool</span></code></p>
 </dd></dl>
 

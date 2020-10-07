@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.v1 &mdash; Lorax 33.2 documentation</title>
+  <title>pylorax.api.v1 &mdash; Lorax 34.3 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                33.2
+                34.3
               </div>
             
           
@@ -87,7 +87,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../livemedia-creator.html">livemedia-creator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lorax-composer.html">lorax-composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../product-images.html">Product and Updates Images</a></li>
@@ -179,25 +178,25 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">current_app</span> <span class="k">as</span> <span class="n">api</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">current_app</span> <span class="k">as</span> <span class="n">api</span>
 
-<span class="kn">from</span> <span class="nn">lifted.queue</span> <span class="k">import</span> <span class="n">get_upload</span><span class="p">,</span> <span class="n">reset_upload</span><span class="p">,</span> <span class="n">cancel_upload</span><span class="p">,</span> <span class="n">delete_upload</span>
-<span class="kn">from</span> <span class="nn">lifted.providers</span> <span class="k">import</span> <span class="n">list_providers</span><span class="p">,</span> <span class="n">resolve_provider</span><span class="p">,</span> <span class="n">load_profiles</span><span class="p">,</span> <span class="n">validate_settings</span><span class="p">,</span> <span class="n">save_settings</span>
-<span class="kn">from</span> <span class="nn">lifted.providers</span> <span class="k">import</span> <span class="n">load_settings</span><span class="p">,</span> <span class="n">delete_profile</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.checkparams</span> <span class="k">import</span> <span class="n">checkparams</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="k">import</span> <span class="n">start_build</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="k">import</span> <span class="n">BAD_COMPOSE_TYPE</span><span class="p">,</span> <span class="n">BUILD_FAILED</span><span class="p">,</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="n">MISSING_POST</span><span class="p">,</span> <span class="n">PROJECTS_ERROR</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="k">import</span> <span class="n">SYSTEM_SOURCE</span><span class="p">,</span> <span class="n">UNKNOWN_BLUEPRINT</span><span class="p">,</span> <span class="n">UNKNOWN_SOURCE</span><span class="p">,</span> <span class="n">UNKNOWN_UUID</span><span class="p">,</span> <span class="n">UPLOAD_ERROR</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="k">import</span> <span class="n">COMPOSE_ERROR</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.flask_blueprint</span> <span class="k">import</span> <span class="n">BlueprintSkip</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="k">import</span> <span class="n">queue_status</span><span class="p">,</span> <span class="n">build_status</span><span class="p">,</span> <span class="n">uuid_status</span><span class="p">,</span> <span class="n">uuid_schedule_upload</span><span class="p">,</span> <span class="n">uuid_remove_upload</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="k">import</span> <span class="n">uuid_info</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">get_repo_sources</span><span class="p">,</span> <span class="n">repo_to_source</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">new_repo_source</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.regexes</span> <span class="k">import</span> <span class="n">VALID_API_STRING</span><span class="p">,</span> <span class="n">VALID_BLUEPRINT_NAME</span>
+<span class="kn">from</span> <span class="nn">lifted.queue</span> <span class="kn">import</span> <span class="n">get_upload</span><span class="p">,</span> <span class="n">reset_upload</span><span class="p">,</span> <span class="n">cancel_upload</span><span class="p">,</span> <span class="n">delete_upload</span>
+<span class="kn">from</span> <span class="nn">lifted.providers</span> <span class="kn">import</span> <span class="n">list_providers</span><span class="p">,</span> <span class="n">resolve_provider</span><span class="p">,</span> <span class="n">load_profiles</span><span class="p">,</span> <span class="n">validate_settings</span><span class="p">,</span> <span class="n">save_settings</span>
+<span class="kn">from</span> <span class="nn">lifted.providers</span> <span class="kn">import</span> <span class="n">load_settings</span><span class="p">,</span> <span class="n">delete_profile</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.checkparams</span> <span class="kn">import</span> <span class="n">checkparams</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="kn">import</span> <span class="n">start_build</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="kn">import</span> <span class="n">BAD_COMPOSE_TYPE</span><span class="p">,</span> <span class="n">BUILD_FAILED</span><span class="p">,</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="n">MISSING_POST</span><span class="p">,</span> <span class="n">PROJECTS_ERROR</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="kn">import</span> <span class="n">SYSTEM_SOURCE</span><span class="p">,</span> <span class="n">UNKNOWN_BLUEPRINT</span><span class="p">,</span> <span class="n">UNKNOWN_SOURCE</span><span class="p">,</span> <span class="n">UNKNOWN_UUID</span><span class="p">,</span> <span class="n">UPLOAD_ERROR</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="kn">import</span> <span class="n">COMPOSE_ERROR</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.flask_blueprint</span> <span class="kn">import</span> <span class="n">BlueprintSkip</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="kn">import</span> <span class="n">queue_status</span><span class="p">,</span> <span class="n">build_status</span><span class="p">,</span> <span class="n">uuid_status</span><span class="p">,</span> <span class="n">uuid_schedule_upload</span><span class="p">,</span> <span class="n">uuid_remove_upload</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="kn">import</span> <span class="n">uuid_info</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="kn">import</span> <span class="n">get_repo_sources</span><span class="p">,</span> <span class="n">repo_to_source</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="kn">import</span> <span class="n">new_repo_source</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.regexes</span> <span class="kn">import</span> <span class="n">VALID_API_STRING</span><span class="p">,</span> <span class="n">VALID_BLUEPRINT_NAME</span>
 <span class="kn">import</span> <span class="nn">pylorax.api.toml</span> <span class="k">as</span> <span class="nn">toml</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.utils</span> <span class="k">import</span> <span class="n">blueprint_exists</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.utils</span> <span class="kn">import</span> <span class="n">blueprint_exists</span>
 
 
 <span class="c1"># Create the v1 routes Blueprint with skip_routes support</span>
@@ -451,11 +450,11 @@
                 <span class="n">provider_name</span> <span class="o">=</span> <span class="n">compose</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">][</span><span class="s2">&quot;provider&quot;</span><span class="p">]</span>
                 <span class="n">settings</span> <span class="o">=</span> <span class="n">compose</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">][</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UPLOAD_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="n">f</span><span class="s1">&#39;Missing parameter {str(e)}!&#39;</span><span class="p">})</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UPLOAD_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Missing parameter </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">!&#39;</span><span class="p">})</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">provider</span> <span class="o">=</span> <span class="n">resolve_provider</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">][</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">provider_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;supported_types&quot;</span> <span class="ow">in</span> <span class="n">provider</span> <span class="ow">and</span> <span class="n">compose_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">provider</span><span class="p">[</span><span class="s2">&quot;supported_types&quot;</span><span class="p">]:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Type &quot;</span><span class="si">{compose_type}</span><span class="s1">&quot; is not supported by provider &quot;</span><span class="si">{provider_name}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Type &quot;</span><span class="si">{</span><span class="n">compose_type</span><span class="si">}</span><span class="s1">&quot; is not supported by provider &quot;</span><span class="si">{</span><span class="n">provider_name</span><span class="si">}</span><span class="s1">&quot;!&#39;</span><span class="p">)</span>
             <span class="n">validate_settings</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">][</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">provider_name</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">image_name</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UPLOAD_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)})</span>
@@ -887,14 +886,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">settings</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UPLOAD_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="n">f</span><span class="s1">&#39;Missing parameter {str(e)}!&#39;</span><span class="p">}</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UPLOAD_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Missing parameter </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">!&#39;</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="n">error</span><span class="p">]),</span> <span class="mi">400</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">compose_type</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">compose_uuid</span><span class="p">)[</span><span class="s2">&quot;compose_type&quot;</span><span class="p">]</span>
         <span class="n">provider</span> <span class="o">=</span> <span class="n">resolve_provider</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">][</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">provider_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;supported_types&quot;</span> <span class="ow">in</span> <span class="n">provider</span> <span class="ow">and</span> <span class="n">compose_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">provider</span><span class="p">[</span><span class="s2">&quot;supported_types&quot;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">&#39;Type &quot;</span><span class="si">{compose_type}</span><span class="s1">&quot; is not supported by provider &quot;</span><span class="si">{provider_name}</span><span class="s1">&quot;!&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Type &quot;</span><span class="si">{</span><span class="n">compose_type</span><span class="si">}</span><span class="s1">&quot; is not supported by provider &quot;</span><span class="si">{</span><span class="n">provider_name</span><span class="si">}</span><span class="s1">&quot;!&#39;</span>
             <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UPLOAD_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}]),</span> <span class="mi">400</span>
@@ -1166,7 +1165,7 @@
         <span class="n">profile</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;profile&quot;</span><span class="p">]</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UPLOAD_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="n">f</span><span class="s1">&#39;Missing parameter {str(e)}!&#39;</span><span class="p">}</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UPLOAD_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Missing parameter </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">!&#39;</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="n">error</span><span class="p">]),</span> <span class="mi">400</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">save_settings</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">][</span><span class="s2">&quot;upload&quot;</span><span class="p">],</span> <span class="n">provider_name</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>

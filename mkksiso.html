@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mkksiso &mdash; Lorax 33.2 documentation</title>
+  <title>mkksiso &mdash; Lorax 34.3 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                33.2
+                34.3
               </div>
             
           
@@ -89,8 +89,9 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html#blueprint-reference">Blueprint Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html#example-blueprint">Example Blueprint</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">mkksiso</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#mkksiso-cmdline-arguments">mkksiso cmdline arguments</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#optional-arguments">Optional arguments</a></li>
@@ -269,10 +270,11 @@ the kickstart like this:</p>
 <p>You can use the kickstart <a class="reference external" href="https://pykickstart.readthedocs.io/en/latest/kickstart-docs.html#liveimg">liveimg command</a>,
 to install a pre-generated disk image or tar to the system the iso is booting
 on.</p>
-<p>Create a disk image or tar with <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> or <code class="docutils literal notranslate"><span class="pre">livemedia-creator</span></code>,
+<p>Create a disk image or tar with <code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code> or <code class="docutils literal notranslate"><span class="pre">livemedia-creator</span></code>,
 make sure the image includes tools expected by <code class="docutils literal notranslate"><span class="pre">anaconda</span></code>, as well as the
-kernel and bootloader support.  In <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> use the <code class="docutils literal notranslate"><span class="pre">liveimg-tar</span></code>
-image type.  If you plan to install it to a UEFI machine make sure to include
+kernel and bootloader support.  In <code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code> use the <code class="docutils literal notranslate"><span class="pre">tar</span></code> image
+type and make sure to include the <code class="docutils literal notranslate"><span class="pre">kernel</span></code>, <code class="docutils literal notranslate"><span class="pre">grub2</span></code>, and <code class="docutils literal notranslate"><span class="pre">grub2-tools</span></code>
+packages.  If you plan to install it to a UEFI machine make sure to include
 <code class="docutils literal notranslate"><span class="pre">grub2-efi</span></code> and <code class="docutils literal notranslate"><span class="pre">efibootmgr</span></code> in the blueprint.</p>
 <p>Add the <code class="docutils literal notranslate"><span class="pre">root.tar.xz</span></code> file to the iso using <code class="docutils literal notranslate"><span class="pre">--add</span> <span class="pre">/PATH/TO/ROOT.TAR.XZ</span></code>,
 and in the kickstart reference it with the <code class="docutils literal notranslate"><span class="pre">liveimg</span></code> command like this:</p>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli package &mdash; Lorax 33.2 documentation</title>
+  <title>composer.cli package &mdash; Lorax 34.3 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="lifted package" href="lifted.html" />
+    <link rel="next" title="pylorax package" href="pylorax.html" />
     <link rel="prev" title="composer package" href="composer.html" /> 
 </head>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                33.2
+                34.3
               </div>
             
           
@@ -89,7 +89,6 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
@@ -105,7 +104,6 @@
 <li class="toctree-l3"><a class="reference internal" href="composer.html#module-composer">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="lifted.html">lifted package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.html">pylorax package</a></li>
 </ul>
 </li>
@@ -184,9 +182,9 @@
 </div>
 <div class="section" id="module-composer.cli.blueprints">
 <span id="composer-cli-blueprints-module"></span><h2>composer.cli.blueprints module<a class="headerlink" href="#module-composer.cli.blueprints" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_changes">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_changes</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_changes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_changes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_changes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the changes for each of the blueprints</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -201,9 +199,9 @@
 <p>blueprints changes &lt;blueprint,...&gt;     Display the changes for each blueprint.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_cmd">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process blueprints commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -219,9 +217,9 @@
 <p>This dispatches the blueprints commands to a function</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_delete">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_delete</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a blueprint from the server</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -236,9 +234,9 @@
 <p>delete &lt;blueprint&gt;          Delete a blueprint from the server</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_depsolve">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_depsolve</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_depsolve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_depsolve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_depsolve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the packages needed to install the blueprint</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -253,9 +251,9 @@
 <p>blueprints depsolve &lt;blueprint,...&gt;    Display the packages needed to install the blueprint.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_diff">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_diff</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_diff" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_diff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the differences between 2 versions of a blueprint</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -274,9 +272,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_freeze">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_freeze</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_freeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_freeze" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_freeze</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_freeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_freeze" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handle the blueprints freeze commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -293,9 +291,9 @@ blueprints freeze show &lt;blueprint,...&gt; Display the frozen blueprint in TOM
 blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file, &lt;blueprint-name&gt;.frozen.toml.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_freeze_save">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_freeze_save</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_freeze_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_freeze_save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_freeze_save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_freeze_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_freeze_save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the frozen blueprint to a TOML file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -310,9 +308,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file, &lt;blueprint-name&gt;.frozen.toml.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_freeze_show">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_freeze_show</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_freeze_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_freeze_show" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_freeze_show</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_freeze_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_freeze_show" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show the frozen blueprint in TOML format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -327,9 +325,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>blueprints freeze show &lt;blueprint,...&gt; Display the frozen blueprint in TOML format.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_list">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output the list of available blueprints</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -344,9 +342,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>blueprints list</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_push">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_push</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_push" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_push</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_push" title="Permalink to this definition">¶</a></dt>
 <dd><p>Push a blueprint TOML file to the server, updating the blueprint</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -361,9 +359,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>push &lt;blueprint&gt;            Push a blueprint TOML file to the server.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_save">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_save</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the blueprint to a TOML file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -378,9 +376,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>blueprints save &lt;blueprint,...&gt;        Save the blueprint to a file, &lt;blueprint-name&gt;.toml</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_show">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_show</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_show" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_show</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_show" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show the blueprints, in TOML format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -396,9 +394,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>Multiple blueprints will be separated by</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_tag">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_tag</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_tag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tag the most recent blueprint commit as a release</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -413,9 +411,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>blueprints tag &lt;blueprint&gt;             Tag the most recent blueprint commit as a release.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_undo">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_undo</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_undo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_undo" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_undo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_undo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_undo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Undo changes to a blueprint</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -430,9 +428,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>blueprints undo &lt;blueprint&gt; &lt;commit&gt;   Undo changes to a blueprint by reverting to the selected commit.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.blueprints_workspace">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_workspace</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_workspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_workspace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">blueprints_workspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_workspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_workspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Push the blueprint TOML to the temporary workspace storage</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -447,9 +445,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>blueprints workspace &lt;blueprint&gt;       Push the blueprint TOML to the temporary workspace storage.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.dict_names">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">dict_names</code><span class="sig-paren">(</span><em class="sig-param">lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#dict_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.dict_names" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">dict_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lst</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#dict_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.dict_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return comma-separated list of the dict's name/user fields</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -465,9 +463,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>root, norm</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.prettyCommitDetails">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">prettyCommitDetails</code><span class="sig-paren">(</span><em class="sig-param">change</em>, <em class="sig-param">indent=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#prettyCommitDetails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.prettyCommitDetails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">prettyCommitDetails</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">change</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">4</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#prettyCommitDetails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.prettyCommitDetails" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the blueprint's change in a nice way</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -479,9 +477,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.pretty_dict">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">pretty_dict</code><span class="sig-paren">(</span><em class="sig-param">d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#pretty_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.pretty_dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">pretty_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#pretty_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.pretty_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dict as a human readable single line</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -497,9 +495,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>key=&quot;str&quot;, key=&quot;str1,str2&quot;, ...</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.blueprints.pretty_diff_entry">
-<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">pretty_diff_entry</code><span class="sig-paren">(</span><em class="sig-param">diff</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#pretty_diff_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.pretty_diff_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.blueprints.</code><code class="sig-name descname">pretty_diff_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diff</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#pretty_diff_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.pretty_diff_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate nice diff entry string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -514,7 +512,7 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 </div>
 <div class="section" id="module-composer.cli.cmdline">
 <span id="composer-cli-cmdline-module"></span><h2>composer.cli.cmdline module<a class="headerlink" href="#module-composer.cli.cmdline" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.cmdline.composer_cli_parser">
 <code class="sig-prename descclassname">composer.cli.cmdline.</code><code class="sig-name descname">composer_cli_parser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/cmdline.html#composer_cli_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.cmdline.composer_cli_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ArgumentParser for composer-cli</p>
@@ -523,9 +521,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 </div>
 <div class="section" id="module-composer.cli.compose">
 <span id="composer-cli-compose-module"></span><h2>composer.cli.compose module<a class="headerlink" href="#module-composer.cli.compose" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_cancel">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_cancel</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_cancel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_cancel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_cancel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cancel a running compose</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -542,9 +540,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 <p>This will cancel a running compose. It does nothing if the compose has finished.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_cmd">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process compose commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -558,11 +556,15 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 </dd>
 </dl>
 <p>This dispatches the compose commands to a function</p>
+<p>compose_cmd expects api to be passed. eg.</p>
+<blockquote>
+<div><p>{&quot;version&quot;: 1, &quot;backend&quot;: &quot;lorax-composer&quot;}</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_delete">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_delete</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a finished compose's results</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -580,9 +582,9 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 or failed, not a running compose.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_image">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_image</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_image" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_image" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download the compose's output image</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -600,9 +602,9 @@ or failed, not a running compose.</p>
 of compose that was selected.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_info">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_info</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return detailed information about the compose</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -619,15 +621,15 @@ of compose that was selected.</p>
 <p>This returns information about the compose, including the blueprint and the dependencies.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_list">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a simple list of compose identifiers</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_log">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_log</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show the last part of the compose log</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -645,9 +647,9 @@ of compose that was selected.</p>
 during the build.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_logs">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_logs</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_logs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_logs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_logs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download a tar of the compose's logs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -664,9 +666,9 @@ during the build.</p>
 <p>Saves the logs as uuid-logs.tar</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_metadata">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_metadata</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_metadata" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download a tar file of the compose's metadata</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -683,9 +685,28 @@ during the build.</p>
 <p>Saves the metadata as uuid-metadata.tar</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
+<dt id="composer.cli.compose.compose_ostree">
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_ostree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_ostree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_ostree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a new ostree compose using the selected blueprint and type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Unix socket to use for API communication</p></li>
+<li><p><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Version of the API to talk to. eg. &quot;0&quot;</p></li>
+<li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
+<li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
+<li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.</p></li>
+<li><p><strong>api</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Details about the API server, &quot;version&quot; and &quot;backend&quot;</p></li>
+</ul>
+</dd>
+</dl>
+<p>compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="composer.cli.compose.compose_results">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_results</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download a tar file of the compose's results</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -703,9 +724,9 @@ during the build.</p>
 It is saved as uuid.tar</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_start">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_start</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_start" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_start</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start a new compose using the selected blueprint and type</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -715,15 +736,16 @@ It is saved as uuid.tar</p>
 <li><p><strong>args</strong> (<em>list of str</em>) -- List of remaining arguments from the cmdline</p></li>
 <li><p><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) -- Set to True to show the JSON output instead of the human readable output</p></li>
 <li><p><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.</p></li>
+<li><p><strong>api</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Details about the API server, &quot;version&quot; and &quot;backend&quot;</p></li>
 </ul>
 </dd>
 </dl>
-<p>compose start &lt;blueprint-name&gt; &lt;compose-type&gt; [&lt;image-name&gt; &lt;provider&gt; &lt;profile&gt; | &lt;image-name&gt; &lt;profile.toml&gt;]</p>
+<p>compose start [--size XXX] &lt;blueprint-name&gt; &lt;compose-type&gt; [&lt;image-name&gt; &lt;provider&gt; &lt;profile&gt; | &lt;image-name&gt; &lt;profile.toml&gt;]</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_status">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_status</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the status of all known composes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -740,9 +762,9 @@ It is saved as uuid.tar</p>
 and failed so raw JSON output is not available.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.compose.compose_types">
-<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_types</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_types" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">compose_types</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">api</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return information about the supported compose types</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -759,15 +781,73 @@ and failed so raw JSON output is not available.</p>
 include this extra information.</p>
 </dd></dl>
 
+<dl class="py function">
+<dt id="composer.cli.compose.get_parent">
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">get_parent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#get_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.get_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return optional --parent argument, and remaining args</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>list of strings</em>) -- list of arguments</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(args, parent)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="composer.cli.compose.get_ref">
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">get_ref</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#get_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.get_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return optional --ref argument, and remaining args</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>list of strings</em>) -- list of arguments</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(args, parent)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="composer.cli.compose.get_size">
+<code class="sig-prename descclassname">composer.cli.compose.</code><code class="sig-name descname">get_size</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#get_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.get_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return optional --size argument, and remaining args</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>list of strings</em>) -- list of arguments</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(args, size)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>check size argument for int</p></li>
+<li><p>check other args for --size in wrong place</p></li>
+<li><p>raise error? Or just return 0?</p></li>
+<li><p>no size returns 0 in size</p></li>
+<li><p>multiply by 1024**2 to make it easier on users to specify large sizes</p></li>
+</ul>
+</dd></dl>
+
 </div>
 <div class="section" id="module-composer.cli.help">
 <span id="composer-cli-help-module"></span><h2>composer.cli.help module<a class="headerlink" href="#module-composer.cli.help" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-composer.cli.modules">
 <span id="composer-cli-modules-module"></span><h2>composer.cli.modules module<a class="headerlink" href="#module-composer.cli.modules" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.modules.modules_cmd">
-<code class="sig-prename descclassname">composer.cli.modules.</code><code class="sig-name descname">modules_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/modules.html#modules_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.modules.modules_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.modules.</code><code class="sig-name descname">modules_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/modules.html#modules_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.modules.modules_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process modules commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -785,9 +865,9 @@ include this extra information.</p>
 </div>
 <div class="section" id="module-composer.cli.projects">
 <span id="composer-cli-projects-module"></span><h2>composer.cli.projects module<a class="headerlink" href="#module-composer.cli.projects" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.projects.projects_cmd">
-<code class="sig-prename descclassname">composer.cli.projects.</code><code class="sig-name descname">projects_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/projects.html#projects_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.projects.projects_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.projects.</code><code class="sig-name descname">projects_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/projects.html#projects_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.projects.projects_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process projects commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -802,9 +882,9 @@ include this extra information.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.projects.projects_info">
-<code class="sig-prename descclassname">composer.cli.projects.</code><code class="sig-name descname">projects_info</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/projects.html#projects_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.projects.projects_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.projects.</code><code class="sig-name descname">projects_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/projects.html#projects_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.projects.projects_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output info on a list of projects</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -819,9 +899,9 @@ include this extra information.</p>
 <p>projects info &lt;project,...&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.projects.projects_list">
-<code class="sig-prename descclassname">composer.cli.projects.</code><code class="sig-name descname">projects_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/projects.html#projects_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.projects.projects_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.projects.</code><code class="sig-name descname">projects_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/projects.html#projects_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.projects.projects_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output the list of available projects</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -839,9 +919,9 @@ include this extra information.</p>
 </div>
 <div class="section" id="module-composer.cli.providers">
 <span id="composer-cli-providers-module"></span><h2>composer.cli.providers module<a class="headerlink" href="#module-composer.cli.providers" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.providers.providers_cmd">
-<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process providers commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -857,9 +937,9 @@ include this extra information.</p>
 <p>This dispatches the providers commands to a function</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.providers.providers_delete">
-<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_delete</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a profile from a provider</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -875,9 +955,9 @@ include this extra information.</p>
 <p>providers delete &lt;provider&gt; &lt;profile&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.providers.providers_info">
-<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_info</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show information about each provider</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -893,9 +973,9 @@ include this extra information.</p>
 <p>providers info &lt;PROVIDER&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.providers.providers_list">
-<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the list of providers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -911,9 +991,9 @@ include this extra information.</p>
 <p>providers list</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.providers.providers_push">
-<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_push</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_push" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_push</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_push" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new provider profile or overwrite an existing one</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -929,9 +1009,9 @@ include this extra information.</p>
 <p>providers push &lt;profile.toml&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.providers.providers_save">
-<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_save</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save a provider's profile to a TOML file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -947,9 +1027,9 @@ include this extra information.</p>
 <p>providers save &lt;provider&gt; &lt;profile&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.providers.providers_show">
-<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_show</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_show" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_show</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_show" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return details about a provider</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -965,9 +1045,9 @@ include this extra information.</p>
 <p>providers show &lt;provider&gt; &lt;profile&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.providers.providers_template">
-<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_template</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_template" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.providers.</code><code class="sig-name descname">providers_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/providers.html#providers_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.providers.providers_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a TOML template for setting the provider's fields</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -986,9 +1066,9 @@ include this extra information.</p>
 </div>
 <div class="section" id="module-composer.cli.sources">
 <span id="composer-cli-sources-module"></span><h2>composer.cli.sources module<a class="headerlink" href="#module-composer.cli.sources" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.sources.sources_add">
-<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_add</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add or change a source</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1003,9 +1083,9 @@ include this extra information.</p>
 <p>sources add &lt;source.toml&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.sources.sources_cmd">
-<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process sources commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1020,9 +1100,9 @@ include this extra information.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.sources.sources_delete">
-<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_delete</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a source</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1037,9 +1117,9 @@ include this extra information.</p>
 <p>sources delete &lt;source-name&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.sources.sources_info">
-<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_info</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output info on a list of projects</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1054,9 +1134,9 @@ include this extra information.</p>
 <p>sources info &lt;source-name&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.sources.sources_list">
-<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.sources.</code><code class="sig-name descname">sources_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output the list of available sources</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1074,9 +1154,9 @@ include this extra information.</p>
 </div>
 <div class="section" id="module-composer.cli.status">
 <span id="composer-cli-status-module"></span><h2>composer.cli.status module<a class="headerlink" href="#module-composer.cli.status" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.status.status_cmd">
-<code class="sig-prename descclassname">composer.cli.status.</code><code class="sig-name descname">status_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/status.html#status_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.status.status_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.status.</code><code class="sig-name descname">status_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/status.html#status_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.status.status_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process status commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1094,9 +1174,9 @@ include this extra information.</p>
 </div>
 <div class="section" id="module-composer.cli.upload">
 <span id="composer-cli-upload-module"></span><h2>composer.cli.upload module<a class="headerlink" href="#module-composer.cli.upload" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.upload.upload_cancel">
-<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_cancel</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_cancel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_cancel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_cancel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cancel the queued or running upload</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1112,9 +1192,9 @@ include this extra information.</p>
 <p>upload cancel &lt;build-uuid&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.upload.upload_cmd">
-<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_cmd</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process upload commands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1130,9 +1210,9 @@ include this extra information.</p>
 <p>This dispatches the upload commands to a function</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.upload.upload_delete">
-<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_delete</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete an upload and remove it from the build</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1148,9 +1228,9 @@ include this extra information.</p>
 <p>upload delete &lt;build-uuid&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.upload.upload_info">
-<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_info</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return detailed information about the upload</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1167,9 +1247,9 @@ include this extra information.</p>
 <p>This returns information about the upload, including uuid, name, status, service, and image.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.upload.upload_list">
-<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_list</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the composes and their associated upload uuids and status</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1185,9 +1265,9 @@ include this extra information.</p>
 <p>upload list</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.upload.upload_log">
-<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_log</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the upload log</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1203,9 +1283,9 @@ include this extra information.</p>
 <p>upload log &lt;build-uuid&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.upload.upload_reset">
-<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_reset</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_reset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_reset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset the upload and execute it again</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1221,9 +1301,9 @@ include this extra information.</p>
 <p>upload reset &lt;build-uuid&gt;</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.upload.upload_start">
-<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_start</code><span class="sig-paren">(</span><em class="sig-param">socket_path</em>, <em class="sig-param">api_version</em>, <em class="sig-param">args</em>, <em class="sig-param">show_json=False</em>, <em class="sig-param">testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_start" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.upload.</code><code class="sig-name descname">upload_start</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">socket_path</span></em>, <em class="sig-param"><span class="n">api_version</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">testmode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/upload.html#upload_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.upload.upload_start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start upload up a build uuid image</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1242,9 +1322,9 @@ include this extra information.</p>
 </div>
 <div class="section" id="module-composer.cli.utilities">
 <span id="composer-cli-utilities-module"></span><h2>composer.cli.utilities module<a class="headerlink" href="#module-composer.cli.utilities" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.utilities.argify">
-<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">argify</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#argify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.argify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">argify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#argify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.argify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take a list of human args and return a list with each item</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1261,9 +1341,9 @@ include this extra information.</p>
 <p>[&quot;one,two&quot;, &quot;three&quot;, &quot;,four&quot;, &quot;,five,&quot;] returns [&quot;one&quot;, &quot;two&quot;, &quot;three&quot;, &quot;four&quot;, &quot;five&quot;]</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.utilities.frozen_toml_filename">
-<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">frozen_toml_filename</code><span class="sig-paren">(</span><em class="sig-param">blueprint_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#frozen_toml_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.frozen_toml_filename" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">frozen_toml_filename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">blueprint_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#frozen_toml_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.frozen_toml_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a blueprint name into a filename.toml</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1278,9 +1358,32 @@ include this extra information.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
+<dt id="composer.cli.utilities.get_arg">
+<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">get_arg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">argtype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#get_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.get_arg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return optional value from args, and remaining args</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<em>list of strings</em>) -- list of arguments</p></li>
+<li><p><strong>name</strong> (<em>string</em>) -- The argument to remove from the args list</p></li>
+<li><p><strong>argtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.8)"><em>type</em></a>) -- Type to use for checking the argument value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(args, value)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
+</dd>
+</dl>
+<p>This removes the optional argument and value from the argument list, returns the new list,
+and the value of the argument.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="composer.cli.utilities.handle_api_result">
-<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">handle_api_result</code><span class="sig-paren">(</span><em class="sig-param">result</em>, <em class="sig-param">show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#handle_api_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.handle_api_result" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">handle_api_result</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">result</span></em>, <em class="sig-param"><span class="n">show_json</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#handle_api_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.handle_api_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log any errors, return the correct value</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1297,9 +1400,9 @@ include this extra information.</p>
 not to continue processing the results.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.utilities.packageNEVRA">
-<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">packageNEVRA</code><span class="sig-paren">(</span><em class="sig-param">pkg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#packageNEVRA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.packageNEVRA" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">packageNEVRA</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pkg</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#packageNEVRA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.packageNEVRA" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the package info as a NEVRA</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1314,9 +1417,9 @@ not to continue processing the results.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.utilities.toml_filename">
-<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">toml_filename</code><span class="sig-paren">(</span><em class="sig-param">blueprint_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#toml_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.toml_filename" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.utilities.</code><code class="sig-name descname">toml_filename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">blueprint_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/utilities.html#toml_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.toml_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a blueprint name into a filename.toml</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1334,9 +1437,9 @@ not to continue processing the results.</p>
 </div>
 <div class="section" id="module-composer.cli">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-composer.cli" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="composer.cli.main">
-<code class="sig-prename descclassname">composer.cli.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param">opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.main" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">composer.cli.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.main" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main program execution</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1356,7 +1459,7 @@ not to continue processing the results.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="lifted.html" class="btn btn-neutral float-right" title="lifted package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pylorax.html" class="btn btn-neutral float-right" title="pylorax package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="composer.html" class="btn btn-neutral float-left" title="composer package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
