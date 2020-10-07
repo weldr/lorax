@@ -248,7 +248,8 @@ def providers_save(socket_path, api_version, args, show_json=False, testmode=0):
             "profile": args[1],
             "settings": results[args[0]]["profiles"][args[1]]
         }
-        open(toml_filename(args[1]), "w").write(toml.dumps(profile))
+        with open(toml_filename(args[1]), "w") as f:
+            f.write(toml.dumps(profile))
 
     return 0
 

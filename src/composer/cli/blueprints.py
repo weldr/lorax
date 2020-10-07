@@ -328,7 +328,8 @@ def blueprints_save(socket_path, api_version, args, show_json=False):
     for blueprint in argify(args):
         api_route = client.api_url(api_version, "/blueprints/info/%s?format=toml" % blueprint)
         blueprint_toml = client.get_url_raw(socket_path, api_route)
-        open(toml_filename(blueprint), "w").write(blueprint_toml)
+        with open(toml_filename(blueprint), "w") as f:
+            f.write(blueprint_toml)
 
     return 0
 
@@ -401,7 +402,8 @@ def blueprints_push(socket_path, api_version, args, show_json=False):
         if not os.path.exists(blueprint):
             log.error("Missing blueprint file: %s", blueprint)
             continue
-        blueprint_toml = open(blueprint, "r").read()
+        with open(blueprint, "r") as f:
+            blueprint_toml = f.read()
 
         result = client.post_url_toml(socket_path, api_route, blueprint_toml)
         if handle_api_result(result, show_json)[0]:
@@ -500,7 +502,8 @@ def blueprints_freeze_save(socket_path, api_version, args, show_json=False):
     for blueprint in argify(args):
         api_route = client.api_url(api_version, "/blueprints/freeze/%s?format=toml" % blueprint)
         blueprint_toml = client.get_url_raw(socket_path, api_route)
-        open(frozen_toml_filename(blueprint), "w").write(blueprint_toml)
+        with open(frozen_toml_filename(blueprint), "w") as f:
+            f.write(blueprint_toml)
 
     return 0
 
@@ -569,7 +572,8 @@ def blueprints_workspace(socket_path, api_version, args, show_json=False):
         if not os.path.exists(blueprint):
             log.error("Missing blueprint file: %s", blueprint)
             continue
-        blueprint_toml = open(blueprint, "r").read()
+        with open(blueprint, "r") as f:
+            blueprint_toml = f.read()
 
         result = client.post_url_toml(socket_path, api_route, blueprint_toml)
         if handle_api_result(result, show_json)[0]:

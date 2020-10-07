@@ -125,7 +125,8 @@ def sources_add(socket_path, api_version, args, show_json=False):
         if not os.path.exists(source):
             log.error("Missing source file: %s", source)
             continue
-        source_toml = open(source, "r").read()
+        with open(source, "r") as f:
+            source_toml = f.read()
 
         result = client.post_url_toml(socket_path, api_route, source_toml)
         if handle_api_result(result, show_json)[0]:
