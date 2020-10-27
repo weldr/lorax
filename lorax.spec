@@ -76,6 +76,7 @@ Requires:       grub2-tools
 
 %ifarch s390 s390x
 Requires:       openssh
+Requires:       s390utils >= 2.15.0-2
 %endif
 
 %ifarch %{arm}
@@ -169,7 +170,6 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_sbindir}/livemedia-creator
 %{_sbindir}/mkksiso
 %{_bindir}/image-minimizer
-%{_bindir}/mk-s390-cdboot
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax

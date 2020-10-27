@@ -19,7 +19,6 @@ for root, dnames, fnames in os.walk("share"):
 data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
                                  "src/sbin/livemedia-creator", "src/sbin/mkksiso"]))
 data_files.append(("/usr/bin",  ["src/bin/image-minimizer",
-                                 "src/bin/mk-s390-cdboot",
                                  "src/bin/composer-cli"]))
 
 # get the version
