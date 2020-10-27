@@ -5,6 +5,7 @@ BOOTDIR="images"
 KERNELDIR=BOOTDIR
 INITRD_ADDRESS="0x02000000"
 LORAXDIR="usr/share/lorax/"
+MKS390IMAGE="/usr/bin/mk-s390image"
 # The assumption seems to be that there is only one s390 kernel, ever
 kernel = kernels[0]
 
@@ -24,6 +25,7 @@ install ${configdir}/generic.ins .
 
 ## configure bootloader
 replace @INITRD_LOAD_ADDRESS@ ${INITRD_ADDRESS} generic.ins
+replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${BOOTDIR}/cdboot.prm
 
 ## install kernel
 installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/kernel.img
@@ -62,10 +64,10 @@ treeinfo images-${basearch} redhat.exec ${BOOTDIR}/redhat.exec
 %endfor
 
 ## Make a combined kernel+initrd image for the iso
-runcmd mk-s390-cdboot -i ${outroot}/${KERNELDIR}/kernel.img \
+runcmd ${MKS390IMAGE} ${outroot}/${KERNELDIR}/kernel.img \
+                      ${outroot}/${BOOTDIR}/cdboot.img \
                       -r ${outroot}/${KERNELDIR}/initrd.img \
-                      -p ${outroot}/${BOOTDIR}/cdboot.prm \
-                      -o ${outroot}/${BOOTDIR}/cdboot.img
+                      -p ${outroot}/${BOOTDIR}/cdboot.prm
 
 ## make boot.iso
 runcmd mkisofs -o ${outroot}/images/boot.iso \

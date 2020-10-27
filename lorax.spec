@@ -71,6 +71,7 @@ Requires:       grub2-tools
 
 %ifarch s390 s390x
 Requires:       openssh
+Requires:       s390utils >= 2.15.0-2
 %endif
 
 %ifarch %{arm}
@@ -216,7 +217,6 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sbindir}/mkefiboot
 %{_sbindir}/livemedia-creator
 %{_bindir}/image-minimizer
-%{_bindir}/mk-s390-cdboot
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
