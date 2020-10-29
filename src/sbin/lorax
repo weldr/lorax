@@ -97,6 +97,9 @@ def main():
     parser = lorax_parser(DRACUT_DEFAULT)
     opts = parser.parse_args()
 
+    # XXX Temporary workaround for https://pagure.io/pungi/pull-request/1463
+    opts.product = opts.product.strip("'")
+
     log.info("Lorax v%s", pylorax.vernum)
 
     if not opts.source and not opts.repos:
