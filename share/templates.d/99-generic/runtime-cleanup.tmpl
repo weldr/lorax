@@ -239,7 +239,7 @@ removefrom linux-firmware /usr/lib/firmware/mellanox/mlxsw_spectrum*
     removefrom linux-firmware /usr/lib/firmware/dpaa2/*
 %endif
 removefrom lldpad /etc/*
-removefrom mdadm /etc/*
+removefrom mdadm /etc/* /usr/lib/systemd/system/mdmonitor*
 removefrom mesa-dri-drivers /usr/${libdir}/dri/*_video.so
 removefrom mt-st /usr/sbin/*
 removefrom mtools /etc/*
