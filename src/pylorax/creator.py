@@ -149,7 +149,7 @@ def dracut_args(opts):
 
 def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
                    vcpus=1, arch=None, title="Linux", project="Linux",
-                   releasever="32"):
+                   releasever="34"):
     """
     Generate an appliance description file
 
@@ -163,7 +163,7 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
     :param str arch: CPU architecture. Default is 'x86_64'
     :param str title: Title, passed to template. Default is 'Linux'
     :param str project: Project, passed to template. Default is 'Linux'
-    :param str releasever: Release version, passed to template. Default is 32
+    :param str releasever: Release version, passed to template. Default is 34
     """
     if not (disk_img and template and outfile):
         return None

@@ -306,7 +306,7 @@ def lmc_parser(dracut_default=""):
 
     parser.add_argument("--project", default="Linux",
                         help="substituted for @PROJECT@ in bootloader config files")
-    parser.add_argument("--releasever", default="32",
+    parser.add_argument("--releasever", default="34",
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
     parser.add_argument("--squashfs-only", action="store_true", default=False,
