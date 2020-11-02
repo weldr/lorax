@@ -3,8 +3,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.3
-Release:        4%{?dist}
+Version:        34.4
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 License:        GPLv2+
@@ -196,6 +196,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Nov 02 2020 Brian C. Lane <bcl@redhat.com> 34.4-1
+- Update the default release version to 34 (bcl@redhat.com)
+- Remove mdmonitor service from boot.iso (bcl@redhat.com)
+- Switch to using upstream mk-s390image for s390 cdboot.img creation (bcl@redhat.com)
+- sshd_config: Apply suggested changes (bcl@redhat.com)
+- lorax.spec: Add BuildRequires on systemd-rpm-macros for tmpfilesdir macro (bcl@redhat.com)
+
 * Wed Dec 02 2020 Brian C. Lane <bcl@redhat.com> 34.3-4
 - lorax.spec: Update for RHEL 9 Alpha changes (bcl@redhat.com)
 - lorax: Strip ' from product cmdline argument (bcl@redhat.com)
