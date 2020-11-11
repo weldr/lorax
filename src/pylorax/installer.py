@@ -404,6 +404,7 @@ def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None):
         for arg in opts.compress_args:
             compress_args += arg.split(" ", 1)
 
+        rc = 1  # assume failure if PartitionMount fails to mount anything
         with PartitionMount(diskimg_path) as img_mount:
             if img_mount and img_mount.mount_dir:
                 rc = mktar(img_mount.mount_dir, disk_img, opts.compression, compress_args)
