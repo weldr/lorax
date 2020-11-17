@@ -111,7 +111,7 @@ local:
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
 test-in-copy:
-	rsync -aP --exclude=.git /lorax-ro/ /lorax/
+	rsync -a --exclude=.git /lorax-ro/ /lorax/
 	make -C /lorax/ $(RUN_TESTS)
 	cp /lorax/.coverage /test-results/
 
