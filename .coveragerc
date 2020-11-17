@@ -1,3 +1,5 @@
 [paths]
 source = .
         /lorax/
+[run]
+relative_files = True

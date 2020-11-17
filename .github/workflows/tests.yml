@@ -1,0 +1,28 @@
+name: Tests and Coverage
+# Make sure only one action triggers the job, otherwise pushing to a
+# pull-request will run it twice.
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - master
+      - rhel8-branch
+      - rhel7-branch
+      - f31-branch
+      - f32-branch
+      - f33-branch
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Clone Repository"
+        uses: actions/checkout@v2
+      - name: Run lorax tests in podman
+        run: make test-in-docker && cp .test-results/.coverage .coverage
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
