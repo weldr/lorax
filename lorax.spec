@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.4
+Version:        34.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -196,6 +196,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Nov 30 2020 Brian C. Lane <bcl@redhat.com> 34.5-1
+- Don't remove libldap_r libraries during runtime-cleanup.tmpl (spichugi@redhat.com)
+- Do not use '--loglevel' option when running Anaconda (vtrefny@redhat.com)
+- Makefile: quiet rsync use in testing (bcl@redhat.com)
+- Switch to using GitHub Actions instead of Travis CI (bcl@redhat.com)
+
 * Mon Nov 02 2020 Brian C. Lane <bcl@redhat.com> 34.4-1
 - Update the default release version to 34 (bcl@redhat.com)
 - Remove mdmonitor service from boot.iso (bcl@redhat.com)
