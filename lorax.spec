@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        34.3
-Release:        1%{?dist}
+Release:        4%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 License:        GPLv2+
@@ -17,8 +17,12 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
 BuildRequires:  make
+BuildRequires:  systemd-rpm-macros
 
 Requires:       lorax-templates
+%if 0%{?rhel} >= 9
+Requires:       lorax-templates-rhel
+%endif
 
 Requires:       GConf2
 Requires:       cpio
@@ -143,7 +147,7 @@ A command line tool for use with the lorax-composer API server. Examine blueprin
 build images, etc. from the command line.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 
 %build
 
@@ -192,6 +196,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Oct 29 2020 Brian C. Lane <bcl@redhat.com> - 34.3-4
+- Drop unused proc/mount patch
+- lorax: Strip ' from product cmdline argument
+  temporary fix for pungi bug: https://pagure.io/pungi/pull-request/1463
+
+* Wed Oct 28 2020 Stephen Gallagher <sgallagh@redhat.com> - 34.3-3
+- Increase boot.iso rootfs to 3GiB
+
+* Tue Oct 27 2020 Brian C. Lane <bcl@redhat.com> - 34.3-2
+- Require lorax-templates-rhel for RHEL9
+
 * Wed Oct 07 2020 Brian C. Lane <bcl@redhat.com> 34.3-1
 - composer: Fix open file warnings (bcl@redhat.com)
 - ltmpl: Fix deprecated escape in docstring (bcl@redhat.com)
