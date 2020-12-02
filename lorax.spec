@@ -196,6 +196,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Wed Dec 02 2020 Brian C. Lane <bcl@redhat.com> 34.3-4
+- lorax.spec: Update for RHEL 9 Alpha changes (bcl@redhat.com)
+- lorax: Strip ' from product cmdline argument (bcl@redhat.com)
+- Change rootfs default size to 3GiB (sgallagh@redhat.com)
+
 * Thu Oct 29 2020 Brian C. Lane <bcl@redhat.com> - 34.3-4
 - Drop unused proc/mount patch
 - lorax: Strip ' from product cmdline argument
