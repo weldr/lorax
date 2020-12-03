@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.55
+Version:        28.14.56
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Dec 03 2020 Brian C. Lane <bcl@redhat.com> 28.14.56-1
+- Switch to using upstream mk-s390image for s390 cdboot.img creation (bcl)
+  Related: rhbz#1892404
+- Add --squashfs-only option to drop inner rootfs.img layer (marmarek)
+  Resolves: rhbz#1846282
+
 * Thu Sep 10 2020 Brian C. Lane <bcl@redhat.com> 28.14.55-1
 - docs: Remove anaconda from rhel-livemedia.ks example (bcl)
   Resolves: rhbz#1876563
