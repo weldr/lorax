@@ -291,7 +291,12 @@ def novirt_cancel_check(cancel_funcs, proc):
     """
     for f in cancel_funcs:
         if f():
-            proc.terminate()
+            # Anaconda runs from unshare, anaconda doesn't exit correctly so try to
+            # send TERM to all of them directly
+            import psutil
+            for p in psutil.Process(proc.pid).children(recursive=True):
+                p.terminate()
+            psutil.Process(proc.pid).terminate()
             return True
     return False
 
@@ -401,7 +406,7 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None, tar_img=None):
     # Preload libgomp.so.1 to workaround rhbz#1722181
     log.info("Running anaconda.")
     try:
-        unshare_args = [ "--pid", "--kill-child", "--mount", "--propagation", "unchanged", "anaconda" ] + args
+        unshare_args = ["--pid", "--kill-child", "--mount", "--propagation", "unchanged", "anaconda"] + args
         for line in execReadlines("unshare", unshare_args, reset_lang=False,
                                   env_add={"ANACONDA_PRODUCTNAME": opts.project,
                                            "ANACONDA_PRODUCTVERSION": opts.releasever,
