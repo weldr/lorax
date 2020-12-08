@@ -21,7 +21,6 @@ BuildRequires:  systemd-rpm-macros
 
 Requires:       lorax-templates
 
-Requires:       GConf2
 Requires:       cpio
 Requires:       device-mapper
 Requires:       dosfstools
