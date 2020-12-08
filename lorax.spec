@@ -24,7 +24,6 @@ Requires:       lorax-templates
 Requires:       lorax-templates-rhel
 %endif
 
-Requires:       GConf2
 Requires:       cpio
 Requires:       device-mapper
 Requires:       dosfstools
