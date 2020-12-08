@@ -118,6 +118,7 @@ Requires: anaconda-core
 Requires: anaconda-tui
 Requires: anaconda-install-env-deps
 Requires: system-logos
+Requires: python3-psutil
 
 %description lmc-novirt
 Additional dependencies required by livemedia-creator when using it with --no-virt

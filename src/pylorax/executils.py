@@ -19,9 +19,11 @@
 #
 
 import os
+import select
 import subprocess
 from subprocess import TimeoutExpired
 import signal
+import time
 
 import logging
 log = logging.getLogger("pylorax")
@@ -288,6 +290,7 @@ def execReadlines(command, argv, stdin=None, root='/', env_prune=None, filter_st
             self._proc = proc
             self._argv = argv
             self._callback = callback
+            self._data = ""
 
         def __iter__(self):
             return self
@@ -302,22 +305,43 @@ def execReadlines(command, argv, stdin=None, root='/', env_prune=None, filter_st
                     pass
 
         def __next__(self):
-            # Read the next line, blocking if a line is not yet available
-            line = self._proc.stdout.readline().decode("utf-8")
-            if line == '' or not self._callback(self._proc):
-                # Output finished, wait for the process to end
-                self._proc.communicate()
+            # Return lines from stdout while also calling _callback
+            while True:
+                # Check for input without blocking
+                if select.select([self._proc.stdout], [], [], 0)[0]:
+                    size = len(self._proc.stdout.peek(1))
+                    if size > 0:
+                        self._data += self._proc.stdout.read(size).decode("utf-8")
 
-                # Check for successful exit
-                if self._proc.returncode < 0:
-                    raise OSError("process '%s' was killed by signal %s" %
-                            (self._argv, -self._proc.returncode))
-                elif self._proc.returncode > 0:
-                    raise OSError("process '%s' exited with status %s" %
-                            (self._argv, self._proc.returncode))
-                raise StopIteration
+                if self._data.find("\n") >= 0:
+                    line = self._data.split("\n", 1)
+                    self._data = line[1]
+                    return line[0]
 
-            return line.strip()
+                if self._proc.poll() is not None or not self._callback(self._proc):
+                    # Output finished, wait 60s for the process to end
+                    try:
+                        self._proc.communicate(timeout=60)
+                    except subprocess.TimeoutExpired:
+                        # Did not exit in 60s, kill it and wait 30s more
+                        self._proc.kill()
+                        try:
+                            self._proc.communicate(timeout=30)
+                        except subprocess.TimeoutExpired:
+                            pass
+
+                    if self._proc.returncode is None:
+                        raise OSError("process '%s' failed to be killed" % self._argv)
+                    elif self._proc.returncode < 0:
+                        raise OSError("process '%s' was killed by signal %s" %
+                                (self._argv, -self._proc.returncode))
+                    elif self._proc.returncode > 0:
+                        raise OSError("process '%s' exited with status %s" %
+                                (self._argv, self._proc.returncode))
+                    raise StopIteration
+
+                # Don't loop too fast with no input to read
+                time.sleep(0.5)
 
     argv = [command] + argv
 
