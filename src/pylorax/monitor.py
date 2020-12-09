@@ -46,7 +46,8 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
         "crashed on signal",
         "packaging: Missed: NoSuchPackage",
         "packaging: Installation failed",
-        "The following error occurred while installing.  This is a fatal error"
+        "The following error occurred while installing.  This is a fatal error",
+        "Error in POSTIN scriptlet in rpm package"
     ]
 
     re_tests = [
