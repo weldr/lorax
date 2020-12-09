@@ -403,14 +403,12 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None, tar_img=None):
         cancel_funcs.append(cancel_func)
 
     # Make sure anaconda has the right product and release
-    # Preload libgomp.so.1 to workaround rhbz#1722181
     log.info("Running anaconda.")
     try:
         unshare_args = ["--pid", "--kill-child", "--mount", "--propagation", "unchanged", "anaconda"] + args
         for line in execReadlines("unshare", unshare_args, reset_lang=False,
                                   env_add={"ANACONDA_PRODUCTNAME": opts.project,
-                                           "ANACONDA_PRODUCTVERSION": opts.releasever,
-                                           "LD_PRELOAD": "libgomp.so.1"},
+                                           "ANACONDA_PRODUCTVERSION": opts.releasever},
                                   callback=lambda p: not novirt_cancel_check(cancel_funcs, p)):
             log.info(line)
 
