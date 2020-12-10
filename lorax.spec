@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.56
+Version:        28.14.57
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -253,6 +253,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Dec 09 2020 Brian C. Lane <bcl@redhat.com> 28.14.57-1
+- fixes #543 qemu -nodefconfig deprecated (afm404)
+  Resolves: rhbz#1904168
+- sshd_config: Apply suggested changes (bcl)
+  Resolves: rhbz#1872892
+
 * Thu Dec 03 2020 Brian C. Lane <bcl@redhat.com> 28.14.56-1
 - Switch to using upstream mk-s390image for s390 cdboot.img creation (bcl)
   Related: rhbz#1892404
