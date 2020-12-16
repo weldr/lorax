@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.5
+Version:        34.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -193,6 +193,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Wed Dec 16 2020 Brian C. Lane <bcl@redhat.com> 34.6-1
+- Remove LD_PRELOAD libgomp.so.1 from lmc --no-virt (bcl@redhat.com)
+- Add POSTIN scriptlet error to the log monitor list (bcl@redhat.com)
+- Improve lmc no-virt error handling (bcl@redhat.com)
+- lorax.spec: Drop GConf2 requirement (bcl@redhat.com)
+
 * Mon Nov 30 2020 Brian C. Lane <bcl@redhat.com> 34.5-1
 - Don't remove libldap_r libraries during runtime-cleanup.tmpl (spichugi@redhat.com)
 - Do not use '--loglevel' option when running Anaconda (vtrefny@redhat.com)
