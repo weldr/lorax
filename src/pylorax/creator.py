@@ -266,6 +266,9 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
         if not os.path.isdir(root_dir):
             os.mkdir(root_dir)
         # /tmp (maybe not fatal)
+        sysroot_dir = joinpaths(sys_root_dir, "sysroot")
+        if not os.path.isdir(sysroot_dir):
+            os.mkdir(sysroot_dir)
         tmp_dir = joinpaths(sys_root_dir, "sysroot/tmp")
         if not os.path.isdir(tmp_dir):
             os.mkdir(tmp_dir)
