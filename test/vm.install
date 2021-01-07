@@ -31,12 +31,15 @@ sed -i "s/download.fedoraproject/dl.fedoraproject/" /etc/yum.repos.d/*.repo
 # Example: `#baseurl=http://download.example/pub/fedora/linux/updates/$releasever/Everything/$basearch/`
 sed -i "s/download.example/dl.fedoraproject.org/" /etc/yum.repos.d/*.repo
 
-# Grow root partition to make room for images. This only works on Fedora right now.
-echo ", +" | sfdisk -N 2 -f /dev/vda
-partprobe
-pvs --noheadings -opv_name | xargs pvresize
-rootlv=$(findmnt --noheadings -oSOURCE /)
-lvresize $rootlv -l+100%FREE -r
+# Grow root partition on LVM test images to make room for built images
+PVS=$(pvs --noheadings -opv_name)
+if [ -n "$PVS" ]; then
+    echo ", +" | sfdisk -N 2 -f /dev/vda
+    partprobe
+    echo "$PVS" | xargs pvresize
+    rootlv=$(findmnt --noheadings -oSOURCE /)
+    lvresize $rootlv -l+100%FREE -r
+fi
 
 rm -rf build-results
 su builder -c "/usr/bin/mock --verbose --no-clean --resultdir build-results --rebuild $SRPM"
