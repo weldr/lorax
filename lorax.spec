@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        28.14.57
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -253,6 +253,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Jan 15 2021 Brian C. Lane <bcl@redhat.com> - 28.14.57-2
+- tests: Start osbuild-composer.socket for the tests
+  Resolves: rhbz#1916684
+
 * Wed Dec 09 2020 Brian C. Lane <bcl@redhat.com> 28.14.57-1
 - fixes #543 qemu -nodefconfig deprecated (afm404)
   Resolves: rhbz#1904168
