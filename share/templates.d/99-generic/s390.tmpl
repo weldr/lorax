@@ -66,7 +66,7 @@ treeinfo images-${basearch} redhat.exec ${BOOTDIR}/redhat.exec
 %>
 
 # Add the license files
-%for f in glob("/usr/share/licenses/*-release/*"):
+%for f in glob("usr/share/licenses/*-release-common/*"):
     install ${f} ${f|basename}
     <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
 %endfor
