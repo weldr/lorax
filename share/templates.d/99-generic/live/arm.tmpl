@@ -44,7 +44,7 @@ mkdir ${KERNELDIR}
 %endfor
 
 # Add the license files
-%for f in glob("/usr/share/licenses/*-release/*"):
+%for f in glob("usr/share/licenses/*-release-common/*"):
     install ${f} ${f|basename}
 %endfor
 
