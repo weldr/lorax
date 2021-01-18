@@ -112,6 +112,12 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
 %endfor
 
+# Add the livecd-iso-to-disk script if installed
+<% f = "usr/bin/livecd-iso-to-disk" %>
+%if exists(f):
+    install ${f} ${LIVEDIR}/${f|basename}
+%endif
+
 ## make boot.iso
 runcmd xorrisofs ${isoargs} -o ${outroot}/images/boot.iso \
        -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin \
