@@ -135,27 +135,44 @@ class QEMUInstall(object):
     """
     Run qemu using an iso and a kickstart
     """
-    # Mapping of arch to qemu command
-    QEMU_CMDS = {"x86_64":  "qemu-system-x86_64",
-                 "aarch64": "qemu-system-aarch64",
-                 "ppc64le": "qemu-system-ppc64"
-                }
-    COMPATIBLE_ARCHS = {"x86_64": [ "x86_64", "i386" ],
-                        "i386": [ "i386" ],
-                        "arm": [ "arm" ],
-                        "aarch64": [ "aarch64", "arm" ],
-                        "ppc64le": [ "ppc64le" ]}
-    QEMU_DEFAULT_MACHINE = {"x86_64":  "q35",
-                            "i386":    "q35",
-                            "arm":     "virt",
-                            "aarch64": "virt",
-                            "ppc64le": "pseries"
-                           }
+    # Mapping of arch to qemu command and options
+    QEMU = {"x86_64": {
+                "cmd": "qemu-system-x86_64",
+                "arches": ["x86_64", "i386"],
+                "machine": "q35",
+                "uefi": ["ovmf/OVMF_CODE.secboot.fd", "ovmf/OVMF_VARS.secboot.fd"],
+                "uefi_machine": "q35,smm=on",
+                "uefi_args": ["-global", "driver=cfi.pflash01,property=secure,value=on"],
+                },
+            "i386": {
+                "cmd": "qemu-system-i386",
+                "arches": ["i386"],
+                "machine": "q35",
+                },
+            "arm": {
+                "cmd": "qemu-system-arm",
+                "arches": ["arm"],
+                "machine": "virt",
+                },
+            "aarch64": {
+                "cmd": "qemu-system-aarch64",
+                "arches": ["aarch64", "arm"],
+                "machine": "virt",
+                "uefi": ["aarch64/QEMU_EFI-pflash.raw", "aarch64/vars-template-pflash.raw"],
+                "uefi_machine": "virt",
+                "uefi_args": ["-global", "driver=cfi.pflash01,property=secure,value=off"],
+                },
+            "ppc64le": {
+                "cmd": "qemu-system-ppc64",
+                "arches": ["ppc64le"],
+                "machine": "pseries",
+                },
+        }
 
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
                  kernel_args=None, memory=1024, vcpus=None, vnc=None, arch=None,
                  cancel_func=None, virtio_host="127.0.0.1", virtio_port=6080,
-                 image_type=None, boot_uefi=False, ovmf_path=None):
+                 image_type=None, boot_uefi=False, fw_path=None):
         """
         Start the installation
 
@@ -176,14 +193,16 @@ class QEMUInstall(object):
         :param int virtio_port: Port to connect virtio log to
         :param str image_type: Type of qemu-img disk to create, or None.
         :param bool boot_uefi: Use OVMF to boot the VM in UEFI mode
-        :param str ovmf_path: Path to the OVMF firmware
+        :param str fw_path: Path to the top of edk2 firmware directory tree
         """
         target_arch = arch or os.uname().machine
-        has_machine = False
         # Lookup qemu-system- for arch if passed, or try to guess using host arch
-        qemu_cmd = [self.QEMU_CMDS.get(target_arch, "qemu-system-"+os.uname().machine)]
-        if not os.path.exists("/usr/bin/"+qemu_cmd[0]):
-            raise InstallError("%s does not exist, cannot run qemu" % qemu_cmd[0])
+        if target_arch in self.QEMU:
+            qemu_cmd = [self.QEMU[target_arch]["cmd"]]
+        elif os.path.exists("/usr/bin/"+"qemu-system-"+os.uname().machine):
+            qemu_cmd = ["/usr/bin/qemu-system-"+os.uname().machine]
+        else:
+            raise InstallError("/usr/bin/qemu-system-%s does not exist, cannot run qemu" % os.uname().machine)
 
         # Default to using the host cpu capabilities
         qemu_cmd += ["-cpu", opts.cpu or "host"]
@@ -194,21 +213,19 @@ class QEMUInstall(object):
             qemu_cmd += ["-smp", str(vcpus)]
 
         if not opts.no_kvm and os.path.exists("/dev/kvm"):
-            if os.uname().machine not in self.COMPATIBLE_ARCHS[target_arch]:
+            if os.uname().machine not in self.QEMU[target_arch]["arches"]:
                 raise InstallError("KVM support not available to run %s on %s" % (target_arch, os.uname().machine))
             qemu_cmd += ["-machine", "accel=kvm"]
-            has_machine = True
 
         if boot_uefi:
-            if target_arch == x86_64:
-                qemu_cmd += ["-machine", "q35,smm=on"]
-                qemu_cmd += ["-global", "driver=cfi.pflash01,property=secure,value=on"]
-                has_machine = True
-            else:
+            if "uefi_machine" not in self.QEMU[target_arch]:
                 raise InstallError("UEFI support not available for %s (yet?)" % target_arch)
 
-        if not has_machine:
-            qemu_cmd += ["-machine", self.QEMU_DEFAULT_MACHINE[target_arch]]
+            qemu_cmd += ["-machine", self.QEMU[target_arch]["uefi_machine"]]
+            qemu_cmd += self.QEMU[target_arch]["uefi_args"]
+
+        if "-machine" not in qemu_cmd:
+            qemu_cmd += ["-machine", self.QEMU[target_arch]["machine"]]
 
         # Copy the initrd from the iso, create a cpio archive of the kickstart files
         # and append it to the temporary initrd.
@@ -266,14 +283,25 @@ class QEMUInstall(object):
             else:
                 qemu_cmd += ["-device", "virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9"]
 
-        if boot_uefi and ovmf_path:
-            qemu_cmd += ["-drive", "file=%s/OVMF_CODE.secboot.fd,if=pflash,format=raw,unit=0,readonly=on" % ovmf_path]
+        if boot_uefi and fw_path:
+            if "uefi" not in self.QEMU[target_arch]:
+                raise InstallError("UEFI support not available for %s, missing firmware configuration" % target_arch)
 
-            # Make a copy of the OVMF_VARS.secboot.fd for this run
-            ovmf_vars = tempfile.mktemp(prefix="lmc-OVMF_VARS-", suffix=".fd")
-            shutil.copy2(joinpaths(ovmf_path, "/OVMF_VARS.secboot.fd"), ovmf_vars)
+            # User may pass full directory to ovmf files, or to the edk2 directory.
+            firmware = joinpaths(fw_path, os.path.basename(self.QEMU[target_arch]["uefi"][0]))
+            flash_vars = joinpaths(fw_path, os.path.basename(self.QEMU[target_arch]["uefi"][1]))
+            if not os.path.exists(firmware) or not os.path.exists(flash_vars):
+                firmware = joinpaths(fw_path, self.QEMU[target_arch]["uefi"][0])
+                flash_vars = joinpaths(fw_path, self.QEMU[target_arch]["uefi"][1])
+                if not os.path.exists(firmware) or not os.path.exists(flash_vars):
+                    raise InstallError("UEFI firmware file(s) are missing: %s, %s" % (firmware, flash_vars))
 
-            qemu_cmd += ["-drive", "file=%s,if=pflash,format=raw,unit=1" % ovmf_vars]
+            qemu_cmd += ["-drive", "file=%s,if=pflash,format=raw,unit=0,readonly=on" % firmware]
+
+            # Make a copy of the flash variables for this run
+            uefi_vars = tempfile.mktemp(prefix="lmc-UEFI_VARS-", suffix=".fd")
+            shutil.copy2(flash_vars, uefi_vars)
+            qemu_cmd += ["-drive", "file=%s,if=pflash,format=raw,unit=1" % uefi_vars]
 
         log.info("Running qemu")
         log.debug(qemu_cmd)
@@ -290,8 +318,8 @@ class QEMUInstall(object):
             raise InstallError("QEMUInstall failed")
         finally:
             os.unlink(qemu_initrd)
-            if boot_uefi and ovmf_path:
-                os.unlink(ovmf_vars)
+            if boot_uefi and fw_path:
+                os.unlink(uefi_vars)
 
         if cancel_func and cancel_func():
             log.error("Installation error detected. See logfile for details.")
@@ -627,7 +655,7 @@ def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None, tar_i
                     virtio_host = log_monitor.host,
                     virtio_port = log_monitor.port,
                     image_type=opts.image_type, boot_uefi=opts.virt_uefi,
-                    ovmf_path=opts.ovmf_path)
+                    fw_path=opts.fw_path)
         log_monitor.shutdown()
     except InstallError as e:
         log.error("VirtualInstall failed: %s", e)
