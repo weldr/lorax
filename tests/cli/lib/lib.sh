@@ -108,7 +108,6 @@ composer_start() {
         # socket stop/start seems to be necessary for a proper service restart
         # after a previous direct manual run for it to work properly
         systemctl start $BACKEND.socket
-        systemctl start $BACKEND
     fi
     rc=$?
 
