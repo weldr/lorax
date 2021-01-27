@@ -98,6 +98,7 @@ composer_start() {
         # and/or internal Fedora URLs instead of mirrors
         mkdir -p /etc/osbuild-composer/repositories/
         cp $(dirname $0)/cli/lib/rhel-8.json /etc/osbuild-composer/repositories/
+        cp $(dirname $0)/cli/lib/rhel-8-beta.json /etc/osbuild-composer/repositories/
     fi
 
     if [ "$BACKEND" == "lorax-composer" ] && [[ -z "$CLI" || "$CLI" == "./src/bin/composer-cli" ]]; then
