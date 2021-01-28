@@ -20,6 +20,7 @@ rlJournalStart
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
         lorax -p Fedora-Lorax-Test -v "$RELEASE" -r "$RELEASE" \
               --repo /etc/yum.repos.d/fedora.repo \
+              --repo /etc/yum.repos.d/fedora-updates.repo \
               --sharedir "$SHARE_DIR" /var/tmp/test-results/
         rlAssertEquals "exit code should be zero" $? 0
         IMAGE="/var/tmp/test-results/images/boot.iso"
