@@ -2,7 +2,7 @@
 <%page args="basearch, product"/>
 
 ## anaconda package
-installpkg anaconda anaconda-widgets kexec-tools-anaconda-addon anaconda-install-env-deps
+installpkg anaconda anaconda-widgets kexec-tools-anaconda-addon anaconda-install-img-deps
 ## Other available payloads
 installpkg dnf
 installpkg rpm-ostree ostree
@@ -104,9 +104,6 @@ installpkg xfsdump
 ## extra storage packages
 # hostname is needed for iscsi to work, see RHBZ#1593917
 installpkg udisks2 udisks2-iscsi hostname
-%if basearch in ("i386", "x86_64"):
-    installpkg fcoe-utils
-%endif
 
 ## extra libblockdev plugins
 installpkg libblockdev-lvm-dbus
@@ -118,9 +115,6 @@ installpkg nss-tools
 ## blivet-gui-runtime requires PolicyKit-authentication-agent, if we
 ## don't tell dnf what to pick it picks lxpolkit, which drags in gtk2
 installpkg polkit-gnome
-
-## enable swap on zram
-installpkg zram-generator-defaults
 
 ## SELinux support
 installpkg selinux-policy-targeted audit
