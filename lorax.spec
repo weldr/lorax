@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.7
+Version:        34.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -196,6 +196,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Feb 08 2021 Brian C. Lane <bcl@redhat.com> 34.8-1
+- Use image dependencies metapackage (vslavik@redhat.com)
+- tests: Include the fedora-updates repo when testing boot.iso building (bcl@redhat.com)
+
 * Wed Jan 20 2021 Brian C. Lane <bcl@redhat.com> 34.7-1
 - live/x86.tmpl: Copy livecd-iso-to-disk script, if installed (david.ward@ll.mit.edu)
 - templates: Copy license files from the correct path (david.ward@ll.mit.edu)
