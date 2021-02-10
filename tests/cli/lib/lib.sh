@@ -26,6 +26,7 @@ fi
 setup_beakerlib_env() {
     export BEAKERLIB_DIR=$(mktemp -d /tmp/composer-test.XXXXXX)
     export BEAKERLIB_JOURNAL=0
+    export BEAKERLIB_PROFILING=0
 }
 
 run_beakerlib_tests() {
