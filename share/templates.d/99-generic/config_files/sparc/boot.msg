@@ -5,5 +5,5 @@
 
  -  To install in text mode, type: [7mlinux text <ENTER>[m.
 
- -  To enter rescue mode type: [7mlinux rescue <ENTER>[m.
+ -  To enter rescue mode type: [7mlinux inst.rescue <ENTER>[m.
 
