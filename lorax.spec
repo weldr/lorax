@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.8
+Version:        34.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -196,6 +196,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Feb 15 2021 Brian C. Lane <bcl@redhat.com> 34.9-1
+- Use inst.rescue to trigger rescue mode (awilliam@redhat.com)
+  Resolves: rhbz#1928318
 * Mon Feb 08 2021 Brian C. Lane <bcl@redhat.com> 34.8-1
 - Use image dependencies metapackage (vslavik@redhat.com)
 - tests: Include the fedora-updates repo when testing boot.iso building (bcl@redhat.com)
