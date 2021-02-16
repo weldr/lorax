@@ -387,6 +387,16 @@ class ComposeOsBuildV1TestCase(ComposeTestCase):
         self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
             "ostree": {"ref": "refid", "parent": "parenturl"}})
 
+    def test_compose_start_ostree_url(self):
+        """Test start-ostree with --ref, --parent, and --url"""
+        result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--ref", "refid", "--parent", "parenturl", "--url", "http://some/path/", "http-server", "fedora-iot-commit"])
+        self.assertTrue(result is not None)
+        self.assertTrue("body" in result)
+        self.assertGreater(len(result["body"]), 0)
+        jd = json.loads(result["body"])
+        self.assertEqual(jd, {"blueprint_name": "http-server", "compose_type": "fedora-iot-commit", "branch": "master",
+            "ostree": {"ref": "refid", "parent": "parenturl", "url": "http://some/path/"}})
+
     def test_compose_start_ostree_size(self):
         """Test start-ostree with --size, --ref and --parent"""
         result = self.run_test(["--socket", self.socket, "--api", "1", "compose", "start-ostree", "--size", "2048", "--ref", "refid", "--parent", "parenturl", "http-server", "fedora-iot-commit"])
