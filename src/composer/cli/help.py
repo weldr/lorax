@@ -20,7 +20,7 @@ compose start [--size XXXX] <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROVIDER> <PROFILE
     Start a compose using the selected blueprint and output type. --size is in MiB.
     NOTE: uploading and --size are only supported by osbuild-composer.
 
-compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROFILE.TOML>]
+compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] [--url url] <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROFILE.TOML>]
     Start an ostree compose using the selected blueprint and output type. Optionally start an upload. This command
     is only supported by osbuild-composer. --size is in MiB.
 

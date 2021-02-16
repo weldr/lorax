@@ -133,6 +133,18 @@ def get_ref(args):
     value = value if value is not None else ""
     return (args, value)
 
+def get_url(args):
+    """Return optional --url argument, and remaining args
+
+    :param args: list of arguments
+    :type args: list of strings
+    :returns: (args, parent)
+    :rtype: tuple
+    """
+    args, value = get_arg(args, "--url")
+    value = value if value is not None else ""
+    return (args, value)
+
 def compose_list(socket_path, api_version, args, show_json=False, testmode=0):
     """Return a simple list of compose identifiers"""
 
@@ -405,13 +417,14 @@ def compose_ostree(socket_path, api_version, args, show_json=False, testmode=0):
     :param api: Details about the API server, "version" and "backend"
     :type api: dict
 
-    compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROFILE.TOML>]
+    compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] [--url URL] <BLUEPRINT> <TYPE> [<IMAGE-NAME> <PROFILE.TOML>]
     """
-    # Get the optional size before checking other parameters
+    # Get the optional arguments before checking other parameters
     try:
         args, size = get_size(args)
         args, parent = get_parent(args)
         args, ref = get_ref(args)
+        args, url = get_url(args)
     except (RuntimeError, ValueError) as e:
         log.error(str(e))
         return 1
@@ -434,6 +447,8 @@ def compose_ostree(socket_path, api_version, args, show_json=False, testmode=0):
         }
     if size > 0:
         config["size"] = size
+    if len(url) > 0:
+        config["ostree"]["url"] = url
 
     if len(args) == 4:
         config["upload"] = {"image_name": args[2]}
