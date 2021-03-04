@@ -3,6 +3,7 @@ DESTDIR ?= /
 PREFIX ?= /usr
 mandir ?= $(PREFIX)/share/man
 DOCKER ?= podman
+PODMAN ?= $(DOCKER)
 DOCS_VERSION ?= next
 RUN_TESTS ?= ci
 BACKEND ?= osbuild-composer
@@ -115,7 +116,9 @@ test-in-copy:
 	make -C /lorax/ $(RUN_TESTS)
 	cp /lorax/.coverage /test-results/
 
-test-in-docker:
+test-in-docker: test-in-podman
+
+test-in-podman:
 	sudo $(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
 	@mkdir -p `pwd`/.test-results
 	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results \
@@ -123,7 +126,10 @@ test-in-docker:
 		--env RUN_TESTS="$(RUN_TESTS)" \
 		welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
 
-docs-in-docker:
+
+docs-in-docker: docs-in-podman
+
+docs-in-podman:
 	sudo $(DOCKER) run -it --rm -v `pwd`:/lorax-ro:ro \
 		-v `pwd`/docs/:/lorax-ro/docs/ \
 		--env LORAX_VERSION=$(DOCS_VERSION) \
@@ -183,4 +189,4 @@ bots:
 ci_after_success:
 # nothing to do here, but Jenkins expects this to be present, otherwise fails
 
-.PHONY: docs check test srpm vm vm-reset
+.PHONY: docs check test srpm vm vm-reset docs-in-docker docs-in-podman test-in-docker test-in-podman
