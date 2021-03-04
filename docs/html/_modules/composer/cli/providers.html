@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli.providers &mdash; Lorax 34.3 documentation</title>
+  <title>composer.cli.providers &mdash; Lorax 35.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.3
+                35.0
               </div>
             
           
@@ -406,7 +406,8 @@
             <span class="s2">&quot;profile&quot;</span><span class="p">:</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
             <span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s2">&quot;profiles&quot;</span><span class="p">][</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
         <span class="p">}</span>
-        <span class="nb">open</span><span class="p">(</span><span class="n">toml_filename</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">toml</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">profile</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">toml_filename</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">toml</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">profile</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="mi">0</span></div>
 

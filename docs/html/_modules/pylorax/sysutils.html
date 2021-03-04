@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.sysutils &mdash; Lorax 34.3 documentation</title>
+  <title>pylorax.sysutils &mdash; Lorax 35.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.3
+                35.0
               </div>
             
           
@@ -203,8 +203,8 @@
 
 
 <div class="viewcode-block" id="touch"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.touch">[docs]</a><span class="k">def</span> <span class="nf">touch</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-    <span class="c1"># python closes the file when it goes out of scope</span>
-    <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="replace"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.replace">[docs]</a><span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">find</span><span class="p">,</span> <span class="n">sub</span><span class="p">):</span>

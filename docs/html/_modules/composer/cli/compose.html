@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli.compose &mdash; Lorax 34.3 documentation</title>
+  <title>composer.cli.compose &mdash; Lorax 35.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.3
+                35.0
               </div>
             
           
@@ -269,6 +269,18 @@
 <span class="sd">    :rtype: tuple</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">args</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">get_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;--ref&quot;</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_url"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.get_url">[docs]</a><span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return optional --url argument, and remaining args</span>
+
+<span class="sd">    :param args: list of arguments</span>
+<span class="sd">    :type args: list of strings</span>
+<span class="sd">    :returns: (args, parent)</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">args</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">get_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;--url&quot;</span><span class="p">)</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -510,7 +522,7 @@
 <span class="sd">    :param api: Details about the API server, &quot;version&quot; and &quot;backend&quot;</span>
 <span class="sd">    :type api: dict</span>
 
-<span class="sd">    compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</span>
+<span class="sd">    compose start-ostree [--size XXXX] [--parent PARENT] [--ref REF] [--url URL] &lt;BLUEPRINT&gt; &lt;TYPE&gt; [&lt;IMAGE-NAME&gt; &lt;PROFILE.TOML&gt;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">api</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing api version/backend&quot;</span><span class="p">)</span>
@@ -520,11 +532,12 @@
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;lorax-composer doesn not support start-ostree.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">1</span>
 
-    <span class="c1"># Get the optional size before checking other parameters</span>
+    <span class="c1"># Get the optional arguments before checking other parameters</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">args</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="n">get_size</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">args</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">get_parent</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">args</span><span class="p">,</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">get_ref</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">args</span><span class="p">,</span> <span class="n">url</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">return</span> <span class="mi">1</span>
@@ -547,6 +560,8 @@
         <span class="p">}</span>
     <span class="k">if</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">size</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;ostree&quot;</span><span class="p">][</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;image_name&quot;</span><span class="p">:</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]}</span>

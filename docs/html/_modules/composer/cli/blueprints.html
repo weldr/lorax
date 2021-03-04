@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli.blueprints &mdash; Lorax 34.3 documentation</title>
+  <title>composer.cli.blueprints &mdash; Lorax 35.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.3
+                35.0
               </div>
             
           
@@ -486,7 +486,8 @@
     <span class="k">for</span> <span class="n">blueprint</span> <span class="ow">in</span> <span class="n">argify</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s2">&quot;/blueprints/info/</span><span class="si">%s</span><span class="s2">?format=toml&quot;</span> <span class="o">%</span> <span class="n">blueprint</span><span class="p">)</span>
         <span class="n">blueprint_toml</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_raw</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-        <span class="nb">open</span><span class="p">(</span><span class="n">toml_filename</span><span class="p">(</span><span class="n">blueprint</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">blueprint_toml</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">toml_filename</span><span class="p">(</span><span class="n">blueprint</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">blueprint_toml</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="mi">0</span></div>
 
@@ -559,7 +560,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">blueprint</span><span class="p">):</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing blueprint file: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">blueprint</span><span class="p">)</span>
             <span class="k">continue</span>
-        <span class="n">blueprint_toml</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">blueprint</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">blueprint</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">blueprint_toml</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post_url_toml</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">blueprint_toml</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
@@ -658,7 +660,8 @@
     <span class="k">for</span> <span class="n">blueprint</span> <span class="ow">in</span> <span class="n">argify</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s2">&quot;/blueprints/freeze/</span><span class="si">%s</span><span class="s2">?format=toml&quot;</span> <span class="o">%</span> <span class="n">blueprint</span><span class="p">)</span>
         <span class="n">blueprint_toml</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_raw</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-        <span class="nb">open</span><span class="p">(</span><span class="n">frozen_toml_filename</span><span class="p">(</span><span class="n">blueprint</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">blueprint_toml</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">frozen_toml_filename</span><span class="p">(</span><span class="n">blueprint</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">blueprint_toml</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="mi">0</span></div>
 
@@ -727,7 +730,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">blueprint</span><span class="p">):</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing blueprint file: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">blueprint</span><span class="p">)</span>
             <span class="k">continue</span>
-        <span class="n">blueprint_toml</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">blueprint</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">blueprint</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">blueprint_toml</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post_url_toml</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">blueprint_toml</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>

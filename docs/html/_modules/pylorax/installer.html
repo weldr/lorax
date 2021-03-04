@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.installer &mdash; Lorax 34.3 documentation</title>
+  <title>pylorax.installer &mdash; Lorax 35.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.3
+                35.0
               </div>
             
           
@@ -449,7 +449,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">cancel_funcs</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">f</span><span class="p">():</span>
-            <span class="n">proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="c1"># Anaconda runs from unshare, anaconda doesn&#39;t exit correctly so try to</span>
+            <span class="c1"># send TERM to all of them directly</span>
+            <span class="kn">import</span> <span class="nn">psutil</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
             <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span></div>
 
@@ -513,7 +518,7 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--kickstart&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;--cmdline&quot;</span><span class="p">,</span> <span class="s2">&quot;--loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;debug&quot;</span><span class="p">]</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--kickstart&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;--cmdline&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">anaconda_args</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">anaconda_args</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -556,14 +561,12 @@
         <span class="n">cancel_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cancel_func</span><span class="p">)</span>
 
     <span class="c1"># Make sure anaconda has the right product and release</span>
-    <span class="c1"># Preload libgomp.so.1 to workaround rhbz#1722181</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running anaconda.&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">unshare_args</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;--pid&quot;</span><span class="p">,</span> <span class="s2">&quot;--kill-child&quot;</span><span class="p">,</span> <span class="s2">&quot;--mount&quot;</span><span class="p">,</span> <span class="s2">&quot;--propagation&quot;</span><span class="p">,</span> <span class="s2">&quot;unchanged&quot;</span><span class="p">,</span> <span class="s2">&quot;anaconda&quot;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="n">unshare_args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--pid&quot;</span><span class="p">,</span> <span class="s2">&quot;--kill-child&quot;</span><span class="p">,</span> <span class="s2">&quot;--mount&quot;</span><span class="p">,</span> <span class="s2">&quot;--propagation&quot;</span><span class="p">,</span> <span class="s2">&quot;unchanged&quot;</span><span class="p">,</span> <span class="s2">&quot;anaconda&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">execReadlines</span><span class="p">(</span><span class="s2">&quot;unshare&quot;</span><span class="p">,</span> <span class="n">unshare_args</span><span class="p">,</span> <span class="n">reset_lang</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                   <span class="n">env_add</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ANACONDA_PRODUCTNAME&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
-                                           <span class="s2">&quot;ANACONDA_PRODUCTVERSION&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span>
-                                           <span class="s2">&quot;LD_PRELOAD&quot;</span><span class="p">:</span> <span class="s2">&quot;libgomp.so.1&quot;</span><span class="p">},</span>
+                                           <span class="s2">&quot;ANACONDA_PRODUCTVERSION&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">},</span>
                                   <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="ow">not</span> <span class="n">novirt_cancel_check</span><span class="p">(</span><span class="n">cancel_funcs</span><span class="p">,</span> <span class="n">p</span><span class="p">)):</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
