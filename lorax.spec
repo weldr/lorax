@@ -3,8 +3,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.57
-Release:        2%{?dist}
+Version:        28.14.58
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -253,6 +253,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Mar 04 2021 Brian C. Lane <bcl@redhat.com> 28.14.58-1
+- composer-cli: Add support for start-ostree --url URL (bcl)
+  Resolves: rhbz#1929381
+- tests: Override rhel-8-beta.json repositories for osbuild-composer (atodorov)
+- tests: Remove systemctl for osbuild-composer (atodorov)
+  Related: rhbz#1916684
+- tests: Start osbuild-composer.socket (bcl)
+  Resolves: rhbz#1916684
+- test: Fix vm.install for non-LVM cloud images (martin)
+
 * Fri Jan 15 2021 Brian C. Lane <bcl@redhat.com> - 28.14.57-2
 - tests: Start osbuild-composer.socket for the tests
   Resolves: rhbz#1916684
