@@ -8,7 +8,7 @@ images and tools to manipulate and start virtual machines from them.
 
 Each test is run on a new instance of a virtual machine.
 Branch/test scenario matrix is configured in
-[testmap.py](https://github.com/cockpit-project/bots/blob/master/task/testmap.py).
+[testmap.py](https://github.com/cockpit-project/bots/blob/master/lib/testmap.py).
 
 ## Dependencies
 
