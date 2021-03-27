@@ -31,7 +31,7 @@ rlJournalStart
             TYPE_EXT4=""
             TYPE_PARTITIONED_DISK=""
             TYPE_TAR="tar"
-            TYPE_IOT="rhel-edge-commit"
+            TYPE_IOT="rhel-edge-commit rhel-edge-container rhel-edge-installer"
         fi
 
         # arch specific compose type selections
