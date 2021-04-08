@@ -1553,6 +1553,127 @@ class ServerTestCase(unittest.TestCase):
         self.assertTrue(len(data["errors"]) > 0)
         self.assertEqual(data["errors"][0]["id"], "UnknownBlueprint")
 
+    ## Order matters, run these last
+    def test_zz_depsolve_groups(self):
+        """Test depsolving with a group"""
+        test_blueprint = """
+            name = "server-group-blueprint-test"
+            description = "A test blueprint with a group"
+            version = "0.0.1"
+
+            [[packages]]
+            name="openssh-server"
+            version="*"
+
+            [[groups]]
+            name="base"
+        """
+        resp = self.server.post("/api/v0/blueprints/new",
+                                data=test_blueprint,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/blueprints/depsolve/server-group-blueprint-test")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "server-group-blueprint-test")
+        self.assertEqual(len(blueprints[0]["dependencies"]) > 10, True)
+        self.assertFalse(data.get("errors"))
+
+    def test_zz_freeze_groups(self):
+        """Test freeze with a group"""
+        test_blueprint = """
+            name = "server-group-blueprint-test"
+            description = "A test blueprint with a group"
+            version = "0.0.1"
+
+            [[packages]]
+            name="openssh-server"
+            version="*"
+
+            [[groups]]
+            name="base"
+        """
+        resp = self.server.post("/api/v0/blueprints/new",
+                                data=test_blueprint,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/blueprints/freeze/server-group-blueprint-test")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "server-group-blueprint-test")
+        self.assertEqual(len(blueprints[0]["blueprint"]["packages"]) > 0, True)
+        self.assertFalse(data.get("errors"))
+
+    def test_zz_depsolve_unknown_groups(self):
+        """Test depsolving with an unknown group"""
+        test_blueprint = """
+            name = "unknown-group-blueprint-test"
+            description = "A test blueprint with an unknown group"
+            version = "0.0.1"
+
+            [[packages]]
+            name="openssh-server"
+            version="*"
+
+            [[groups]]
+            name="unknown-group"
+        """
+        resp = self.server.post("/api/v0/blueprints/new",
+                                data=test_blueprint,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/blueprints/depsolve/unknown-group-blueprint-test")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "unknown-group-blueprint-test")
+        self.assertTrue(len(data.get("errors")) > 0)
+        self.assertTrue("unknown-group" in data["errors"][0]["msg"])
+
+    def test_zz_freeze_unknown_groups(self):
+        """Test freeze with an unknown group"""
+        test_blueprint = """
+            name = "unknown-group-blueprint-test"
+            description = "A test blueprint with an unknown group"
+            version = "0.0.1"
+
+            [[packages]]
+            name="openssh-server"
+            version="*"
+
+            [[groups]]
+            name="unknown-group"
+        """
+        resp = self.server.post("/api/v0/blueprints/new",
+                                data=test_blueprint,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/blueprints/freeze/unknown-group-blueprint-test")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "unknown-group-blueprint-test")
+        self.assertTrue(len(data.get("errors")) > 0)
+        self.assertTrue("unknown-group" in data["errors"][0]["msg"])
+
 @contextmanager
 def in_tempdir(prefix='tmp'):
     """Execute a block of code with chdir in a temporary location"""

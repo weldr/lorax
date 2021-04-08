@@ -235,7 +235,7 @@ def _depsolve(dbo, projects, groups):
     for name in groups:
         try:
             dbo.group_install(name, ["mandatory", "default"])
-        except dnf.exceptions.MarkingError as e:
+        except (dnf.exceptions.MarkingError, ValueError) as e:
             install_errors.append(("Group %s" % (name), str(e)))
 
     for name, version in projects:
