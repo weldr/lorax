@@ -33,6 +33,18 @@ class LoraxLintConfig(PocketLintConfig):
     def extraArgs(self):
         return ["--extension-pkg-whitelist=rpm"]
 
+    @property
+    def disabledOptions(self):
+        retval = super(LoraxLintConfig, self).disabledOptions
+
+        # Remove messages that are no longer supported in py3
+        for msg in ["W0110", "W0141", "W0142", "I0012"]:
+            try:
+                retval.remove(msg)
+            except ValueError:
+                pass
+        return retval
+
 if __name__ == "__main__":
     conf = LoraxLintConfig()
     linter = PocketLinter(conf)
