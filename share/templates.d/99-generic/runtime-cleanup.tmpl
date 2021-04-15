@@ -106,7 +106,6 @@ removefrom gtk2 /usr/${libdir}/gtk-2.0/*/{engines,printbackends}/*
 removefrom gtk2 /usr/share/themes/*
 removefrom gtk3 /usr/${libdir}/gtk-3.0/*/printbackends/*
 removefrom gtk3 /usr/share/themes/*
-removefrom metacity --allbut /usr/bin/* /usr/${libdir}/*
 
 ## filesystem tools
 removefrom e2fsprogs /usr/share/locale/*
@@ -171,7 +170,7 @@ removefrom gdb-headless /usr/share/* /etc/gdbinit*
 removefrom gdisk /usr/share/*
 removefrom gdk-pixbuf2 /usr/share/locale*
 removefrom gfs2-utils /usr/sbin/*
-removefrom glib2 /usr/bin/* /usr/share/locale/*
+removefrom glib2 /usr/share/locale/*
 removefrom glibc /etc/gai.conf /etc/rpc
 removefrom glibc /${libdir}/libBrokenLocale*
 removefrom glibc /${libdir}/libSegFault* /${libdir}/libanl*
