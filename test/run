@@ -2,16 +2,9 @@
 # This is the expected entry point for Cockpit CI; will be called without
 # arguments but with an appropriate $TEST_OS, and optionally $TEST_SCENARIO
 
-if [ "$TEST_SCENARIO" == "osbuild-composer" ]; then
-    rm -rf ./test/images/*
-    export BACKEND="osbuild-composer"
-    make BACKEND=osbuild-composer vm
-else
-    make vm
+if [ "$TEST_SCENARIO" != "osbuild-composer" ]; then
+    echo "$TEST_SCENARIO no longer supported by lorax"
+    exit 1
 fi
-
-if [ "$TEST_SCENARIO" == "lorax" ]; then
-    test/check-lorax TestLorax
-else
-    test/check-cli TestImages
-fi
+make vm
+test/check-lorax TestLorax

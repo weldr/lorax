@@ -2,10 +2,10 @@
 
 
 import tempfile
-import composertest
+import loraxtest
 
 
-class LoraxTestCase(composertest.ComposerTestCase):
+class LoraxTestCase(loraxtest.TestCase):
     def setUp(self):
         self.setUpTestMachine()
 
@@ -54,4 +54,4 @@ class TestLorax(LoraxTestCase):
 
 
 if __name__ == '__main__':
-    composertest.main()
+    loraxtest.main()
