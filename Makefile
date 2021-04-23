@@ -112,9 +112,9 @@ test-in-copy:
 test-in-docker: test-in-podman
 
 test-in-podman:
-	sudo $(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
+	$(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
 	@mkdir -p `pwd`/.test-results
-	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results \
+	$(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results \
 		-v `pwd`:/lorax-ro:ro --security-opt label=disable \
 		--env RUN_TESTS="$(RUN_TESTS)" \
 		welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
@@ -123,7 +123,7 @@ test-in-podman:
 docs-in-docker: docs-in-podman
 
 docs-in-podman:
-	sudo $(DOCKER) run -it --rm -v `pwd`:/lorax-ro:ro \
+	$(DOCKER) run -it --rm -v `pwd`:/lorax-ro:ro \
 		-v `pwd`/docs/:/lorax-ro/docs/ \
 		--env LORAX_VERSION=$(DOCS_VERSION) \
 		--env LOCAL_UID=`id -u` --env LOCAL_GID=`id -g` \

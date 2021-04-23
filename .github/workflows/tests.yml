@@ -21,7 +21,7 @@ jobs:
       - name: "Clone Repository"
         uses: actions/checkout@v2
       - name: Run lorax tests in podman
-        run: make test-in-docker && cp .test-results/.coverage .coverage
+        run: sudo make test-in-podman && cp .test-results/.coverage .coverage
       - name: Coveralls
         uses: AndreMiras/coveralls-python-action@develop
         with:
