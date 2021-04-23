@@ -320,7 +320,7 @@ def anaconda_cleanup(dirinstall_path):
     # Make sure the process is really finished (it should be, since it was started from a subprocess call)
     # and then remove the pid file.
     if os.path.exists("/var/run/anaconda.pid"):
-        # lorax-composer runs anaconda using unshare so the pid is always 1
+        # anaconda may be started using unshare so the pid is always 1
         if open("/var/run/anaconda.pid").read().strip() == "1":
             os.unlink("/var/run/anaconda.pid")
 

@@ -120,7 +120,7 @@ class VirtMachineTestCase(unittest.TestCase):
         self.boot_id = boot_id
 
 
-class ComposerTestCase(VirtMachineTestCase):
+class TestCase(VirtMachineTestCase):
     def setUp(self):
         self.setUpTestMachine()
 
@@ -148,20 +148,8 @@ class ComposerTestCase(VirtMachineTestCase):
         self.tearDownTestMachine()
         return local_dir
 
-    def runCliTest(self, script):
-        extra_env = ["BACKEND=%s" % os.getenv('BACKEND', 'osbuild-composer')]
-        if self.sit:
-            extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
 
-        r = self.execute(["CLI=/usr/bin/composer-cli",
-                          "TEST=" + self.id(),
-                          "PACKAGE=composer-cli",
-                          *extra_env,
-                          "/tests/test_cli.sh", script])
-        self.assertEqual(r.returncode, 0)
-
-
-class ComposerTestResult(unittest.TestResult):
+class TestResult(unittest.TestResult):
     def name(self, test):
         name = test.id().replace("__main__.", "")
         if test.shortDescription():
@@ -205,8 +193,8 @@ class ComposerTestResult(unittest.TestResult):
         print("not ok {} {}".format(self.testsRun, self.name(test)))
 
 
-class ComposerTestRunner(object):
-    """A test runner that (in combination with ComposerTestResult) outputs
+class TestRunner(object):
+    """A test runner that (in combination with TestResult) outputs
     results in a way that cockpit's log.html can read and format them.
     """
 
@@ -214,7 +202,7 @@ class ComposerTestRunner(object):
         self.failfast = failfast
 
     def run(self, testable):
-        result = ComposerTestResult()
+        result = TestResult()
         result.failfast = self.failfast
         result.startTestRun()
         count = testable.countTestCases()
@@ -244,7 +232,7 @@ def main():
     parser.add_argument("-s", "--sit", action="store_true", help="Halt test execution (but keep VM running) when a test fails")
     args = parser.parse_args()
 
-    ComposerTestCase.sit = args.sit
+    TestCase.sit = args.sit
 
     module = __import__("__main__")
     if args.tests:
@@ -256,7 +244,7 @@ def main():
         print_tests(tests)
         return 0
 
-    runner = ComposerTestRunner(failfast=args.sit)
+    runner = TestRunner(failfast=args.sit)
     result = runner.run(tests)
 
     if tests.countTestCases() != result.testsRun:

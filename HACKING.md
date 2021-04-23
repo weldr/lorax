@@ -25,7 +25,6 @@ To run the broader unit and integration tests we use:
 
     $ make test
 
-Some of the tests will be skipped unless a lorax-composer process is running
-and listening on an accessible socket. Either run lorax-composer from the
-checkout, or the installed version.
+The tests may also be run using a podman container:
 
+    $ make test-in-podman
