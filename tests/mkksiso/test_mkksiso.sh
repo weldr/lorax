@@ -5,7 +5,7 @@ set -eu
 
 [ "$(id -u)" -eq 0 ] || (echo "$0 must be run as root"; exit 1)
 
-BEAKERLIB_DIR=$(mktemp -d /tmp/composer-test.XXXXXX)
+BEAKERLIB_DIR=$(mktemp -d /tmp/mkksiso-test.XXXXXX)
 export BEAKERLIB_DIR
 CLI="${CLI:-}"
 
