@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.unix_socket &mdash; Lorax 19.7.22 documentation</title>
+    <title>composer.unix_socket &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -77,7 +77,7 @@
 <span class="c"># https://github.com/docker/docker-py/blob/master/docker/transport/unixconn.py</span>
 <div class="viewcode-block" id="UnixHTTPConnection"><a class="viewcode-back" href="../../composer.html#composer.unix_socket.UnixHTTPConnection">[docs]</a><span class="k">class</span> <span class="nc">UnixHTTPConnection</span><span class="p">(</span><span class="n">httplib</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create an HTTP connection to a unix domain socket</span>
 
 <span class="sd">        :param socket_path: The path to the Unix domain socket</span>
@@ -99,13 +99,15 @@
 </div></div>
 <div class="viewcode-block" id="UnixHTTPConnectionPool"><a class="viewcode-back" href="../../composer.html#composer.unix_socket.UnixHTTPConnectionPool">[docs]</a><span class="k">class</span> <span class="nc">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">urllib3</span><span class="o">.</span><span class="n">connectionpool</span><span class="o">.</span><span class="n">HTTPConnectionPool</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a connection pool using a Unix domain socket</span>
 
 <span class="sd">        :param socket_path: The path to the Unix domain socket</span>
 <span class="sd">        :param timeout: Number of seconds to timeout the connection</span>
+
+<span class="sd">        NOTE: retries are disabled for these connections, they are never useful</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">UnixHTTPConnectionPool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UnixHTTPConnectionPool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">socket_path</span> <span class="o">=</span> <span class="n">socket_path</span>
 
     <span class="k">def</span> <span class="nf">_new_conn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -143,7 +145,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax &mdash; Lorax 19.7.22 documentation</title>
+    <title>pylorax &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="../index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -245,6 +245,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_file_logging</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;version is </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">vernum</span><span class="p">)</span>
+        <span class="n">log_selinux_state</span><span class="p">()</span>
+
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;using work directory </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;using log directory </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">logdir</span><span class="p">)</span>
 
@@ -258,22 +260,6 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;checking for root privileges&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">geteuid</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s">&quot;no root privileges&quot;</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="c"># is selinux disabled?</span>
-        <span class="c"># With selinux in enforcing mode the rpcbind package required for</span>
-        <span class="c"># dracut nfs module, which is in turn required by anaconda module,</span>
-        <span class="c"># will not get installed, because it&#39;s preinstall scriptlet fails,</span>
-        <span class="c"># resulting in an incomplete initial ramdisk image.</span>
-        <span class="c"># The reason is that the scriptlet runs tools from the shadow-utils</span>
-        <span class="c"># package in chroot, particularly groupadd and useradd to add the</span>
-        <span class="c"># required rpc group and rpc user. This operation fails, because</span>
-        <span class="c"># the selinux context on files in the chroot, that the shadow-utils</span>
-        <span class="c"># tools need to access (/etc/group, /etc/passwd, /etc/shadow etc.),</span>
-        <span class="c"># is wrong and selinux therefore disallows access to these files.</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;checking the selinux mode&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">is_selinux_enabled</span><span class="p">()</span> <span class="ow">and</span> <span class="n">selinux</span><span class="o">.</span><span class="n">security_getenforce</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s">&quot;selinux must be disabled or in Permissive mode&quot;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c"># do we have a proper yum base object?</span>
@@ -359,7 +345,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;no BCJ filter for arch </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">)</span>
         <span class="n">rb</span><span class="o">.</span><span class="n">create_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span><span class="n">runtime</span><span class="p">),</span>
-                          <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span>
+                          <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">,</span>
+                          <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;preparing to build output tree and boot images&quot;</span><span class="p">)</span>
         <span class="n">treebuilder</span> <span class="o">=</span> <span class="n">TreeBuilder</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
@@ -434,7 +421,17 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s">&quot;no anaconda package in the repository&quot;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">buildarch</span></div>
+    <span class="k">return</span> <span class="n">buildarch</span>
+</div>
+<div class="viewcode-block" id="log_selinux_state"><a class="viewcode-back" href="../pylorax.html#pylorax.log_selinux_state">[docs]</a><span class="k">def</span> <span class="nf">log_selinux_state</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Log the current state of selinux&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">is_selinux_enabled</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">security_getenforce</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;selinux is enabled and in Enforcing mode&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;selinux is enabled and in Permissive mode&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;selinux is Disabled&quot;</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
@@ -468,7 +465,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

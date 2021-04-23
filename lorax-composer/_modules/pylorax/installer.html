@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.installer &mdash; Lorax 19.7.22 documentation</title>
+    <title>pylorax.installer &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="../../index.html" />
     <link rel="up" title="pylorax" href="../pylorax.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" accesskey="U">pylorax</a> &raquo;</li> 
       </ul>
@@ -70,6 +70,7 @@
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;pylorax&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
@@ -168,7 +169,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">iso</span><span class="p">,</span> <span class="n">ks_paths</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
                   <span class="n">kernel_args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">vnc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                  <span class="n">log_check</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
+                  <span class="n">cancel_func</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
                   <span class="n">qcow2</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ovmf_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the installation</span>
@@ -263,14 +264,14 @@
         <span class="c"># TODO: If vnc has been passed, we should look up the port and print that</span>
         <span class="c"># for the user at this point</span>
 
-        <span class="k">while</span> <span class="n">dom</span><span class="o">.</span><span class="n">isActive</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">log_check</span><span class="p">():</span>
+        <span class="k">while</span> <span class="n">dom</span><span class="o">.</span><span class="n">isActive</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">()):</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
         <span class="k">print</span>
 
-        <span class="k">if</span> <span class="n">log_check</span><span class="p">():</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s">&quot;Installation error detected. See logfile.&quot;</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s">&quot;Installation error or cancel detected. See logfile.&quot;</span> <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s">&quot;Install finished. Or at least virt shut down.&quot;</span> <span class="p">)</span>
 
@@ -285,19 +286,12 @@
 
         <span class="c"># Undefine the virt, UEFI installs need to have --nvram passed</span>
         <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s">&quot;virsh&quot;</span><span class="p">,</span> <span class="s">&quot;undefine&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">,</span> <span class="s">&quot;--nvram&quot;</span><span class="p">])</span>
+
 </div></div>
-<div class="viewcode-block" id="novirt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_install">[docs]</a><span class="k">def</span> <span class="nf">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">repo_url</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="novirt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_install">[docs]</a><span class="k">def</span> <span class="nf">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">repo_url</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use Anaconda to install to a disk image</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">selinux</span>
-
-    <span class="c"># Set selinux to Permissive if it is Enforcing</span>
-    <span class="n">selinux_enforcing</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">is_selinux_enabled</span><span class="p">()</span> <span class="ow">and</span> <span class="n">selinux</span><span class="o">.</span><span class="n">security_getenforce</span><span class="p">():</span>
-        <span class="n">selinux_enforcing</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="n">selinux</span><span class="o">.</span><span class="n">security_setenforce</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
     <span class="c"># Clean up /tmp/ from previous runs to prevent stale info from being used</span>
     <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;/tmp/yum.repos.d/&quot;</span><span class="p">,</span> <span class="s">&quot;/tmp/yum.cache/&quot;</span><span class="p">,</span> <span class="s">&quot;/tmp/yum.root/&quot;</span><span class="p">,</span> <span class="s">&quot;/tmp/yum.pluginconf.d/&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -334,10 +328,14 @@
         <span class="c"># Create the sparse image</span>
         <span class="n">mksparse</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
 
+    <span class="n">cancel_funcs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cancel_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cancel_func</span><span class="p">)</span>
+
     <span class="c"># Make sure anaconda has the right product and release</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&quot;ANACONDA_PRODUCTNAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">project</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&quot;ANACONDA_PRODUCTVERSION&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">releasever</span>
-    <span class="n">rc</span> <span class="o">=</span> <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;anaconda&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="n">callback_func</span><span class="p">)</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;anaconda&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="k">lambda</span> <span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">cancel_funcs</span><span class="p">))</span>
 
     <span class="c"># Move the anaconda logs over to a log directory</span>
     <span class="n">log_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span>
@@ -358,13 +356,13 @@
 
         <span class="k">if</span> <span class="n">disk_img</span><span class="p">:</span>
             <span class="n">dm_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">dm_path</span> <span class="o">=</span> <span class="s">&quot;/dev/mapper/&quot;</span><span class="o">+</span><span class="n">dm_name</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dm_path</span><span class="p">):</span>
-                <span class="n">dm_detach</span><span class="p">(</span><span class="n">dm_path</span><span class="p">)</span>
-                <span class="n">loop_detach</span><span class="p">(</span><span class="n">get_loop_name</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="n">selinux_enforcing</span><span class="p">:</span>
-        <span class="n">selinux</span><span class="o">.</span><span class="n">security_setenforce</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Removing device-mapper setup on </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">dm_name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">&quot;/dev/mapper/&quot;</span><span class="o">+</span><span class="n">dm_name</span><span class="o">+</span><span class="s">&quot;*&quot;</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+                <span class="n">dm_detach</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Removing loop device for </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">)</span>
+            <span class="n">loop_detach</span><span class="p">(</span><span class="s">&quot;/dev/&quot;</span><span class="o">+</span><span class="n">get_loop_name</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;novirt_install failed&quot;</span><span class="p">)</span>
@@ -394,7 +392,7 @@
         <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;mv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="n">qcow2_img</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">],</span> <span class="n">raise_err</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="virt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.virt_install">[docs]</a><span class="k">def</span> <span class="nf">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">):</span>
+<div class="viewcode-block" id="virt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.virt_install">[docs]</a><span class="k">def</span> <span class="nf">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use virt-install to install to a disk image</span>
 
@@ -404,6 +402,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">iso_mount</span> <span class="o">=</span> <span class="n">IsoMountpoint</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">iso</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
     <span class="n">log_monitor</span> <span class="o">=</span> <span class="n">LogMonitor</span><span class="p">(</span><span class="n">install_log</span><span class="p">)</span>
+    <span class="n">cancel_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cancel_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cancel_func</span><span class="p">)</span>
 
     <span class="n">kernel_args</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">kernel_args</span><span class="p">:</span>
@@ -427,7 +428,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">virt</span> <span class="o">=</span> <span class="n">VirtualInstall</span><span class="p">(</span><span class="n">iso_mount</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">,</span> <span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span>
                                <span class="n">kernel_args</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ram</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
-                               <span class="n">log_check</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">,</span>
+                               <span class="n">cancel_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">cancel_funcs</span><span class="p">),</span>
                                <span class="n">virtio_host</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
                                <span class="n">virtio_port</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
                                <span class="n">qcow2</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">qcow2</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">virt_uefi</span><span class="p">,</span>
@@ -443,7 +444,9 @@
         <span class="n">iso_mount</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;virt_install failed&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;virt_install failed. See logfile.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;virt_install canceled by cancel_func&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span><span class="p">:</span>
         <span class="n">mkdiskfsimage</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">fs_label</span><span class="p">)</span>
@@ -493,7 +496,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" >pylorax</a> &raquo;</li> 
       </ul>

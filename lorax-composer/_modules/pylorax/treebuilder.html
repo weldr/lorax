@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.treebuilder &mdash; Lorax 19.7.22 documentation</title>
+    <title>pylorax.treebuilder &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="../../index.html" />
     <link rel="up" title="pylorax" href="../pylorax.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" accesskey="U">pylorax</a> &raquo;</li> 
       </ul>
@@ -225,7 +225,8 @@
 <div class="viewcode-block" id="TreeBuilder"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder">[docs]</a><span class="k">class</span> <span class="nc">TreeBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Builds the arch-specific boot images.</span>
 <span class="sd">    inroot should be the installtree root (the newly-built runtime dir)&#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">isolabel</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">add_templates</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">add_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">isolabel</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">templatedir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">add_templates</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">add_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">extra_boot_args</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
 
         <span class="c"># NOTE: if you pass an arg named &quot;runtime&quot; to a mako template it&#39;ll</span>
         <span class="c"># clobber some mako internal variables - hence &quot;runtime_img&quot;.</span>
@@ -234,7 +235,7 @@
                                <span class="n">inroot</span><span class="o">=</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="o">=</span><span class="n">outroot</span><span class="p">,</span>
                                <span class="n">basearch</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">,</span> <span class="n">libdir</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">libdir</span><span class="p">,</span>
                                <span class="n">isolabel</span><span class="o">=</span><span class="n">isolabel</span><span class="p">,</span> <span class="n">udev</span><span class="o">=</span><span class="n">udev_escape</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="n">domacboot</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="n">doupgrade</span><span class="p">,</span>
-                               <span class="n">workdir</span><span class="o">=</span><span class="n">workdir</span><span class="p">)</span>
+                               <span class="n">workdir</span><span class="o">=</span><span class="n">workdir</span><span class="p">,</span> <span class="n">extra_boot_args</span><span class="o">=</span><span class="n">extra_boot_args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span> <span class="o">=</span> <span class="n">LoraxTemplateRunner</span><span class="p">(</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="n">templatedir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_templates</span> <span class="o">=</span> <span class="n">add_templates</span> <span class="ow">or</span> <span class="p">[]</span>
@@ -403,7 +404,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" >pylorax</a> &raquo;</li> 
       </ul>

@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>api Package &mdash; Lorax 19.7.22 documentation</title>
+    <title>api Package &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="index.html" />
     <link rel="up" title="pylorax Package" href="pylorax.html" />
     <link rel="prev" title="pylorax Package" href="pylorax.html" /> 
   </head>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="pylorax.html" title="pylorax Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="pylorax.html" accesskey="U">pylorax Package</a> &raquo;</li> 
       </ul>
@@ -61,6 +61,40 @@
 <dt id="pylorax.api.crossdomain">
 <tt class="descclassname">pylorax.api.</tt><tt class="descname">crossdomain</tt><big>(</big><em>origin</em>, <em>methods=None</em>, <em>headers=None</em>, <em>max_age=21600</em>, <em>attach_to_all=True</em>, <em>automatic_options=True</em><big>)</big><a class="headerlink" href="#pylorax.api.crossdomain" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.bisect">
+<span id="bisect-module"></span><h2><a class="reference external" href="https://docs.python.org/2/library/bisect.html#module-bisect" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">bisect</span></tt></a> Module<a class="headerlink" href="#module-pylorax.api.bisect" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.api.bisect.insort_left">
+<tt class="descclassname">pylorax.api.bisect.</tt><tt class="descname">insort_left</tt><big>(</big><em>a</em>, <em>x</em>, <em>key=None</em>, <em>lo=0</em>, <em>hi=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/bisect.html#insort_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.bisect.insort_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert item x in list a, and keep it sorted assuming a is sorted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> (<em>list</em>) &#8211; sorted list</li>
+<li><strong>x</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><em>object</em></a>) &#8211; item to insert into the list</li>
+<li><strong>key</strong> (<em>function</em>) &#8211; Function to use to compare items in the list</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">index where the item was inserted</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If x is already in a, insert it to the left of the leftmost x.
+Optional args lo (default 0) and hi (default len(a)) bound the
+slice of a to be searched.</p>
+<p>This is a modified version of bisect.insort_left that can use a
+function for the compare, and returns the index position where it
+was inserted.</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-pylorax.api.checkparams">
@@ -109,6 +143,26 @@ parameters needed to generate the desired output. Other types should be set to F
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.compose.bootloader_append">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">bootloader_append</tt><big>(</big><em>line</em>, <em>kernel_append</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#bootloader_append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.bootloader_append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert the kernel_append string into the &#8211;append argument</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>line</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The bootloader ... line</li>
+<li><strong>kernel_append</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The arguments to append to the &#8211;append section</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.compose.compose_args">
 <tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">compose_args</tt><big>(</big><em>compose_type</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#compose_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.compose_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the settings to pass to novirt_install for the compose type</p>
@@ -130,6 +184,225 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 <tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">compose_types</tt><big>(</big><em>share_dir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.compose_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of the supported output types</p>
 <p>The output types come from the kickstart names in /usr/share/lorax/composer/*ks</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.customize_ks_template">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">customize_ks_template</tt><big>(</big><em>ks_template</em>, <em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#customize_ks_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.customize_ks_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Customize the kickstart template and return it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ks_template</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The kickstart template</li>
+<li><strong>recipe</strong> (<em>Recipe object</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Apply customizations to existing template commands, or add defaults for ones that are
+missing and required.</p>
+<p>Apply customizations.kernel.append to the bootloader argument in the template.
+Add bootloader line if it is missing.</p>
+<p>Add default timezone if needed. It does NOT replace an existing timezone entry</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.firewall_cmd">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">firewall_cmd</tt><big>(</big><em>line</em>, <em>settings</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#firewall_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.firewall_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the firewall line with the new ports and services</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>line</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The firewall ... line</li>
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; A dict with the list of services and ports to enable and disable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_default_services">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">get_default_services</tt><big>(</big><em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#get_default_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_default_services" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the default string for services, based on recipe
+:param recipe: The recipe</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string with &#8220;services&#8221; or &#8220;&#8221;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+<p>When no services have been selected we don&#8217;t need to add anything to the kickstart
+so return an empty string. Otherwise return &#8220;services&#8221; which will be updated with
+the settings.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_firewall_settings">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">get_firewall_settings</tt><big>(</big><em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#get_firewall_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_firewall_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.firewall settings</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe</strong> (<em>Recipe object</em>) &#8211; The recipe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict of settings</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_kernel_append">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">get_kernel_append</tt><big>(</big><em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#get_kernel_append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_kernel_append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.kernel append value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe</strong> (<em>Recipe object</em>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">append value or empty string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_keyboard_layout">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">get_keyboard_layout</tt><big>(</big><em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#get_keyboard_layout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_keyboard_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.locale.keyboard list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe</strong> (<em>Recipe object</em>) &#8211; The recipe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The keyboard layout string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_languages">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">get_languages</tt><big>(</big><em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#get_languages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_languages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.locale.languages list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe</strong> (<em>Recipe object</em>) &#8211; The recipe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of language strings</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_md_size">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">get_md_size</tt><big>(</big><em>yum_path</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#get_md_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_md_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate the amount of space needed by anaconda</p>
+<p>Anaconda doesn&#8217;t download the filelists or &#8216;other&#8217; metadata, which can add
+up to a significant difference, so exclude those from the calculation.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_services">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">get_services</tt><big>(</big><em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#get_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_services" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.services settings</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe</strong> (<em>Recipe object</em>) &#8211; The recipe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict of settings</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_timezone_settings">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">get_timezone_settings</tt><big>(</big><em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#get_timezone_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_timezone_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.timezone dict</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe</strong> (<em>Recipe object</em>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">append value or empty string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.keyboard_cmd">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">keyboard_cmd</tt><big>(</big><em>line</em>, <em>layout</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#keyboard_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.keyboard_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the keyboard line with the layout</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>line</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The keyboard ... line</li>
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The keyboard layout</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.lang_cmd">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">lang_cmd</tt><big>(</big><em>line</em>, <em>languages</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#lang_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.lang_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the lang line with the languages</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>line</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The lang ... line</li>
+<li><strong>settings</strong> (<em>list</em>) &#8211; The list of languages</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
 </dd></dl>
 
 <dl class="function">
@@ -155,6 +428,26 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 <tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">repo_to_ks</tt><big>(</big><em>r</em>, <em>url='url'</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#repo_to_ks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.repo_to_ks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a kickstart line with the correct args.</p>
 <p>Set url to &#8220;baseurl&#8221; if it is a repo, leave it as &#8220;url&#8221; for the installation url.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.services_cmd">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">services_cmd</tt><big>(</big><em>line</em>, <em>settings</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#services_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.services_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the services line with additional services to enable/disable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>line</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The services ... line</li>
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; A dict with the list of services to enable and disable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
 </dd></dl>
 
 <dl class="function">
@@ -203,6 +496,26 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.compose.timezone_cmd">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">timezone_cmd</tt><big>(</big><em>line</em>, <em>settings</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#timezone_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.timezone_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the timezone line with the settings</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>line</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The timezone ... line</li>
+<li><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; A dict with timezone and/or ntpservers list</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.compose.write_ks_group">
 <tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">write_ks_group</tt><big>(</big><em>f</em>, <em>group</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#write_ks_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.write_ks_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write kickstart group entry</p>
@@ -219,6 +532,28 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 </tbody>
 </table>
 <p>gid is optional</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.write_ks_root">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">write_ks_root</tt><big>(</big><em>f</em>, <em>user</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#write_ks_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.write_ks_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write kickstart root password and sshkey entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>f</strong> (<em>open file object</em>) &#8211; kickstart file object</li>
+<li><strong>user</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; A blueprint user dictionary</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If the entry contains a ssh key, use sshkey to write it
+If it contains password, use rootpw to set it</p>
+<p>root cannot be used with the user command. So only key and password are supported
+for root.</p>
 </dd></dl>
 
 <dl class="function">
@@ -433,10 +768,10 @@ source_name isn&#8217;t passed to it.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The estimated size of installed packages</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Tuple of the the estimated size needed, and the size anaconda will calculate</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(int, int)</p>
 </td>
 </tr>
 </tbody>
@@ -444,6 +779,28 @@ source_name isn&#8217;t passed to it.</p>
 <p>Estimating actual requirements is difficult without the actual file sizes, which
 yum doesn&#8217;t provide access to. So use the file count and block size to estimate
 a minimum size for each package.</p>
+<p>Anaconda only takes into account the installedsize of each package. It then fudges
+this by 35% to make sure there is enough space.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.filterVersionGlob">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">filterVersionGlob</tt><big>(</big><em>pkgs</em>, <em>version</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#filterVersionGlob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.filterVersionGlob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter a list of yum package objects with a version glob</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pkgs</strong> (<em>list</em>) &#8211; list of yum package objects</li>
+<li><strong>version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; version matching glob</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>pkgs should be a list of all the versions of the <em>same</em> package.
+Return the latest package that matches the &#8216;version&#8217; glob.</p>
 </dd></dl>
 
 <dl class="function">
@@ -534,6 +891,25 @@ and sets the type to &#8220;rpm&#8221;</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.projects.proj_to_module">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">proj_to_module</tt><big>(</big><em>proj</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#proj_to_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.proj_to_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the name from a YumAvailablePackageSqlite object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>proj</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Project details</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with name, and group_type</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+<p>group_type is hard-coded to &#8220;rpm&#8221;</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.projects.projects_depsolve">
 <tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">projects_depsolve</tt><big>(</big><em>yb</em>, <em>projects</em>, <em>groups</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dependencies for a list of projects</p>
@@ -576,10 +952,10 @@ and sets the type to &#8220;rpm&#8221;</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">installed size and a list of NEVRA&#8217;s of the project and its dependencies</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">installed size, size estimated by anaconda, and a list of NEVRA&#8217;s of the project and its dependencies</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple of (int, list of dicts)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple of (int, int, list of dicts)</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">ProjectsError if there was a problem installing something</p>
@@ -587,6 +963,8 @@ and sets the type to &#8220;rpm&#8221;</p>
 </tr>
 </tbody>
 </table>
+<p>The anaconda_size only includes the installed package size, not file block or cache estimation like
+installed_size includes.</p>
 </dd></dl>
 
 <dl class="function">
@@ -721,22 +1099,23 @@ after popping off baseurl and mirrorlist.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="pylorax.api.projects.yaps_to_module">
-<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">yaps_to_module</tt><big>(</big><em>yaps</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#yaps_to_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.yaps_to_module" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract the name from a YumAvailablePackageSqlite object</p>
+<dt id="pylorax.api.projects.yaps_to_build">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">yaps_to_build</tt><big>(</big><em>yaps</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#yaps_to_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.yaps_to_build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the build details from a hawkey.Package object</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yaps</strong> (<em>YumAvailablePackageSqlite</em>) &#8211; Yum object with package details</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with name, and group_type</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with the build details, epoch, release, arch, build_time, changelog, ...</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
-<p>group_type is hard-coded to &#8220;rpm&#8221;</p>
+<p>metadata entries are hard-coded to {}</p>
+<p>Note that this only returns the build dict, it does not include the name, description, etc.</p>
 </dd></dl>
 
 <dl class="function">
@@ -826,6 +1205,22 @@ yum .repo file. So do this manually with only the attributes we care about.</p>
 <p>This returns a list of build details for each of the matching builds on the
 system. It does not return the status of builds that have not been finished.
 Use queue_status() for those.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.check_queues">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">check_queues</tt><big>(</big><em>cfg</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#check_queues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.check_queues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to make sure the new and run queue symlinks are correct</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cfg</strong> (<em>DataHolder</em>) &#8211; Configuration settings</td>
+</tr>
+</tbody>
+</table>
+<p>Also check all of the existing results and make sure any with WAITING
+set in STATUS have a symlink in queue/new/</p>
 </dd></dl>
 
 <dl class="function">
@@ -954,7 +1349,7 @@ a symlink to the uniquely named results directory should be placed in ./queue/ne
 <p>When the it is ready to be run (it is checked every 30 seconds or after a previous
 compose is finished) the symlink will be moved into ./queue/run/ and a STATUS file
 will be created in the results directory.</p>
-<p>STATUS can contain one of: RUNNING, FINISHED, FAILED</p>
+<p>STATUS can contain one of: WAITING, RUNNING, FINISHED, FAILED</p>
 <p>If the system is restarted while a compose is running it will move any old symlinks
 from ./queue/run/ to ./queue/new/ and rerun them.</p>
 </dd></dl>
@@ -1429,6 +1824,12 @@ be tried.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.recipes.customizations_diff">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">customizations_diff</tt><big>(</big><em>old_recipe</em>, <em>new_recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#customizations_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.customizations_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diff the customizations sections from two versions of a recipe</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.recipes.delete_file">
 <tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">delete_file</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#delete_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.delete_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a file from a branch.</p>
@@ -1485,8 +1886,8 @@ be tried.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="pylorax.api.recipes.diff_items">
-<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">diff_items</tt><big>(</big><em>title</em>, <em>old_items</em>, <em>new_items</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#diff_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.diff_items" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.api.recipes.diff_lists">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">diff_lists</tt><big>(</big><em>title</em>, <em>field</em>, <em>old_items</em>, <em>new_items</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#diff_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.diff_lists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the differences between two lists of dicts.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1494,6 +1895,7 @@ be tried.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Title of the entry</li>
+<li><strong>field</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Field to use as the key for comparisons</li>
 <li><strong>old_items</strong> (<em>list(dict)</em>) &#8211; List of item dicts with &#8220;name&#8221; field</li>
 <li><strong>new_items</strong> (<em>list(dict)</em>) &#8211; List of item dicts with &#8220;name&#8221; field</li>
 </ul>
@@ -1539,6 +1941,34 @@ be a tag at all.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.recipes.find_field_value">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">find_field_value</tt><big>(</big><em>field</em>, <em>value</em>, <em>lst</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#find_field_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.find_field_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a field matching value in the list of dicts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>field</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; field to search for</li>
+<li><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; value to match in the field</li>
+<li><strong>lst</strong> (<em>list of dict</em>) &#8211; List of dict&#8217;s with field</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">First dict with matching field:value, or None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Used to return a specific entry from a list that looks like this:</p>
+<p>[{&#8220;name&#8221;: &#8220;one&#8221;, &#8220;attr&#8221;: &#8220;green&#8221;}, ...]</p>
+<p>find_field_value(&#8220;name&#8221;, &#8220;one&#8221;, lst) will return the matching dict.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.recipes.find_name">
 <tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">find_name</tt><big>(</big><em>name</em>, <em>lst</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#find_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.find_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the dict matching the name in a list and return it.</p>
@@ -1548,7 +1978,7 @@ be a tag at all.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Name to search for</li>
-<li><strong>lst</strong> &#8211; List of dict&#8217;s with &#8220;name&#8221; field</li>
+<li><strong>lst</strong> (<em>list of dict</em>) &#8211; List of dict&#8217;s with &#8220;name&#8221; field</li>
 </ul>
 </td>
 </tr>
@@ -1560,6 +1990,30 @@ be a tag at all.</p>
 </tr>
 </tbody>
 </table>
+<p>This is just a wrapper for find_field_value with field set to &#8220;name&#8221;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.find_recipe_obj">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">find_recipe_obj</tt><big>(</big><em>path</em>, <em>recipe</em>, <em>default=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#find_recipe_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.find_recipe_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a recipe object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<em>list of str</em>) &#8211; A list of dict field names</li>
+<li><strong>recipe</strong> (<em>Recipe</em>) &#8211; The recipe to search</li>
+<li><strong>default</strong> (<em>Any</em>) &#8211; The value to return if it is not found</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Return the object found by applying the path to the dicts in the recipe, or
+return the default if it doesn&#8217;t exist.</p>
+<p>eg. {&#8220;customizations&#8221;: {&#8220;hostname&#8221;: &#8220;foo&#8221;, &#8220;users&#8221;: [...]}}</p>
+<p>find_recipe_obj([&#8220;customizations&#8221;, &#8220;hostname&#8221;], recipe, &#8220;&#8221;)</p>
 </dd></dl>
 
 <dl class="function">
@@ -2037,6 +2491,31 @@ commit:filename</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.recipes.repo_file_exists">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">repo_file_exists</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#repo_file_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.repo_file_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the filename exists on the branch</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Filename to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if the filename exists on the HEAD of the branch, False otherwise.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.recipes.revert_file">
 <tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">revert_file</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em>, <em>commit</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#revert_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.revert_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Revert the contents of a file to that of a previous commit</p>
@@ -2278,14 +2757,20 @@ store the new blueprint on the new branch.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-blueprints-info-blueprint-names">
-<h4><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;</cite><a class="headerlink" href="#api-v0-blueprints-info-blueprint-names" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-blueprints-info-blueprint-names-format-json-toml">
+<h4><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;[?format=&lt;json|toml&gt;]</cite><a class="headerlink" href="#api-v0-blueprints-info-blueprint-names-format-json-toml" title="Permalink to this headline">¶</a></h4>
 <blockquote>
 <div><p>Return the JSON representation of the blueprint. This includes 3 top level
 objects.  <cite>changes</cite> which lists whether or not the workspace is different from
 the most recent commit. <cite>blueprints</cite> which lists the JSON representation of the
 blueprint, and <cite>errors</cite> which will list any errors, like non-existant blueprints.</p>
-<p>Example:</p>
+<p>By default the response is JSON, but if <cite>?format=toml</cite> is included in the URL&#8217;s
+arguments it will return the response as the blueprint&#8217;s raw TOML content.
+<em>Unless</em> there is an error which will only return a 400 and a standard error
+<a href="#id2"><span class="problematic" id="id3">`Status Response`_</span></a>.</p>
+<p>If there is an error when JSON is requested the successful blueprints and the
+errors will both be returned.</p>
+<p>Example of json response:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
   <span class="s">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -2409,7 +2894,8 @@ error response with it set to false and an error message included.</p>
 <blockquote>
 <div><p>Delete a blueprint. The blueprint is deleted from the branch, and will no longer
 be listed by the <cite>list</cite> route. A blueprint can be undeleted using the <cite>undo</cite> route
-to revert to a previous commit.</p>
+to revert to a previous commit. This will also delete the workspace copy of the
+blueprint.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
@@ -3210,7 +3696,21 @@ a line boundry.</p>
 <dl class="function">
 <dt id="pylorax.api.v0.blueprint_exists">
 <tt class="descclassname">pylorax.api.v0.</tt><tt class="descname">blueprint_exists</tt><big>(</big><em>api</em>, <em>branch</em>, <em>blueprint_name</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/v0.html#blueprint_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.blueprint_exists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return True if the blueprint exists</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>api</strong> (<em>Flask</em>) &#8211; flask object</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Recipe name to read</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="pylorax.api.v0.take_limits">
@@ -3349,6 +3849,34 @@ a line boundry.</p>
 </div>
 <div class="section" id="module-pylorax.api.yumbase">
 <span id="yumbase-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">yumbase</span></tt> Module<a class="headerlink" href="#module-pylorax.api.yumbase" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.api.yumbase.YumLock">
+<em class="property">class </em><tt class="descclassname">pylorax.api.yumbase.</tt><tt class="descname">YumLock</tt><big>(</big><em>conf</em>, <em>expire_secs=21600</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/yumbase.html#YumLock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.yumbase.YumLock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<p>Hold the YumBase object and a Lock to control access to it.</p>
+<p>self.yb is a property that returns the YumBase object, but it <em>may</em> change
+from one call to the next if the upstream repositories have changed.</p>
+<dl class="attribute">
+<dt id="pylorax.api.yumbase.YumLock.lock">
+<tt class="descname">lock</tt><a class="reference internal" href="_modules/pylorax/api/yumbase.html#YumLock.lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.yumbase.YumLock.lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for repo updates (using expiration time) and return the lock</p>
+<p>If the repository has been updated, tear down the old YumBase and
+create a new one. This is the only way to force yum to use the new
+metadata.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.api.yumbase.YumLock.lock_check">
+<tt class="descname">lock_check</tt><a class="reference internal" href="_modules/pylorax/api/yumbase.html#YumLock.lock_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.yumbase.YumLock.lock_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force a check for repo updates and return the lock</p>
+<p>If the repository has been updated, tear down the old YumBase and
+create a new one. This is the only way to force yum to use the new
+metadata.</p>
+<p>Use this method sparingly, it removes the repodata and downloads a new copy every time.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="pylorax.api.yumbase.get_base_object">
 <tt class="descclassname">pylorax.api.yumbase.</tt><tt class="descname">get_base_object</tt><big>(</big><em>conf</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/yumbase.html#get_base_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.yumbase.get_base_object" title="Permalink to this definition">¶</a></dt>
@@ -3398,6 +3926,7 @@ a line boundry.</p>
   <ul>
 <li><a class="reference internal" href="#">api Package</a><ul>
 <li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">api</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.bisect"><tt class="docutils literal"><span class="pre">bisect</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-pylorax.api.checkparams"><tt class="docutils literal"><span class="pre">checkparams</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-pylorax.api.compose"><tt class="docutils literal"><span class="pre">compose</span></tt> Module</a><ul>
 <li><a class="reference internal" href="#adding-new-output-types">Adding New Output Types</a></li>
@@ -3416,7 +3945,7 @@ a line boundry.</p>
 <li><a class="reference internal" href="#status-responses">Status Responses</a></li>
 <li><a class="reference internal" href="#api-routes">API Routes</a><ul>
 <li><a class="reference internal" href="#api-v0-blueprints-list"><cite>/api/v0/blueprints/list</cite></a></li>
-<li><a class="reference internal" href="#api-v0-blueprints-info-blueprint-names"><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-blueprints-info-blueprint-names-format-json-toml"><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;[?format=&lt;json|toml&gt;]</cite></a></li>
 <li><a class="reference internal" href="#api-v0-blueprints-changes-blueprint-names-offset-0-limit-20"><cite>/api/v0/blueprints/changes/&lt;blueprint_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
 <li><a class="reference internal" href="#post-api-v0-blueprints-new">POST <cite>/api/v0/blueprints/new</cite></a></li>
 <li><a class="reference internal" href="#delete-api-v0-blueprints-delete-blueprint-name">DELETE <cite>/api/v0/blueprints/delete/&lt;blueprint_name&gt;</cite></a></li>
@@ -3498,7 +4027,7 @@ a line boundry.</p>
         <li class="right" >
           <a href="pylorax.html" title="pylorax Package"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="pylorax.html" >pylorax Package</a> &raquo;</li> 
       </ul>

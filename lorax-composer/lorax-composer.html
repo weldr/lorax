@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lorax-composer &mdash; Lorax 19.7.22 documentation</title>
+    <title>lorax-composer &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="index.html" />
     <link rel="next" title="composer-cli" href="composer-cli.html" />
     <link rel="prev" title="livemedia-creator" href="livemedia-creator.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.43 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -81,6 +81,10 @@ for image creation to work correctly. You can either edit the setting in the
 <a class="reference external" href="https://access.redhat.com/solutions/392003">Red Hat Enterprise Linux 7 documentation</a>
 for information on how to enable it. Otherwise you will see image creation fail to
 depsolve even if the blueprint itself is correct.</li>
+<li>All image types lock the root account, except for live-iso. You will need to either
+use one of the <a class="reference internal" href="#customizations">Customizations</a> methods for setting a ssh key/password, install a
+package that creates a user, or use something like <cite>cloud-init</cite> to setup access at
+boot time.</li>
 </ul>
 </div>
 <div class="section" id="installation">
@@ -204,10 +208,21 @@ for selecting optional packages.</p>
 </div>
 <div class="section" id="customizations">
 <h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>
-<p>The <tt class="docutils literal"><span class="pre">[[customizations]]</span></tt> section can be used to configure the hostname of the final image. eg.:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="n">customizations</span><span class="p">]]</span>
+<p>The <tt class="docutils literal"><span class="pre">[customizations]</span></tt> section can be used to configure the hostname of the final image. eg.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">customizations</span><span class="p">]</span>
 <span class="n">hostname</span> <span class="o">=</span> <span class="s">&quot;baseimage&quot;</span>
 </pre></div>
+</div>
+<p>This is optional and may be left out to use the defaults.</p>
+<div class="section" id="customizations-kernel">
+<h4>[customizations.kernel]<a class="headerlink" href="#customizations-kernel" title="Permalink to this headline">¶</a></h4>
+<p>This allows you to append arguments to the bootloader&#8217;s kernel commandline. This will not have any
+effect on <tt class="docutils literal"><span class="pre">tar</span></tt> or <tt class="docutils literal"><span class="pre">ext4-filesystem</span></tt> images since they do not include a bootloader.</p>
+<p>For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">kernel</span><span class="p">]</span>
+<span class="n">append</span> <span class="o">=</span> <span class="s">&quot;nosmt=force&quot;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="customizations-sshkey">
 <h4>[[customizations.sshkey]]<a class="headerlink" href="#customizations-sshkey" title="Permalink to this headline">¶</a></h4>
@@ -245,6 +260,82 @@ an encrypted password. Otherwise it will be treated as a plain text password.</p
 <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;widget&quot;</span>
 <span class="n">gid</span> <span class="o">=</span> <span class="mi">1130</span>
 </pre></div>
+</div>
+</div>
+<div class="section" id="customizations-timezone">
+<h4>[customizations.timezone]<a class="headerlink" href="#customizations-timezone" title="Permalink to this headline">¶</a></h4>
+<p>Customizing the timezone and the NTP servers to use for the system:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">timezone</span><span class="p">]</span>
+<span class="n">timezone</span> <span class="o">=</span> <span class="s">&quot;US/Eastern&quot;</span>
+<span class="n">ntpservers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;0.north-america.pool.ntp.org&quot;</span><span class="p">,</span> <span class="s">&quot;1.north-america.pool.ntp.org&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The values supported by <tt class="docutils literal"><span class="pre">timezone</span></tt> can be listed by running <tt class="docutils literal"><span class="pre">timedatectl</span> <span class="pre">list-timezones</span></tt>.</p>
+<p>If no timezone is setup the system will default to using <cite>UTC</cite>. The ntp servers are also
+optional and will default to using the distribution defaults which are fine for most uses.</p>
+<p>In some image types there are already NTP servers setup, eg. Google cloud image, and they
+cannot be overridden because they are required to boot in the selected environment. But the
+timezone will be updated to the one selected in the blueprint.</p>
+</div>
+<div class="section" id="customizations-locale">
+<h4>[customizations.locale]<a class="headerlink" href="#customizations-locale" title="Permalink to this headline">¶</a></h4>
+<p>Customize the locale settings for the system:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">locale</span><span class="p">]</span>
+<span class="n">languages</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;en_US.UTF-8&quot;</span><span class="p">]</span>
+<span class="n">keyboard</span> <span class="o">=</span> <span class="s">&quot;us&quot;</span>
+</pre></div>
+</div>
+<p>The values supported by <tt class="docutils literal"><span class="pre">languages</span></tt> can be listed by running <tt class="docutils literal"><span class="pre">localectl</span> <span class="pre">list-locales</span></tt> from
+the command line.</p>
+<p>The values supported by <tt class="docutils literal"><span class="pre">keyboard</span></tt> can be listed by running <tt class="docutils literal"><span class="pre">localectl</span> <span class="pre">list-keymaps</span></tt> from
+the command line.</p>
+<p>Multiple languages can be added. The first one becomes the
+primary, and the others are added as secondary. One or the other of <tt class="docutils literal"><span class="pre">languages</span></tt>
+or <tt class="docutils literal"><span class="pre">keyboard</span></tt> must be included (or both) in the section.</p>
+</div>
+<div class="section" id="customizations-firewall">
+<h4>[customizations.firewall]<a class="headerlink" href="#customizations-firewall" title="Permalink to this headline">¶</a></h4>
+<p>By default the firewall blocks all access except for services that enable their ports explicitly,
+like <tt class="docutils literal"><span class="pre">sshd</span></tt>. This command can be used to open other ports or services. Ports are configured using
+the port:protocol format:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">firewall</span><span class="p">]</span>
+<span class="n">ports</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;22:tcp&quot;</span><span class="p">,</span> <span class="s">&quot;80:tcp&quot;</span><span class="p">,</span> <span class="s">&quot;imap:tcp&quot;</span><span class="p">,</span> <span class="s">&quot;53:tcp&quot;</span><span class="p">,</span> <span class="s">&quot;53:udp&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Numeric ports, or their names from <tt class="docutils literal"><span class="pre">/etc/services</span></tt> can be used in the <tt class="docutils literal"><span class="pre">ports</span></tt> enabled/disabled lists.</p>
+<p>The blueprint settings extend any existing settings in the image templates, so if <tt class="docutils literal"><span class="pre">sshd</span></tt> is
+already enabled it will extend the list of ports with the ones listed by the blueprint.</p>
+<p>If the distribution uses <tt class="docutils literal"><span class="pre">firewalld</span></tt> you can specify services listed by <tt class="docutils literal"><span class="pre">firewall-cmd</span> <span class="pre">--get-services</span></tt>
+in a <tt class="docutils literal"><span class="pre">customizations.firewall.services</span></tt> section:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">services</span><span class="p">]</span>
+<span class="n">enabled</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;ftp&quot;</span><span class="p">,</span> <span class="s">&quot;ntp&quot;</span><span class="p">,</span> <span class="s">&quot;dhcp&quot;</span><span class="p">]</span>
+<span class="n">disabled</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;telnet&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Remember that the <tt class="docutils literal"><span class="pre">firewall.services</span></tt> are different from the names in <tt class="docutils literal"><span class="pre">/etc/services</span></tt>.</p>
+<p>Both are optional, if they are not used leave them out or set them to an empty list <tt class="docutils literal"><span class="pre">[]</span></tt>. If you
+only want the default firewall setup this section can be omitted from the blueprint.</p>
+<p>NOTE: The <tt class="docutils literal"><span class="pre">Google</span></tt> and <tt class="docutils literal"><span class="pre">OpenStack</span></tt> templates explicitly disable the firewall for their environment.
+This cannot be overridden by the blueprint.</p>
+</div>
+<div class="section" id="customizations-services">
+<h4>[customizations.services]<a class="headerlink" href="#customizations-services" title="Permalink to this headline">¶</a></h4>
+<p>This section can be used to control which services are enabled at boot time.
+Some image types already have services enabled or disabled in order for the
+image to work correctly, and cannot be overridden. eg. <tt class="docutils literal"><span class="pre">ami</span></tt> requires
+<tt class="docutils literal"><span class="pre">sshd</span></tt>, <tt class="docutils literal"><span class="pre">chronyd</span></tt>, and <tt class="docutils literal"><span class="pre">cloud-init</span></tt>. Without them the image will not
+boot. Blueprint services are added to, not replacing, the list already in the
+templates, if any.</p>
+<blockquote>
+<div>[customizations.services]
+enabled = [&#8220;sshd&#8221;, &#8220;cockpit&#8221;, &#8220;httpd.service&#8221;]
+disabled = [&#8220;postfix&#8221;, &#8220;telnetd&#8221;]</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The service names are systemd service units. You can only specify the unit
+name, eg. <tt class="docutils literal"><span class="pre">httpd</span></tt>, or the full service name, eg. <tt class="docutils literal"><span class="pre">httpd.service</span></tt> &#8211; but
+not other systemd unit files. Note that this is different from newer
+releases where you can specify any systemd unit file.</p>
 </div>
 </div>
 </div>
@@ -393,9 +484,14 @@ sources from <tt class="docutils literal"><span class="pre">/etc/yum.repos.d/</s
 <li><a class="reference internal" href="#packages-and-modules">[[packages]] and [[modules]]</a></li>
 <li><a class="reference internal" href="#groups">[[groups]]</a></li>
 <li><a class="reference internal" href="#customizations">Customizations</a><ul>
+<li><a class="reference internal" href="#customizations-kernel">[customizations.kernel]</a></li>
 <li><a class="reference internal" href="#customizations-sshkey">[[customizations.sshkey]]</a></li>
 <li><a class="reference internal" href="#customizations-user">[[customizations.user]]</a></li>
 <li><a class="reference internal" href="#customizations-group">[[customizations.group]]</a></li>
+<li><a class="reference internal" href="#customizations-timezone">[customizations.timezone]</a></li>
+<li><a class="reference internal" href="#customizations-locale">[customizations.locale]</a></li>
+<li><a class="reference internal" href="#customizations-firewall">[customizations.firewall]</a></li>
+<li><a class="reference internal" href="#customizations-services">[customizations.services]</a></li>
 </ul>
 </li>
 </ul>
@@ -455,7 +551,7 @@ sources from <tt class="docutils literal"><span class="pre">/etc/yum.repos.d/</s
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.43 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

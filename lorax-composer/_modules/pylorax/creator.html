@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.creator &mdash; Lorax 19.7.22 documentation</title>
+    <title>pylorax.creator &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="../../index.html" />
     <link rel="up" title="pylorax" href="../pylorax.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" accesskey="U">pylorax</a> &raquo;</li> 
       </ul>
@@ -97,7 +97,7 @@
 
 <span class="n">RUNTIME</span> <span class="o">=</span> <span class="s">&quot;images/install.img&quot;</span>
 
-<span class="c"># Default parameters for rebuilding initramfs, override with --dracut-args</span>
+<span class="c"># Default parameters for rebuilding initramfs, override with --dracut-arg</span>
 <span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;--xz&quot;</span><span class="p">,</span> <span class="s">&quot;--add&quot;</span><span class="p">,</span> <span class="s">&quot;livenet dmsquash-live convertfs pollcdrom&quot;</span><span class="p">,</span>
                   <span class="s">&quot;--omit&quot;</span><span class="p">,</span> <span class="s">&quot;plymouth&quot;</span><span class="p">,</span> <span class="s">&quot;--no-hostonly&quot;</span><span class="p">,</span> <span class="s">&quot;--no-early-microcode&quot;</span><span class="p">]</span>
 
@@ -393,7 +393,8 @@
     <span class="n">tb</span> <span class="o">=</span> <span class="n">TreeBuilder</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">arch</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">domacboot</span><span class="p">,</span>
                      <span class="n">inroot</span><span class="o">=</span><span class="n">mount_dir</span><span class="p">,</span> <span class="n">outroot</span><span class="o">=</span><span class="n">work_dir</span><span class="p">,</span>
                      <span class="n">runtime</span><span class="o">=</span><span class="n">RUNTIME</span><span class="p">,</span> <span class="n">isolabel</span><span class="o">=</span><span class="n">isolabel</span><span class="p">,</span>
-                     <span class="n">templatedir</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">lorax_templates</span><span class="p">,</span><span class="s">&quot;live/&quot;</span><span class="p">))</span>
+                     <span class="n">templatedir</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">lorax_templates</span><span class="p">,</span><span class="s">&quot;live/&quot;</span><span class="p">),</span>
+                     <span class="n">extra_boot_args</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">extra_boot_args</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s">&quot;Rebuilding initrds&quot;</span> <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_args</span><span class="p">:</span>
         <span class="n">dracut_args</span> <span class="o">=</span> <span class="n">DRACUT_DEFAULT</span>
@@ -457,7 +458,7 @@
     <span class="n">remove</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="s">&quot;runtime&quot;</span><span class="p">))</span>
 
 </div>
-<div class="viewcode-block" id="make_image"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_image">[docs]</a><span class="k">def</span> <span class="nf">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="make_image"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_image">[docs]</a><span class="k">def</span> <span class="nf">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Install to an image</span>
 
@@ -475,12 +476,12 @@
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span><span class="p">:</span>
-            <span class="n">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="n">callback_func</span><span class="p">)</span>
+            <span class="n">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">install_log</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span><span class="o">+</span><span class="s">&quot;/virt-install.log&quot;</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;install_log = </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">install_log</span><span class="p">)</span>
 
-            <span class="n">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
+            <span class="n">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">InstallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Install failed: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">keep_image</span><span class="p">:</span>
@@ -541,7 +542,7 @@
 
     <span class="k">return</span> <span class="n">work_dir</span>
 </div>
-<div class="viewcode-block" id="run_creator"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.run_creator">[docs]</a><span class="k">def</span> <span class="nf">run_creator</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="run_creator"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.run_creator">[docs]</a><span class="k">def</span> <span class="nf">run_creator</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Run the image creator process</span>
 
 <span class="sd">    :param opts: Commandline options to control the process</span>
@@ -589,7 +590,10 @@
 
         <span class="c"># Make the image. Output of this is either a partitioned disk image or a fsimage</span>
         <span class="c"># Can also fail with InstallError</span>
-        <span class="n">disk_img</span> <span class="o">=</span> <span class="n">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="n">callback_func</span><span class="p">)</span>
+        <span class="n">disk_img</span> <span class="o">=</span> <span class="n">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;image creation canceled&quot;</span><span class="p">)</span>
 
     <span class="c"># Only create the disk image, return that now</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_only</span><span class="p">:</span>
@@ -604,6 +608,10 @@
             <span class="n">disk_img</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">fs_image</span> <span class="ow">or</span> <span class="n">disk_img</span>
 
             <span class="n">make_squashfs</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;ISO creation canceled&quot;</span><span class="p">)</span>
+
             <span class="k">with</span> <span class="n">Mount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s">&quot;loop&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mount_dir</span><span class="p">:</span>
                 <span class="n">result_dir</span> <span class="o">=</span> <span class="n">make_livecd</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -697,7 +705,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" >pylorax</a> &raquo;</li> 
       </ul>

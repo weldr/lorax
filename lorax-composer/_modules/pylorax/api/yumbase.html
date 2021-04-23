@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.yumbase &mdash; Lorax 19.7.22 documentation</title>
+    <title>pylorax.api.yumbase &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -76,6 +76,8 @@
 <span class="kn">from</span> <span class="nn">fnmatch</span> <span class="kn">import</span> <span class="n">fnmatchcase</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">yum</span>
 <span class="kn">from</span> <span class="nn">yum.Errors</span> <span class="kn">import</span> <span class="n">YumBaseError</span>
 
@@ -84,6 +86,74 @@
 
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span>
 
+<div class="viewcode-block" id="YumLock"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.yumbase.YumLock">[docs]</a><span class="k">class</span> <span class="nc">YumLock</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hold the YumBase object and a Lock to control access to it.</span>
+
+<span class="sd">    self.yb is a property that returns the YumBase object, but it *may* change</span>
+<span class="sd">    from one call to the next if the upstream repositories have changed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">expire_secs</span><span class="o">=</span><span class="mi">6</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conf</span> <span class="o">=</span> <span class="n">conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yb</span> <span class="o">=</span> <span class="n">get_base_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expire_secs</span> <span class="o">=</span> <span class="n">expire_secs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expire_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expire_secs</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="YumLock.lock"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.yumbase.YumLock.lock">[docs]</a>    <span class="k">def</span> <span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check for repo updates (using expiration time) and return the lock</span>
+
+<span class="sd">        If the repository has been updated, tear down the old YumBase and</span>
+<span class="sd">        create a new one. This is the only way to force yum to use the new</span>
+<span class="sd">        metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expire_time</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_check</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="YumLock.lock_check"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.yumbase.YumLock.lock_check">[docs]</a>    <span class="k">def</span> <span class="nf">lock_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Force a check for repo updates and return the lock</span>
+
+<span class="sd">        If the repository has been updated, tear down the old YumBase and</span>
+<span class="sd">        create a new one. This is the only way to force yum to use the new</span>
+<span class="sd">        metadata.</span>
+
+<span class="sd">        Use this method sparingly, it removes the repodata and downloads a new copy every time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expire_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expire_secs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_haveReposChanged</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_destroyYb</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yb</span> <span class="o">=</span> <span class="n">get_base_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span>
+</div>
+    <span class="k">def</span> <span class="nf">_destroyYb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Do our best to get yum to let go of all the things...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">pkgSack</span><span class="o">.</span><span class="n">dropCachedData</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">pkgSack</span><span class="o">.</span><span class="n">sacks</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">del</span> <span class="n">s</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">pkgSack</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">ts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">yb</span>
+
+    <span class="k">def</span> <span class="nf">_haveReposChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True if the repo has new metadata&quot;&quot;&quot;</span>
+        <span class="c"># This is a total kludge, yum doesn&#39;t really expect to deal with things changing while the</span>
+        <span class="c"># object is is use.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">before</span> <span class="o">=</span> <span class="p">[(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">repoXML</span><span class="o">.</span><span class="n">checksums</span><span class="p">[</span><span class="s">&quot;sha256&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">listEnabled</span><span class="p">())]</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">listEnabled</span><span class="p">()):</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">metadata_expire</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">del</span> <span class="n">r</span><span class="o">.</span><span class="n">repoXML</span>
+            <span class="n">after</span> <span class="o">=</span> <span class="p">[(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">repoXML</span><span class="o">.</span><span class="n">checksums</span><span class="p">[</span><span class="s">&quot;sha256&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">listEnabled</span><span class="p">())]</span>
+            <span class="k">return</span> <span class="n">before</span> <span class="o">!=</span> <span class="n">after</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+</div>
 <div class="viewcode-block" id="get_base_object"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.yumbase.get_base_object">[docs]</a><span class="k">def</span> <span class="nf">get_base_object</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get the Yum object with settings from the config file</span>
 
@@ -156,6 +226,32 @@
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">fnmatchcase</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pattern</span><span class="p">),</span> <span class="n">enabled_repos</span><span class="p">)):</span>     <span class="c"># pylint: disable=cell-var-from-loop</span>
             <span class="n">yb</span><span class="o">.</span><span class="n">getReposFromConfigFile</span><span class="p">(</span><span class="n">repo_file</span><span class="p">)</span>
 
+    <span class="c"># Remove any duplicate repo entries. These can cause problems with Anaconda, which will fail</span>
+    <span class="c"># with space problems.</span>
+    <span class="n">repos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">listEnabled</span><span class="p">())</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;baseurl&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s">&quot;mirrorlist&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s">&quot;metalink&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">for</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">repos</span><span class="p">:</span>
+        <span class="n">remove</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">repo</span> <span class="o">=</span> <span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">getRepo</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">[</span><span class="s">&quot;baseurl&quot;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Removing duplicate repo: </span><span class="si">%s</span><span class="s"> baseurl=</span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">source_name</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">remove</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">seen</span><span class="p">[</span><span class="s">&quot;baseurl&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">[</span><span class="s">&quot;mirrorlist&quot;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Removing duplicate repo: </span><span class="si">%s</span><span class="s"> mirrorlist=</span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">source_name</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">)</span>
+                <span class="n">remove</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">seen</span><span class="p">[</span><span class="s">&quot;mirrorlist&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">remove</span><span class="p">:</span>
+            <span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+
+    <span class="c"># delete doesn&#39;t remove it from the cache used by listEnabled so we have to force it</span>
+    <span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">_cache_enabled_repos</span> <span class="o">=</span> <span class="bp">None</span>
+
     <span class="c"># Update the metadata from the enabled repos to speed up later operations</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Updating yum repository metadata&quot;</span><span class="p">)</span>
     <span class="n">update_metadata</span><span class="p">(</span><span class="n">yb</span><span class="p">)</span>
@@ -213,7 +309,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

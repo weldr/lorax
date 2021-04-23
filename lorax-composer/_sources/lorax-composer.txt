@@ -25,6 +25,11 @@ Important Things To Note
   for information on how to enable it. Otherwise you will see image creation fail to
   depsolve even if the blueprint itself is correct.
 
+* All image types lock the root account, except for live-iso. You will need to either
+  use one of the `Customizations`_ methods for setting a ssh key/password, install a
+  package that creates a user, or use something like `cloud-init` to setup access at
+  boot time.
+
 Installation
 ------------
 
@@ -167,10 +172,24 @@ for selecting optional packages.
 Customizations
 ~~~~~~~~~~~~~~
 
-The ``[[customizations]]`` section can be used to configure the hostname of the final image. eg.::
+The ``[customizations]`` section can be used to configure the hostname of the final image. eg.::
 
-    [[customizations]]
+    [customizations]
     hostname = "baseimage"
+
+This is optional and may be left out to use the defaults.
+
+
+[customizations.kernel]
+***********************
+
+This allows you to append arguments to the bootloader's kernel commandline. This will not have any
+effect on ``tar`` or ``ext4-filesystem`` images since they do not include a bootloader.
+
+For example::
+
+    [customizations.kernel]
+    append = "nosmt=force"
 
 
 [[customizations.sshkey]]
@@ -215,6 +234,96 @@ Add a group to the image. ``name`` is required and ``gid`` is optional::
     name = "widget"
     gid = 1130
 
+
+[customizations.timezone]
+*************************
+
+Customizing the timezone and the NTP servers to use for the system::
+
+    [customizations.timezone]
+    timezone = "US/Eastern"
+    ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
+
+The values supported by ``timezone`` can be listed by running ``timedatectl list-timezones``.
+
+If no timezone is setup the system will default to using `UTC`. The ntp servers are also
+optional and will default to using the distribution defaults which are fine for most uses.
+
+In some image types there are already NTP servers setup, eg. Google cloud image, and they
+cannot be overridden because they are required to boot in the selected environment. But the
+timezone will be updated to the one selected in the blueprint.
+
+
+[customizations.locale]
+***********************
+
+Customize the locale settings for the system::
+
+    [customizations.locale]
+    languages = ["en_US.UTF-8"]
+    keyboard = "us"
+
+The values supported by ``languages`` can be listed by running ``localectl list-locales`` from
+the command line.
+
+The values supported by ``keyboard`` can be listed by running ``localectl list-keymaps`` from
+the command line.
+
+Multiple languages can be added. The first one becomes the
+primary, and the others are added as secondary. One or the other of ``languages``
+or ``keyboard`` must be included (or both) in the section.
+
+
+[customizations.firewall]
+*************************
+
+By default the firewall blocks all access except for services that enable their ports explicitly,
+like ``sshd``. This command can be used to open other ports or services. Ports are configured using
+the port:protocol format::
+
+    [customizations.firewall]
+    ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
+
+Numeric ports, or their names from ``/etc/services`` can be used in the ``ports`` enabled/disabled lists.
+
+The blueprint settings extend any existing settings in the image templates, so if ``sshd`` is
+already enabled it will extend the list of ports with the ones listed by the blueprint.
+
+If the distribution uses ``firewalld`` you can specify services listed by ``firewall-cmd --get-services``
+in a ``customizations.firewall.services`` section::
+
+    [customizations.firewall.services]
+    enabled = ["ftp", "ntp", "dhcp"]
+    disabled = ["telnet"]
+
+Remember that the ``firewall.services`` are different from the names in ``/etc/services``.
+
+Both are optional, if they are not used leave them out or set them to an empty list ``[]``. If you
+only want the default firewall setup this section can be omitted from the blueprint.
+
+NOTE: The ``Google`` and ``OpenStack`` templates explicitly disable the firewall for their environment.
+This cannot be overridden by the blueprint.
+
+[customizations.services]
+*************************
+
+This section can be used to control which services are enabled at boot time.
+Some image types already have services enabled or disabled in order for the
+image to work correctly, and cannot be overridden. eg. ``ami`` requires
+``sshd``, ``chronyd``, and ``cloud-init``. Without them the image will not
+boot. Blueprint services are added to, not replacing, the list already in the
+templates, if any.
+
+    [customizations.services]
+    enabled = ["sshd", "cockpit", "httpd.service"]
+    disabled = ["postfix", "telnetd"]
+
+.. note::
+
+    The service names are systemd service units. You can only specify the unit
+    name, eg. ``httpd``, or the full service name, eg. ``httpd.service`` -- but
+    not other systemd unit files. Note that this is different from newer
+    releases where you can specify any systemd unit file.
 
 Adding Output Types
 -------------------

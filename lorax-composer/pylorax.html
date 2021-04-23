@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax Package &mdash; Lorax 19.7.22 documentation</title>
+    <title>pylorax Package &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="index.html" />
     <link rel="up" title="src" href="modules.html" />
     <link rel="next" title="api Package" href="pylorax.api.html" />
     <link rel="prev" title="cli Package" href="composer.cli.html" /> 
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="composer.cli.html" title="cli Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="modules.html" accesskey="U">src</a> &raquo;</li> 
       </ul>
     </div>  
@@ -107,6 +107,12 @@
 <tt class="descclassname">pylorax.</tt><tt class="descname">get_buildarch</tt><big>(</big><em>ybo</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#get_buildarch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.get_buildarch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="function">
+<dt id="pylorax.log_selinux_state">
+<tt class="descclassname">pylorax.</tt><tt class="descname">log_selinux_state</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax.html#log_selinux_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.log_selinux_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log the current state of selinux</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-pylorax.base">
 <span id="base-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">base</span></tt> Module<a class="headerlink" href="#module-pylorax.base" title="Permalink to this headline">¶</a></h2>
@@ -116,27 +122,27 @@
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pcritical">
-<tt class="descname">pcritical</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f838cf59150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pcritical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pcritical" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pcritical</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f44874d0150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pcritical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pcritical" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pdebug">
-<tt class="descname">pdebug</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f838cf59150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pdebug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pdebug" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pdebug</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f44874d0150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pdebug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pdebug" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.perror">
-<tt class="descname">perror</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f838cf59150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.perror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.perror" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">perror</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f44874d0150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.perror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.perror" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pinfo">
-<tt class="descname">pinfo</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f838cf59150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pinfo" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pinfo</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f44874d0150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pinfo" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pwarning">
-<tt class="descname">pwarning</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f838cf59150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pwarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pwarning" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pwarning</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f44874d0150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pwarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pwarning" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -275,7 +281,7 @@ releasever  Release version, passed to template. Default is 17</p>
 
 <dl class="function">
 <dt id="pylorax.creator.make_image">
-<tt class="descclassname">pylorax.creator.</tt><tt class="descname">make_image</tt><big>(</big><em>opts</em>, <em>ks</em>, <em>callback_func=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/creator.html#make_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_image" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.creator.</tt><tt class="descname">make_image</tt><big>(</big><em>opts</em>, <em>ks</em>, <em>cancel_func=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/creator.html#make_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_image" title="Permalink to this definition">¶</a></dt>
 <dd><p>Install to an image</p>
 <p>Use virt or anaconda to install to an image.</p>
 <p>Returns the full path of of the image created.</p>
@@ -370,7 +376,7 @@ type img_mount: imgutils.PartitionMount</p>
 
 <dl class="function">
 <dt id="pylorax.creator.run_creator">
-<tt class="descclassname">pylorax.creator.</tt><tt class="descname">run_creator</tt><big>(</big><em>opts</em>, <em>callback_func=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/creator.html#run_creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.run_creator" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.creator.</tt><tt class="descname">run_creator</tt><big>(</big><em>opts</em>, <em>cancel_func=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/creator.html#run_creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.run_creator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the image creator process</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -775,7 +781,7 @@ initrd.img than the iso has. The iso is still used for stage2.</p>
 
 <dl class="class">
 <dt id="pylorax.installer.VirtualInstall">
-<em class="property">class </em><tt class="descclassname">pylorax.installer.</tt><tt class="descname">VirtualInstall</tt><big>(</big><em>iso</em>, <em>ks_paths</em>, <em>disk_img</em>, <em>img_size=2</em>, <em>kernel_args=None</em>, <em>memory=1024</em>, <em>vnc=None</em>, <em>arch=None</em>, <em>log_check=None</em>, <em>virtio_host='127.0.0.1'</em>, <em>virtio_port=6080</em>, <em>qcow2=False</em>, <em>boot_uefi=False</em>, <em>ovmf_path=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/installer.html#VirtualInstall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.VirtualInstall" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pylorax.installer.</tt><tt class="descname">VirtualInstall</tt><big>(</big><em>iso</em>, <em>ks_paths</em>, <em>disk_img</em>, <em>img_size=2</em>, <em>kernel_args=None</em>, <em>memory=1024</em>, <em>vnc=None</em>, <em>arch=None</em>, <em>cancel_func=None</em>, <em>virtio_host='127.0.0.1'</em>, <em>virtio_port=6080</em>, <em>qcow2=False</em>, <em>boot_uefi=False</em>, <em>ovmf_path=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/installer.html#VirtualInstall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.VirtualInstall" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
 <p>Run virt-install using an iso and kickstart(s)</p>
 <dl class="method">
@@ -789,13 +795,13 @@ initrd.img than the iso has. The iso is still used for stage2.</p>
 
 <dl class="function">
 <dt id="pylorax.installer.novirt_install">
-<tt class="descclassname">pylorax.installer.</tt><tt class="descname">novirt_install</tt><big>(</big><em>opts</em>, <em>disk_img</em>, <em>disk_size</em>, <em>repo_url</em>, <em>callback_func=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/installer.html#novirt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.novirt_install" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.installer.</tt><tt class="descname">novirt_install</tt><big>(</big><em>opts</em>, <em>disk_img</em>, <em>disk_size</em>, <em>repo_url</em>, <em>cancel_func=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/installer.html#novirt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.novirt_install" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use Anaconda to install to a disk image</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pylorax.installer.virt_install">
-<tt class="descclassname">pylorax.installer.</tt><tt class="descname">virt_install</tt><big>(</big><em>opts</em>, <em>install_log</em>, <em>disk_img</em>, <em>disk_size</em><big>)</big><a class="reference internal" href="_modules/pylorax/installer.html#virt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.virt_install" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.installer.</tt><tt class="descname">virt_install</tt><big>(</big><em>opts</em>, <em>install_log</em>, <em>disk_img</em>, <em>disk_size</em>, <em>cancel_func=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/installer.html#virt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.virt_install" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use virt-install to install to a disk image</p>
 <p>install_log is the path to write the log from virt-install
 disk_img is the full path to the final disk or filesystem image
@@ -1320,7 +1326,7 @@ Example:</p>
 
 <dl class="class">
 <dt id="pylorax.treebuilder.TreeBuilder">
-<em class="property">class </em><tt class="descclassname">pylorax.treebuilder.</tt><tt class="descname">TreeBuilder</tt><big>(</big><em>product</em>, <em>arch</em>, <em>inroot</em>, <em>outroot</em>, <em>runtime</em>, <em>isolabel</em>, <em>domacboot=False</em>, <em>doupgrade=True</em>, <em>templatedir=None</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>workdir=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pylorax.treebuilder.</tt><tt class="descname">TreeBuilder</tt><big>(</big><em>product</em>, <em>arch</em>, <em>inroot</em>, <em>outroot</em>, <em>runtime</em>, <em>isolabel</em>, <em>domacboot=False</em>, <em>doupgrade=True</em>, <em>templatedir=None</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>workdir=None</em>, <em>extra_boot_args=''</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
 <p>Builds the arch-specific boot images.
 inroot should be the installtree root (the newly-built runtime dir)</p>
@@ -1467,6 +1473,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pylorax.api.html">api Package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#id1"><tt class="docutils literal"><span class="pre">api</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.bisect"><tt class="docutils literal"><span class="pre">bisect</span></tt> Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.checkparams"><tt class="docutils literal"><span class="pre">checkparams</span></tt> Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.compose"><tt class="docutils literal"><span class="pre">compose</span></tt> Module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#adding-new-output-types">Adding New Output Types</a></li>
@@ -1485,7 +1492,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 <li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#status-responses">Status Responses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#api-routes">API Routes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-list"><cite>/api/v0/blueprints/list</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-info-blueprint-names"><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-info-blueprint-names-format-json-toml"><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;[?format=&lt;json|toml&gt;]</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-changes-blueprint-names-offset-0-limit-20"><cite>/api/v0/blueprints/changes/&lt;blueprint_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#post-api-v0-blueprints-new">POST <cite>/api/v0/blueprints/new</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-blueprints-delete-blueprint-name">DELETE <cite>/api/v0/blueprints/delete/&lt;blueprint_name&gt;</cite></a></li>
@@ -1608,7 +1615,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
         <li class="right" >
           <a href="composer.cli.html" title="cli Package"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li> 
       </ul>
     </div>

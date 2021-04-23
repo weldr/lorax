@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>cli Package &mdash; Lorax 19.7.22 documentation</title>
+    <title>cli Package &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="index.html" />
     <link rel="up" title="composer Package" href="composer.html" />
     <link rel="next" title="pylorax Package" href="pylorax.html" />
     <link rel="prev" title="composer Package" href="composer.html" /> 
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="composer.html" title="composer Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="composer.html" accesskey="U">composer Package</a> &raquo;</li> 
       </ul>
@@ -399,6 +399,25 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 </dd></dl>
 
 <dl class="function">
+<dt id="composer.cli.blueprints.dict_names">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">dict_names</tt><big>(</big><em>lst</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#dict_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.dict_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return comma-separated list of the dict&#8217;s name/user fields</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; key/values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">String of the dict&#8217;s keys and values</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+<p>root, norm</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="composer.cli.blueprints.prettyCommitDetails">
 <tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">prettyCommitDetails</tt><big>(</big><em>change</em>, <em>indent=4</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#prettyCommitDetails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.prettyCommitDetails" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the blueprint&#8217;s change in a nice way</p>
@@ -417,8 +436,27 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 </dd></dl>
 
 <dl class="function">
-<dt id="composer.cli.blueprints.prettyDiffEntry">
-<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">prettyDiffEntry</tt><big>(</big><em>diff</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#prettyDiffEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.prettyDiffEntry" title="Permalink to this definition">¶</a></dt>
+<dt id="composer.cli.blueprints.pretty_dict">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">pretty_dict</tt><big>(</big><em>d</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#pretty_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.pretty_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dict as a human readable single line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; key/values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">String of the dict&#8217;s keys and values</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+<p>key=&#8221;str&#8221;, key=&#8221;str1,str2&#8221;, ...</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.pretty_diff_entry">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">pretty_diff_entry</tt><big>(</big><em>diff</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#pretty_diff_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.pretty_diff_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate nice diff entry string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1094,7 +1132,7 @@ not to continue processing the results.</p>
         <li class="right" >
           <a href="composer.html" title="composer Package"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="composer.html" >composer Package</a> &raquo;</li> 
       </ul>

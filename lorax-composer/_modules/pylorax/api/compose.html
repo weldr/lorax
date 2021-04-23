@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.compose &mdash; Lorax 19.7.22 documentation</title>
+    <title>pylorax.api.compose &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -51,7 +51,7 @@
           <div class="body">
             
   <h1>Source code for pylorax.api.compose</h1><div class="highlight"><pre>
-<span class="c"># Copyright (C) 2018 Red Hat, Inc.</span>
+<span class="c"># Copyright (C) 2018-2019 Red Hat, Inc.</span>
 <span class="c">#</span>
 <span class="c"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c"># it under the terms of the GNU General Public License as published by</span>
@@ -83,11 +83,13 @@
 <span class="sd">parameters needed to generate the desired output. Other types should be set to False.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;lorax-composer&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
 <span class="kn">import</span> <span class="nn">pytoml</span> <span class="kn">as</span> <span class="nn">toml</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
@@ -103,6 +105,7 @@
 <span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="kn">import</span> <span class="n">ProjectsError</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="kn">import</span> <span class="n">read_recipe_and_id</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.timestamp</span> <span class="kn">import</span> <span class="n">TS_CREATED</span><span class="p">,</span> <span class="n">write_timestamp</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd_output</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">default_image_name</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span>
 
@@ -172,8 +175,390 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="o">.</span><span class="n">sslverify</span><span class="p">:</span>
         <span class="n">cmd</span> <span class="o">+=</span> <span class="s">&#39;--noverifyssl&#39;</span>
 
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">sslcacert</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">+=</span> <span class="s">&#39; --sslcacert=&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">r</span><span class="o">.</span><span class="n">sslcacert</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">sslclientcert</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">+=</span> <span class="s">&#39; --sslclientcert=&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">r</span><span class="o">.</span><span class="n">sslclientcert</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">sslclientkey</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">+=</span> <span class="s">&#39; --sslclientkey=&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">r</span><span class="o">.</span><span class="n">sslclientkey</span>
+
     <span class="k">return</span> <span class="n">cmd</span>
 
+</div>
+<div class="viewcode-block" id="bootloader_append"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.bootloader_append">[docs]</a><span class="k">def</span> <span class="nf">bootloader_append</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">kernel_append</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Insert the kernel_append string into the --append argument</span>
+
+<span class="sd">    :param line: The bootloader ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param kernel_append: The arguments to append to the --append section</span>
+<span class="sd">    :type kernel_append: str</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">bootloader</span><span class="o">.</span><span class="n">appendLine</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">bootloader</span><span class="o">.</span><span class="n">appendLine</span> <span class="o">+=</span> <span class="s">&quot; </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">kernel_append</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">bootloader</span><span class="o">.</span><span class="n">appendLine</span> <span class="o">=</span> <span class="n">kernel_append</span>
+
+    <span class="c"># Converting back to a string includes a comment, return just the bootloader line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">bootloader</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="get_kernel_append"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_kernel_append">[docs]</a><span class="k">def</span> <span class="nf">get_kernel_append</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.kernel append value</span>
+
+<span class="sd">    :param recipe:</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: append value or empty string</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s">&quot;kernel&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]</span> <span class="ow">or</span> \
+       <span class="s">&quot;append&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;kernel&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;kernel&quot;</span><span class="p">][</span><span class="s">&quot;append&quot;</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="timezone_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.timezone_cmd">[docs]</a><span class="k">def</span> <span class="nf">timezone_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the timezone line with the settings</span>
+
+<span class="sd">    :param line: The timezone ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: A dict with timezone and/or ntpservers list</span>
+<span class="sd">    :type settings: dict</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s">&quot;timezone&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">timezone</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s">&quot;timezone&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s">&quot;ntpservers&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">ntpservers</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s">&quot;ntpservers&quot;</span><span class="p">]</span>
+
+    <span class="c"># Converting back to a string includes a comment, return just the timezone line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">timezone</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="get_timezone_settings"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_timezone_settings">[docs]</a><span class="k">def</span> <span class="nf">get_timezone_settings</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.timezone dict</span>
+
+<span class="sd">    :param recipe:</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: append value or empty string</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s">&quot;timezone&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">return</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;timezone&quot;</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="lang_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.lang_cmd">[docs]</a><span class="k">def</span> <span class="nf">lang_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">languages</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the lang line with the languages</span>
+
+<span class="sd">    :param line: The lang ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: The list of languages</span>
+<span class="sd">    :type settings: list</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">languages</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="n">languages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">languages</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">addsupport</span> <span class="o">=</span> <span class="n">languages</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c"># Converting back to a string includes a comment, return just the lang line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">lang</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="get_languages"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_languages">[docs]</a><span class="k">def</span> <span class="nf">get_languages</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.locale.languages list</span>
+
+<span class="sd">    :param recipe: The recipe</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: list of language strings</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s">&quot;locale&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]</span> <span class="ow">or</span> \
+       <span class="s">&quot;languages&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;locale&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;locale&quot;</span><span class="p">][</span><span class="s">&quot;languages&quot;</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="keyboard_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.keyboard_cmd">[docs]</a><span class="k">def</span> <span class="nf">keyboard_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">layout</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the keyboard line with the layout</span>
+
+<span class="sd">    :param line: The keyboard ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: The keyboard layout</span>
+<span class="sd">    :type settings: str</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">layout</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">keyboard</span><span class="o">.</span><span class="n">keyboard</span> <span class="o">=</span> <span class="n">layout</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">keyboard</span><span class="o">.</span><span class="n">vc_keymap</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">keyboard</span><span class="o">.</span><span class="n">x_layouts</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c"># Converting back to a string includes a comment, return just the keyboard line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">keyboard</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="get_keyboard_layout"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_keyboard_layout">[docs]</a><span class="k">def</span> <span class="nf">get_keyboard_layout</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.locale.keyboard list</span>
+
+<span class="sd">    :param recipe: The recipe</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: The keyboard layout string</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s">&quot;locale&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]</span> <span class="ow">or</span> \
+       <span class="s">&quot;keyboard&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;locale&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;locale&quot;</span><span class="p">][</span><span class="s">&quot;keyboard&quot;</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="firewall_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.firewall_cmd">[docs]</a><span class="k">def</span> <span class="nf">firewall_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the firewall line with the new ports and services</span>
+
+<span class="sd">    :param line: The firewall ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: A dict with the list of services and ports to enable and disable</span>
+<span class="sd">    :type settings: dict</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="c"># Do not override firewall --disabled</span>
+    <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">enabled</span> <span class="o">!=</span> <span class="bp">False</span> <span class="ow">and</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s">&quot;ports&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">ports</span><span class="p">))</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s">&quot;enabled&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">services</span><span class="p">))</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">remove_services</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s">&quot;disabled&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">remove_services</span><span class="p">))</span>
+
+    <span class="c"># Converting back to a string includes a comment, return just the keyboard line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="get_firewall_settings"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_firewall_settings">[docs]</a><span class="k">def</span> <span class="nf">get_firewall_settings</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.firewall settings</span>
+
+<span class="sd">    :param recipe: The recipe</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: A dict of settings</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;ports&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s">&quot;enabled&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s">&quot;disabled&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="k">if</span> <span class="s">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s">&quot;firewall&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">settings</span>
+
+    <span class="n">settings</span><span class="p">[</span><span class="s">&quot;ports&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;firewall&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;ports&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="k">if</span> <span class="s">&quot;services&quot;</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;firewall&quot;</span><span class="p">]:</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s">&quot;enabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;firewall&quot;</span><span class="p">][</span><span class="s">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;enabled&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s">&quot;disabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;firewall&quot;</span><span class="p">][</span><span class="s">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;disabled&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">return</span> <span class="n">settings</span>
+
+</div>
+<div class="viewcode-block" id="services_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.services_cmd">[docs]</a><span class="k">def</span> <span class="nf">services_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the services line with additional services to enable/disable</span>
+
+<span class="sd">    :param line: The services ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: A dict with the list of services to enable and disable</span>
+<span class="sd">    :type settings: dict</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Empty services and no additional settings, return an empty string</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">settings</span><span class="p">[</span><span class="s">&quot;enabled&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">settings</span><span class="p">[</span><span class="s">&quot;disabled&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="c"># Allow passing in a &#39;default&#39; so that the enable/disable may be applied to it, without</span>
+    <span class="c"># parsing it and emitting a kickstart error message</span>
+    <span class="k">if</span> <span class="n">line</span> <span class="o">!=</span> <span class="s">&quot;services&quot;</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="c"># Add to any existing services, removing any duplicates</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s">&quot;enabled&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">enabled</span><span class="p">))</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s">&quot;disabled&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">disabled</span><span class="p">))</span>
+
+    <span class="c"># Converting back to a string includes a comment, return just the keyboard line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="get_services"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_services">[docs]</a><span class="k">def</span> <span class="nf">get_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.services settings</span>
+
+<span class="sd">    :param recipe: The recipe</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: A dict of settings</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;enabled&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s">&quot;disabled&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="k">if</span> <span class="s">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s">&quot;services&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">settings</span>
+
+    <span class="n">settings</span><span class="p">[</span><span class="s">&quot;enabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;enabled&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="n">settings</span><span class="p">[</span><span class="s">&quot;disabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">][</span><span class="s">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;disabled&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="k">return</span> <span class="n">settings</span>
+
+</div>
+<div class="viewcode-block" id="get_default_services"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_default_services">[docs]</a><span class="k">def</span> <span class="nf">get_default_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the default string for services, based on recipe</span>
+<span class="sd">    :param recipe: The recipe</span>
+
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: string with &quot;services&quot; or &quot;&quot;</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    When no services have been selected we don&#39;t need to add anything to the kickstart</span>
+<span class="sd">    so return an empty string. Otherwise return &quot;services&quot; which will be updated with</span>
+<span class="sd">    the settings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">services</span> <span class="o">=</span> <span class="n">get_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">services</span><span class="p">[</span><span class="s">&quot;enabled&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">services</span><span class="p">[</span><span class="s">&quot;disabled&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s">&quot;services&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="customize_ks_template"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.customize_ks_template">[docs]</a><span class="k">def</span> <span class="nf">customize_ks_template</span><span class="p">(</span><span class="n">ks_template</span><span class="p">,</span> <span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Customize the kickstart template and return it</span>
+
+<span class="sd">    :param ks_template: The kickstart template</span>
+<span class="sd">    :type ks_template: str</span>
+<span class="sd">    :param recipe:</span>
+<span class="sd">    :type recipe: Recipe object</span>
+
+<span class="sd">    Apply customizations to existing template commands, or add defaults for ones that are</span>
+<span class="sd">    missing and required.</span>
+
+<span class="sd">    Apply customizations.kernel.append to the bootloader argument in the template.</span>
+<span class="sd">    Add bootloader line if it is missing.</span>
+
+<span class="sd">    Add default timezone if needed. It does NOT replace an existing timezone entry</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Commands to be modified [NEW-COMMAND-FUNC, NEW-VALUE, DEFAULT, REPLACE]</span>
+    <span class="c"># The function is called with a kickstart command string and the value to replace</span>
+    <span class="c"># The value is specific to the command, and is understood by the function</span>
+    <span class="c"># The default is a complete kickstart command string, suitable for writing to the template</span>
+    <span class="c"># If REPLACE is False it will not change an existing entry only add a missing one</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;bootloader&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">bootloader_append</span><span class="p">,</span>
+                               <span class="n">get_kernel_append</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s">&#39;bootloader --location=none&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">],</span>
+                <span class="s">&quot;timezone&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="n">timezone_cmd</span><span class="p">,</span>
+                               <span class="n">get_timezone_settings</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s">&#39;timezone UTC&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">],</span>
+                <span class="s">&quot;lang&quot;</span><span class="p">:</span>       <span class="p">[</span><span class="n">lang_cmd</span><span class="p">,</span>
+                               <span class="n">get_languages</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s">&#39;lang en_US.UTF-8&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">],</span>
+                <span class="s">&quot;keyboard&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="n">keyboard_cmd</span><span class="p">,</span>
+                               <span class="n">get_keyboard_layout</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s">&#39;keyboard --xlayouts us --vckeymap us&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">],</span>
+                <span class="s">&quot;firewall&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="n">firewall_cmd</span><span class="p">,</span>
+                               <span class="n">get_firewall_settings</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s">&#39;firewall --enabled&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">],</span>
+                <span class="s">&quot;services&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="n">services_cmd</span><span class="p">,</span>
+                               <span class="n">get_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="n">get_default_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span> <span class="bp">True</span><span class="p">]</span>
+               <span class="p">}</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ks_template</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="p">(</span><span class="n">new_command</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span> <span class="o">=</span> <span class="n">commands</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+                <span class="n">found</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">replace</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Replacing </span><span class="si">%s</span><span class="s"> with </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">new_command</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span> <span class="nb">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Skipping </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># No matches, write the line as-is</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="c"># Write out defaults for the ones not found</span>
+    <span class="c"># These must go FIRST because the template still needs to have the packages added</span>
+    <span class="n">defaults</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">found</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="p">(</span><span class="n">new_command</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">commands</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">default</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Setting </span><span class="si">%s</span><span class="s"> to use </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">new_command</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span> <span class="nb">file</span><span class="o">=</span><span class="n">defaults</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">default</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Setting </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">defaults</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">defaults</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span> <span class="o">+</span> <span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="write_ks_root"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.write_ks_root">[docs]</a><span class="k">def</span> <span class="nf">write_ks_root</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Write kickstart root password and sshkey entry</span>
+
+<span class="sd">    :param f: kickstart file object</span>
+<span class="sd">    :type f: open file object</span>
+<span class="sd">    :param user: A blueprint user dictionary</span>
+<span class="sd">    :type user: dict</span>
+
+<span class="sd">    If the entry contains a ssh key, use sshkey to write it</span>
+<span class="sd">    If it contains password, use rootpw to set it</span>
+
+<span class="sd">    root cannot be used with the user command. So only key and password are supported</span>
+<span class="sd">    for root.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># ssh key uses the sshkey kickstart command</span>
+    <span class="k">if</span> <span class="s">&quot;key&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;sshkey --user </span><span class="si">%s</span><span class="s"> &quot;</span><span class="si">%s</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;key&quot;</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="s">&quot;password&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;password&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;$2b$&quot;</span><span class="p">,</span> <span class="s">&quot;$6$&quot;</span><span class="p">,</span> <span class="s">&quot;$5$&quot;</span><span class="p">]):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Detected pre-crypted password&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;rootpw --iscrypted &quot;</span><span class="si">%s</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;password&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Detected plaintext password&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;rootpw --plaintext &quot;</span><span class="si">%s</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;password&quot;</span><span class="p">])</span>
 </div>
 <div class="viewcode-block" id="write_ks_user"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.write_ks_user">[docs]</a><span class="k">def</span> <span class="nf">write_ks_user</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Write kickstart user and sshkey entry</span>
@@ -187,9 +572,6 @@
 <span class="sd">    All of the user fields are optional, except name, write out a kickstart user entry</span>
 <span class="sd">    with whatever options are relevant.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;user entry requires a name&quot;</span><span class="p">)</span>
-
     <span class="c"># ssh key uses the sshkey kickstart command</span>
     <span class="k">if</span> <span class="s">&quot;key&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;sshkey --user </span><span class="si">%s</span><span class="s"> &quot;</span><span class="si">%s</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;key&quot;</span><span class="p">]))</span>
@@ -261,6 +643,10 @@
         <span class="k">return</span>
     <span class="n">customizations</span> <span class="o">=</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]</span>
 
+    <span class="c"># allow customizations to be incorrectly specified as [[customizations]] instead of [customizations]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">customizations</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">customizations</span> <span class="o">=</span> <span class="n">customizations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
     <span class="k">if</span> <span class="s">&quot;hostname&quot;</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;network --hostname=</span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">customizations</span><span class="p">[</span><span class="s">&quot;hostname&quot;</span><span class="p">])</span>
 
@@ -278,6 +664,14 @@
     <span class="k">if</span> <span class="s">&quot;user&quot;</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">:</span>
         <span class="c"># only name is required, everything else is optional</span>
         <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">[</span><span class="s">&quot;user&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="s">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;user entry requires a name&quot;</span><span class="p">)</span>
+
+            <span class="c"># root is special, cannot use normal user command for it</span>
+            <span class="k">if</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;root&quot;</span><span class="p">:</span>
+                <span class="n">write_ks_root</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+                <span class="k">continue</span>
+
             <span class="n">write_ks_user</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
             <span class="n">user_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
 
@@ -287,6 +681,25 @@
                 <span class="n">write_ks_group</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Skipping group </span><span class="si">%s</span><span class="s">, already created by user&quot;</span><span class="p">,</span> <span class="n">group</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
+
+</div>
+<div class="viewcode-block" id="get_md_size"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_md_size">[docs]</a><span class="k">def</span> <span class="nf">get_md_size</span><span class="p">(</span><span class="n">yum_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Estimate the amount of space needed by anaconda</span>
+
+<span class="sd">    Anaconda doesn&#39;t download the filelists or &#39;other&#39; metadata, which can add</span>
+<span class="sd">    up to a significant difference, so exclude those from the calculation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">du_output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s">&quot;/usr/bin/du&quot;</span><span class="p">,</span>
+                                   <span class="s">&quot;--exclude&quot;</span><span class="p">,</span> <span class="s">&quot;*other*&quot;</span><span class="p">,</span>
+                                   <span class="s">&quot;--exclude&quot;</span><span class="p">,</span> <span class="s">&quot;*filelists*&quot;</span><span class="p">,</span>
+                                   <span class="s">&quot;-sb&quot;</span><span class="p">,</span>
+                                   <span class="n">yum_path</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">du_output</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Problem calculating metadata size from &#39;</span><span class="si">%s</span><span class="s">&#39;: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">du_output</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
 </div>
 <div class="viewcode-block" id="start_build"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.start_build">[docs]</a><span class="k">def</span> <span class="nf">start_build</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">yumlock</span><span class="p">,</span> <span class="n">gitlock</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Start the build</span>
@@ -318,8 +731,9 @@
     <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_nver</span><span class="o">+</span><span class="n">package_nver</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">installed_size</span><span class="p">,</span> <span class="n">deps</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">yumlock</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">recipe</span><span class="o">.</span><span class="n">group_names</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="c"># This can possibly update repodata and reset the YumBase object.</span>
+        <span class="k">with</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">lock_check</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">installed_size</span><span class="p">,</span> <span class="n">anaconda_size</span><span class="p">,</span> <span class="n">deps</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">yumlock</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">recipe</span><span class="o">.</span><span class="n">group_names</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;start_build depsolve: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
@@ -328,7 +742,7 @@
     <span class="n">ks_template_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">share_dir</span><span class="p">,</span> <span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.ks&quot;</span>
     <span class="n">ks_template</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ks_template_path</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
-    <span class="c"># How much space will the packages in the default template take?</span>
+    <span class="c"># How much space will the packages in the selected template take?</span>
     <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">(</span><span class="n">RHEL7</span><span class="p">)</span>
     <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">ks_template</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="si">%e</span><span class="s">nd</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
@@ -336,16 +750,29 @@
     <span class="n">grps</span> <span class="o">=</span> <span class="p">[</span><span class="n">grp</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">groupList</span><span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">template_size</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">yumlock</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">,</span> <span class="n">grps</span><span class="p">,</span>
-                                                             <span class="n">with_core</span><span class="o">=</span><span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">nocore</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">template_size</span><span class="p">,</span> <span class="n">anaconda_tmpl_size</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">yumlock</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">,</span> <span class="n">grps</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">nocore</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;start_build depsolve: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;installed_size = </span><span class="si">%d</span><span class="s">, template_size=</span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">installed_size</span><span class="p">,</span> <span class="n">template_size</span><span class="p">)</span>
 
-    <span class="c"># Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 35% (which doesn&#39;t always work).</span>
-    <span class="n">installed_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">installed_size</span><span class="o">+</span><span class="n">template_size</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.4</span><span class="p">))</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;/ partition size = </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">installed_size</span><span class="p">)</span>
+    <span class="c"># Anaconda also stores the metadata on the disk once it is partitioned, try to take this into account by</span>
+    <span class="c"># adding the size of the lorax-composer metadata storage.</span>
+    <span class="k">with</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+        <span class="n">metadata_size</span> <span class="o">=</span> <span class="n">get_md_size</span><span class="p">(</span><span class="n">yumlock</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">installroot</span><span class="p">)</span>
+
+    <span class="c"># Anaconda estimates size differently, only taking into account installed size and adding 35%</span>
+    <span class="c"># But we must make sure that our actual disk size is at least as big as the anaconda size, otherwise the install will fail</span>
+    <span class="n">anaconda_minimum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">anaconda_size</span><span class="o">+</span><span class="n">anaconda_tmpl_size</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.35</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;anaconda_size = </span><span class="si">%d</span><span class="s">, anaconda_template_size=</span><span class="si">%d</span><span class="s">, anaconda_minimum=</span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">anaconda_size</span><span class="p">,</span> <span class="n">anaconda_tmpl_size</span><span class="p">,</span> <span class="n">anaconda_minimum</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;installed_size = </span><span class="si">%d</span><span class="s">, template_size=</span><span class="si">%d</span><span class="s">, metadata_size=</span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">installed_size</span><span class="p">,</span> <span class="n">template_size</span><span class="p">,</span> <span class="n">metadata_size</span><span class="p">)</span>
+
+    <span class="c"># Add 10% to the composer estimate</span>
+    <span class="n">installed_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">installed_size</span><span class="o">+</span><span class="n">template_size</span><span class="o">+</span><span class="n">metadata_size</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.10</span><span class="p">)</span>
+
+    <span class="c"># Select the largest size for the partition</span>
+    <span class="n">partition_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="n">anaconda_minimum</span><span class="p">,</span> <span class="n">installed_size</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;/ partition size = </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">partition_size</span><span class="p">)</span>
 
     <span class="c"># Create the results directory</span>
     <span class="n">build_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())</span>
@@ -397,14 +824,16 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;clearpart --all</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
 
         <span class="c"># Write the root partition and it&#39;s size in MB (rounded up)</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;part / --fstype=&quot;ext4&quot; --size=</span><span class="si">%d</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ceil</span><span class="p">(</span><span class="n">installed_size</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;part / --size=</span><span class="si">%d</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ceil</span><span class="p">(</span><span class="n">installed_size</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ks_template</span><span class="p">)</span>
+        <span class="c"># Some customizations modify the template before writing it</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">customize_ks_template</span><span class="p">(</span><span class="n">ks_template</span><span class="p">,</span> <span class="n">recipe</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">deps</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dep_nevra</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%e</span><span class="s">nd</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
 
+        <span class="c"># Other customizations can be appended to the kickstart</span>
         <span class="n">add_customizations</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span>
 
     <span class="c"># Setup the config to pass to novirt_install</span>
@@ -423,6 +852,7 @@
     <span class="n">cfg_args</span><span class="p">[</span><span class="s">&quot;project&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;NAME&quot;</span><span class="p">)</span>
     <span class="n">cfg_args</span><span class="p">[</span><span class="s">&quot;releasever&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;VERSION_ID&quot;</span><span class="p">)</span>
     <span class="n">cfg_args</span><span class="p">[</span><span class="s">&quot;volid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="n">cfg_args</span><span class="p">[</span><span class="s">&quot;extra_boot_args&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_kernel_append</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
 
     <span class="n">cfg_args</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
         <span class="s">&quot;compression&quot;</span><span class="p">:</span>      <span class="s">&quot;xz&quot;</span><span class="p">,</span>
@@ -565,6 +995,86 @@
                                  <span class="s">&quot;app_template&quot;</span><span class="p">:</span>            <span class="bp">None</span><span class="p">,</span>
                                  <span class="s">&quot;app_file&quot;</span><span class="p">:</span>                <span class="bp">None</span>
                                 <span class="p">},</span>
+            <span class="s">&quot;ami&quot;</span><span class="p">:</span>              <span class="p">{</span><span class="s">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s">&quot;qcow2&quot;</span><span class="p">:</span>                   <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;qcow2_args&quot;</span><span class="p">:</span>              <span class="p">[],</span>
+                                 <span class="s">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s">&quot;disk.ami&quot;</span><span class="p">,</span>
+                                 <span class="s">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s">&quot;&quot;</span><span class="p">,</span>
+                                 <span class="s">&quot;image_only&quot;</span><span class="p">:</span>              <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;app_name&quot;</span><span class="p">:</span>                <span class="bp">None</span><span class="p">,</span>
+                                 <span class="s">&quot;app_template&quot;</span><span class="p">:</span>            <span class="bp">None</span><span class="p">,</span>
+                                 <span class="s">&quot;app_file&quot;</span><span class="p">:</span>                <span class="bp">None</span><span class="p">,</span>
+                                <span class="p">},</span>
+            <span class="s">&quot;vhd&quot;</span><span class="p">:</span>              <span class="p">{</span><span class="s">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s">&quot;qcow2&quot;</span><span class="p">:</span>                   <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;qcow2_args&quot;</span><span class="p">:</span>              <span class="p">[</span><span class="s">&quot;-O&quot;</span><span class="p">,</span> <span class="s">&quot;vpc&quot;</span><span class="p">,</span> <span class="s">&quot;-o&quot;</span><span class="p">,</span> <span class="s">&quot;subformat=fixed&quot;</span><span class="p">],</span>
+                                 <span class="s">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s">&quot;disk.vhd&quot;</span><span class="p">,</span>
+                                 <span class="s">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s">&quot;&quot;</span><span class="p">,</span>
+                                 <span class="s">&quot;image_only&quot;</span><span class="p">:</span>              <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;app_name&quot;</span><span class="p">:</span>                <span class="bp">None</span><span class="p">,</span>
+                                 <span class="s">&quot;app_template&quot;</span><span class="p">:</span>            <span class="bp">None</span><span class="p">,</span>
+                                 <span class="s">&quot;app_file&quot;</span><span class="p">:</span>                <span class="bp">None</span><span class="p">,</span>
+                                <span class="p">},</span>
+            <span class="s">&quot;vmdk&quot;</span><span class="p">:</span>             <span class="p">{</span><span class="s">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s">&quot;qcow2&quot;</span><span class="p">:</span>                   <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;qcow2_args&quot;</span><span class="p">:</span>              <span class="p">[</span><span class="s">&quot;-O&quot;</span><span class="p">,</span> <span class="s">&quot;vmdk&quot;</span><span class="p">],</span>
+                                 <span class="s">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s">&quot;disk.vmdk&quot;</span><span class="p">,</span>
+                                 <span class="s">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s">&quot;&quot;</span><span class="p">,</span>
+                                 <span class="s">&quot;image_only&quot;</span><span class="p">:</span>              <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;app_name&quot;</span><span class="p">:</span>                <span class="bp">None</span><span class="p">,</span>
+                                 <span class="s">&quot;app_template&quot;</span><span class="p">:</span>            <span class="bp">None</span><span class="p">,</span>
+                                 <span class="s">&quot;app_file&quot;</span><span class="p">:</span>                <span class="bp">None</span><span class="p">,</span>
+                                <span class="p">},</span>
+            <span class="s">&quot;openstack&quot;</span><span class="p">:</span>        <span class="p">{</span><span class="s">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="bp">False</span><span class="p">,</span>
+                                 <span class="s">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s">&quot;qcow2&quot;</span><span class="p">:</span>                   <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;qcow2_args&quot;</span><span class="p">:</span>              <span class="p">[],</span>
+                                 <span class="s">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s">&quot;disk.qcow2&quot;</span><span class="p">,</span>
+                                 <span class="s">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s">&quot;&quot;</span><span class="p">,</span>
+                                 <span class="s">&quot;image_only&quot;</span><span class="p">:</span>              <span class="bp">True</span><span class="p">,</span>
+                                 <span class="s">&quot;app_name&quot;</span><span class="p">:</span>                <span class="bp">None</span><span class="p">,</span>
+                                 <span class="s">&quot;app_template&quot;</span><span class="p">:</span>            <span class="bp">None</span><span class="p">,</span>
+                                 <span class="s">&quot;app_file&quot;</span><span class="p">:</span>                <span class="bp">None</span><span class="p">,</span>
+                                <span class="p">},</span>
             <span class="p">}</span>
     <span class="k">return</span> <span class="n">_MAP</span><span class="p">[</span><span class="n">compose_type</span><span class="p">]</span>
 </div>
@@ -623,7 +1133,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

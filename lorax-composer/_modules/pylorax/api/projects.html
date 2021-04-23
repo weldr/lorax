@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.projects &mdash; Lorax 19.7.22 documentation</title>
+    <title>pylorax.api.projects &mdash; Lorax 19.7.43 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.22',
+        VERSION:     '19.7.43',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.22 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.43 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -70,12 +70,14 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;lorax-composer&quot;</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">ConfigParser</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">import</span> <span class="nn">fnmatch</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">yum.Errors</span> <span class="kn">import</span> <span class="n">YumBaseError</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.bisect</span> <span class="kn">import</span> <span class="n">insort_left</span>
 
 <span class="n">TIME_FORMAT</span> <span class="o">=</span> <span class="s">&quot;%Y-%m-</span><span class="si">%d</span><span class="s">T%H:%M:%S&quot;</span>
 
@@ -129,6 +131,32 @@
             <span class="s">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s">&quot;UPSTREAM_VCS&quot;</span><span class="p">}</span>
 
 </div>
+<div class="viewcode-block" id="yaps_to_build"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.yaps_to_build">[docs]</a><span class="k">def</span> <span class="nf">yaps_to_build</span><span class="p">(</span><span class="n">yaps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract the build details from a hawkey.Package object</span>
+
+<span class="sd">    :param yaps: Yum object with package details</span>
+<span class="sd">    :type yaps: YumAvailablePackageSqlite</span>
+<span class="sd">    :returns: A dict with the build details, epoch, release, arch, build_time, changelog, ...</span>
+<span class="sd">    :rtype: dict</span>
+
+<span class="sd">    metadata entries are hard-coded to {}</span>
+
+<span class="sd">    Note that this only returns the build dict, it does not include the name, description, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">&quot;epoch&quot;</span><span class="p">:</span>      <span class="nb">int</span><span class="p">(</span><span class="n">yaps</span><span class="o">.</span><span class="n">epoch</span><span class="p">),</span>
+            <span class="s">&quot;release&quot;</span><span class="p">:</span>    <span class="n">yaps</span><span class="o">.</span><span class="n">release</span><span class="p">,</span>
+            <span class="s">&quot;arch&quot;</span><span class="p">:</span>       <span class="n">yaps</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
+            <span class="s">&quot;build_time&quot;</span><span class="p">:</span> <span class="n">api_time</span><span class="p">(</span><span class="n">yaps</span><span class="o">.</span><span class="n">buildtime</span><span class="p">),</span>
+            <span class="s">&quot;changelog&quot;</span><span class="p">:</span>  <span class="n">api_changelog</span><span class="p">(</span><span class="n">yaps</span><span class="o">.</span><span class="n">returnChangelog</span><span class="p">()),</span>
+            <span class="s">&quot;build_config_ref&quot;</span><span class="p">:</span> <span class="s">&quot;BUILD_CONFIG_REF&quot;</span><span class="p">,</span>
+            <span class="s">&quot;build_env_ref&quot;</span><span class="p">:</span>    <span class="s">&quot;BUILD_ENV_REF&quot;</span><span class="p">,</span>
+            <span class="s">&quot;metadata&quot;</span><span class="p">:</span>    <span class="p">{},</span>
+            <span class="s">&quot;source&quot;</span><span class="p">:</span>      <span class="p">{</span><span class="s">&quot;license&quot;</span><span class="p">:</span>    <span class="n">yaps</span><span class="o">.</span><span class="n">license</span><span class="p">,</span>
+                            <span class="s">&quot;version&quot;</span><span class="p">:</span>    <span class="n">yaps</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                            <span class="s">&quot;source_ref&quot;</span><span class="p">:</span> <span class="s">&quot;SOURCE_REF&quot;</span><span class="p">,</span>
+                            <span class="s">&quot;metadata&quot;</span><span class="p">:</span>   <span class="p">{}}}</span>
+
+</div>
 <div class="viewcode-block" id="yaps_to_project_info"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.yaps_to_project_info">[docs]</a><span class="k">def</span> <span class="nf">yaps_to_project_info</span><span class="p">(</span><span class="n">yaps</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Extract the details from a YumAvailablePackageSqlite object</span>
 
@@ -139,25 +167,12 @@
 
 <span class="sd">    metadata entries are hard-coded to {}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">build</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;epoch&quot;</span><span class="p">:</span>      <span class="nb">int</span><span class="p">(</span><span class="n">yaps</span><span class="o">.</span><span class="n">epoch</span><span class="p">),</span>
-             <span class="s">&quot;release&quot;</span><span class="p">:</span>    <span class="n">yaps</span><span class="o">.</span><span class="n">release</span><span class="p">,</span>
-             <span class="s">&quot;arch&quot;</span><span class="p">:</span>       <span class="n">yaps</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
-             <span class="s">&quot;build_time&quot;</span><span class="p">:</span> <span class="n">api_time</span><span class="p">(</span><span class="n">yaps</span><span class="o">.</span><span class="n">buildtime</span><span class="p">),</span>
-             <span class="s">&quot;changelog&quot;</span><span class="p">:</span>  <span class="n">api_changelog</span><span class="p">(</span><span class="n">yaps</span><span class="o">.</span><span class="n">returnChangelog</span><span class="p">()),</span>
-             <span class="s">&quot;build_config_ref&quot;</span><span class="p">:</span> <span class="s">&quot;BUILD_CONFIG_REF&quot;</span><span class="p">,</span>
-             <span class="s">&quot;build_env_ref&quot;</span><span class="p">:</span>    <span class="s">&quot;BUILD_ENV_REF&quot;</span><span class="p">,</span>
-             <span class="s">&quot;metadata&quot;</span><span class="p">:</span>    <span class="p">{},</span>
-             <span class="s">&quot;source&quot;</span><span class="p">:</span>      <span class="p">{</span><span class="s">&quot;license&quot;</span><span class="p">:</span>    <span class="n">yaps</span><span class="o">.</span><span class="n">license</span><span class="p">,</span>
-                             <span class="s">&quot;version&quot;</span><span class="p">:</span>    <span class="n">yaps</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
-                             <span class="s">&quot;source_ref&quot;</span><span class="p">:</span> <span class="s">&quot;SOURCE_REF&quot;</span><span class="p">,</span>
-                             <span class="s">&quot;metadata&quot;</span><span class="p">:</span>   <span class="p">{}}}</span>
-
     <span class="k">return</span> <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span>         <span class="n">yaps</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s">&quot;summary&quot;</span><span class="p">:</span>      <span class="n">yaps</span><span class="o">.</span><span class="n">summary</span><span class="p">,</span>
             <span class="s">&quot;description&quot;</span><span class="p">:</span>  <span class="n">yaps</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
             <span class="s">&quot;homepage&quot;</span><span class="p">:</span>     <span class="n">yaps</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
             <span class="s">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s">&quot;UPSTREAM_VCS&quot;</span><span class="p">,</span>
-            <span class="s">&quot;builds&quot;</span><span class="p">:</span>       <span class="p">[</span><span class="n">build</span><span class="p">]}</span>
+            <span class="s">&quot;builds&quot;</span><span class="p">:</span>       <span class="p">[</span><span class="n">yaps_to_build</span><span class="p">(</span><span class="n">yaps</span><span class="p">)]}</span>
 
 </div>
 <div class="viewcode-block" id="tm_to_dep"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.tm_to_dep">[docs]</a><span class="k">def</span> <span class="nf">tm_to_dep</span><span class="p">(</span><span class="n">tm</span><span class="p">):</span>
@@ -175,17 +190,17 @@
             <span class="s">&quot;arch&quot;</span><span class="p">:</span>     <span class="n">tm</span><span class="o">.</span><span class="n">arch</span><span class="p">}</span>
 
 </div>
-<div class="viewcode-block" id="yaps_to_module"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.yaps_to_module">[docs]</a><span class="k">def</span> <span class="nf">yaps_to_module</span><span class="p">(</span><span class="n">yaps</span><span class="p">):</span>
+<div class="viewcode-block" id="proj_to_module"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.proj_to_module">[docs]</a><span class="k">def</span> <span class="nf">proj_to_module</span><span class="p">(</span><span class="n">proj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Extract the name from a YumAvailablePackageSqlite object</span>
 
-<span class="sd">    :param yaps: Yum object with package details</span>
-<span class="sd">    :type yaps: YumAvailablePackageSqlite</span>
+<span class="sd">    :param proj: Project details</span>
+<span class="sd">    :type proj: dict</span>
 <span class="sd">    :returns: A dict with name, and group_type</span>
 <span class="sd">    :rtype: dict</span>
 
 <span class="sd">    group_type is hard-coded to &quot;rpm&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="n">yaps</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="n">proj</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span>
             <span class="s">&quot;group_type&quot;</span><span class="p">:</span> <span class="s">&quot;rpm&quot;</span><span class="p">}</span>
 
 </div>
@@ -220,8 +235,8 @@
         <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem listing projects: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
-    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">yaps_to_project</span><span class="p">,</span> <span class="n">ybl</span><span class="o">.</span><span class="n">available</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-
+    <span class="n">projs</span> <span class="o">=</span> <span class="n">_unique_dicts</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">yaps_to_project</span><span class="p">,</span> <span class="n">ybl</span><span class="o">.</span><span class="n">available</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">projs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 </div>
 <div class="viewcode-block" id="projects_info"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_info">[docs]</a><span class="k">def</span> <span class="nf">projects_info</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">project_names</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return details about specific projects</span>
@@ -239,9 +254,119 @@
         <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem with info for </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
-    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">yaps_to_project_info</span><span class="p">,</span> <span class="n">ybl</span><span class="o">.</span><span class="n">available</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-
+    <span class="k">return</span> <span class="n">_unique_projs</span><span class="p">(</span><span class="n">ybl</span><span class="o">.</span><span class="n">available</span><span class="p">)</span>
 </div>
+<span class="k">def</span> <span class="nf">_unique_projs</span><span class="p">(</span><span class="n">projs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a sorted list of projects with builds combined into one project entry</span>
+
+<span class="sd">    :param yaps: Yum object with package details</span>
+<span class="sd">    :type yaps: YumAvailablePackageSqlite</span>
+<span class="sd">    :returns: List of project info dicts with yaps_to_project as well as epoch, version, release, etc.</span>
+<span class="sd">    :rtype: list of dicts</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># iterate over ybl.available</span>
+    <span class="c"># - if ybl.name isn&#39;t in the results yet, add yaps_to_project_info in sorted position</span>
+    <span class="c"># - if ybl.name is already in results, get its builds. If the build for the project is different</span>
+    <span class="c">#   in any way (version, arch, etc.) add it to the entry&#39;s builds list. If it is the same,</span>
+    <span class="c">#   skip it.</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">results_names</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">projs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results_names</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">insort_left</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">yaps_to_project_info</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">results_names</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">build</span> <span class="o">=</span> <span class="n">yaps_to_build</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">build</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="n">results_names</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]][</span><span class="s">&quot;builds&quot;</span><span class="p">]:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">results_names</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]][</span><span class="s">&quot;builds&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span>
+
+
+<div class="viewcode-block" id="filterVersionGlob"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.filterVersionGlob">[docs]</a><span class="k">def</span> <span class="nf">filterVersionGlob</span><span class="p">(</span><span class="n">pkgs</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Filter a list of yum package objects with a version glob</span>
+
+<span class="sd">    :param pkgs: list of yum package objects</span>
+<span class="sd">    :type pkgs: list</span>
+<span class="sd">    :param version: version matching glob</span>
+<span class="sd">    :type version: str</span>
+
+<span class="sd">    pkgs should be a list of all the versions of the *same* package.</span>
+<span class="sd">    Return the latest package that matches the &#39;version&#39; glob.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Pick the version(s) matching the version glob</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">po</span> <span class="k">for</span> <span class="n">po</span> <span class="ow">in</span> <span class="n">pkgs</span> <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatchcase</span><span class="p">(</span><span class="n">po</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">version</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;No package version matching </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+
+    <span class="c"># yum implements __cmd__ using verCMP so this will return the highest matching version</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+</div>
+<span class="k">def</span> <span class="nf">_findPackageGlob</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">pkg_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the package(s) that match a name glob</span>
+
+<span class="sd">    :param yb: yum base object</span>
+<span class="sd">    :type yb: YumBase</span>
+<span class="sd">    :param pkg_name: Name or fileglob of the name to find</span>
+<span class="sd">    :type pkg_name: str</span>
+<span class="sd">    :returns: list of yum package objects or empty list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span><span class="n">exact</span><span class="p">,</span> <span class="n">globbed</span><span class="p">,</span> <span class="n">_unmatched</span><span class="p">)</span> <span class="o">=</span> <span class="n">yb</span><span class="o">.</span><span class="n">pkgSack</span><span class="o">.</span><span class="n">matchPackageNames</span><span class="p">([</span><span class="n">pkg_name</span><span class="p">])</span>
+    <span class="n">pkgs</span> <span class="o">=</span> <span class="n">exact</span> <span class="o">+</span> <span class="n">globbed</span>
+    <span class="k">if</span> <span class="n">pkgs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pkgs</span>
+
+    <span class="c"># Nothing matched, check rpmdb</span>
+    <span class="n">pkgs</span> <span class="o">=</span> <span class="n">yb</span><span class="o">.</span><span class="n">rpmdb</span><span class="o">.</span><span class="n">returnPackages</span><span class="p">(</span><span class="n">patterns</span><span class="o">=</span><span class="p">[</span><span class="n">pkg_name</span><span class="p">],</span> <span class="n">ignore_case</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pkgs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pkgs</span>
+
+    <span class="c"># Nothing matched, find a matching dep</span>
+    <span class="k">return</span> <span class="n">yb</span><span class="o">.</span><span class="n">returnPackagesByDep</span><span class="p">(</span><span class="n">pkg_name</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_depsolve</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the dependencies for a list of projects and groups</span>
+
+<span class="sd">    :param yb: yum base object</span>
+<span class="sd">    :type yb: YumBase</span>
+<span class="sd">    :param projects: The projects and version globs to find the dependencies for</span>
+<span class="sd">    :type projects: List of tuples</span>
+<span class="sd">    :param groups: The groups to include in dependency solving</span>
+<span class="sd">    :type groups: List of str</span>
+<span class="sd">    :returns: A list of errors that were encountered while depsolving the packages</span>
+<span class="sd">    :rtype: list of strings</span>
+<span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># This resets the transaction</span>
+    <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
+    <span class="n">install_errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+        <span class="n">yb</span><span class="o">.</span><span class="n">selectGroup</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;mandatory&quot;</span><span class="p">,</span> <span class="s">&quot;default&quot;</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">version</span><span class="p">:</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;*&quot;</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+
+        <span class="c"># yum.install&#39;s pattern matches the whole nevra, which can result in -* matching</span>
+        <span class="c"># unexpected packages. So we need to implement our own version globbing.</span>
+        <span class="c"># First get a list of packages, then filter that by the version</span>
+        <span class="n">pkgs</span> <span class="o">=</span> <span class="n">_findPackageGlob</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgs</span><span class="p">:</span>
+            <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="s">&quot;No package name matching </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">))</span>
+            <span class="k">continue</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">po</span> <span class="o">=</span> <span class="n">filterVersionGlob</span><span class="p">(</span><span class="n">pkgs</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Chose </span><span class="si">%s</span><span class="s"> as best match for </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">po</span><span class="o">.</span><span class="n">nevra</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+
+            <span class="n">yb</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">po</span><span class="o">=</span><span class="n">po</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">YumBaseError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">install_errors</span>
+
 <div class="viewcode-block" id="projects_depsolve"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the dependencies for a list of projects</span>
 
@@ -256,20 +381,7 @@
 <span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c"># This resets the transaction</span>
-        <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
-        <span class="n">install_errors</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
-            <span class="n">yb</span><span class="o">.</span><span class="n">selectGroup</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;mandatory&quot;</span><span class="p">,</span> <span class="s">&quot;default&quot;</span><span class="p">])</span>
-
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">version</span><span class="p">:</span>
-                <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;*&quot;</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">yb</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">YumBaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="n">install_errors</span> <span class="o">=</span> <span class="n">_depsolve</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
 
         <span class="c"># Were there problems installing these packages?</span>
         <span class="k">if</span> <span class="n">install_errors</span><span class="p">:</span>
@@ -293,18 +405,26 @@
 <span class="sd">    :type packages: list of TransactionMember objects</span>
 <span class="sd">    :param block_size: The block size to use for rounding up file sizes.</span>
 <span class="sd">    :type block_size: int</span>
-<span class="sd">    :returns: The estimated size of installed packages</span>
-<span class="sd">    :rtype: int</span>
+<span class="sd">    :returns: Tuple of the the estimated size needed, and the size anaconda will calculate</span>
+<span class="sd">    :rtype: tuple(int, int)</span>
 
 <span class="sd">    Estimating actual requirements is difficult without the actual file sizes, which</span>
 <span class="sd">    yum doesn&#39;t provide access to. So use the file count and block size to estimate</span>
 <span class="sd">    a minimum size for each package.</span>
+
+<span class="sd">    Anaconda only takes into account the installedsize of each package. It then fudges</span>
+<span class="sd">    this by 35% to make sure there is enough space.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">installed_size</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">anaconda_size</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">packages</span><span class="p">:</span>
         <span class="n">installed_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">po</span><span class="o">.</span><span class="n">filelist</span><span class="p">)</span> <span class="o">*</span> <span class="n">block_size</span>
         <span class="n">installed_size</span> <span class="o">+=</span> <span class="n">p</span><span class="o">.</span><span class="n">po</span><span class="o">.</span><span class="n">installedsize</span>
-    <span class="k">return</span> <span class="n">installed_size</span>
+        <span class="c"># anaconda only takes into account installedsize</span>
+        <span class="n">anaconda_size</span> <span class="o">+=</span> <span class="n">p</span><span class="o">.</span><span class="n">po</span><span class="o">.</span><span class="n">installedsize</span>
+        <span class="c"># also count the RPM package size (yum cache)</span>
+        <span class="n">installed_size</span> <span class="o">+=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">po</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">block_size</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">block_size</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">installed_size</span><span class="p">,</span> <span class="n">anaconda_size</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="projects_depsolve_with_size"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve_with_size">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve_with_size</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the dependencies and installed size for a list of projects</span>
@@ -315,25 +435,15 @@
 <span class="sd">    :type projects: List of tuples</span>
 <span class="sd">    :param groups: The groups to include in dependency solving</span>
 <span class="sd">    :type groups: List of str</span>
-<span class="sd">    :returns: installed size and a list of NEVRA&#39;s of the project and its dependencies</span>
-<span class="sd">    :rtype: tuple of (int, list of dicts)</span>
+<span class="sd">    :returns: installed size, size estimated by anaconda, and a list of NEVRA&#39;s of the project and its dependencies</span>
+<span class="sd">    :rtype: tuple of (int, int, list of dicts)</span>
 <span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
+
+<span class="sd">    The anaconda_size only includes the installed package size, not file block or cache estimation like</span>
+<span class="sd">    installed_size includes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c"># This resets the transaction</span>
-        <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
-        <span class="n">install_errors</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
-            <span class="n">yb</span><span class="o">.</span><span class="n">selectGroup</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;mandatory&quot;</span><span class="p">,</span> <span class="s">&quot;default&quot;</span><span class="p">])</span>
-
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">version</span><span class="p">:</span>
-                <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;*&quot;</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">yb</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">YumBaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="n">install_errors</span> <span class="o">=</span> <span class="n">_depsolve</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
 
         <span class="c"># Were there problems installing these packages?</span>
         <span class="k">if</span> <span class="n">install_errors</span><span class="p">:</span>
@@ -345,13 +455,13 @@
         <span class="k">if</span> <span class="n">rc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">projects</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">makelists</span><span class="p">()</span>
-        <span class="n">installed_size</span> <span class="o">=</span> <span class="n">estimate_size</span><span class="p">(</span><span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">installed</span> <span class="o">+</span> <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">depinstalled</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">installed_size</span><span class="p">,</span> <span class="n">anaconda_size</span><span class="p">)</span> <span class="o">=</span> <span class="n">estimate_size</span><span class="p">(</span><span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">installed</span> <span class="o">+</span> <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">depinstalled</span><span class="p">)</span>
         <span class="n">deps</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">tm_to_dep</span><span class="p">,</span> <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">installed</span> <span class="o">+</span> <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">depinstalled</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="k">except</span> <span class="n">YumBaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">projects</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">installed_size</span><span class="p">,</span> <span class="n">deps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">installed_size</span><span class="p">,</span> <span class="n">anaconda_size</span><span class="p">,</span> <span class="n">deps</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="modules_list"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.modules_list">[docs]</a><span class="k">def</span> <span class="nf">modules_list</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">module_names</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a list of modules</span>
@@ -368,15 +478,30 @@
 <span class="sd">    Modules don&#39;t exist in RHEL7 so this only returns projects</span>
 <span class="sd">    and sets the type to &quot;rpm&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">ybl</span> <span class="o">=</span> <span class="n">yb</span><span class="o">.</span><span class="n">doPackageLists</span><span class="p">(</span><span class="n">pkgnarrow</span><span class="o">=</span><span class="s">&quot;available&quot;</span><span class="p">,</span> <span class="n">patterns</span><span class="o">=</span><span class="n">module_names</span><span class="p">,</span> <span class="n">showdups</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">YumBaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem listing modules: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
-    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">yaps_to_module</span><span class="p">,</span> <span class="n">ybl</span><span class="o">.</span><span class="n">available</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-
+    <span class="n">projs</span> <span class="o">=</span> <span class="n">_unique_dicts</span><span class="p">(</span><span class="n">projects_info</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">module_names</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">proj_to_module</span><span class="p">,</span> <span class="n">projs</span><span class="p">))</span>
 </div>
+<span class="k">def</span> <span class="nf">_unique_dicts</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a new list of dicts, only including one match of key(d)</span>
+
+<span class="sd">    :param lst: list of dicts</span>
+<span class="sd">    :type lst: list</span>
+<span class="sd">    :param key: key function to match lst entries</span>
+<span class="sd">    :type key: function</span>
+<span class="sd">    :returns: list of the unique lst entries</span>
+<span class="sd">    :rtype: list</span>
+
+<span class="sd">    Uses key(d) to test for duplicates in the returned list, creating a</span>
+<span class="sd">    list of unique return values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">result_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result_keys</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">result_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+
 <div class="viewcode-block" id="modules_info"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.modules_info">[docs]</a><span class="k">def</span> <span class="nf">modules_info</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">module_names</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return details about a module, including dependencies</span>
 
@@ -648,7 +773,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.43 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

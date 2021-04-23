@@ -9,6 +9,14 @@ api Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`bisect` Module
+--------------------
+
+.. automodule:: pylorax.api.bisect
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`checkparams` Module
 -------------------------
 
