@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "Mar 04, 2021" "35.0" "Lorax"
+.TH "LORAX" "1" "Apr 23, 2021" "35.1" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .
@@ -55,10 +55,10 @@ Create the Anaconda boot.iso
 .sp
 .nf
 .ft C
-usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-repo REPOSITORY] [\-m REPOSITORY] [\-t VARIANT] [\-b URL] [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE] [\-e PACKAGE] [\-\-buildarch ARCH] [\-\-volid VOLID]
-             [\-\-macboot] [\-\-nomacboot] [\-\-noupgrade] [\-\-logfile LOGFILE] [\-\-tmp TMP] [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force] [\-\-add\-template ADD_TEMPLATES] [\-\-add\-template\-var ADD_TEMPLATE_VARS]
-             [\-\-add\-arch\-template ADD_ARCH_TEMPLATES] [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify] [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]] [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl]
-             [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only] [\-\-skip\-branding] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
+usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-repo REPOSITORY] [\-m REPOSITORY] [\-t VARIANT] [\-b URL] [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE] [\-e PACKAGE]
+             [\-\-buildarch ARCH] [\-\-volid VOLID] [\-\-macboot] [\-\-nomacboot] [\-\-noupgrade] [\-\-logfile LOGFILE] [\-\-tmp TMP] [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force] [\-\-add\-template ADD_TEMPLATES]
+             [\-\-add\-template\-var ADD_TEMPLATE_VARS] [\-\-add\-arch\-template ADD_ARCH_TEMPLATES] [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify] [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
+             [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only] [\-\-skip\-branding] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -273,7 +273,7 @@ You can add your own repos with \fB\-s\fP and packages with higher NVRs will
 override the ones in the distribution repositories.
 .sp
 Under \fB\&./results/\fP will be the release tree files: .discinfo, .treeinfo, everything that
-goes onto the boot.iso, the pxeboot directory, and the boot.iso under \fB\&./images/\fP\&.
+goes onto the boot.iso, the pxeboot directory, and the boot.iso under \fB\&./results/images/\fP\&.
 .SH BRANDING
 .sp
 By default lorax will search for the first package that provides \fBsystem\-release\fP
