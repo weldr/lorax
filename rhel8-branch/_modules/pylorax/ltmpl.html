@@ -1,38 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>pylorax.ltmpl &mdash; Lorax 28.14.42 documentation</title>
+  <title>pylorax.ltmpl &mdash; Lorax 28.14.58 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -58,7 +61,7 @@
             
             
               <div class="version">
-                28.14.42
+                28.14.58
               </div>
             
           
@@ -75,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,6 +100,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -130,11 +135,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -182,25 +189,25 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax.ltmpl&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shlex</span><span class="o">,</span> <span class="nn">fnmatch</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">isdir</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">CalledProcessError</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">isdir</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">CalledProcessError</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">cpfile</span><span class="p">,</span> <span class="n">mvfile</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">remove</span>
-<span class="kn">from</span> <span class="nn">pylorax.dnfhelper</span> <span class="k">import</span> <span class="n">LoraxDownloadCallback</span><span class="p">,</span> <span class="n">LoraxRpmCallback</span>
-<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">DataHolder</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">mkcpio</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">cpfile</span><span class="p">,</span> <span class="n">mvfile</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">remove</span>
+<span class="kn">from</span> <span class="nn">pylorax.dnfhelper</span> <span class="kn">import</span> <span class="n">LoraxDownloadCallback</span><span class="p">,</span> <span class="n">LoraxRpmCallback</span>
+<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mkcpio</span>
 
-<span class="kn">from</span> <span class="nn">mako.lookup</span> <span class="k">import</span> <span class="n">TemplateLookup</span>
-<span class="kn">from</span> <span class="nn">mako.exceptions</span> <span class="k">import</span> <span class="n">text_error_template</span>
+<span class="kn">from</span> <span class="nn">mako.lookup</span> <span class="kn">import</span> <span class="n">TemplateLookup</span>
+<span class="kn">from</span> <span class="nn">mako.exceptions</span> <span class="kn">import</span> <span class="n">text_error_template</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">traceback</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">import</span> <span class="nn">dnf</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 
 <div class="viewcode-block" id="LoraxTemplate"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplate">[docs]</a><span class="k">class</span> <span class="nc">LoraxTemplate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">directories</span> <span class="o">=</span> <span class="n">directories</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;/usr/share/lorax&quot;</span><span class="p">]</span>
         <span class="c1"># we have to add [&quot;/&quot;] to the template lookup directories or the</span>
         <span class="c1"># file includes won&#39;t work properly for absolute paths</span>
@@ -287,7 +294,7 @@
 <span class="sd">    * Parsing and execution are *separate* passes - so you can&#39;t use the result</span>
 <span class="sd">      of a command in an %if statement (or any other control statements)!</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fatalerrors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fatalerrors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span> <span class="o">=</span> <span class="n">fatalerrors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span> <span class="o">=</span> <span class="n">templatedir</span> <span class="ow">or</span> <span class="s2">&quot;/usr/share/lorax&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">templatefile</span> <span class="o">=</span> <span class="kc">None</span>
@@ -373,7 +380,7 @@
 
 <span class="sd">    * Commands should raise exceptions for errors - don&#39;t use sys.exit()</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">dbo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fatalerrors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">dbo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fatalerrors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                         <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inroot</span> <span class="o">=</span> <span class="n">inroot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outroot</span> <span class="o">=</span> <span class="n">outroot</span>
@@ -970,7 +977,7 @@
 <span class="sd">      It is meant to be used with the live-install.tmpl which lists the per-arch</span>
 <span class="sd">      pacages needed to build the live-iso output.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbo</span><span class="p">,</span> <span class="n">fatalerrors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbo</span><span class="p">,</span> <span class="n">fatalerrors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span> <span class="o">=</span> <span class="n">dbo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pkgs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1047,20 +1054,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2019, Red Hat, Inc.
+        &#169; Copyright 2018-2019, Red Hat, Inc..
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -1068,7 +1080,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
