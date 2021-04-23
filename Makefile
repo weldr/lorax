@@ -5,7 +5,6 @@ mandir ?= $(PREFIX)/share/man
 DOCKER ?= podman
 DOCS_VERSION ?= next
 RUN_TESTS ?= ci
-BACKEND ?= osbuild-composer
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
@@ -28,13 +27,10 @@ endif
 
 default: all
 
-src/composer/version.py: lorax.spec
-	echo "num = '$(VERSION)-$(RELEASE)'" > src/composer/version.py
-
 src/pylorax/version.py: lorax.spec
 	echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/version.py
 
-all: src/pylorax/version.py src/composer/version.py
+all: src/pylorax/version.py
 	$(PYTHON) setup.py build
 
 install: all
@@ -42,7 +38,6 @@ install: all
 	mkdir -p $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/*.1 $(DESTDIR)/$(mandir)/man1
 	mkdir -p $(DESTDIR)/etc/bash_completion.d
-	install -m 644 etc/bash_completion.d/composer-cli $(DESTDIR)/etc/bash_completion.d
 
 check:
 	@echo "*** Running pylint ***"
@@ -51,8 +46,7 @@ check:
 test:
 	@echo "*** Running tests ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -X dev -m pytest -v --cov-branch \
-					--cov=pylorax --cov=composer \
-					./tests/pylorax/ ./tests/composer/
+					--cov=pylorax ./tests/pylorax/
 
 	coverage3 report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
@@ -75,7 +69,6 @@ clean_cloud_envs:
 
 clean:
 	-rm -rf build src/pylorax/version.py
-	-rm -rf build src/composer/version.py
 
 tag:
 	git tag -f $(TAG)
@@ -142,7 +135,7 @@ $(VM_IMAGE): srpm bots
 		--upload $(CURDIR)/test/vm.install:/var/tmp/vm.install \
 		--upload $(realpath tests):/ \
 		--run-command "chmod +x /var/tmp/vm.install" \
-		--run-command "cd /var/tmp; BACKEND=$(BACKEND) /var/tmp/vm.install $$srpm" \
+		--run-command "cd /var/tmp; /var/tmp/vm.install $$srpm" \
 		$(TEST_OS)
 	[ -f ~/.config/lorax-test-env ] && bots/image-customize \
 		--upload ~/.config/lorax-test-env:/var/tmp/lorax-test-env \
@@ -157,16 +150,6 @@ vm: $(VM_IMAGE)
 # and update the image. Mostly used when testing downstream snapshots to make
 # sure VM_IMAGE is as close as possible to the host!
 vm-local-repos: vm
-	bots/image-customize -v \
-		--run-command "rm -rf /etc/yum.repos.d" \
-		$(TEST_OS)
-	bots/image-customize -v \
-		--upload $(REPOS_DIR):/etc/yum.repos.d \
-		--run-command "yum -y remove composer-cli $(BACKEND)" \
-		--run-command "yum -y update" \
-		--run-command "yum -y install composer-cli $(BACKEND)" \
-		--run-command "systemctl enable $(BACKEND).socket" \
-		$(TEST_OS)
 
 vm-reset:
 	rm -f $(VM_IMAGE) $(VM_IMAGE).qcow2
