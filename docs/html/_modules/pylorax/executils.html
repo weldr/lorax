@@ -1,38 +1,38 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>pylorax.executils &mdash; Lorax 34.3 documentation</title>
+  <title>pylorax.executils &mdash; Lorax 34.10 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.3
+                34.10
               </div>
             
           
@@ -75,6 +75,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -87,7 +88,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
@@ -96,6 +96,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -130,11 +131,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -177,9 +180,11 @@
 <span class="c1">#</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">select</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">TimeoutExpired</span>
 <span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax&quot;</span><span class="p">)</span>
@@ -446,6 +451,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span> <span class="o">=</span> <span class="n">proc</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_argv</span> <span class="o">=</span> <span class="n">argv</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="n">callback</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span>
@@ -460,22 +466,43 @@
                     <span class="k">pass</span>
 
         <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="c1"># Read the next line, blocking if a line is not yet available</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="p">):</span>
-                <span class="c1"># Output finished, wait for the process to end</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+            <span class="c1"># Return lines from stdout while also calling _callback</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="c1"># Check for input without blocking</span>
+                <span class="k">if</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">peek</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 
-                <span class="c1"># Check for successful exit</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">returncode</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;process &#39;</span><span class="si">%s</span><span class="s2">&#39; was killed by signal </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-                            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_argv</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">))</span>
-                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">returncode</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;process &#39;</span><span class="si">%s</span><span class="s2">&#39; exited with status </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
-                            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_argv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">))</span>
-                <span class="k">raise</span> <span class="ne">StopIteration</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-            <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="p">):</span>
+                    <span class="c1"># Output finished, wait 60s for the process to end</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+                        <span class="c1"># Did not exit in 60s, kill it and wait 30s more</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+                            <span class="k">pass</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;process &#39;</span><span class="si">%s</span><span class="s2">&#39; failed to be killed&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_argv</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">returncode</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;process &#39;</span><span class="si">%s</span><span class="s2">&#39; was killed by signal </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_argv</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">returncode</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;process &#39;</span><span class="si">%s</span><span class="s2">&#39; exited with status </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_argv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="ne">StopIteration</span>
+
+                <span class="c1"># Don&#39;t loop too fast with no input to read</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
 
     <span class="n">argv</span> <span class="o">=</span> <span class="p">[</span><span class="n">command</span><span class="p">]</span> <span class="o">+</span> <span class="n">argv</span>
 
@@ -511,20 +538,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc.
+        &#169; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -532,7 +564,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
