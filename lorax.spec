@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        35.0
+Version:        35.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,21 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Apr 26 2021 Brian C. Lane <bcl@redhat.com> 35.1-1
+- New lorax documentation - 35.1 (bcl@redhat.com)
+- Makefile: Use podman as a user for testing and docs (bcl@redhat.com)
+- composer-cli: Remove all traces of composer-cli (bcl@redhat.com)
+- livemedia-creator: Add rhgb to live iso cmdline (#1943312) (bcl@redhat.com)
+- tests: Fix pocketlint use of removed pylint messages (bcl@redhat.com)
+- Disable X11 forwarding from installation environment. (vslavik@redhat.com)
+- Remove display-related packages (vslavik@redhat.com)
+- Drop trying to install reiserfs-utils (kevin@scrye.com)
+- test: Fix URL to bots testmap (martin@piware.de)
+- Change khmeros-base-fonts to khmer-os-system-fonts. (pnemade@fedoraproject.org)
+- Fix output path in docs (vslavik@redhat.com)
+- runtime-cleanup: don't wipe /usr/bin/report-cli (#1937550) (awilliam@redhat.com)
+- xorg-x11-font-utils is now four packages, remove all of them (peter.hutterer@who-t.net)
+- xorg-x11-server-utils was split up in Fedora 34, so adjust templates (kevin@scrye.com)
 * Wed Mar 03 2021 Brian C. Lane <bcl@redhat.com> 35.0-1
 - New lorax documentation - 35.0 (bcl@redhat.com)
 - Makefile: Add test-in-podman and docs-in-podman build targets (bcl@redhat.com)
