@@ -1,38 +1,38 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>pylorax.imgutils &mdash; Lorax 34.3 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 34.10 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.3
+                34.10
               </div>
             
           
@@ -75,6 +75,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -87,7 +88,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
@@ -96,6 +96,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -130,11 +131,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -235,9 +238,20 @@
             <span class="n">archive</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">archive</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-        <span class="n">comp</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="n">compression</span><span class="p">]</span> <span class="o">+</span> <span class="n">compressargs</span><span class="p">,</span>
-                     <span class="n">stdin</span><span class="o">=</span><span class="n">archive</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">))</span>
-        <span class="n">comp</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+            <span class="n">comp</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="n">compression</span><span class="p">]</span> <span class="o">+</span> <span class="n">compressargs</span><span class="p">,</span>
+                         <span class="n">stdin</span><span class="o">=</span><span class="n">archive</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">fout</span><span class="p">)</span>
+            <span class="n">comp</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+        <span class="c1"># Clean up the open fds and processes</span>
+        <span class="k">if</span> <span class="n">find</span><span class="p">:</span>
+            <span class="n">find</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">find</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">archive</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">archive</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
+            <span class="n">archive</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">archive</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+            <span class="n">archive</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">comp</span><span class="o">.</span><span class="n">returncode</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -287,8 +301,8 @@
 
 <div class="viewcode-block" id="mksparse"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mksparse">[docs]</a><span class="k">def</span> <span class="nf">mksparse</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;use os.ftruncate to create a sparse file of the given size.&#39;&#39;&#39;</span>
-    <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">ftruncate</span><span class="p">(</span><span class="n">fobj</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">ftruncate</span><span class="p">(</span><span class="n">fobj</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">size</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="mkqcow2"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkqcow2">[docs]</a><span class="k">def</span> <span class="nf">mkqcow2</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;use qemu-img to create a file of the given size.</span>
@@ -716,20 +730,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc.
+        &#169; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -737,7 +756,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
