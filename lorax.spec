@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9
+Version:        34.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Apr 26 2021 Brian C. Lane <bcl@redhat.com> 34.10-1
+- New lorax documentation - 34.10 (bcl@redhat.com)
+- composer-cli: Remove all traces of composer-cli (bcl@redhat.com)
+- runtime-cleanup: don't wipe /usr/bin/report-cli (#1937550) (awilliam@redhat.com)
+
 * Mon Feb 15 2021 Brian C. Lane <bcl@redhat.com> 34.9-1
 - Use inst.rescue to trigger rescue mode (awilliam@redhat.com)
   Resolves: rhbz#1928318
