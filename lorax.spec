@@ -183,9 +183,6 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
   Related: rhbz#1952978
 - composer-cli: Remove all traces of composer-cli (bcl@redhat.com)
   Resolves: rhbz#1952978
-* Thu Apr 29 2021 Brian C. Lane <bcl@redhat.com> - 34.9.0-1
-- Remove composer-cli (replaced by weldr-client) and update docs
-  Resolves: rhbz#1952978
 
 * Mon Feb 15 2021 Brian C. Lane <bcl@redhat.com> 34.9-1
 - Use inst.rescue to trigger rescue mode (awilliam@redhat.com)
