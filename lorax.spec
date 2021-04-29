@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9
+Version:        34.9.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -178,9 +178,19 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Apr 29 2021 Brian C. Lane <bcl@redhat.com> 34.9.0-1
+- New lorax documentation - 34.9.0 (bcl@redhat.com)
+  Related: rhbz#1952978
+- composer-cli: Remove all traces of composer-cli (bcl@redhat.com)
+  Resolves: rhbz#1952978
+* Thu Apr 29 2021 Brian C. Lane <bcl@redhat.com> - 34.9.0-1
+- Remove composer-cli (replaced by weldr-client) and update docs
+  Resolves: rhbz#1952978
+
 * Mon Feb 15 2021 Brian C. Lane <bcl@redhat.com> 34.9-1
 - Use inst.rescue to trigger rescue mode (awilliam@redhat.com)
   Resolves: rhbz#1928318
+
 * Mon Feb 08 2021 Brian C. Lane <bcl@redhat.com> 34.8-1
 - Use image dependencies metapackage (vslavik@redhat.com)
 - tests: Include the fedora-updates repo when testing boot.iso building (bcl@redhat.com)
