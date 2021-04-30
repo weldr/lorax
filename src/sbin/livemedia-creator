@@ -20,7 +20,6 @@
 import logging
 log = logging.getLogger("livemedia-creator")
 
-import glob
 import os
 import sys
 import tempfile
@@ -84,8 +83,8 @@ def main():
         errors.append("the volume id cannot be longer than 32 characters")
 
     if is_install and not opts.no_virt \
-       and not any(glob.glob("/usr/bin/qemu-system-*")):
-        errors.append("qemu needs to be installed.")
+       and not os.path.exists("/usr/libexec/qemu-kvm"):
+        errors.append("qemu-kvm needs to be installed.")
 
     if is_install and opts.no_virt \
        and not os.path.exists("/usr/sbin/anaconda"):
@@ -144,6 +143,9 @@ def main():
         for f in ["OVMF_CODE.secboot.fd", "OVMF_VARS.secboot.fd"]:
             if not os.path.exists(joinpaths(opts.ovmf_path, f)):
                 errors.append("OVMF secure boot firmware file %s is missing from %s" % (f, opts.ovmf_path))
+
+    if opts.arch != None:
+        errors.append("RHEL9 only support virt for the host arch.")
 
     if os.getuid() != 0:
         errors.append("You need to run this as root")

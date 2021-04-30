@@ -103,13 +103,12 @@ Includes the full html documentation for lorax, livemedia-creator, and the pylor
 %package lmc-virt
 Summary:  livemedia-creator libvirt dependencies
 Requires: lorax = %{version}-%{release}
-Requires: qemu
+Requires: qemu-kvm
 
 # Fedora edk2 builds currently only support these arches
 %ifarch %{ix86} x86_64 %{arm} aarch64
 Requires: edk2-ovmf
 %endif
-Recommends: qemu-kvm
 
 %description lmc-virt
 Additional dependencies required by livemedia-creator when using it with qemu.

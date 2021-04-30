@@ -135,14 +135,6 @@ class QEMUInstall(object):
     """
     Run qemu using an iso and a kickstart
     """
-    # Mapping of arch to qemu command
-    QEMU_CMDS = {"x86_64":  "qemu-system-x86_64",
-                 "i386":    "qemu-system-i386",
-                 "arm":     "qemu-system-arm",
-                 "aarch64": "qemu-system-aarch64",
-                 "ppc64le": "qemu-system-ppc64"
-                }
-
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
                  kernel_args=None, memory=1024, vcpus=None, vnc=None, arch=None,
                  cancel_func=None, virtio_host="127.0.0.1", virtio_port=6080,
@@ -160,7 +152,7 @@ class QEMUInstall(object):
         :param int memory: Amount of RAM to assign to the virt, in MiB
         :param int vcpus: Number of virtual cpus
         :param str vnc: Arguments to pass to qemu -display
-        :param str arch: Optional architecture to use in the virt
+        :param str arch: Unsupported in RHEL9
         :param cancel_func: Function that returns True if the installation fails
         :type cancel_func: function
         :param str virtio_host: Hostname to connect virtio log to
@@ -169,9 +161,10 @@ class QEMUInstall(object):
         :param bool boot_uefi: Use OVMF to boot the VM in UEFI mode
         :param str ovmf_path: Path to the OVMF firmware
         """
-        # Lookup qemu-system- for arch if passed, or try to guess using host arch
-        qemu_cmd = [self.QEMU_CMDS.get(arch or os.uname().machine, "qemu-system-"+os.uname().machine)]
-        if not os.path.exists("/usr/bin/"+qemu_cmd[0]):
+        # RHEL9 only supports 1 path for the qemu-kvm binary
+        qemu_cmd = ["/usr/libexec/qemu-kvm", "-cpu", "host"]
+
+        if not os.path.exists(qemu_cmd[0]):
             raise InstallError("%s does not exist, cannot run qemu" % qemu_cmd[0])
 
         qemu_cmd += ["-no-user-config"]
@@ -227,6 +220,9 @@ class QEMUInstall(object):
             display_args = opts.vnc
         log.info("qemu %s", display_args)
         qemu_cmd += ["-nographic", "-monitor", "none", "-serial", "null", "-display", display_args ]
+
+        # Setup virtio networking
+        qemu_cmd += ["-netdev", "user,id=n1", "-device", "virtio-net-pci,netdev=n1"]
 
         # Setup the virtio log port
         qemu_cmd += ["-device", "virtio-serial-pci,id=virtio-serial0"]
