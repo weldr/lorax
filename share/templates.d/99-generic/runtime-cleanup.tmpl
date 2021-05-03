@@ -1,5 +1,5 @@
 ## lorax template file: cleanup for the ramdisk (runtime image)
-<%page args="libdir, product, root"/>
+<%page args="libdir, branding, root"/>
 
 ## remove the sources
 remove usr/share/i18n
@@ -14,7 +14,6 @@ removepkg flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
-removefrom ${product.name}-logos /usr/share/plymouth/*
 ## In order to execute the /usr move on upgrades we need convertfs from dracut
 ## We also need dracut-shutdown.service and dracut-initramfs-restore to reboot
 removefrom dracut --allbut /usr/lib/dracut/modules.d/30convertfs/convertfs.sh \
@@ -326,9 +325,13 @@ removefrom xorg-x11-drv-wacom /usr/bin/*
 removefrom xorg-x11-fonts-misc --allbut /usr/share/X11/fonts/misc/{6x13,encodings,fonts,*cursor}*
 removefrom xorg-x11-server-utils --allbut /usr/bin/xrandr /usr/share/X11/rgb.txt /usr/bin/xrdb
 removefrom yum /etc/* /usr/share/locale/* /usr/share/yum-cli/*
-removefrom ${product.name}-logos /etc/*
-removefrom ${product.name}-logos /usr/share/icons/{Bluecurve,oxygen}/*
-removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pixmaps}/*
+
+%if branding.release:
+    removefrom ${branding.logos} /usr/share/plymouth/*
+    removefrom ${branding.logos} /etc/*
+    removefrom ${branding.logos} /usr/share/icons/{Bluecurve,oxygen}/*
+    removefrom ${branding.logos} /usr/share/{firstboot,gnome-screensaver,kde4,pixmaps}/*
+%endif
 
 ## cleanup_python_files()
 runcmd find ${root} -name "*.pyo" -type f -delete
