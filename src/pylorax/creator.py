@@ -200,7 +200,7 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
     # symlink mount_dir/images to work_dir/images so we don't run out of space
     os.makedirs(joinpaths(work_dir, "images"))
 
-    rb = RuntimeBuilder(product, arch, fake_dbo)
+    rb = RuntimeBuilder(product, arch, fake_dbo, skip_branding=True)
     compression, compressargs = squashfs_args(opts)
     log.info("Creating runtime")
     rb.create_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
