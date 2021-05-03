@@ -218,7 +218,7 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
     product = DataHolder(name=opts.project, version=opts.releasever, release="",
                             variant="", bugurl="", isfinal=False)
 
-    rb = RuntimeBuilder(product, arch, fake_dbo)
+    rb = RuntimeBuilder(product, arch, fake_dbo, skip_branding=True)
     compression, compressargs = squashfs_args(opts)
 
     if opts.squashfs_only:

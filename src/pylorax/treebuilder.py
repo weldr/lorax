@@ -74,11 +74,6 @@ class RuntimeBuilder(object):
                  add_template_vars=None,
                  skip_branding=False):
         root = dbo.conf.installroot
-        # use a copy of product so we can modify it locally
-        product = product.copy()
-        product.name = product.name.lower()
-        self.vars = DataHolder(arch=arch, product=product, dbo=dbo, root=root,
-                               basearch=arch.basearch, libdir=arch.libdir)
         self.dbo = dbo
         self._runner = LoraxTemplateRunner(inroot=root, outroot=root,
                                            dbo=dbo, templatedir=templatedir)
@@ -86,20 +81,29 @@ class RuntimeBuilder(object):
         self.add_template_vars = add_template_vars or {}
         self._installpkgs = installpkgs or []
         self._excludepkgs = excludepkgs or []
-        self._runner.defaults = self.vars
         self.dbo.reset()
-        self._skip_branding = skip_branding
 
-    def _install_branding(self):
+        # use a copy of product so we can modify it locally
+        product = product.copy()
+        product.name = product.name.lower()
+        self._branding = self.get_branding(skip_branding, product)
+        self.vars = DataHolder(arch=arch, product=product, dbo=dbo, root=root,
+                               basearch=arch.basearch, libdir=arch.libdir,
+                               branding=self._branding)
+        self._runner.defaults = self.vars
+
+    def get_branding(self, skip, product):
         """Select the branding from the available 'system-release' packages
         The *best* way to control this is to have a single package in the repo provide 'system-release'
         When there are more than 1 package it will:
         - Make a list of the available packages
         - If variant is set look for a package ending with lower(variant) and use that
         - If there are one or more non-generic packages, use the first one after sorting
+
+        Returns the package names of the system-release and release logos package
         """
-        if self._skip_branding:
-            return
+        if skip:
+            return DataHolder(release=None, logos=None)
 
         release = None
         q = self.dbo.sack.query()
@@ -108,11 +112,11 @@ class RuntimeBuilder(object):
                                     if not p.name.startswith("generic")])
         if not pkgs:
             logger.error("No system-release packages found, could not get the release")
-            return
+            return DataHolder(release=None, logos=None)
 
         logger.debug("system-release packages: %s", pkgs)
-        if self.vars.product.variant:
-            variant = [p for p in pkgs if p.endswith("-"+self.vars.product.variant.lower())]
+        if product.variant:
+            variant = [p for p in pkgs if p.endswith("-"+product.variant.lower())]
             if variant:
                 release = variant[0]
         if not release:
@@ -120,20 +124,25 @@ class RuntimeBuilder(object):
 
         # release
         logger.info('got release: %s', release)
-        self._runner.installpkg(release)
 
-        # logos
-        release, _suffix = release.split('-', 1)
-        self._runner.installpkg('%s-logos' % release)
+        # logos uses the basename from release (fedora, redhat, centos, ...)
+        logos, _suffix = release.split('-', 1)
+        return DataHolder(release=release, logos=logos+"-logos")
 
     def install(self):
         '''Install packages and do initial setup with runtime-install.tmpl'''
-        self._install_branding()
+        if self._branding.release:
+            self._runner.installpkg(self._branding.release)
+        if self._branding.logos:
+            self._runner.installpkg(self._branding.logos)
+
         if len(self._installpkgs) > 0:
             self._runner.installpkg(*self._installpkgs)
         if len(self._excludepkgs) > 0:
             self._runner.removepkg(*self._excludepkgs)
+
         self._runner.run("runtime-install.tmpl")
+
         for tmpl in self.add_templates:
             self._runner.run(tmpl, **self.add_template_vars)
 
