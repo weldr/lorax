@@ -10,7 +10,8 @@ timezone US/Eastern
 lang en_US.UTF-8
 # Firewall configuration
 firewall --enabled --service=mdns
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+url --url="http://URL-TO-BASEOS"
+repo --name=appstream --baseurl="http://URL-TO-APPSTREAM/"
 # Network information
 network  --bootproto=dhcp --device=link --activate
 
@@ -367,24 +368,19 @@ EOF
 %end
 
 %packages
-@anaconda-tools
 @base-x
 @core
-@firefox
 @fonts
 @guest-desktop-agents
 @hardware-support
-@libreoffice
 @multimedia
 @networkmanager-submodules
-@printing
 @workstation-product
 gnome-terminal
 aajohan-comfortaa-fonts
-anaconda
-anaconda-live
 dracut-config-generic
 dracut-live
+system-logos
 glibc-all-langpacks
 kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires

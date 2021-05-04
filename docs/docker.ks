@@ -1,7 +1,8 @@
-# Minimal Disk Image
+# Minimal tar Image
 
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+url --url="http://URL-TO-BASEOS"
+repo --name=appstream --baseurl="http://URL-TO-APPSTREAM/"
 
 # Root password
 rootpw --plaintext replace-this-pw
