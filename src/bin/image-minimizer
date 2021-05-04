@@ -70,7 +70,7 @@ class ImageMinimizer:
         not_found = True
         for hdr in mi:
             not_found = False
-            rpms.add(hdr['name'].decode("utf8"))
+            rpms.add(hdr['name'])
         if self.verbose and not_found:
             print("%s package not found" % pattern)
 
