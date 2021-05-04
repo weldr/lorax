@@ -201,7 +201,7 @@ class QEMUInstall(object):
 
         # Setup the cmdline args
         # ======================
-        cmdline_args = "ks=file:/%s" % os.path.basename(ks_paths[0])
+        cmdline_args = "inst.ks=file:/%s" % os.path.basename(ks_paths[0])
         cmdline_args += " inst.stage2=hd:LABEL=%s" % udev_escape(iso.label)
         if opts.proxy:
             cmdline_args += " inst.proxy=%s" % opts.proxy
