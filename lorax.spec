@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.0
+Version:        34.9.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -177,6 +177,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed May 05 2021 Brian C. Lane <bcl@redhat.com> 34.9.1-1
+- livemedia-creator: Use inst.ks on cmdline for virt (bcl@redhat.com)
+- image-minimizer: Fix decode() usage (bcl@redhat.com)
+- docs: Update example kickstarts for RHEL/CentOS (bcl@redhat.com)
+- livemedia-creator: RHEL9 only supports qemu-kvm (bcl@redhat.com)
+- runtime-cleanup: Use branding package name instead of product.name (bcl@redhat.com)
+- treebuilder: Add branding package to template variables (bcl@redhat.com)
+- runtime-cleanup: Remove mcpp and libmcpp cleanup (bcl@redhat.com)
+- spec: Fix changelog for 34.9.0 (bcl@redhat.com)
+
 * Thu Apr 29 2021 Brian C. Lane <bcl@redhat.com> 34.9.0-1
 - New lorax documentation - 34.9.0 (bcl@redhat.com)
   Related: rhbz#1952978
