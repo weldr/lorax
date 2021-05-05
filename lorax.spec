@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.10
+Version:        34.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed May 05 2021 Brian C. Lane <bcl@redhat.com> 34.11-1
+- runtime-cleanup: Use branding package name instead of product.name (bcl@redhat.com)
+- treebuilder: Add branding package to template variables (bcl@redhat.com)
+- livemedia-creator: Use inst.ks on cmdline for virt (bcl@redhat.com)
+- Change khmeros-base-fonts to khmer-os-system-fonts. This font got renamed last year. (pnemade@fedoraproject.org)
+- xorg-x11-font-utils is now four packages, remove all of them (peter.hutterer@who-t.net)
+- xorg-x11-server-utils was split up in Fedora 34, so adjust templates (kevin@scrye.com)
+
 * Mon Apr 26 2021 Brian C. Lane <bcl@redhat.com> 34.10-1
 - New lorax documentation - 34.10 (bcl@redhat.com)
 - composer-cli: Remove all traces of composer-cli (bcl@redhat.com)
