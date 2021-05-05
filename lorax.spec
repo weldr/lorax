@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        34.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 License:        GPLv2+
@@ -100,18 +100,24 @@ Requires: lorax = %{version}-%{release}
 %description docs
 Includes the full html documentation for lorax, livemedia-creator, and the pylorax library.
 
+# ppc64le does not include qemu-kvm, skip building lmc-virt
+%ifnarch ppc64le
 %package lmc-virt
 Summary:  livemedia-creator libvirt dependencies
 Requires: lorax = %{version}-%{release}
 Requires: qemu-kvm
 
 # Fedora edk2 builds currently only support these arches
-%ifarch %{ix86} x86_64 %{arm} aarch64
+%ifarch %{ix86} x86_64
 Requires: edk2-ovmf
+%endif
+%ifarch aarch64
+Requires: edk2-aarch64
 %endif
 
 %description lmc-virt
 Additional dependencies required by livemedia-creator when using it with qemu.
+%endif
 
 %package lmc-novirt
 Summary:  livemedia-creator no-virt dependencies
@@ -168,7 +174,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files docs
 %doc docs/html/*
 
+%ifnarch ppc64le
 %files lmc-virt
+%endif
 
 %files lmc-novirt
 
@@ -177,6 +185,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed May 05 2021 Brian C. Lane <bcl@redhat.com> - 34.9.1-2
+- qemu-kvm isn't available on ppc64le
+- edk2-aarch64 has the UEFI firmware on aarch64
+  Related: rhbz#1955674
+
 * Wed May 05 2021 Brian C. Lane <bcl@redhat.com> 34.9.1-1
 - livemedia-creator: Use inst.ks on cmdline for virt (bcl@redhat.com)
 - image-minimizer: Fix decode() usage (bcl@redhat.com)
