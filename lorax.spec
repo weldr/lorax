@@ -1,10 +1,10 @@
-# NOTE: This specfile is generated from upstream at https://github.com/rhinstaller/lorax
+# NOTE: This specfile is generated from upstream at https://github.com/weldr/lorax
 # NOTE: Please submit changes as a pull request
 %define debug_package %{nil}
 
 Name:           lorax
 Version:        35.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 License:        GPLv2+
@@ -20,6 +20,9 @@ BuildRequires:  make
 BuildRequires:  systemd-rpm-macros
 
 Requires:       lorax-templates
+%if 0%{?rhel} >= 9
+Requires:       lorax-templates-rhel
+%endif
 
 Requires:       cpio
 Requires:       device-mapper
@@ -175,6 +178,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue May 11 2021 Stephen Gallagher <sgallagh@redhat.com> - 35.2-2
+- Add Requires: lorax-templates-rhel when building for ELN
+
 * Wed May 05 2021 Brian C. Lane <bcl@redhat.com> 35.2-1
 - runtime-cleanup: Use branding package name instead of product.name (bcl@redhat.com)
 - treebuilder: Add branding package to template variables (bcl@redhat.com)
