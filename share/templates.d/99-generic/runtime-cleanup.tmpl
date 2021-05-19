@@ -105,7 +105,6 @@ removefrom gtk2 /usr/${libdir}/gtk-2.0/*/{engines,printbackends}/*
 removefrom gtk2 /usr/share/themes/*
 removefrom gtk3 /usr/${libdir}/gtk-3.0/*/printbackends/*
 removefrom gtk3 /usr/share/themes/*
-removefrom metacity --allbut /usr/bin/* /usr/${libdir}/*
 
 ## filesystem tools
 removefrom e2fsprogs /usr/share/locale/*
@@ -343,7 +342,7 @@ removepkg geoclue2
 removepkg cdparanoia-libs opus libtheora libvisual flac-libs gsm avahi-glib avahi-libs \
           ModemManager-glib
 
-## metacity requires libvorbis and libvorbisfile, but enc/dec are no longer needed
+## gnome-kiosk dependencies require libvorbis and libvorbisfile, but enc/dec are no longer needed
 removefrom libvorbis --allbut /usr/${libdir}/libvorbisfile.* /usr/${libdir}/libvorbis.*
 
 ## Remove build-id links, they are used with debuginfo
