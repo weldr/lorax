@@ -328,14 +328,17 @@ class TreeBuilder(object):
                 # Construct an initrd from the kernel name
                 outfile = kernel.path.replace("vmlinuz-", "initrd-") + ".img"
             logger.info("rebuilding %s", outfile)
-            logger.info("dracut warnings about /proc are safe to ignore")
 
             if backup:
                 initrd = joinpaths(self.vars.inroot, outfile)
                 if os.path.exists(initrd):
                     os.rename(initrd, initrd + backup)
             cmd = dracut + [outfile, kernel.version]
+            runcmd([ "mount", "-t", "proc", "-o", "nosuid,noexec,nodev", "proc", self.vars.inroot + "/proc" ])
+            runcmd([ "mount", "-t", "devtmpfs", "-o", "mode=0755,noexec,nosuid,strictatime", "devtmpfs", self.vars.inroot + "/dev" ])
             runcmd(cmd, root=self.vars.inroot)
+            runcmd([ "umount", self.vars.inroot + "/proc" ])
+            runcmd([ "umount", self.vars.inroot + "/dev" ])
 
     def build(self):
         templatefile = templatemap[self.vars.arch.basearch]
