@@ -380,7 +380,6 @@ EOF
 @printing
 @workstation-product
 gnome-terminal
-aajohan-comfortaa-fonts
 anaconda
 anaconda-live
 dracut-config-generic
