@@ -31,6 +31,7 @@ from pylorax.sysutils import joinpaths, remove
 from pylorax.base import DataHolder
 from pylorax.ltmpl import LoraxTemplateRunner
 import pylorax.imgutils as imgutils
+from pylorax.imgutils import DracutChroot
 from pylorax.executils import runcmd, runcmd_output, execWithCapture
 
 templatemap = {
@@ -301,32 +302,31 @@ class TreeBuilder(object):
         name of the kernel.
         '''
         add_args = add_args or []
-        dracut = ["dracut", "--nomdadmconf", "--nolvmconf"] + add_args
+        args = ["--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
-            dracut.append("--force")
+            args.append("--force")
 
         if not self.kernels:
             raise Exception("No kernels found, cannot rebuild_initrds")
 
-        for kernel in self.kernels:
-            if prefix:
-                idir = os.path.dirname(kernel.path)
-                outfile = joinpaths(idir, prefix+'-'+kernel.version+'.img')
-            elif hasattr(kernel, "initrd"):
-                # If there is an existing initrd, use that
-                outfile = kernel.initrd.path
-            else:
-                # Construct an initrd from the kernel name
-                outfile = kernel.path.replace("vmlinuz-", "initrd-") + ".img"
-            logger.info("rebuilding %s", outfile)
-            logger.info("dracut warnings about /proc are safe to ignore")
+        with DracutChroot(self.vars.inroot) as dracut:
+            for kernel in self.kernels:
+                if prefix:
+                    idir = os.path.dirname(kernel.path)
+                    outfile = joinpaths(idir, prefix+'-'+kernel.version+'.img')
+                elif hasattr(kernel, "initrd"):
+                    # If there is an existing initrd, use that
+                    outfile = kernel.initrd.path
+                else:
+                    # Construct an initrd from the kernel name
+                    outfile = kernel.path.replace("vmlinuz-", "initrd-") + ".img"
+                logger.info("rebuilding %s", outfile)
 
-            if backup:
-                initrd = joinpaths(self.vars.inroot, outfile)
-                if os.path.exists(initrd):
-                    os.rename(initrd, initrd + backup)
-            cmd = dracut + [outfile, kernel.version]
-            runcmd(cmd, root=self.vars.inroot)
+                if backup:
+                    initrd = joinpaths(self.vars.inroot, outfile)
+                    if os.path.exists(initrd):
+                        os.rename(initrd, initrd + backup)
+                dracut.Run(args + [outfile, kernel.version])
 
     def build(self):
         templatefile = templatemap[self.vars.arch.basearch]

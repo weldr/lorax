@@ -462,6 +462,42 @@ class PartitionMount(object):
         execWithRedirect("kpartx", ["-d", "-s", self.disk_img])
 
 
+class DracutChroot(object):
+    """Setup the chroot for running dracut inside it, cleanup when done
+
+    This mount /proc, /dev, and /var/tmp plus optional bind mounted directories
+    as a list of (source, destination) tuples where destination is relative to the chroot.
+    """
+    def __init__(self, root, bind=None):
+        self.root = root
+        self.bind = [("/var/tmp", "/var/tmp")] + (bind if bind else [])
+
+    def __enter__(self):
+        for d in [d for _, d in self.bind] + ["/proc", "/dev"]:
+            if not os.path.exists(self.root + d):
+                logger.warning("Making missing dracut chroot directory: %s", d)
+                os.makedirs(self.root + d)
+
+        runcmd(["mount", "-t", "proc", "-o", "nosuid,noexec,nodev", "proc", self.root + "/proc" ])
+        runcmd(["mount", "-t", "devtmpfs", "-o", "mode=0755,noexec,nosuid,strictatime", "devtmpfs", self.root + "/dev" ])
+
+        for s, d in self.bind:
+            runcmd(["mount", "-o", "bind", s, self.root + d])
+
+        return self
+
+    def __exit__(self, exc_type, exc_value, tracebk):
+        runcmd(["umount", self.root + "/proc" ])
+        runcmd(["umount", self.root + "/dev" ])
+
+        # cleanup bind mounts
+        for _, d in self.bind:
+            runcmd(["umount", self.root + d ])
+
+    def Run(self, args):
+        runcmd(["dracut"] + args, root=self.root)
+
+
 ######## Functions for making filesystem images ##########################
 
 def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=None, mountargs="", graft=None):
