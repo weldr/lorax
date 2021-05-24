@@ -351,7 +351,7 @@ class Lorax(BaseLoraxClass):
             for arg in user_dracut_args:
                 dracut_args += arg.split(" ", 1)
 
-        anaconda_args = dracut_args + ["--add", "anaconda pollcdrom qemu qemu-net"]
+        anaconda_args = dracut_args + ["--add", "anaconda pollcdrom qemu qemu-net prefixdevname-tools"]
 
         logger.info("dracut args = %s", dracut_args)
         logger.info("anaconda args = %s", anaconda_args)
