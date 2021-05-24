@@ -36,8 +36,8 @@ from pykickstart.version import makeVersion
 # Use the Lorax treebuilder branch for iso creation
 from pylorax import ArchData
 from pylorax.base import DataHolder
-from pylorax.executils import execWithRedirect, runcmd
-from pylorax.imgutils import PartitionMount
+from pylorax.executils import execWithRedirect
+from pylorax.imgutils import DracutChroot, PartitionMount
 from pylorax.imgutils import mount, umount, Mount
 from pylorax.imgutils import mksquashfs, mkrootfsimg
 from pylorax.imgutils import copytree
@@ -243,7 +243,7 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
     # cmdline dracut args override the defaults, but need to be parsed
     log.info("dracut args = %s", dracut_args(opts))
 
-    dracut = ["dracut", "--nomdadmconf", "--nolvmconf"] + dracut_args(opts)
+    args = ["--nomdadmconf", "--nolvmconf"] + dracut_args(opts)
 
     kdir = "boot"
     if opts.ostree:
@@ -272,25 +272,18 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
 
     # Write the new initramfs directly to the results directory
     os.mkdir(joinpaths(sys_root_dir, "results"))
-    mount(results_dir, opts="bind", mnt=joinpaths(sys_root_dir, "results"))
-    # Dracut runs out of space inside the minimal rootfs image
-    mount("/var/tmp", opts="bind", mnt=joinpaths(sys_root_dir, "var/tmp"))
-    for kernel in kernels:
-        if hasattr(kernel, "initrd"):
-            outfile = os.path.basename(kernel.initrd.path)
-        else:
-            # Construct an initrd from the kernel name
-            outfile = os.path.basename(kernel.path.replace("vmlinuz-", "initrd-") + ".img")
-        log.info("rebuilding %s", outfile)
-        log.info("dracut warnings about /proc are safe to ignore")
+    with DracutChroot(sys_root_dir, bind=[(results_dir, "/results")]) as dracut:
+        for kernel in kernels:
+            if hasattr(kernel, "initrd"):
+                outfile = os.path.basename(kernel.initrd.path)
+            else:
+                # Construct an initrd from the kernel name
+                outfile = os.path.basename(kernel.path.replace("vmlinuz-", "initrd-") + ".img")
+            log.info("rebuilding %s", outfile)
 
-        kver = kernel.version
-        cmd = dracut + ["/results/"+outfile, kver]
-        runcmd(cmd, root=sys_root_dir)
-
-        shutil.copy2(joinpaths(sys_root_dir, kernel.path), results_dir)
-    umount(joinpaths(sys_root_dir, "var/tmp"), delete=False)
-    umount(joinpaths(sys_root_dir, "results"), delete=False)
+            kver = kernel.version
+            dracut.Run(args + ["/results/"+outfile, kver])
+            shutil.copy2(joinpaths(sys_root_dir, kernel.path), results_dir)
 
 def create_pxe_config(template, images_dir, live_image_name, add_args = None):
     """
