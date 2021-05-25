@@ -3,8 +3,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.1
-Release:        2%{?dist}
+Version:        34.9.2
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 License:        GPLv2+
@@ -185,6 +185,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue May 25 2021 Brian C. Lane <bcl@redhat.com> 34.9.2-1
+- Add prefixdevname to Anaconda initramfs (rvykydal@redhat.com)
+  Related: rhbz#1958173
+- Replace metacity with gnome-kiosk (bcl@redhat.com)
+  Related: rhbz#1961099
+- runtime-install: Install ipcalc (bcl@redhat.com)
+  Related: rhbz#1958173
+- spec: Update lorax-lmc-virt packages for rhel9 arches (bcl@redhat.com)
+  Related: rhbz#1955674
 * Wed May 05 2021 Brian C. Lane <bcl@redhat.com> - 34.9.1-2
 - qemu-kvm isn't available on ppc64le
 - edk2-aarch64 has the UEFI firmware on aarch64
