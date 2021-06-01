@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.11
+Version:        34.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Jun 01 2021 Brian C. Lane <bcl@redhat.com> 34.12-1
+- Add a context manager for dracut (bcl@redhat.com)
+  Resolves: rhbz#1962975
 * Wed May 05 2021 Brian C. Lane <bcl@redhat.com> 34.11-1
 - runtime-cleanup: Use branding package name instead of product.name (bcl@redhat.com)
 - treebuilder: Add branding package to template variables (bcl@redhat.com)
