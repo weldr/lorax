@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        33.10
+Version:        33.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -268,6 +268,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Jun 01 2021 Brian C. Lane <bcl@redhat.com> 33.11-1
+- Add a context manager for dracut (bcl@redhat.com)
+  Resolves: rhbz#1962975
+- live/x86.tmpl: Copy livecd-iso-to-disk script, if installed (david.ward@ll.mit.edu)
+- templates: Copy license files from the correct path (david.ward@ll.mit.edu)
+- New lorax documentation - 33.10 (bcl@redhat.com)
+
 * Mon Sep 14 2020 Brian C. Lane <bcl@redhat.com> 33.10-1
 - Fix broken single-item tuples in a few places (awilliam@redhat.com)
 - Drop dpaa2 firmware on non-aarch64 arches (awilliam@redhat.com)
