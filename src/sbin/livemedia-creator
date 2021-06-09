@@ -147,6 +147,9 @@ def main():
     if opts.arch != None:
         errors.append("RHEL9 only support virt for the host arch.")
 
+    if opts.domacboot and not os.path.exists("/usr/sbin/mkfs.hfsplus"):
+        errors.append("mkfs.hfsplus is missing. Install hfsplus-tools, or pass --nomacboot")
+
     if os.getuid() != 0:
         errors.append("You need to run this as root")
 
