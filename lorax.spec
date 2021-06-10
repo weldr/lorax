@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        35.3
+Version:        35.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Jun 10 2021 Brian C. Lane <bcl@redhat.com> 35.4-1
+- livemedia-creator: Check for mkfs.hfsplus (bcl@redhat.com)
+- Drop retired icfg (zbyszek@in.waw.pl)
+
 * Tue May 25 2021 Brian C. Lane <bcl@redhat.com> 35.3-1
 - Add a context manager for dracut (bcl@redhat.com)
   Resolves: rhbz#1962975
