@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.2
+Version:        34.9.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Jun 10 2021 Brian C. Lane <bcl@redhat.com> 34.9.3-1
+- livemedia-creator: Check for mkfs.hfsplus (bcl@redhat.com)
+
 * Tue May 25 2021 Brian C. Lane <bcl@redhat.com> 34.9.2-1
 - Add prefixdevname to Anaconda initramfs (rvykydal@redhat.com)
   Related: rhbz#1958173
