@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        35.4
+Version:        35.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Jun 11 2021 Brian C. Lane <bcl@redhat.com> 35.5-1
+- pylorax: Fix mksparse ftruncate size handling (bcl@redhat.com)
+
 * Thu Jun 10 2021 Brian C. Lane <bcl@redhat.com> 35.4-1
 - livemedia-creator: Check for mkfs.hfsplus (bcl@redhat.com)
 - Drop retired icfg (zbyszek@in.waw.pl)
