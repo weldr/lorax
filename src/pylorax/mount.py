@@ -92,7 +92,7 @@ class IsoMountpoint(object):
 
     def get_iso_label(self):
         """
-        Get the iso's label using isoinfo
+        Get the iso's label using pycdlib
 
         Sets self.label if one is found
         """
