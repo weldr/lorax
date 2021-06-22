@@ -398,7 +398,7 @@ dracut-config-generic
 dracut-live
 glibc-all-langpacks
 grub2-efi
-grub2-pc-modules
+grub2-*-modules
 kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
 kernel-modules
