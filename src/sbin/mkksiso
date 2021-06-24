@@ -584,7 +584,7 @@ def setup_args():
     parser.add_argument("-a", "--add", action="append", dest="add_paths", default=[],
                         type=os.path.abspath,
                         help="File or directory to add to ISO (may be used multiple times)")
-    parser.add_argument("-c", "--cmdline", dest="cmdline", metavar="CMDLINE",
+    parser.add_argument("-c", "--cmdline", dest="cmdline", metavar="CMDLINE", default="",
                         help="Arguments to add to kernel cmdline")
     parser.add_argument("--debug", action="store_const", const=log.DEBUG,
                         dest="loglevel", default=log.INFO,
