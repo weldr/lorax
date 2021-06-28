@@ -189,7 +189,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 - mkksiso: cmdline should default to empty string (bcl@redhat.com)
   Related: rhbz#1975844
 - runtime-install: Remove gfs2-utils (bcl@redhat.com)
-  Related: rhbz#1904955
+  Related: rhbz#1975378
 
 * Thu Jun 10 2021 Brian C. Lane <bcl@redhat.com> 34.9.3-1
 - livemedia-creator: Check for mkfs.hfsplus (bcl@redhat.com)
