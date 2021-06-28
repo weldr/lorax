@@ -249,6 +249,7 @@ latex_documents = [
 man_pages = [
     ('lorax', 'lorax', u'Lorax Documentation', [u'Weldr Team'], 1),
     ('livemedia-creator', 'livemedia-creator', u'Live Media Creator Documentation', [u'Weldr Team'], 1),
+    ('mkksiso', 'mkksiso', u'Make Kickstart ISO Utility Documentation', [u'Weldr Team'], 1),
     ('lorax-composer', 'lorax-composer', u'Lorax Composer Documentation', [u'Weldr Team'], 1),
     ('composer-cli', 'composer-cli', u'Composer Cmdline Utility Documentation', [u'Weldr Team'], 1),
 ]

@@ -216,12 +216,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sbindir}/lorax
 %{_sbindir}/mkefiboot
 %{_sbindir}/livemedia-creator
+%{_sbindir}/mkksiso
 %{_bindir}/image-minimizer
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
 %{_mandir}/man1/lorax.1*
 %{_mandir}/man1/livemedia-creator.1*
+%{_mandir}/man1/mkksiso.1*
 %{_tmpfilesdir}/lorax.conf
 
 %files docs

@@ -21,7 +21,8 @@ for root, dnames, fnames in os.walk("share"):
 
 # executable
 data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
-                                 "src/sbin/livemedia-creator", "src/sbin/lorax-composer"]))
+                                 "src/sbin/livemedia-creator", "src/sbin/lorax-composer",
+                                 "src/sbin/mkksiso"]))
 data_files.append(("/usr/bin",  ["src/bin/image-minimizer",
                                  "src/bin/composer-cli"]))
 
