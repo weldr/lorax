@@ -1,6 +1,6 @@
 PYTHON ?= /usr/bin/python3
 DESTDIR ?= /
-DOCKER ?= docker
+DOCKER ?= podman
 BACKEND ?= lorax-composer
 
 PKGNAME = lorax
@@ -101,17 +101,27 @@ local:
 	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
+local-srpm: local $(PKGNAME).spec
+	rpmbuild -bs \
+	  --define "_sourcedir $(CURDIR)" \
+	  --define "_srcrpmdir $(CURDIR)" \
+	  lorax.spec
+
 test-in-copy:
 	rsync -aP --exclude=.git /lorax-ro/ /lorax/
 	make -C /lorax/ ci
 	cp /lorax/.coverage /test-results/
 
 test-in-docker:
-	sudo $(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
-	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results -v `pwd`:/lorax-ro:ro --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
+	$(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
+	@mkdir -p `pwd`/.test-results
+	$(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results -v `pwd`:/lorax-ro:ro --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
 
 docs-in-docker:
-	sudo $(DOCKER) run -it --rm -v `pwd`/docs/html/:/lorax/docs/html/ --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make docs
+	$(DOCKER) build -t welder/lorax-docs:$(IMAGE_RELEASE) -f Dockerfile.docs .
+	$(DOCKER) run -it --rm -v `pwd`:/lorax-ro:ro -v `pwd`/docs/:/lorax-ro/docs/ \
+		--security-opt label=disable \
+		welder/lorax-docs:$(IMAGE_RELEASE) make docs
 
 ci: check test
 

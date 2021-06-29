@@ -3,8 +3,8 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build-3
-SPHINXAPIDOC  = sphinx-apidoc-3
+SPHINXBUILD   ?= sphinx-build
+SPHINXAPIDOC  ?= sphinx-apidoc
 PAPER         =
 BUILDDIR      = .
 SOURCEDIR     = ../src/pylorax

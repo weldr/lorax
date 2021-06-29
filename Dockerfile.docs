@@ -1,0 +1,9 @@
+FROM centos:8
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+COPY ./test-packages .
+RUN dnf -y install $(cat ./test-packages) && touch /.in-container
+RUN pip3 install pocketlint Sphinx sphinx-rtd-theme sphinx-argparse
+RUN useradd weldr
+VOLUME /lorax-ro
+VOLUME /test-results
+WORKDIR /lorax-ro
