@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.59
+Version:        28.14.60
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -258,6 +258,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Jun 29 2021 Brian C. Lane <bcl@redhat.com> 28.14.60-1
+- New lorax documentation - 28.14.59 (bcl)
+  Related: rhbz#1955355
+- docs: Add missing mkksiso.1 manpage (bcl)
+  Related: rhbz#1955355
+- docs: Fix reference in composer-cli.rst (bcl)
+  Related: rhbz#1915361
+- Makefile: Use user-mode podman and fix docs-in-docker target (bcl)
+  Related: rhbz#1955355
+
 * Tue Jun 29 2021 Brian C. Lane <bcl@redhat.com> 28.14.59-1
 - Backport mkksiso to RHEL 8.5.0 (bcl)
   Resolves: rhbz#1955355
