@@ -34,8 +34,8 @@ description, add a package or module to it. Send it back to the server by
 running ``composer-cli blueprints push http-server.toml``. You can verify that it was
 saved by viewing the changelog - ``composer-cli blueprints changes http-server``.
 
-The full blueprint documentation `is
-here<https://www.osbuild.org/guides/blueprint-reference/blueprint-reference.html>`_.
+The full blueprint documentation `is here
+<https://www.osbuild.org/guides/blueprint-reference/blueprint-reference.html>`_.
 
 Build an image
 ----------------
