@@ -1,8 +1,5 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "Apr 27, 2020" "28.14.42" "Lorax"
-.SH NAME
-lorax \- Lorax Documentation
 .
 .nr rst2man-indent-level 0
 .
@@ -30,6 +27,9 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
+.TH "LORAX" "1" "Jun 29, 2021" "28.14.59" "Lorax"
+.SH NAME
+lorax \- Lorax Documentation
 .INDENT 0.0
 .TP
 .B Authors
@@ -67,7 +67,8 @@ usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY]
              [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify]
              [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
              [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE]
-             [\-\-noverifyssl] [\-\-skip\-branding] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
+             [\-\-noverifyssl] [\-\-skip\-branding] [\-\-squashfs\-only]
+             [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -76,33 +77,33 @@ usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY]
 .SS Positional Arguments
 .INDENT 0.0
 .TP
-.BOUTPUTDIR
+.B OUTPUTDIR
 Output directory
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
 .TP
-.B\-V
+.B \-V
 show program\(aqs version number and exit
 .UNINDENT
 .SS required arguments
 .INDENT 0.0
 .TP
-.B\-p, \-\-product
+.B \-p, \-\-product
 product name
 .TP
-.B\-v, \-\-version
+.B \-v, \-\-version
 version identifier
 .TP
-.B\-r, \-\-release
+.B \-r, \-\-release
 release information
 .TP
-.B\-s, \-\-source
+.B \-s, \-\-source
 source repository (may be listed multiple times)
 .sp
 Default: []
 .TP
-.B\-\-repo
+.B \-\-repo
 source dnf repository file
 .sp
 Default: []
@@ -110,139 +111,144 @@ Default: []
 .SS Named Arguments
 .INDENT 0.0
 .TP
-.B\-m, \-\-mirrorlist
+.B \-m, \-\-mirrorlist
 mirrorlist repository (may be listed multiple times)
 .sp
 Default: []
 .TP
-.B\-t, \-\-variant
+.B \-t, \-\-variant
 variant name
 .sp
 Default: ""
 .TP
-.B\-b, \-\-bugurl
+.B \-b, \-\-bugurl
 bug reporting URL for the product
 .sp
 Default: "your distribution provided bug reporting tool"
 .TP
-.B\-\-isfinal
+.B \-\-isfinal
 Default: False
 .TP
-.B\-c, \-\-config
+.B \-c, \-\-config
 config file
 .sp
 Default: "/etc/lorax/lorax.conf"
 .TP
-.B\-\-proxy
+.B \-\-proxy
 repo proxy url:port
 .TP
-.B\-i, \-\-installpkgs
+.B \-i, \-\-installpkgs
 package glob to install before runtime\-install.tmpl runs. (may be listed multiple times)
 .sp
 Default: []
 .TP
-.B\-e, \-\-excludepkgs
+.B \-e, \-\-excludepkgs
 package glob to remove before runtime\-install.tmpl runs. (may be listed multiple times)
 .sp
 Default: []
 .TP
-.B\-\-buildarch
+.B \-\-buildarch
 build architecture
 .TP
-.B\-\-volid
+.B \-\-volid
 volume id
 .TP
-.B\-\-macboot
+.B \-\-macboot
 Make the iso bootable on UEFI based Mac systems
 .sp
 Default: True
 .TP
-.B\-\-nomacboot
+.B \-\-nomacboot
 Do not create a Mac bootable iso
 .sp
 Default: False
 .TP
-.B\-\-noupgrade
+.B \-\-noupgrade
 Default: True
 .TP
-.B\-\-logfile
+.B \-\-logfile
 Path to logfile
 .sp
 Default: ./lorax.log
 .TP
-.B\-\-tmp
+.B \-\-tmp
 Top level temporary directory
 .sp
 Default: "/var/tmp/lorax"
 .TP
-.B\-\-cachedir
+.B \-\-cachedir
 DNF cache directory. Default is a temporary dir.
 .TP
-.B\-\-workdir
+.B \-\-workdir
 Work directory, overrides \-\-tmp. Default is a temporary dir under /var/tmp/lorax
 .TP
-.B\-\-force
+.B \-\-force
 Run even when the destination directory exists
 .sp
 Default: False
 .TP
-.B\-\-add\-template
+.B \-\-add\-template
 Additional template for runtime image
 .sp
 Default: []
 .TP
-.B\-\-add\-template\-var
+.B \-\-add\-template\-var
 Set variable for runtime image template
 .sp
 Default: []
 .TP
-.B\-\-add\-arch\-template
+.B \-\-add\-arch\-template
 Additional template for architecture\-specific image
 .sp
 Default: []
 .TP
-.B\-\-add\-arch\-template\-var
+.B \-\-add\-arch\-template\-var
 Set variable for architecture\-specific image
 .sp
 Default: []
 .TP
-.B\-\-noverify
+.B \-\-noverify
 Do not verify the install root
 .sp
 Default: True
 .TP
-.B\-\-sharedir
+.B \-\-sharedir
 Directory containing all the templates. Overrides config file sharedir
 .TP
-.B\-\-enablerepo
+.B \-\-enablerepo
 Names of repos to enable
 .sp
 Default: []
 .TP
-.B\-\-disablerepo
+.B \-\-disablerepo
 Names of repos to disable
 .sp
 Default: []
 .TP
-.B\-\-rootfs\-size
+.B \-\-rootfs\-size
 Size of root filesystem in GiB. Defaults to 3.
 .sp
 Default: 3
 .TP
-.B\-\-noverifyssl
+.B \-\-noverifyssl
 Do not verify SSL certificates
 .sp
 Default: False
 .TP
-.B\-\-skip\-branding
+.B \-\-skip\-branding
 Disable automatic branding package selection. Use \-\-installpkgs to add custom branding.
+.sp
+Default: False
+.TP
+.B \-\-squashfs\-only
+Use a plain squashfs filesystem for the runtime.
 .sp
 Default: False
 .UNINDENT
 .SS dracut arguments
 .INDENT 0.0
 .TP
-.B\-\-dracut\-arg
+.B \-\-dracut\-arg
 Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the default. (default: )
 .UNINDENT
 .SH QUICKSTART

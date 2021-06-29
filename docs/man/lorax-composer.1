@@ -1,8 +1,5 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX-COMPOSER" "1" "Apr 27, 2020" "28.14.42" "Lorax"
-.SH NAME
-lorax-composer \- Lorax Composer Documentation
 .
 .nr rst2man-indent-level 0
 .
@@ -30,13 +27,16 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
+.TH "LORAX-COMPOSER" "1" "Jun 29, 2021" "28.14.59" "Lorax"
+.SH NAME
+lorax-composer \- Lorax Composer Documentation
 .INDENT 0.0
 .TP
 .B Authors
 Brian C. Lane <\fI\%bcl@redhat.com\fP>
 .UNINDENT
 .sp
-\fBlorax\-composer\fP is an API server that allows you to build disk images using
+\fBlorax\-composer\fP is a WELDR API server that allows you to build disk images using
 \fI\%Blueprints\fP to describe the package versions to be installed into the image.
 It is compatible with the Weldr project\(aqs bdcs\-api REST protocol. More
 information on Weldr can be found \fI\%on the Weldr blog\fP\&.
@@ -44,6 +44,17 @@ information on Weldr can be found \fI\%on the Weldr blog\fP\&.
 Behind the scenes it uses \fI\%livemedia\-creator\fP and
 \fI\%Anaconda\fP to handle the
 installation and configuration of the images.
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+\fBlorax\-composer\fP is now deprecated. It is being replaced by the
+\fBosbuild\-composer\fP WELDR API server which implements more features (eg.
+ostree, image uploads, etc.) You can still use \fBcomposer\-cli\fP and
+\fBcockpit\-composer\fP with \fBosbuild\-composer\fP\&. See the documentation or
+the \fI\%osbuild website\fP for more information.
+.UNINDENT
+.UNINDENT
 .SH IMPORTANT THINGS TO NOTE
 .INDENT 0.0
 .IP \(bu 2
@@ -128,62 +139,62 @@ usage: lorax\-composer [\-h] [\-\-socket SOCKET] [\-\-user USER] [\-\-group GROU
 .SS Positional Arguments
 .INDENT 0.0
 .TP
-.BBLUEPRINTS
+.B BLUEPRINTS
 Path to the blueprints
 .UNINDENT
 .SS Named Arguments
 .INDENT 0.0
 .TP
-.B\-\-socket
+.B \-\-socket
 Path to the socket file to listen on
 .sp
 Default: "/run/weldr/api.socket"
 .TP
-.B\-\-user
+.B \-\-user
 User to use for reduced permissions
 .sp
 Default: "root"
 .TP
-.B\-\-group
+.B \-\-group
 Group to set ownership of the socket to
 .sp
 Default: "weldr"
 .TP
-.B\-\-log
+.B \-\-log
 Path to logfile (/var/log/lorax\-composer/composer.log)
 .sp
 Default: "/var/log/lorax\-composer/composer.log"
 .TP
-.B\-\-mockfiles
+.B \-\-mockfiles
 Path to JSON files used for /api/mock/ paths (/var/tmp/bdcs\-mockfiles/)
 .sp
 Default: "/var/tmp/bdcs\-mockfiles/"
 .TP
-.B\-\-sharedir
+.B \-\-sharedir
 Directory containing all the templates. Overrides config file sharedir
 .TP
-.B\-V
+.B \-V
 show program\(aqs version number and exit
 .sp
 Default: False
 .TP
-.B\-c, \-\-config
+.B \-c, \-\-config
 Path to lorax\-composer configuration file.
 .sp
 Default: "/etc/lorax/composer.conf"
 .TP
-.B\-\-releasever
+.B \-\-releasever
 Release version to use for $releasever in dnf repository urls
 .TP
-.B\-\-tmp
+.B \-\-tmp
 Top level temporary directory
 .sp
 Default: "/var/tmp"
 .TP
-.B\-\-proxy
+.B \-\-proxy
 Set proxy for DNF, overrides configuration file setting.
 .TP
-.B\-\-no\-system\-repos
+.B \-\-no\-system\-repos
 Do not copy over system repos from /etc/yum.repos.d/ at startup
 .sp
 Default: False

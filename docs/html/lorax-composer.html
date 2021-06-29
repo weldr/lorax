@@ -1,42 +1,49 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>lorax-composer &mdash; Lorax 28.14.42 documentation</title>
-  
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
+  <title>lorax-composer &mdash; Lorax 28.14.59 documentation</title>
   
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="composer-cli" href="composer-cli.html" />
-    <link rel="prev" title="livemedia-creator" href="livemedia-creator.html" /> 
+    <link rel="prev" title="mkksiso" href="mkksiso.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -60,7 +67,7 @@
             
             
               <div class="version">
-                28.14.42
+                28.14.59
               </div>
             
           
@@ -77,6 +84,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mkksiso.html">mkksiso</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lorax-composer</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#important-things-to-note">Important Things To Note</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
@@ -137,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -171,18 +181,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>lorax-composer</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/lorax-composer.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -196,21 +208,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="lorax-composer">
+  <section id="lorax-composer">
 <h1>lorax-composer<a class="headerlink" href="#lorax-composer" title="Permalink to this headline">¶</a></h1>
 <dl class="field-list simple">
 <dt class="field-odd">Authors</dt>
 <dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
 </dd>
 </dl>
-<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is an API server that allows you to build disk images using
+<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is a WELDR API server that allows you to build disk images using
 <a class="reference internal" href="#blueprints">Blueprints</a> to describe the package versions to be installed into the image.
 It is compatible with the Weldr project’s bdcs-api REST protocol. More
 information on Weldr can be found <a class="reference external" href="http://www.weldr.io">on the Weldr blog</a>.</p>
 <p>Behind the scenes it uses <a class="reference external" href="livemedia-creator.html">livemedia-creator</a> and
 <a class="reference external" href="https://anaconda-installer.readthedocs.io/en/latest/">Anaconda</a> to handle the
 installation and configuration of the images.</p>
-<div class="section" id="important-things-to-note">
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is now deprecated. It is being replaced by the
+<code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code> WELDR API server which implements more features (eg.
+ostree, image uploads, etc.) You can still use <code class="docutils literal notranslate"><span class="pre">composer-cli</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cockpit-composer</span></code> with <code class="docutils literal notranslate"><span class="pre">osbuild-composer</span></code>. See the documentation or
+the <a class="reference external" href="https://www.osbuild.org/">osbuild website</a> for more information.</p>
+</div>
+<section id="important-things-to-note">
 <h2>Important Things To Note<a class="headerlink" href="#important-things-to-note" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>As of version 30.7 SELinux can be set to Enforcing. The current state is
@@ -221,8 +241,8 @@ use one of the <a class="reference internal" href="#customizations">Customizatio
 package that creates a user, or use something like <cite>cloud-init</cite> to setup access at
 boot time.</p></li>
 </ul>
-</div>
-<div class="section" id="installation">
+</section>
+<section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>The best way to install <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is to use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span>
 <span class="pre">lorax-composer</span> <span class="pre">composer-cli</span></code>, this will setup the weldr user and install the
@@ -231,8 +251,8 @@ systemd socket activation service. You will then need to enable it with <code cl
 <span class="pre">lorax-composer.socket</span></code>. This will leave the server off until the first request
 is made. Systemd will then launch the server and it will remain running until
 the system is rebooted.</p>
-</div>
-<div class="section" id="quickstart">
+</section>
+<section id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
 <li><p>Create a <code class="docutils literal notranslate"><span class="pre">weldr</span></code> user and group by running <code class="docutils literal notranslate"><span class="pre">useradd</span> <span class="pre">weldr</span></code></p></li>
@@ -251,13 +271,13 @@ be created, and all the blueprints created with the <code class="docutils litera
 route will be stored.  If there are blueprint <code class="docutils literal notranslate"><span class="pre">.toml</span></code> files in the top level
 of the directory they will be imported into the blueprint git storage when
 <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> starts.</p>
-</div>
-<div class="section" id="logs">
+</section>
+<section id="logs">
 <h2>Logs<a class="headerlink" href="#logs" title="Permalink to this headline">¶</a></h2>
 <p>Logs are stored under <code class="docutils literal notranslate"><span class="pre">/var/log/lorax-composer/</span></code> and include all console
 messages as well as extra debugging info and API requests.</p>
-</div>
-<div class="section" id="security">
+</section>
+<section id="security">
 <h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
 <p>Some security related issues that you should be aware of before running <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>:</p>
 <ul class="simple">
@@ -268,8 +288,8 @@ messages as well as extra debugging info and API requests.</p>
 inject commands into a blueprint that would result in the kickstart executing
 arbitrary code on the host.  Only authorized users should be allowed to build
 images using <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>.</p>
-</div>
-<div class="section" id="lorax-composer-cmdline-arguments">
+</section>
+<section id="lorax-composer-cmdline-arguments">
 <h2>lorax-composer cmdline arguments<a class="headerlink" href="#lorax-composer-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
 <p><p>Lorax Composer API Server</p>
 </p>
@@ -281,15 +301,15 @@ images using <code class="docutils literal notranslate"><span class="pre">lorax-
                       <span class="n">BLUEPRINTS</span>
 </pre></div>
 </div>
-<div class="section" id="Positional Arguments">
+<section id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>BLUEPRINTS</kbd></dt>
 <dd><p>Path to the blueprints</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="Named Arguments">
+</section>
+<section id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--socket</kbd></dt>
@@ -338,9 +358,9 @@ images using <code class="docutils literal notranslate"><span class="pre">lorax-
 <p>Default: False</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="how-it-works">
+</section>
+</section>
+<section id="how-it-works">
 <h2>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
 <p>The server runs as root, and as <code class="docutils literal notranslate"><span class="pre">weldr</span></code>. Communication with it is via a unix
 domain socket (<code class="docutils literal notranslate"><span class="pre">/run/weldr/api.socket</span></code> by default). The directory and socket
@@ -353,14 +373,14 @@ cmdline by passing it the <code class="docutils literal notranslate"><span class
 <p>It will then drop root privileges for the API thread and run as the <code class="docutils literal notranslate"><span class="pre">weldr</span></code>
 user. The queue and compose thread still runs as root because it needs to be
 able to mount/umount files and run Anaconda.</p>
-</div>
-<div class="section" id="composing-images">
+</section>
+<section id="composing-images">
 <h2>Composing Images<a class="headerlink" href="#composing-images" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference external" href="https://github.com/weldr/welder-web/">welder-web</a> GUI project can be used to construct
 blueprints and create composes using a web browser.</p>
 <p>Or use the command line with <a class="reference external" href="composer-cli.html">composer-cli</a>.</p>
-</div>
-<div class="section" id="blueprints">
+</section>
+<section id="blueprints">
 <h2>Blueprints<a class="headerlink" href="#blueprints" title="Permalink to this headline">¶</a></h2>
 <p>Blueprints are simple text files in <a class="reference external" href="https://github.com/toml-lang/toml">TOML</a> format that describe
 which packages, and what versions, to install into the image. They can also define a limited set
@@ -385,7 +405,7 @@ automatically bump the PATCH level of the <code class="docutils literal notransl
 doesn’t match it will be used as is. eg. Uploading a blueprint with <code class="docutils literal notranslate"><span class="pre">version</span></code>
 set to <code class="docutils literal notranslate"><span class="pre">0.1.0</span></code> when the existing blueprint <code class="docutils literal notranslate"><span class="pre">version</span></code> is <code class="docutils literal notranslate"><span class="pre">0.0.1</span></code> will
 result in the new blueprint being stored as <code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">0.1.0</span></code>.</p>
-<div class="section" id="packages-and-modules">
+<section id="packages-and-modules">
 <h3>[[packages]] and [[modules]]<a class="headerlink" href="#packages-and-modules" title="Permalink to this headline">¶</a></h3>
 <p>These entries describe the package names and matching version glob to be installed into the image.</p>
 <p>The names must match the names exactly, and the versions can be an exact match
@@ -394,8 +414,8 @@ character matching.</p>
 <p>NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
 that is planned for a future release. And currently there are no differences
 between <code class="docutils literal notranslate"><span class="pre">packages</span></code> and <code class="docutils literal notranslate"><span class="pre">modules</span></code> in <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>.</p>
-</div>
-<div class="section" id="groups">
+</section>
+<section id="groups">
 <h3>[[groups]]<a class="headerlink" href="#groups" title="Permalink to this headline">¶</a></h3>
 <p>These entries describe a group of packages to be installed into the image.  Package groups are
 defined in the repository metadata.  Each group has a descriptive name used primarily for display
@@ -404,8 +424,8 @@ way of listing a group.</p>
 <p>Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
 For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
 for selecting optional packages.</p>
-</div>
-<div class="section" id="customizations">
+</section>
+<section id="customizations">
 <h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">[customizations]</span></code> section can be used to configure the hostname of the final image. eg.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="p">]</span>
@@ -413,7 +433,7 @@ for selecting optional packages.</p>
 </pre></div>
 </div>
 <p>This is optional and may be left out to use the defaults.</p>
-<div class="section" id="customizations-kernel">
+<section id="customizations-kernel">
 <h4>[customizations.kernel]<a class="headerlink" href="#customizations-kernel" title="Permalink to this headline">¶</a></h4>
 <p>This allows you to append arguments to the bootloader’s kernel commandline. This will not have any
 effect on <code class="docutils literal notranslate"><span class="pre">tar</span></code> or <code class="docutils literal notranslate"><span class="pre">ext4-filesystem</span></code> images since they do not include a bootloader.</p>
@@ -422,8 +442,8 @@ effect on <code class="docutils literal notranslate"><span class="pre">tar</span
 <span class="n">append</span> <span class="o">=</span> <span class="s2">&quot;nosmt=force&quot;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="customizations-sshkey">
+</section>
+<section id="customizations-sshkey">
 <h4>[[customizations.sshkey]]<a class="headerlink" href="#customizations-sshkey" title="Permalink to this headline">¶</a></h4>
 <p>Set an existing user’s ssh key in the final image:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">customizations</span><span class="o">.</span><span class="n">sshkey</span><span class="p">]]</span>
@@ -432,8 +452,8 @@ effect on <code class="docutils literal notranslate"><span class="pre">tar</span
 </pre></div>
 </div>
 <p>The key will be added to the user’s authorized_keys file.</p>
-</div>
-<div class="section" id="customizations-user">
+</section>
+<section id="customizations-user">
 <h4>[[customizations.user]]<a class="headerlink" href="#customizations-user" title="Permalink to this headline">¶</a></h4>
 <p>Add a user to the image, and/or set their ssh key.
 All fields for this section are optional except for the <code class="docutils literal notranslate"><span class="pre">name</span></code>, here is a complete example:</p>
@@ -451,8 +471,8 @@ All fields for this section are optional except for the <code class="docutils li
 </div>
 <p>If the password starts with <code class="docutils literal notranslate"><span class="pre">$6$</span></code>, <code class="docutils literal notranslate"><span class="pre">$5$</span></code>, or <code class="docutils literal notranslate"><span class="pre">$2b$</span></code> it will be stored as
 an encrypted password. Otherwise it will be treated as a plain text password.</p>
-</div>
-<div class="section" id="customizations-group">
+</section>
+<section id="customizations-group">
 <h4>[[customizations.group]]<a class="headerlink" href="#customizations-group" title="Permalink to this headline">¶</a></h4>
 <p>Add a group to the image. <code class="docutils literal notranslate"><span class="pre">name</span></code> is required and <code class="docutils literal notranslate"><span class="pre">gid</span></code> is optional:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">customizations</span><span class="o">.</span><span class="n">group</span><span class="p">]]</span>
@@ -460,8 +480,8 @@ an encrypted password. Otherwise it will be treated as a plain text password.</p
 <span class="n">gid</span> <span class="o">=</span> <span class="mi">1130</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="customizations-timezone">
+</section>
+<section id="customizations-timezone">
 <h4>[customizations.timezone]<a class="headerlink" href="#customizations-timezone" title="Permalink to this headline">¶</a></h4>
 <p>Customizing the timezone and the NTP servers to use for the system:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">timezone</span><span class="p">]</span>
@@ -475,8 +495,8 @@ optional and will default to using the distribution defaults which are fine for 
 <p>In some image types there are already NTP servers setup, eg. Google cloud image, and they
 cannot be overridden because they are required to boot in the selected environment. But the
 timezone will be updated to the one selected in the blueprint.</p>
-</div>
-<div class="section" id="customizations-locale">
+</section>
+<section id="customizations-locale">
 <h4>[customizations.locale]<a class="headerlink" href="#customizations-locale" title="Permalink to this headline">¶</a></h4>
 <p>Customize the locale settings for the system:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">locale</span><span class="p">]</span>
@@ -491,8 +511,8 @@ the command line.</p>
 <p>Multiple languages can be added. The first one becomes the
 primary, and the others are added as secondary. One or the other of <code class="docutils literal notranslate"><span class="pre">languages</span></code>
 or <code class="docutils literal notranslate"><span class="pre">keyboard</span></code> must be included (or both) in the section.</p>
-</div>
-<div class="section" id="customizations-firewall">
+</section>
+<section id="customizations-firewall">
 <h4>[customizations.firewall]<a class="headerlink" href="#customizations-firewall" title="Permalink to this headline">¶</a></h4>
 <p>By default the firewall blocks all access except for services that enable their ports explicitly,
 like <code class="docutils literal notranslate"><span class="pre">sshd</span></code>. This command can be used to open other ports or services. Ports are configured using
@@ -516,8 +536,8 @@ in a <code class="docutils literal notranslate"><span class="pre">customizations
 only want the default firewall setup this section can be omitted from the blueprint.</p>
 <p>NOTE: The <code class="docutils literal notranslate"><span class="pre">Google</span></code> and <code class="docutils literal notranslate"><span class="pre">OpenStack</span></code> templates explicitly disable the firewall for their environment.
 This cannot be overridden by the blueprint.</p>
-</div>
-<div class="section" id="customizations-services">
+</section>
+<section id="customizations-services">
 <h4>[customizations.services]<a class="headerlink" href="#customizations-services" title="Permalink to this headline">¶</a></h4>
 <p>This section can be used to control which services are enabled at boot time.
 Some image types already have services enabled or disabled in order for the
@@ -532,9 +552,9 @@ file accepted by <code class="docutils literal notranslate"><span class="pre">sy
 <span class="n">disabled</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;postfix&quot;</span><span class="p">,</span> <span class="s2">&quot;telnetd&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="repos-git">
+</section>
+</section>
+<section id="repos-git">
 <h3>[[repos.git]]<a class="headerlink" href="#repos-git" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">[[repos.git]]</span></code> entries are used to add files from a <cite>git repository&lt;https://git-scm.com/&gt;</cite>
 repository to the created image. The repository is cloned, the specified <code class="docutils literal notranslate"><span class="pre">ref</span></code> is checked out
@@ -568,34 +588,34 @@ of a branch set it to <code class="docutils literal notranslate"><span class="pr
 <p>Note that the repository is cloned in full each time a build is started, so pointing to a
 repository with a large amount of history may take a while to clone and use a significant
 amount of disk space. The clone is temporary and is removed once the rpm is created.</p>
-</div>
-</div>
-<div class="section" id="adding-output-types">
+</section>
+</section>
+<section id="adding-output-types">
 <h2>Adding Output Types<a class="headerlink" href="#adding-output-types" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">livemedia-creator</span></code> supports a large number of output types, and only some of
 these are currently available via <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>. To add a new output type to
 lorax-composer a kickstart file needs to be added to <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code>. The
 name of the kickstart is what will be used by the <code class="docutils literal notranslate"><span class="pre">/compose/types</span></code> route, and the
 <code class="docutils literal notranslate"><span class="pre">compose_type</span></code> field of the POST to start a compose. It also needs to have
-code added to the <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code> function. The
+code added to the <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a> function. The
 <code class="docutils literal notranslate"><span class="pre">_MAP</span></code> entry in this function defines what lorax-composer will pass to
 <a class="reference internal" href="pylorax.html#pylorax.installer.novirt_install" title="pylorax.installer.novirt_install"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.installer.novirt_install()</span></code></a> when it runs the compose.  When the
 compose is finished the output files need to be copied out of the build
 directory (<code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/results/&lt;UUID&gt;/compose/</span></code>),
-<code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> handles this for each type.
+<a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> handles this for each type.
 You should move them instead of copying to save space.</p>
 <p>If the new output type does not have support in livemedia-creator it should be
 added there first. This will make the output available to the widest number of
 users.</p>
-<div class="section" id="example-add-partitioned-disk-support">
+<section id="example-add-partitioned-disk-support">
 <h3>Example: Add partitioned disk support<a class="headerlink" href="#example-add-partitioned-disk-support" title="Permalink to this headline">¶</a></h3>
 <p>Partitioned disk support is something that livemedia-creator already supports
 via the <code class="docutils literal notranslate"><span class="pre">--make-disk</span></code> cmdline argument. To add this to lorax-composer it
 needs 3 things:</p>
 <ul class="simple">
 <li><p>A <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> file in <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code></p></li>
-<li><p>A new entry in the _MAP in <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></p></li>
-<li><p>Add a bit of code to <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> to move the disk image from
+<li><p>A new entry in the _MAP in <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a></p></li>
+<li><p>Add a bit of code to <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> to move the disk image from
 the compose directory to the results directory.</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> is pretty similar to the example minimal kickstart
@@ -612,9 +632,9 @@ the results directory, or it could do some post-processing on it. The end of
 the function should always clean up the <code class="docutils literal notranslate"><span class="pre">./compose/</span></code> directory, removing any
 unneeded extra files. This is especially true for the <code class="docutils literal notranslate"><span class="pre">live-iso</span></code> since it produces
 the contents of the iso as well as the boot.iso itself.</p>
-</div>
-</div>
-<div class="section" id="package-sources">
+</section>
+</section>
+<section id="package-sources">
 <h2>Package Sources<a class="headerlink" href="#package-sources" title="Permalink to this headline">¶</a></h2>
 <p>By default lorax-composer uses the host’s configured repositories. It copies
 the <code class="docutils literal notranslate"><span class="pre">*.repo</span></code> files from <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code> into
@@ -657,7 +677,7 @@ it returns JSON but it can also return TOML if <code class="docutils literal not
 <p>The configured sources are used for all blueprint depsolve operations, and for composing images.
 When adding additional sources you must make sure that the packages in the source do not
 conflict with any other package sources, otherwise depsolving will fail.</p>
-<div class="section" id="dvd-iso-package-source">
+<section id="dvd-iso-package-source">
 <h3>DVD ISO Package Source<a class="headerlink" href="#dvd-iso-package-source" title="Permalink to this headline">¶</a></h3>
 <p>In some situations the system may want to <em>only</em> use a DVD iso as the package
 source, not the repos from the network. <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> and <code class="docutils literal notranslate"><span class="pre">anaconda</span></code>
@@ -686,38 +706,38 @@ type will not be available.</p></li>
 mounting the iso and creating a source file to point to it as described in the
 <a class="reference internal" href="#package-sources">Package Sources</a> documentation.  In that case there is no need to remove the other
 sources from <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code> or clear the cached repos.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="composer-cli.html" class="btn btn-neutral float-right" title="composer-cli" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="livemedia-creator.html" class="btn btn-neutral float-left" title="livemedia-creator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="composer-cli.html" class="btn btn-neutral float-right" title="composer-cli" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mkksiso.html" class="btn btn-neutral float-left" title="mkksiso" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2019, Red Hat, Inc.
+        &#169; Copyright 2018-2019, Red Hat, Inc..
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -725,7 +745,6 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
