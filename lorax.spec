@@ -277,9 +277,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
   Resolves: rhbz#1929381
 - tests: Override rhel-8-beta.json repositories for osbuild-composer (atodorov)
 - tests: Remove systemctl for osbuild-composer (atodorov)
-  Related: rhbz#1916684
 - tests: Start osbuild-composer.socket (bcl)
-  Resolves: rhbz#1916684
 - test: Fix vm.install for non-LVM cloud images (martin)
 
 * Fri Jan 15 2021 Brian C. Lane <bcl@redhat.com> - 28.14.57-2
