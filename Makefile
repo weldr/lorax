@@ -106,6 +106,12 @@ local:
 	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
+local-srpm: local $(PKGNAME).spec
+	rpmbuild -bs \
+	  --define "_sourcedir $(CURDIR)" \
+	  --define "_srcrpmdir $(CURDIR)" \
+	  lorax.spec
+
 test-in-copy:
 	rsync -a --exclude=.git /lorax-ro/ /lorax/
 	make -C /lorax/ $(RUN_TESTS)
