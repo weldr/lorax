@@ -38,6 +38,7 @@ install: all
 	mkdir -p $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/lorax.1 $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
+	install -m 644 docs/man/mkksiso.1 $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/lorax-composer.1 $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/composer-cli.1 $(DESTDIR)/$(mandir)/man1
 	mkdir -p $(DESTDIR)/etc/bash_completion.d

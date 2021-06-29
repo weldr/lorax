@@ -1,0 +1,219 @@
+.\" Man page generated from reStructuredText.
+.
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.TH "MKKSISO" "1" "Jun 29, 2021" "28.14.59" "Lorax"
+.SH NAME
+mkksiso \- Make Kickstart ISO Utility Documentation
+.INDENT 0.0
+.TP
+.B Authors
+Brian C. Lane <\fI\%bcl@redhat.com\fP>
+.UNINDENT
+.sp
+\fBmkksiso\fP is a tool for creating kickstart boot isos. In it\(aqs simplest form
+you can add a kickstart to a boot.iso and the kickstart will be executed when
+the iso is booted. If the original iso was created with EFI and Mac support the
+kickstart boot.iso will include this support as well.
+.sp
+\fBmkksiso\fP needs to be run as root, it depends on mounting the original iso
+and you need to be root to be able to do that.
+.SH MKKSISO CMDLINE ARGUMENTS
+.sp
+Add a kickstart and files to an iso
+.INDENT 0.0
+.INDENT 3.5
+\fBusage: mkksiso [\-h] [\-a ADD_PATHS] [\-c CMDLINE] [\-\-debug] ks input_iso output_iso\fP
+.UNINDENT
+.UNINDENT
+.SS Optional arguments
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.TP
+.B  \-h\fP,\fB  \-\-help
+show this help message and exit
+.TP
+.BI \-a \ ADD_PATHS\fR,\fB \ \-\-add \ ADD_PATHS
+File or directory to add to ISO (may be used multiple
+times)
+.TP
+.BI \-c \ CMDLINE\fR,\fB \ \-\-cmdline \ CMDLINE
+Arguments to add to kernel cmdline
+.TP
+.B  \-\-debug
+print debugging info
+.TP
+.BI \-V \ VOLID\fR,\fB \ \-\-volid \ VOLID
+Set the ISO volume id, defaults to input\(aqs
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Positional arguments
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.TP
+.B ks
+Kickstart to add to the ISO
+.TP
+.B input_iso
+ISO to modify
+.TP
+.B output_iso
+Full pathname of iso to be created
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SH CREATE A KICKSTART BOOT.ISO OR DVD
+.sp
+Create a kickstart like you normally would, kickstart documentation can be
+\fI\%found here\fP, including the
+\fBurl\fP and \fBrepo\fP commands.  If you are creating a DVD and only need the
+content on the DVD you can use the \fBcdrom\fP command to install without a
+network connection. Then run \fBmkksiso\fP like this:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkksiso /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+This will create a new iso with the kickstart in the root directory, and the
+kernel cmdline will have \fBinst.ks=...\fP added to it so that it will be
+executed when the iso is booted (be careful not to boot on a system you don\(aqt
+want to wipe out! There will be no prompting).
+.sp
+By default the volume id of the iso is preserved. You can set a custom volid
+by passing \fB\-V\fP and the string to set. The kernel cmdline will be changes, and the iso will have th custom volume id.
+eg.:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkksiso \-V "Test Only" /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH ADDING PACKAGE REPOS TO A BOOT.ISO
+.sp
+You can add repo directories to the iso using \fB\-\-add /PATH/TO/REPO/\fP, make
+sure it contains the \fBrepodata\fP directory by running \fBcreaterepo_c\fP on it
+first. In the kickstart you can refer to the directories (and files) on the iso
+using \fBfile:///run/install/repo/DIRECTORY/\fP\&. You can then use these repos in
+the kickstart like this:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+repo \-\-name=extra\-repo \-\-baseurl=file:///run/install/repo/extra\-repo/
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Run \fBmkksiso\fP like so:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkksiso \-\-add /PATH/TO/REPO/ /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH CREATE A LIVEIMG BOOT.ISO
+.sp
+You can use the kickstart \fI\%liveimg command\fP,
+to install a pre\-generated disk image or tar to the system the iso is booting
+on.
+.sp
+Create a disk image or tar with \fBosbuild\-composer\fP or \fBlivemedia\-creator\fP,
+make sure the image includes tools expected by \fBanaconda\fP, as well as the
+kernel and bootloader support.  In \fBosbuild\-composer\fP use the \fBtar\fP image
+type and make sure to include the \fBkernel\fP, \fBgrub2\fP, and \fBgrub2\-tools\fP
+packages.  If you plan to install it to a UEFI machine make sure to include
+\fBgrub2\-efi\fP and \fBefibootmgr\fP in the blueprint.
+.sp
+Add the \fBroot.tar.xz\fP file to the iso using \fB\-\-add /PATH/TO/ROOT.TAR.XZ\fP,
+and in the kickstart reference it with the \fBliveimg\fP command like this:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+liveimg \-\-url=file:///run/install/repo/root.tar.xz
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+It is also a good idea to use the \fB\-\-checksum\fP argument to \fBliveimg\fP  to be
+sure the file hasn\(aqt been corrupted:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkksiso \-\-add /PATH/TO/root.tar.xz /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+When this iso is booted it will execute the kickstart and install the liveimg
+contents to the system without any prompting.
+.SH HOW IT WORKS
+.sp
+\fBmkksiso\fP first examines the system to make sure the tools it needs are installed,
+it will work with \fBxorrisofs\fP or \fBmkisofs\fP installed. It mounts the source iso,
+and copies the directories that need to be modified to a temporary directory.
+.sp
+It then modifies the boot configuration files to include the \fBinst.ks\fP command,
+and checks to see if the original iso supports EFI. If it does it regenerates the
+EFI boot images with the new configuration, and then runs the available iso creation
+tool to add the new files and directories to the new iso. If the architecture is
+\fBx86_64\fP it will also make sure the iso can be booted as an iso or from a USB
+stick (hybridiso).
+.sp
+The last step is to update the iso checksums so that booting with test enabled
+will pass.
+.SH AUTHOR
+Weldr Team
+.SH COPYRIGHT
+2018-2019, Red Hat, Inc.
+.\" Generated by docutils manpage writer.
+.
