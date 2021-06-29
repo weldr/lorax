@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.58
+Version:        28.14.59
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -258,6 +258,20 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Jun 29 2021 Brian C. Lane <bcl@redhat.com> 28.14.59-1
+- Backport mkksiso to RHEL 8.5.0 (bcl)
+  Resolves: rhbz#1955355
+- Move manpages into the correct subpackages (bcl)
+  Resolves: rhbz#1928962
+- composer-cli: Update documentation URLs (bcl)
+  Resolves: rhbz#1915361
+- Use wildcard for grub2 modules in livemedia.ks example (bcl)
+  Related: rhbz#1973530
+- runtime-install: Install ipcalc (bcl)
+  Related: rhbz#1958314
+- test: Add new osbuild-composer expected types (martin) (martin)
+- test: Fix URL to bots testmap (martin) (martin)
+
 * Thu Mar 04 2021 Brian C. Lane <bcl@redhat.com> 28.14.58-1
 - composer-cli: Add support for start-ostree --url URL (bcl)
   Resolves: rhbz#1929381
