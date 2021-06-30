@@ -129,6 +129,7 @@ test-in-podman:
 docs-in-docker: docs-in-podman
 
 docs-in-podman:
+	$(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
 	$(DOCKER) run -it --rm -v `pwd`:/lorax-ro:ro \
 		-v `pwd`/docs/:/lorax-ro/docs/ \
 		--env LORAX_VERSION=$(DOCS_VERSION) \
