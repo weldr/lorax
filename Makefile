@@ -79,7 +79,7 @@ docs:
 
 # This is needed to reset the ownership of the new docs files after they are created in a container
 set-docs-owner:
-	chown -R $(LOCAL_UID):$(LOCAL_GID) docs/
+	sudo chown -R $(LOCAL_UID):$(LOCAL_GID) docs/
 
 archive:
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
@@ -124,7 +124,8 @@ test-in-podman:
 		-v `pwd`:/lorax-ro:ro --security-opt label=disable \
 		--env RUN_TESTS="$(RUN_TESTS)" \
 		welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
-
+	# rootless podman leaves them owned by the container UID
+	$(MAKE) set-docs-owner
 
 docs-in-docker: docs-in-podman
 
@@ -134,7 +135,8 @@ docs-in-podman:
 		-v `pwd`/docs/:/lorax-ro/docs/ \
 		--env LORAX_VERSION=$(DOCS_VERSION) \
 		--env LOCAL_UID=`id -u` --env LOCAL_GID=`id -g` \
-		--security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make docs set-docs-owner
+		--security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make docs
+
 
 ci: check test
 
