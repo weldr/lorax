@@ -31,7 +31,7 @@ zerombr
 # Partition clearing information
 clearpart --all
 # Disk partitioning information
-part / --fstype="ext4" --size=3000
+part / --fstype="ext4" --size=4000
 
 %post
 # Remove random-seed

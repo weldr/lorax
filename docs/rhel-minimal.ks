@@ -34,7 +34,7 @@ bootloader --location=mbr
 # Partition clearing information
 clearpart --all --initlabel
 # Disk partitioning information
-part / --fstype="ext4" --size=2000
+part / --fstype="ext4" --size=4000
 part swap --size=512
 
 %post
