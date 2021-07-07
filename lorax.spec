@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.60
+Version:        28.14.61
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -258,6 +258,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Wed Jul 07 2021 Brian C. Lane <bcl@redhat.com> 28.14.61-1
+- Increase example kickstart root partitions to at least 4000MB (bcl)
+  Resolves: rhbz#1973407
+
 * Tue Jun 29 2021 Brian C. Lane <bcl@redhat.com> 28.14.60-1
 - New lorax documentation - 28.14.59 (bcl)
   Related: rhbz#1955355
