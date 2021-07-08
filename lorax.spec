@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        28.14.61
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -168,6 +168,9 @@ Summary: A command line tool for use with the lorax-composer API server
 Requires: python3-urllib3
 Requires: python3-pytoml
 
+# composer-cli manpage moved to composer-cli package in 28.14.59
+Conflicts: lorax < 28.14.59
+
 %description -n composer-cli
 A command line tool for use with the lorax-composer API server. Examine recipes,
 build images, etc. from the command line.
@@ -258,6 +261,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Jul 08 2021 Brian C. Lane <bcl@redhat.com> - 28.14.61-2
+- Add Conflicts to composer-cli for manpage move
+  Related: rhbz#1928962
+
 * Wed Jul 07 2021 Brian C. Lane <bcl@redhat.com> 28.14.61-1
 - Increase example kickstart root partitions to at least 4000MB (bcl)
   Resolves: rhbz#1973407
