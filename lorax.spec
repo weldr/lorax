@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        35.5
+Version:        35.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Jul 08 2021 Brian C. Lane <bcl@redhat.com> 35.6-1
+- Install unicode.pf2 from new directory (bcl@redhat.com)
+- Makefile: Use sudo to fix ownership of docs (bcl@redhat.com)
+- Makefile: Make sure container is built before docs (bcl@redhat.com)
+- Makefile: Add local-srpm target to create a .src.rpm from HEAD (bcl@redhat.com)
+- mkksiso: cmdline should default to empty string (bcl@redhat.com)
+- runtime-install: Remove gfs2-utils (bcl@redhat.com)
+- mount.py: Fix docstring (jkucera@redhat.com)
+
 * Fri Jun 11 2021 Brian C. Lane <bcl@redhat.com> 35.5-1
 - pylorax: Fix mksparse ftruncate size handling (bcl@redhat.com)
 
