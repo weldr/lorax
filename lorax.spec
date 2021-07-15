@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.4
+Version:        34.9.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Jul 15 2021 Brian C. Lane <bcl@redhat.com> 34.9.5-1
+- Add a context manager for dracut (bcl@redhat.com)
+  Resolves: rhbz#1982271
+- spec: Fix bug number for dropping gfs2-utils (bcl@redhat.com)
+  Related: rhbz#1975378
+
 * Mon Jun 28 2021 Brian C. Lane <bcl@redhat.com> 34.9.4-1
 - mkksiso: cmdline should default to empty string (bcl@redhat.com)
   Related: rhbz#1975844
