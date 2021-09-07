@@ -33,7 +33,7 @@ bootloader --location=none
 clearpart --all --initlabel
 rootpw rootme
 # Disk partitioning information
-part / --size=6656
+part / --size=8000
 
 %post
 # FIXME: it'd be better to get this installed from a package
