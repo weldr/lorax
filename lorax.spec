@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        35.6
+Version:        35.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Sep 07 2021 Brian C. Lane <bcl@redhat.com> 35.7-1
+- templates: Remove memtest86+ (bcl@redhat.com)
+
 * Thu Jul 08 2021 Brian C. Lane <bcl@redhat.com> 35.6-1
 - Install unicode.pf2 from new directory (bcl@redhat.com)
 - Makefile: Use sudo to fix ownership of docs (bcl@redhat.com)
