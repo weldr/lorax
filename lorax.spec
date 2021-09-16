@@ -3,8 +3,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.61
-Release:        2%{?dist}
+Version:        28.14.62
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -261,6 +261,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Sep 16 2021 Brian C. Lane <bcl@redhat.com> 28.14.62-1
+- Increase root partition of rhel-livemedia.ks to 8000MB (bcl)
+  Resolves: rhbz#2001942
+- Add Conflicts to composer-cli for manpage move (bcl)
+  Related: rhbz#1928962
+
 * Thu Jul 08 2021 Brian C. Lane <bcl@redhat.com> - 28.14.61-2
 - Add Conflicts to composer-cli for manpage move
   Related: rhbz#1928962
