@@ -416,12 +416,17 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None, tar_img=None):
         setfiles_args = ["-e", "/proc", "-e", "/sys",
                          "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
 
+        execWithRedirect("sync", ["-f", dirinstall_path])
         if "--dirinstall" in args:
             # setfiles may not be available, warn instead of fail
             try:
                 execWithRedirect("setfiles", setfiles_args, root=dirinstall_path)
             except (subprocess.CalledProcessError, OSError) as e:
                 log.warning("Running setfiles on install tree failed: %s", str(e))
+
+            if os.path.exists(disk_img):
+                execWithRedirect("du", ["-B", "1", disk_img])
+            execWithRedirect("fstrim", ["-v", dirinstall_path])
         else:
             with PartitionMount(disk_img) as img_mount:
                 if img_mount and img_mount.mount_dir:
@@ -432,7 +437,10 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None, tar_img=None):
 
                     # For image installs, run fstrim to discard unused blocks. This way
                     # unused blocks do not need to be allocated for sparse image types
-                    execWithRedirect("fstrim", [img_mount.mount_dir])
+                    execWithRedirect("du", ["-B", "1", disk_img])
+                    execWithRedirect("fstrim", ["-v", img_mount.mount_dir])
+        if os.path.exists(disk_img):
+            execWithRedirect("du", ["-B", "1", disk_img])
 
     except (subprocess.CalledProcessError, OSError) as e:
         log.error("Running anaconda failed: %s", e)
@@ -524,8 +532,10 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None, tar_img=None):
         if rc:
             raise InstallError("novirt_install mktar failed: rc=%s" % rc)
     else:
-        # For raw disk images, use fallocate to deallocate unused space
-        execWithRedirect("fallocate", ["--dig-holes", disk_img], raise_err=True)
+        # Examine the image for sections that can be made sparse
+        execWithRedirect("du", ["-B", "1", disk_img])
+        execWithRedirect("fallocate", ["--dig-holes", "-v", disk_img], raise_err=True)
+        execWithRedirect("du", ["-B", "1", disk_img])
 
     # For make_tar_disk, wrap the result in a tar file, and remove the original disk image.
     if opts.make_tar_disk:
