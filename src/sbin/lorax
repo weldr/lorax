@@ -173,14 +173,14 @@ def main():
     for kv in opts.add_template_vars:
         k, t, v = kv.partition('=')
         if t == '':
-            raise ValueError("Missing '=' for key=value in " % kv)
+            raise ValueError("Missing '=' for key=value in %s" % kv)
         parsed_add_template_vars[k] = v
 
     parsed_add_arch_template_vars = {}
     for kv in opts.add_arch_template_vars:
         k, t, v = kv.partition('=')
         if t == '':
-            raise ValueError("Missing '=' for key=value in " % kv)
+            raise ValueError("Missing '=' for key=value in %s" % kv)
         parsed_add_arch_template_vars[k] = v
 
     if 'SOURCE_DATE_EPOCH' in os.environ:

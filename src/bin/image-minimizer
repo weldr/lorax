@@ -179,7 +179,7 @@ def main():
         minimizer.filter()
     except SystemExit as e:
         sys.exit(e.code)
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         print("Aborted at user request")
 
 if __name__ == "__main__":

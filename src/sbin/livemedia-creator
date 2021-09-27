@@ -114,7 +114,7 @@ def main():
         opts.image_type = "qcow2"
 
     if opts.image_type and not os.path.exists("/usr/bin/qemu-img"):
-        errors.append("image-type requires the qemu-img utility to be installed." % opts.image_type)
+        errors.append("image-type option requires the qemu-img utility to be installed.")
 
     if opts.image_type and opts.make_iso:
         errors.append("image-type cannot be used to make a bootable iso.")
