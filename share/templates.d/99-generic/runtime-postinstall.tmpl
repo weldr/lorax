@@ -114,6 +114,10 @@ remove etc/lvm/cache
 remove etc/lvm/lvm.conf
 append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
 
+## Remove machine specific nvme-cli files
+remove etc/nvme/hostid
+remove etc/nvme/hostnqn
+
 ## TODO: we could run prelink here if we wanted?
 
 ## fix fonconfig cache containing timestamps
