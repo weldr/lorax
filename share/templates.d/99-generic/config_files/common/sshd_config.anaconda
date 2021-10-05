@@ -1,7 +1,7 @@
 PermitRootLogin yes
 X11Forwarding yes
 X11DisplayOffset 10
-PrintMotd yes
+PrintMotd no
 SyslogFacility AUTHPRIV
 PasswordAuthentication yes
 PermitEmptyPasswords yes
