@@ -17,12 +17,16 @@ installpkg grubby
 %if basearch != "s390x":
     ## skip the firmware for sound, video, and scanners, none of which will
     ## do much good for the installer. Also skip uhd-firmware which is not
-    ## even a kernel firmware package.
+    ## even a kernel firmware package. liquidio and netronome firmwares are
+    ## for enterprise switch devices, netinst deployment does not work on
+    ## these so there is no point shipping them - see
+    ## https://bugzilla.redhat.com/show_bug.cgi?id=2011615
     installpkg --optional *-firmware --except alsa* --except midisport-firmware \
                            --except crystalhd-firmware --except ivtv-firmware \
                            --except cx18-firmware --except iscan-firmware \
                            --except uhd-firmware --except lulzbot-marlin-firmware \
-                           --except gnome-firmware --except sigrok-firmware
+                           --except gnome-firmware --except sigrok-firmware \
+                           --except liquidio-firmware --except netronome-firmware
     installpkg b43-openfwwf
 %endif
 
