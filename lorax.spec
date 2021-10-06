@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.6
+Version:        34.9.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,20 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Oct 06 2021 Brian C. Lane <bcl@redhat.com> 34.9.7-1
+- runtime-cleanup: Remove dropped package from template (bcl@redhat.com)
+  Related: rhbz#1991006
+- sshd_config: Update sshd options (bcl@redhat.com)
+  Related: rhbz#2007288
+- Install nvme-cli tool (bcl@redhat.com)
+  Related: rhbz#2010254
+- When running the tests in docker/podman use the Fedora 34 image (bcl@redhat.com)
+  Related: rhbz#2010542
+- Fix pylint warnings about string formatting (bcl@redhat.com)
+  Related: rhbz#2010542
+- tests: Ignore new pylint warnings (bcl@redhat.com)
+  Resolves: rhbz#2010542
+
 * Thu Sep 09 2021 Brian C. Lane <bcl@redhat.com> 34.9.6-1
 - github: Run tests for rhel9-branch PRs (bcl@redhat.com)
   Related: rhbz#2000439
