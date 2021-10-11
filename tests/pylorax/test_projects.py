@@ -219,6 +219,10 @@ class ProjectsTest(unittest.TestCase):
         self.assertTrue("ctags" in names)               # default package
         self.assertFalse("cmake" in names)              # optional package
 
+    def test_groups_depsolve_error(self):
+        with self.assertRaises(ProjectsError):
+            projects_depsolve(self.dbo, [], ["notagroup"])
+
 
 class ConfigureTest(unittest.TestCase):
     @classmethod

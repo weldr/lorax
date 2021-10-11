@@ -19,6 +19,7 @@ log = logging.getLogger("lorax-composer")
 
 from configparser import ConfigParser
 import dnf
+from dnf.exceptions import MarkingError, CompsError
 from glob import glob
 import os
 import time
@@ -235,7 +236,7 @@ def _depsolve(dbo, projects, groups):
     for name in groups:
         try:
             dbo.group_install(name, ["mandatory", "default"])
-        except dnf.exceptions.MarkingError as e:
+        except (MarkingError, ValueError, CompsError) as e:
             install_errors.append(("Group %s" % (name), str(e)))
 
     for name, version in projects:
