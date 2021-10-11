@@ -21,8 +21,6 @@ keyboard --xlayouts=us --vckeymap=us
 lang en_US.UTF-8
 # SELinux configuration
 selinux --enforcing
-# Installation logging level
-logging --level=info
 # Shutdown after installation
 shutdown
 # System timezone
