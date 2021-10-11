@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        35.7
+Version:        36.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Oct 11 2021 Brian C. Lane <bcl@redhat.com> 36.0-1
+- New lorax documentation - 36.0 (bcl@redhat.com)
+- docs: Remove logging command from examples (bcl@redhat.com)
+- runtime-install: exclude liquidio and netronome firmwares (awilliam@redhat.com)
+- runtime-cleanup: drop Marvell Prestera firmware files (awilliam@redhat.com)
+- runtime-cleanup: drop some Qualcomm smartphone firmwares (awilliam@redhat.com)
+- Fix pylint warnings about string formatting (bcl@redhat.com)
+- tests: Ignore new pylint warnings (bcl@redhat.com)
+- Add fstrim to disk and filesystem image creation (bcl@redhat.com)
+
 * Tue Sep 07 2021 Brian C. Lane <bcl@redhat.com> 35.7-1
 - templates: Remove memtest86+ (bcl@redhat.com)
 
