@@ -1,8 +1,5 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LIVEMEDIA-CREATOR" "1" "Apr 23, 2021" "35.1" "Lorax"
-.SH NAME
-livemedia-creator \- Live Media Creator Documentation
 .
 .nr rst2man-indent-level 0
 .
@@ -30,6 +27,9 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
+.TH "LIVEMEDIA-CREATOR" "1" "Oct 11, 2021" "35.7" "Lorax"
+.SH NAME
+livemedia-creator \- Live Media Creator Documentation
 .INDENT 0.0
 .TP
 .B Authors
@@ -77,221 +77,235 @@ Create Live Install Media
 .sp
 .nf
 .ft C
-usage: livemedia\-creator [\-h] (\-\-make\-iso | \-\-make\-disk | \-\-make\-fsimage | \-\-make\-appliance | \-\-make\-ami | \-\-make\-tar | \-\-make\-tar\-disk | \-\-make\-pxe\-live | \-\-make\-ostree\-live | \-\-make\-oci | \-\-make\-vagrant)
-                         [\-\-iso ISO] [\-\-iso\-only] [\-\-iso\-name ISO_NAME] [\-\-ks KS] [\-\-image\-only] [\-\-no\-virt] [\-\-proxy PROXY] [\-\-anaconda\-arg ANACONDA_ARGS] [\-\-armplatform ARMPLATFORM] [\-\-location LOCATION]
-                         [\-\-logfile LOGFILE] [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP] [\-\-resultdir RESULT_DIR] [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS] [\-\-disk\-image DISK_IMAGE]
-                         [\-\-keep\-image] [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME] [\-\-tar\-disk\-name TAR_DISK_NAME] [\-\-fs\-label FS_LABEL] [\-\-image\-size\-align IMAGE_SIZE_ALIGN] [\-\-image\-type IMAGE_TYPE]
-                         [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2] [\-\-qcow2\-arg QEMU_ARGS] [\-\-compression COMPRESSION] [\-\-compress\-arg COMPRESS_ARGS] [\-\-app\-name APP_NAME] [\-\-app\-template APP_TEMPLATE]
-                         [\-\-app\-file APP_FILE] [\-\-ram MEMORY] [\-\-vcpus VCPUS] [\-\-vnc VNC] [\-\-arch ARCH] [\-\-kernel\-args KERNEL_ARGS] [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi] [\-\-no\-kvm] [\-\-with\-rng WITH_RNG]
-                         [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE] [\-\-live\-rootfs\-keep\-size] [\-\-oci\-config OCI_CONFIG] [\-\-oci\-runtime OCI_RUNTIME]
-                         [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE] [\-\-project PROJECT] [\-\-releasever RELEASEVER] [\-\-volid VOLID] [\-\-squashfs\-only] [\-\-timeout TIMEOUT] [\-V]
+usage: livemedia\-creator [\-h]
+                         (\-\-make\-iso | \-\-make\-disk | \-\-make\-fsimage | \-\-make\-appliance | \-\-make\-ami | \-\-make\-tar | \-\-make\-tar\-disk | \-\-make\-pxe\-live | \-\-make\-ostree\-live | \-\-make\-oci | \-\-make\-vagrant)
+                         [\-\-iso ISO] [\-\-iso\-only] [\-\-iso\-name ISO_NAME] [\-\-ks KS] [\-\-image\-only]
+                         [\-\-no\-virt] [\-\-proxy PROXY] [\-\-anaconda\-arg ANACONDA_ARGS]
+                         [\-\-armplatform ARMPLATFORM] [\-\-location LOCATION] [\-\-logfile LOGFILE]
+                         [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP] [\-\-resultdir RESULT_DIR]
+                         [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS]
+                         [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image] [\-\-fs\-image FS_IMAGE]
+                         [\-\-image\-name IMAGE_NAME] [\-\-tar\-disk\-name TAR_DISK_NAME]
+                         [\-\-fs\-label FS_LABEL] [\-\-image\-size\-align IMAGE_SIZE_ALIGN]
+                         [\-\-image\-type IMAGE_TYPE] [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2]
+                         [\-\-qcow2\-arg QEMU_ARGS] [\-\-compression COMPRESSION]
+                         [\-\-compress\-arg COMPRESS_ARGS] [\-\-app\-name APP_NAME]
+                         [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE] [\-\-ram MEMORY]
+                         [\-\-vcpus VCPUS] [\-\-vnc VNC] [\-\-arch ARCH] [\-\-kernel\-args KERNEL_ARGS]
+                         [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi] [\-\-no\-kvm] [\-\-with\-rng WITH_RNG]
+                         [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS]
+                         [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE] [\-\-live\-rootfs\-keep\-size]
+                         [\-\-oci\-config OCI_CONFIG] [\-\-oci\-runtime OCI_RUNTIME]
+                         [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE]
+                         [\-\-project PROJECT] [\-\-releasever RELEASEVER] [\-\-volid VOLID]
+                         [\-\-squashfs\-only] [\-\-timeout TIMEOUT] [\-V]
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-.SS Named Arguments
+.SS options
 .INDENT 0.0
 .TP
-.B\-\-make\-iso
+.B \-\-make\-iso
 Build a live iso
 .sp
 Default: False
 .TP
-.B\-\-make\-disk
+.B \-\-make\-disk
 Build a partitioned disk image
 .sp
 Default: False
 .TP
-.B\-\-make\-fsimage
+.B \-\-make\-fsimage
 Build a filesystem image
 .sp
 Default: False
 .TP
-.B\-\-make\-appliance
+.B \-\-make\-appliance
 Build an appliance image and XML description
 .sp
 Default: False
 .TP
-.B\-\-make\-ami
+.B \-\-make\-ami
 Build an ami image
 .sp
 Default: False
 .TP
-.B\-\-make\-tar
+.B \-\-make\-tar
 Build a tar of the root filesystem
 .sp
 Default: False
 .TP
-.B\-\-make\-tar\-disk
+.B \-\-make\-tar\-disk
 Build a tar of a partitioned disk image
 .sp
 Default: False
 .TP
-.B\-\-make\-pxe\-live
+.B \-\-make\-pxe\-live
 Build a live pxe boot squashfs image
 .sp
 Default: False
 .TP
-.B\-\-make\-ostree\-live
+.B \-\-make\-ostree\-live
 Build a live pxe boot squashfs image of Atomic Host
 .sp
 Default: False
 .TP
-.B\-\-make\-oci
+.B \-\-make\-oci
 Build an Open Container Initiative image
 .sp
 Default: False
 .TP
-.B\-\-make\-vagrant
+.B \-\-make\-vagrant
 Build a Vagrant Box image
 .sp
 Default: False
 .TP
-.B\-\-iso
+.B \-\-iso
 Anaconda installation .iso path to use for qemu
 .TP
-.B\-\-iso\-only
+.B \-\-iso\-only
 Remove all iso creation artifacts except the boot.iso, combine with \-\-iso\-name to rename the boot.iso
 .sp
 Default: False
 .TP
-.B\-\-iso\-name
+.B \-\-iso\-name
 Name of output iso file for \-\-iso\-only. Default is boot.iso
 .TP
-.B\-\-ks
+.B \-\-ks
 Kickstart file defining the install.
 .TP
-.B\-\-image\-only
+.B \-\-image\-only
 Exit after creating fs/disk image.
 .sp
 Default: False
 .TP
-.B\-\-no\-virt
+.B \-\-no\-virt
 Run anaconda directly on host instead of using qemu
 .sp
 Default: False
 .TP
-.B\-\-proxy
+.B \-\-proxy
 proxy URL to use for the install
 .TP
-.B\-\-anaconda\-arg
+.B \-\-anaconda\-arg
 Additional argument to pass to anaconda (no\-virt mode). Pass once for each argument
 .TP
-.B\-\-armplatform
+.B \-\-armplatform
 the platform to use when creating images for ARM, i.e., highbank, mvebu, omap, tegra, etc.
 .TP
-.B\-\-location
+.B \-\-location
 location of iso directory tree with initrd.img and vmlinuz. Used to run qemu with a newer initrd than the iso.
 .TP
-.B\-\-logfile
+.B \-\-logfile
 Name and path for primary logfile, other logs will be created in the same directory.
 .sp
 Default: ./livemedia.log
 .TP
-.B\-\-lorax\-templates
+.B \-\-lorax\-templates
 Path to mako templates for lorax
 .TP
-.B\-\-tmp
+.B \-\-tmp
 Top level temporary directory
 .sp
 Default: /var/tmp
 .TP
-.B\-\-resultdir
+.B \-\-resultdir
 Directory to copy the resulting images and iso into. Defaults to the temporary working directory
 .TP
-.B\-\-macboot
+.B \-\-macboot
 Make the iso bootable on UEFI based Mac systems
 .sp
 Default: True
 .TP
-.B\-\-nomacboot
+.B \-\-nomacboot
 Do not create a Mac bootable iso
 .sp
 Default: False
 .TP
-.B\-\-extra\-boot\-args
+.B \-\-extra\-boot\-args
 Extra arguments to add to the bootloader kernel cmdline in the templates
 .sp
 Default: ""
 .TP
-.B\-\-project
+.B \-\-project
 substituted for @PROJECT@ in bootloader config files
 .sp
 Default: "Linux"
 .TP
-.B\-\-releasever
+.B \-\-releasever
 substituted for @VERSION@ in bootloader config files
 .sp
 Default: "34"
 .TP
-.B\-\-volid
+.B \-\-volid
 volume id
 .TP
-.B\-\-squashfs\-only
+.B \-\-squashfs\-only
 Use a plain squashfs filesystem for the runtime.
 .sp
 Default: False
 .TP
-.B\-\-timeout
+.B \-\-timeout
 Cancel installer after X minutes
 .TP
-.B\-V
+.B \-V
 show program\(aqs version number and exit
 .UNINDENT
 .SS disk/fs image arguments
 .INDENT 0.0
 .TP
-.B\-\-disk\-image
+.B \-\-disk\-image
 Path to existing disk image to use for creating final image.
 .TP
-.B\-\-keep\-image
+.B \-\-keep\-image
 Keep raw disk image after .iso creation
 .sp
 Default: False
 .TP
-.B\-\-fs\-image
+.B \-\-fs\-image
 Path to existing filesystem image to use for creating final image.
 .TP
-.B\-\-image\-name
+.B \-\-image\-name
 Name of output file to create. Used for tar, fs and disk image. Default is a random name.
 .TP
-.B\-\-tar\-disk\-name
+.B \-\-tar\-disk\-name
 Name of the archive member for make\-tar\-disk.
 .TP
-.B\-\-fs\-label
+.B \-\-fs\-label
 Label to set on fsimage, default is \(aqAnaconda\(aq
 .sp
 Default: "Anaconda"
 .TP
-.B\-\-image\-size\-align
+.B \-\-image\-size\-align
 Create a disk image with a size that is a multiple of this value in MiB.
 .sp
 Default: 0
 .TP
-.B\-\-image\-type
+.B \-\-image\-type
 Create an image with qemu\-img. See qemu\-img \-\-help for supported formats.
 .TP
-.B\-\-qemu\-arg
+.B \-\-qemu\-arg
 Arguments to pass to qemu\-img. Pass once for each argument, they will be used for ALL calls to qemu\-img.
 .sp
 Default: []
 .TP
-.B\-\-qcow2
+.B \-\-qcow2
 Create qcow2 image instead of raw sparse image when making disk images.
 .sp
 Default: False
 .TP
-.B\-\-qcow2\-arg
+.B \-\-qcow2\-arg
 Arguments to pass to qemu\-img. Pass once for each argument, they will be used for ALL calls to qemu\-img.
 .sp
 Default: []
 .TP
-.B\-\-compression
+.B \-\-compression
 Compression binary for make\-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.
 .sp
 Default: "xz"
 .TP
-.B\-\-compress\-arg
+.B \-\-compress\-arg
 Arguments to pass to compression. Pass once for each argument
 .sp
 Default: []
@@ -299,13 +313,13 @@ Default: []
 .SS appliance arguments
 .INDENT 0.0
 .TP
-.B\-\-app\-name
+.B \-\-app\-name
 Name of appliance to pass to template
 .TP
-.B\-\-app\-template
+.B \-\-app\-template
 Path to template to use for appliance data.
 .TP
-.B\-\-app\-file
+.B \-\-app\-file
 Appliance template results file.
 .sp
 Default: "appliance.xml"
@@ -313,39 +327,39 @@ Default: "appliance.xml"
 .SS qemu arguments
 .INDENT 0.0
 .TP
-.B\-\-ram
+.B \-\-ram
 Memory to allocate for installer in megabytes.
 .sp
 Default: 2048
 .TP
-.B\-\-vcpus
+.B \-\-vcpus
 Passed to qemu \-smp command
 .TP
-.B\-\-vnc
+.B \-\-vnc
 Passed to qemu \-display command. eg. vnc=127.0.0.1:5, default is to choose the first unused vnc port.
 .TP
-.B\-\-arch
+.B \-\-arch
 System arch to build for. Used to select qemu\-system\-* command. Defaults to qemu\-system\-<arch>
 .TP
-.B\-\-kernel\-args
+.B \-\-kernel\-args
 Additional argument to pass to the installation kernel
 .TP
-.B\-\-ovmf\-path
+.B \-\-ovmf\-path
 Path to OVMF firmware
 .sp
 Default: "/usr/share/edk2/ovmf/"
 .TP
-.B\-\-virt\-uefi
+.B \-\-virt\-uefi
 Use OVMF firmware to boot the VM in UEFI mode
 .sp
 Default: False
 .TP
-.B\-\-no\-kvm
+.B \-\-no\-kvm
 Skip using kvm with qemu even if it is available.
 .sp
 Default: False
 .TP
-.B\-\-with\-rng
+.B \-\-with\-rng
 RNG device for QEMU (none for no RNG)
 .sp
 Default: "/dev/random"
@@ -353,21 +367,21 @@ Default: "/dev/random"
 .SS dracut arguments: (default: )
 .INDENT 0.0
 .TP
-.B\-\-dracut\-conf
+.B \-\-dracut\-conf
 Path to a dracut.conf file to use instead of the default arguments. See the dracut.conf(5) manpage.
 .TP
-.B\-\-dracut\-arg
+.B \-\-dracut\-arg
 Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the defaults.
 .UNINDENT
 .SS pxe to live arguments
 .INDENT 0.0
 .TP
-.B\-\-live\-rootfs\-size
+.B \-\-live\-rootfs\-size
 Size of root filesystem of live image in GiB
 .sp
 Default: 0
 .TP
-.B\-\-live\-rootfs\-keep\-size
+.B \-\-live\-rootfs\-keep\-size
 Keep the original size of root filesystem in live image
 .sp
 Default: False
@@ -375,19 +389,19 @@ Default: False
 .SS OCI arguments
 .INDENT 0.0
 .TP
-.B\-\-oci\-config
+.B \-\-oci\-config
 config.json OCI configuration file
 .TP
-.B\-\-oci\-runtime
+.B \-\-oci\-runtime
 runtime.json OCI configuration file
 .UNINDENT
 .SS Vagrant arguments
 .INDENT 0.0
 .TP
-.B\-\-vagrant\-metadata
+.B \-\-vagrant\-metadata
 optional metadata.json file
 .TP
-.B\-\-vagrantfile
+.B \-\-vagrantfile
 optional vagrantfile
 .UNINDENT
 .SH QUICKSTART
