@@ -51,7 +51,7 @@ You can add your own repos with ``-s`` and packages with higher NVRs will
 override the ones in the distribution repositories.
 
 Under ``./results/`` will be the release tree files: .discinfo, .treeinfo, everything that
-goes onto the boot.iso, the pxeboot directory, and the boot.iso under ``./images/``.
+goes onto the boot.iso, the pxeboot directory, and the boot.iso under ``./results/images/``.
 
 
 Branding
