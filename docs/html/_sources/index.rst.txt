@@ -21,9 +21,9 @@ Contents:
 Documentation for other Lorax Branches
 ======================================
 
-* `Fedora 34 <f33-branch/>`_
+* `Fedora 35 <f35-branch/>`_
+* `Fedora 34 <f34-branch/>`_
 * `Fedora 33 <f33-branch/>`_
-* `Fedora 32 <f32-branch/>`_
 * `RHEL8 lorax-composer <rhel8-branch/>`_
 * `RHEL7 lorax-composer <lorax-composer/>`_
 

@@ -1,69 +1,31 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pylorax.imgutils &mdash; Lorax 36.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
-  <title>pylorax.imgutils &mdash; Lorax 35.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> Lorax
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
-                35.1
+                36.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -71,18 +33,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
@@ -93,71 +44,31 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Lorax</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-        
           <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-        
       <li>pylorax.imgutils</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for pylorax.imgutils</h1><div class="highlight"><pre>
 <span></span><span class="c1"># imgutils.py - utility functions/classes for building disk images</span>
 <span class="c1">#</span>
@@ -302,7 +213,7 @@
 <div class="viewcode-block" id="mksparse"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mksparse">[docs]</a><span class="k">def</span> <span class="nf">mksparse</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;use os.ftruncate to create a sparse file of the given size.&#39;&#39;&#39;</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">ftruncate</span><span class="p">(</span><span class="n">fobj</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">size</span><span class="p">)</span></div>
+        <span class="n">os</span><span class="o">.</span><span class="n">ftruncate</span><span class="p">(</span><span class="n">fobj</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="mkqcow2"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkqcow2">[docs]</a><span class="k">def</span> <span class="nf">mkqcow2</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;use qemu-img to create a file of the given size.</span>
@@ -634,6 +545,42 @@
         <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;kpartx&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span><span class="p">])</span></div>
 
 
+<div class="viewcode-block" id="DracutChroot"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.DracutChroot">[docs]</a><span class="k">class</span> <span class="nc">DracutChroot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Setup the chroot for running dracut inside it, cleanup when done</span>
+
+<span class="sd">    This mount /proc, /dev, and /var/tmp plus optional bind mounted directories</span>
+<span class="sd">    as a list of (source, destination) tuples where destination is relative to the chroot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">bind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;/var/tmp&quot;</span><span class="p">,</span> <span class="s2">&quot;/var/tmp&quot;</span><span class="p">)]</span> <span class="o">+</span> <span class="p">(</span><span class="n">bind</span> <span class="k">if</span> <span class="n">bind</span> <span class="k">else</span> <span class="p">[])</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;/proc&quot;</span><span class="p">,</span> <span class="s2">&quot;/dev&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">d</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Making missing dracut chroot directory: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span>
+
+        <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;mount&quot;</span><span class="p">,</span> <span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="s2">&quot;proc&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;nosuid,noexec,nodev&quot;</span><span class="p">,</span> <span class="s2">&quot;proc&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s2">&quot;/proc&quot;</span> <span class="p">])</span>
+        <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;mount&quot;</span><span class="p">,</span> <span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="s2">&quot;devtmpfs&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;mode=0755,noexec,nosuid,strictatime&quot;</span><span class="p">,</span> <span class="s2">&quot;devtmpfs&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s2">&quot;/dev&quot;</span> <span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">:</span>
+            <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;mount&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;bind&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">d</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">tracebk</span><span class="p">):</span>
+        <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;umount&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s2">&quot;/proc&quot;</span> <span class="p">])</span>
+        <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;umount&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s2">&quot;/dev&quot;</span> <span class="p">])</span>
+
+        <span class="c1"># cleanup bind mounts</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">:</span>
+            <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;umount&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">d</span> <span class="p">])</span>
+
+<div class="viewcode-block" id="DracutChroot.Run"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.DracutChroot.Run">[docs]</a>    <span class="k">def</span> <span class="nf">Run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;dracut&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span></div></div>
+
+
 <span class="c1">######## Functions for making filesystem images ##########################</span>
 
 <div class="viewcode-block" id="mkfsimage"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkfsimage">[docs]</a><span class="k">def</span> <span class="nf">mkfsimage</span><span class="p">(</span><span class="n">fstype</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mkfsargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mountargs</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">graft</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -727,46 +674,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2018, Red Hat, Inc..
-
-    </p>
+    <p>&#169; Copyright 2018, Red Hat, Inc..</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

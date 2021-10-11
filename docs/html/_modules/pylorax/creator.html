@@ -1,69 +1,31 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pylorax.creator &mdash; Lorax 36.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
-  <title>pylorax.creator &mdash; Lorax 35.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> Lorax
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
-                35.1
+                36.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -71,18 +33,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
@@ -93,71 +44,31 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Lorax</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-        
           <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-        
       <li>pylorax.creator</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for pylorax.creator</h1><div class="highlight"><pre>
 <span></span><span class="c1">#</span>
 <span class="c1"># Copyright (C) 2011-2018  Red Hat, Inc.</span>
@@ -197,8 +108,8 @@
 <span class="c1"># Use the Lorax treebuilder branch for iso creation</span>
 <span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">ArchData</span>
 <span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithRedirect</span><span class="p">,</span> <span class="n">runcmd</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">PartitionMount</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithRedirect</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">DracutChroot</span><span class="p">,</span> <span class="n">PartitionMount</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span><span class="p">,</span> <span class="n">Mount</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mksquashfs</span><span class="p">,</span> <span class="n">mkrootfsimg</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">copytree</span>
@@ -379,7 +290,7 @@
     <span class="n">product</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
                             <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">isfinal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">fake_dbo</span><span class="p">)</span>
+    <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">fake_dbo</span><span class="p">,</span> <span class="n">skip_branding</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">squashfs_only</span><span class="p">:</span>
@@ -404,7 +315,7 @@
     <span class="c1"># cmdline dracut args override the defaults, but need to be parsed</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut args = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">))</span>
 
-    <span class="n">dracut</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dracut&quot;</span><span class="p">,</span> <span class="s2">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s2">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s2">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
 
     <span class="n">kdir</span> <span class="o">=</span> <span class="s2">&quot;boot&quot;</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">ostree</span><span class="p">:</span>
@@ -433,25 +344,18 @@
 
     <span class="c1"># Write the new initramfs directly to the results directory</span>
     <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">))</span>
-    <span class="n">mount</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;bind&quot;</span><span class="p">,</span> <span class="n">mnt</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">))</span>
-    <span class="c1"># Dracut runs out of space inside the minimal rootfs image</span>
-    <span class="n">mount</span><span class="p">(</span><span class="s2">&quot;/var/tmp&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;bind&quot;</span><span class="p">,</span> <span class="n">mnt</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;var/tmp&quot;</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">kernels</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s2">&quot;initrd&quot;</span><span class="p">):</span>
-            <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">initrd</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Construct an initrd from the kernel name</span>
-            <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;vmlinuz-&quot;</span><span class="p">,</span> <span class="s2">&quot;initrd-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.img&quot;</span><span class="p">)</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;rebuilding </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut warnings about /proc are safe to ignore&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">DracutChroot</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">bind</span><span class="o">=</span><span class="p">[(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;/results&quot;</span><span class="p">)])</span> <span class="k">as</span> <span class="n">dracut</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">kernels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s2">&quot;initrd&quot;</span><span class="p">):</span>
+                <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">initrd</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Construct an initrd from the kernel name</span>
+                <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;vmlinuz-&quot;</span><span class="p">,</span> <span class="s2">&quot;initrd-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.img&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;rebuilding </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
 
-        <span class="n">kver</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="n">dracut</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;/results/&quot;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kver</span><span class="p">]</span>
-        <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">sys_root_dir</span><span class="p">)</span>
-
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">results_dir</span><span class="p">)</span>
-    <span class="n">umount</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;var/tmp&quot;</span><span class="p">),</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">umount</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">),</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+            <span class="n">kver</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span>
+            <span class="n">dracut</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">args</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;/results/&quot;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kver</span><span class="p">])</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">results_dir</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="create_pxe_config"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.create_pxe_config">[docs]</a><span class="k">def</span> <span class="nf">create_pxe_config</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">images_dir</span><span class="p">,</span> <span class="n">live_image_name</span><span class="p">,</span> <span class="n">add_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -918,46 +822,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2018, Red Hat, Inc..
-
-    </p>
+    <p>&#169; Copyright 2018, Red Hat, Inc..</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
