@@ -1,5 +1,9 @@
 ## lorax template file: populate the ramdisk (runtime image)
 <%page args="basearch, product"/>
+<%
+# This version of grub2 moves the font directory and is needed to keep the efi template from failing.
+GRUB2VER="1:2.06-3"
+%>
 
 ## anaconda package
 installpkg anaconda anaconda-widgets kexec-tools-anaconda-addon anaconda-install-img-deps
@@ -37,12 +41,13 @@ installpkg glibc-all-langpacks
 ## arch-specific packages (bootloaders etc.)
 %if basearch == "aarch64":
     installpkg efibootmgr
-    installpkg grub2-efi-aa64-cdboot shim-aa64
+    installpkg grub2-efi-aa64-cdboot>=${GRUB2VER}
+    installpkg shim-aa64
     installpkg uboot-tools
 %endif
 %if basearch in ("arm", "armhfp"):
     installpkg efibootmgr
-    installpkg grub2-efi-arm-cdboot
+    installpkg grub2-efi-arm-cdboot>=${GRUB2VER}
     installpkg grubby-deprecated
     installpkg kernel-lpae
     installpkg uboot-tools
@@ -51,19 +56,22 @@ installpkg glibc-all-langpacks
     installpkg gpart
 %endif
 %if basearch == "x86_64":
-    installpkg grub2-tools-efi
+    installpkg grub2-tools-efi>=${GRUB2VER}
     installpkg efibootmgr
-    installpkg shim-x64 grub2-efi-x64-cdboot
-    installpkg shim-ia32 grub2-efi-ia32-cdboot
+    installpkg shim-x64
+    installpkg grub2-efi-x64-cdboot>=${GRUB2VER}
+    installpkg shim-ia32
+    installpkg grub2-efi-ia32-cdboot>=${GRUB2VER}
 %endif
 %if basearch in ("i386", "x86_64"):
     installpkg biosdevname syslinux
-    installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
+    installpkg grub2-tools>=${GRUB2VER} grub2-tools-minimal>=${GRUB2VER}
+    installpkg grub2-tools-extra>=${GRUB2VER}
 %endif
 %if basearch == "ppc64le":
     installpkg powerpc-utils lsvpd ppc64-diag
-    installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
-    installpkg grub2-${basearch}
+    installpkg grub2-tools>=${GRUB2VER} grub2-tools-minimal>=${GRUB2VER}
+    installpkg grub2-tools-extra>=${GRUB2VER} grub2-${basearch}>=${GRUB2VER}
 %endif
 %if basearch == "s390x":
     installpkg lsscsi s390utils-base s390utils-cmsfs-fuse s390utils-hmcdrvfs

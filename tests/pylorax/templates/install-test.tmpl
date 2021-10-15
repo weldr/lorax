@@ -1,8 +1,10 @@
 <%page />
 installpkg anaconda-core
 installpkg --optional exact-1.3.17
-installpkg --except fake-homer fake-*
+installpkg --except fake-homer --except fake-milhouse --except fake-lisa fake-*
 installpkg --required lots-of-files
 installpkg known-path
 -installpkg missing-package
+installpkg fake-milhouse>1.0.0-4
+installpkg fake-lisa<1.2.0-1
 run_pkg_transaction
