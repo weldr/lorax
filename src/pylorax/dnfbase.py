@@ -53,6 +53,8 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             return None
 
     mirrorlists = mirrorlists or []
+    enablerepos = enablerepos or []
+    disablerepos = disablerepos or []
 
     # sanitize the repositories
     sources = list(sanitize_repo(r) for r in sources)
