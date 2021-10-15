@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.62
+Version:        28.14.63
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -261,6 +261,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Oct 15 2021 Brian C. Lane <bcl@redhat.com> 28.14.63-1
+- Handle all possible dnf group_install errors (bcl)
+  Related: rhbz#1947958
+- runtime-install: Install nvme-cli tool (bcl)
+  Related: rhbz#1903339
+
 * Thu Sep 16 2021 Brian C. Lane <bcl@redhat.com> 28.14.62-1
 - Increase root partition of rhel-livemedia.ks to 8000MB (bcl)
   Resolves: rhbz#2001942
