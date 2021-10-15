@@ -115,8 +115,10 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         self.repo1_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
         makeFakeRPM(self.repo1_dir, "anaconda-core", 0, "0.0.1", "1")
         makeFakeRPM(self.repo1_dir, "exact", 0, "1.3.17", "1")
-        makeFakeRPM(self.repo1_dir, "fake-milhouse", 0, "1.0.0", "1")
+        makeFakeRPM(self.repo1_dir, "fake-milhouse", 0, "1.0.0", "1", ["/fake-milhouse/1.0.0-1"])
+        makeFakeRPM(self.repo1_dir, "fake-bart", 0, "1.0.0", "6")
         makeFakeRPM(self.repo1_dir, "fake-bart", 2, "1.13.0", "6")
+        makeFakeRPM(self.repo1_dir, "fake-bart", 2, "2.3.0", "1")
         makeFakeRPM(self.repo1_dir, "fake-homer", 0, "0.4.0", "2")
         makeFakeRPM(self.repo1_dir, "lots-of-files", 0, "0.1.1", "1",
                     ["/lorax-files/file-one.txt",
@@ -126,12 +128,15 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         os.system("createrepo_c " + self.repo1_dir)
 
         self.repo2_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
-        makeFakeRPM(self.repo2_dir, "fake-milhouse", 0, "1.3.0", "1")
-        makeFakeRPM(self.repo2_dir, "fake-lisa", 0, "1.2.0", "1")
+        makeFakeRPM(self.repo2_dir, "fake-milhouse", 0, "1.0.0", "4", ["/fake-milhouse/1.0.0-4"])
+        makeFakeRPM(self.repo2_dir, "fake-milhouse", 0, "1.0.7", "1", ["/fake-milhouse/1.0.7-1"])
+        makeFakeRPM(self.repo2_dir, "fake-milhouse", 0, "1.3.0", "1", ["/fake-milhouse/1.3.0-1"])
+        makeFakeRPM(self.repo2_dir, "fake-lisa", 0, "1.2.0", "1", ["/fake-lisa/1.2.0-1"])
+        makeFakeRPM(self.repo2_dir, "fake-lisa", 0, "1.1.4", "5", ["/fake-lisa/1.1.4-5"])
         os.system("createrepo_c " + self.repo2_dir)
 
         self.repo3_dir = tempfile.mkdtemp(prefix="lorax.test.debug.repo.")
-        makeFakeRPM(self.repo3_dir, "fake-marge", 0, "2.3.0", "1", ["/fake-marge/file-one.txt"])
+        makeFakeRPM(self.repo3_dir, "fake-marge", 0, "2.3.0", "1", ["/fake-marge/2.3.0-1"])
         makeFakeRPM(self.repo3_dir, "fake-marge-debuginfo", 0, "2.3.0", "1", ["/fake-marge/file-one-debuginfo.txt"])
         os.system("createrepo_c " + self.repo3_dir)
 
@@ -154,24 +159,89 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         shutil.rmtree(self.repo2_dir)
         shutil.rmtree(self.root_dir)
 
-    def test_00_runner_multi_repo(self):
+    def test_pkgver_errors(self):
+        """Test error states of _pkgver"""
+        with self.assertRaises(RuntimeError) as e:
+            self.runner._pkgver("=")
+        self.assertEqual(str(e.exception), "Missing package name")
+
+
+        with self.assertRaises(RuntimeError) as e:
+            self.runner._pkgver("foopkg=")
+        self.assertEqual(str(e.exception), "Missing version")
+
+        with self.assertRaises(RuntimeError) as e:
+            self.runner._pkgver("foopkg>1.0.0-1<1.0.6-1")
+        self.assertEqual(str(e.exception), "Too many comparisons")
+
+
+    def test_00_pkgver(self):
+        """Test all the version comparison operators with pkgver"""
+        matrix = [
+            ("fake-milhouse>=2.1.0-1", ""),                         # Not available
+            ("fake-bart>=2:3.0.0-2", ""),                           # Not available
+            ("fake-bart>2:1.13.0-6", "fake-bart-2:2.3.0-1"),
+            ("fake-bart<2:1.13.0-6", "fake-bart-1.0.0-6"),
+            ("fake-milhouse==1.3.0-1", "fake-milhouse-1.3.0-1"),
+            ("fake-milhouse=1.3.0-1", "fake-milhouse-1.3.0-1"),
+            ("fake-milhouse=1.0.0-4", "fake-milhouse-1.0.0-4"),
+            ("fake-milhouse!=1.3.0-1", "fake-milhouse-1.0.7-1"),
+            ("fake-milhouse<>1.3.0-1", "fake-milhouse-1.0.7-1"),
+            ("fake-milhouse>1.0.0-4", "fake-milhouse-1.3.0-1"),
+            ("fake-milhouse>=1.3.0", "fake-milhouse-1.3.0-1"),
+            ("fake-milhouse>=1.0.7-1", "fake-milhouse-1.3.0-1"),
+            ("fake-milhouse=>1.0.0-4", "fake-milhouse-1.3.0-1"),
+            ("fake-milhouse<=1.0.0-4", "fake-milhouse-1.0.0-4"),
+            ("fake-milhouse=<1.0.7-1", "fake-milhouse-1.0.7-1"),
+            ("fake-milhouse<1.3.0", "fake-milhouse-1.0.7-1"),
+            ("fake-milhouse<1.3.0-1", "fake-milhouse-1.0.7-1"),
+            ("fake-milhouse<1.0.7-1", "fake-milhouse-1.0.0-4"),
+        ]
+
+        def nevra(pkg):
+            if pkg.epoch:
+                return "{}-{}:{}-{}".format(pkg.name, pkg.epoch, pkg.version, pkg.release)
+            else:
+                return "{}-{}-{}".format(pkg.name, pkg.version, pkg.release)
+
+        print([nevra(p) for p in list(self.dnfbase.sack.query().available())])
+        for t in matrix:
+            r = self.runner._pkgver(t[0])
+            if t[1]:
+                self.assertTrue(len(r) > 0, t[0])
+                self.assertEqual(nevra(self.runner._pkgver(t[0])[0]), t[1], t[0])
+            else:
+                self.assertEqual(r, [], t[0])
+
+    def test_01_runner_multi_repo(self):
         """Test installing packages with updates in a 2nd repo"""
         # If this does not raise an error it means that:
         #   Installing a named package works (anaconda-core)
         #   Installing a pinned package works (exact-1.3.17)
         #   Installing a globbed set of package names from multiple repos works
+        #   Installing a package using version compare
         #   removepkg removes a package's files
         #   removefrom removes some, but not all, of a package's files
         #
         # These all need to be done in one template because run_pkg_transaction can only run once
         self.runner.run("install-test.tmpl")
         self.runner.run("install-remove-test.tmpl")
-        self.assertFalse(os.path.exists(joinpaths(self.root_dir, "/known-path/file-one.txt")))
-        self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/lorax-files/file-one.txt")))
-        self.assertFalse(os.path.exists(joinpaths(self.root_dir, "/lorax-files/file-two.txt")))
+
+        def exists(p):
+            return os.path.exists(joinpaths(self.root_dir, p))
+
+        self.assertFalse(exists("/known-path/file-one.txt"))
+        self.assertTrue(exists("/lorax-files/file-one.txt"))
+        self.assertFalse(exists("/lorax-files/file-two.txt"))
+        self.assertTrue(exists("/fake-marge/2.3.0-1"))
 
         # Check the debug log
-        self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/root/debug-pkgs.log")))
+        self.assertTrue(exists("/root/debug-pkgs.log"))
+
+        # Check package version installs
+        self.assertTrue(exists("/fake-lisa/1.1.4-5"))
+        self.assertFalse(exists("/fake-lisa/1.2.0-1"))
+        self.assertTrue(exists("/fake-milhouse/1.3.0-1"))
 
     def test_install_file(self):
         """Test append, and install template commands"""
