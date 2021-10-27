@@ -30,7 +30,7 @@ clearpart --all --initlabel
 rootpw rootme
 # Disk partitioning information
 reqpart
-part / --size=6656
+part / --size=8000
 
 %post
 # FIXME: it'd be better to get this installed from a package
@@ -368,20 +368,11 @@ EOF
 %end
 
 %packages
-@base-x
-@core
-@fonts
-@guest-desktop-agents
-@hardware-support
-@multimedia
-@networkmanager-submodules
-@workstation-product
-gnome-terminal
-aajohan-comfortaa-fonts
+@^workstation-product-environment
 dracut-config-generic
 dracut-live
 system-logos
-glibc-all-langpacks
+
 kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
 kernel-modules
@@ -392,7 +383,6 @@ syslinux
 -@input-methods
 -@standard
 -gfs2-utils
--reiserfs-utils
 
 # This package is needed to boot the iso on UEFI
 shim
