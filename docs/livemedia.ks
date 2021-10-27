@@ -407,4 +407,7 @@ efibootmgr
 initscripts
 chkconfig
 
+# Required for rd.live.check
+isomd5sum
+
 %end
