@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        36.0
+Version:        36.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Oct 28 2021 Brian C. Lane <bcl@redhat.com> 36.1-1
+- dnfbase: Handle defaults better (bcl@redhat.com)
+- ltmpl: Add version compare support to installpkg (bcl@redhat.com)
+
 * Mon Oct 11 2021 Brian C. Lane <bcl@redhat.com> 36.0-1
 - New lorax documentation - 36.0 (bcl@redhat.com)
 - docs: Remove logging command from examples (bcl@redhat.com)
