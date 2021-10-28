@@ -21,8 +21,7 @@ import logging
 log = logging.getLogger("livemedia-creator")
 
 import os
-import pycdlib
-from pycdlib.pycdlibexception import PyCdlibException
+import iso9660
 
 from pylorax.imgutils import mount, umount
 
@@ -92,13 +91,18 @@ class IsoMountpoint(object):
 
     def get_iso_label(self):
         """
-        Get the iso's label using isoinfo
+        Get the iso's label using pycdio
 
         Sets self.label if one is found
         """
         try:
-            iso = pycdlib.PyCdlib()
-            iso.open(self.iso_path)
-            self.label = iso.pvd.volume_identifier.decode("UTF-8").strip()
-        except PyCdlibException as e:
+            iso = iso9660.ISO9660.IFS(source=self.iso_path)
+            if not iso.is_open():
+                raise RuntimeError("error opening file")
+
+            self.label = iso.get_volume_id()
+            if self.label is None:
+                self.label = ""
+                raise RuntimeError("error reading volume id")
+        except RuntimeError as e:
             log.error("Problem reading label from %s: %s", self.iso_path, e)
