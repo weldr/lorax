@@ -151,12 +151,6 @@ usermod -aG wheel liveuser > /dev/null
 # Remove root password lock
 passwd -d root > /dev/null
 
-# turn off firstboot for livecd boots
-systemctl --no-reload disable firstboot-text.service 2> /dev/null || :
-systemctl --no-reload disable firstboot-graphical.service 2> /dev/null || :
-systemctl stop firstboot-text.service 2> /dev/null || :
-systemctl stop firstboot-graphical.service 2> /dev/null || :
-
 # don't use prelink on a running live image
 sed -i 's/PRELINKING=yes/PRELINKING=no/' /etc/sysconfig/prelink &>/dev/null || :
 
@@ -382,7 +376,6 @@ syslinux
 -@dial-up
 -@input-methods
 -@standard
--gfs2-utils
 
 # This package is needed to boot the iso on UEFI
 shim
