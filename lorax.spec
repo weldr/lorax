@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.7
+Version:        34.9.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,18 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Oct 29 2021 Brian C. Lane <bcl@redhat.com> 34.9.8-1
+- livemedia.ks: Drop unneeded commands (bcl@redhat.com)
+  Related: rhbz#2017993
+- livemedia.ks: Install workstation-product-environment (bcl@redhat.com)
+  Resolves: rhbz#2017993
+- templates: Change nomodeset / basic graphics to use inst.text (bcl@redhat.com)
+  Related: rhbz#1961092
+- templates: Drop nomodeset / basic graphics menu from live configs (bcl@redhat.com)
+  Related: rhbz#1961092
+- livemedia.ks: Add isomd5sum for use with rd.live.check (bcl@redhat.com)
+  Resolves: rhbz#2015908
+
 * Wed Oct 06 2021 Brian C. Lane <bcl@redhat.com> 34.9.7-1
 - runtime-cleanup: Remove dropped package from template (bcl@redhat.com)
   Related: rhbz#1991006
