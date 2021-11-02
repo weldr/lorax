@@ -68,7 +68,7 @@ def lorax_parser(dracut_default=""):
     optional.add_argument("--volid", default=None,
                         help="volume id", metavar="VOLID")
     optional.add_argument("--macboot", help="",
-                        action="store_true", default=True, dest="domacboot")
+                        action="store_true", default=False, dest="domacboot")
     optional.add_argument("--nomacboot", help="",
                         action="store_false", dest="domacboot")
     optional.add_argument("--noupgrade", help="",
@@ -205,7 +205,7 @@ def lmc_parser(dracut_default=""):
                         help="Directory to copy the resulting images and iso into. "
                              "Defaults to the temporary working directory")
 
-    parser.add_argument("--macboot", action="store_true", default=True,
+    parser.add_argument("--macboot", action="store_true", default=False,
                         dest="domacboot")
     parser.add_argument("--nomacboot", action="store_false",
                         dest="domacboot")
