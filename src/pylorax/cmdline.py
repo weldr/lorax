@@ -304,9 +304,9 @@ def lmc_parser(dracut_default=""):
     vagrant_group.add_argument("--vagrantfile",
                                help="optional vagrantfile")
 
-    parser.add_argument("--project", default="Linux",
+    parser.add_argument("--project", default="Red Hat Enterprise Linux",
                         help="substituted for @PROJECT@ in bootloader config files")
-    parser.add_argument("--releasever", default="34",
+    parser.add_argument("--releasever", default="9",
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
     parser.add_argument("--squashfs-only", action="store_true", default=False,

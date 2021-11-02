@@ -62,7 +62,7 @@ class MkefibootTool(Tool):
     """Create the efiboot.img needed for EFI booting"""
     tools = ["mkefiboot"]
 
-    def run(self, isodir, tmpdir, product="Fedora"):
+    def run(self, isodir, tmpdir, product="Red Hat Enterprise Linux"):
         cmd = ["mkefiboot", "--label=ANACONDA"]
         if log.root.level < log.INFO:
             cmd.append("--debug")
@@ -82,7 +82,7 @@ class MkmacbootTool(MkefibootTool):
     requirements = ["/usr/share/pixmaps/bootloader/fedora.icns",
                     "/usr/share/pixmaps/bootloader/fedora-media.vol"]
 
-    def run(self, isodir, tmpdir, product="Fedora"):
+    def run(self, isodir, tmpdir, product="Red Hat Enterprise Linux"):
         cmd = ["mkefiboot", "--label", "ANACONDA",
                "--apple", "--icon", self.requirements[0],
                "--diskname", self.requirements[1],
