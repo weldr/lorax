@@ -34,7 +34,7 @@ from pykickstart.constants import KS_SHUTDOWN
 from pykickstart.version import makeVersion
 
 # Use the Lorax treebuilder branch for iso creation
-from pylorax import ArchData
+from pylorax import DEFAULT_RELEASEVER, ArchData
 from pylorax.base import DataHolder
 from pylorax.executils import execWithRedirect
 from pylorax.imgutils import DracutChroot, PartitionMount
@@ -149,7 +149,7 @@ def dracut_args(opts):
 
 def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
                    vcpus=1, arch=None, title="Linux", project="Linux",
-                   releasever="34"):
+                   releasever=DEFAULT_RELEASEVER):
     """
     Generate an appliance description file
 
@@ -163,7 +163,7 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
     :param str arch: CPU architecture. Default is 'x86_64'
     :param str title: Title, passed to template. Default is 'Linux'
     :param str project: Project, passed to template. Default is 'Linux'
-    :param str releasever: Release version, passed to template. Default is 34
+    :param str releasever: Release version, passed to template.
     """
     if not (disk_img and template and outfile):
         return None
