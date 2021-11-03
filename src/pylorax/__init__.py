@@ -61,7 +61,8 @@ else:
 DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "--add", "fips"]
 
 # Used for DNF conf.module_platform_id
-DEFAULT_PLATFORM_ID = "platform:f34"
+DEFAULT_PLATFORM_ID = "platform:f36"
+DEFAULT_RELEASEVER = "36"
 
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64le", "s390x", "ia64", "aarch64")

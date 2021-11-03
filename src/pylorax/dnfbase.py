@@ -20,12 +20,12 @@ import dnf
 import os
 import shutil
 
-from pylorax import DEFAULT_PLATFORM_ID
+from pylorax import DEFAULT_PLATFORM_ID, DEFAULT_RELEASEVER
 from pylorax.sysutils import flatconfig
 
 def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
                         enablerepos=None, disablerepos=None,
-                        tempdir="/var/tmp", proxy=None, releasever="34",
+                        tempdir="/var/tmp", proxy=None, releasever=DEFAULT_RELEASEVER,
                         cachedir=None, logdir=None, sslverify=True, dnfplugins=None):
     """ Create a dnf Base object and setup the repositories and installroot
 

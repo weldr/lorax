@@ -22,7 +22,7 @@ import os
 import sys
 import argparse
 
-from pylorax import vernum
+from pylorax import DEFAULT_RELEASEVER, vernum
 
 version = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
@@ -306,7 +306,7 @@ def lmc_parser(dracut_default=""):
 
     parser.add_argument("--project", default="Linux",
                         help="substituted for @PROJECT@ in bootloader config files")
-    parser.add_argument("--releasever", default="34",
+    parser.add_argument("--releasever", default=DEFAULT_RELEASEVER,
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
     parser.add_argument("--squashfs-only", action="store_true", default=False,
