@@ -3,7 +3,6 @@
 
 <%page args="root, basearch, libdir, configdir"/>
 <%
-stubs = ("list-harddrives", "raidstart", "raidstop")
 configdir = configdir + "/common"
 import os, time
 SOURCE_DATE_EPOCH = os.environ.get('SOURCE_DATE_EPOCH', str(int(time.time())))
@@ -11,9 +10,7 @@ SOURCE_DATE_EPOCH = os.environ.get('SOURCE_DATE_EPOCH', str(int(time.time())))
 
 ## move_stubs()
 move usr/share/anaconda/restart-anaconda usr/bin
-%for stub in stubs:
-    -move usr/share/anaconda/${stub}-stub usr/bin/${stub}
-%endfor
+move usr/share/anaconda/list-harddrives-stub usr/bin/list-harddrives
 
 ## move_repos()
 move etc/yum.repos.d etc/anaconda.repos.d
