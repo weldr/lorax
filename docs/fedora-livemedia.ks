@@ -382,6 +382,7 @@ EOF
 gnome-terminal
 anaconda
 anaconda-live
+anaconda-install-img-deps
 dracut-config-generic
 dracut-live
 glibc-all-langpacks
