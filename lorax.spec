@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.12
+Version:        34.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Nov 08 2021 Brian C. Lane <bcl@redhat.com> 34.13-1
+- Use fedora:34 for Dockerfile.test (bcl@redhat.com)
+- dnfbase: Handle defaults better (bcl@redhat.com)
+- ltmpl: Add version compare support to installpkg (bcl@redhat.com)
+- Install unicode.pf2 from new directory (bcl@redhat.com)
+- fedora-livemedia: Add anaconda-install-img-deps (bcl@redhat.com)
+- New lorax documentation - 34.12 (bcl@redhat.com)
+
 * Tue Jun 01 2021 Brian C. Lane <bcl@redhat.com> 34.12-1
 - Add a context manager for dracut (bcl@redhat.com)
   Resolves: rhbz#1962975
