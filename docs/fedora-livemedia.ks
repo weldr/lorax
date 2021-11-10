@@ -337,6 +337,11 @@ FOE
     cp /usr/share/anaconda/gnome/fedora-welcome.desktop ~liveuser/.config/autostart/
   fi
 
+  # Disable GNOME welcome tour so it doesn't overlap with Fedora welcome screen
+  cat >> /usr/share/glib-2.0/schemas/org.gnome.shell.gschema.override << FOE
+welcome-dialog-last-shown-version='4294967295'
+FOE
+
   # Copy Anaconda branding in place
   if [ -d /usr/share/lorax/product/usr/share/anaconda ]; then
     cp -a /usr/share/lorax/product/* /
