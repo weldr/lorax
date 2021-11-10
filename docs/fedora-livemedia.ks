@@ -18,7 +18,7 @@ network  --bootproto=dhcp --device=link --activate
 selinux --enforcing
 
 # System services
-services --disabled="network,sshd" --enabled="NetworkManager,ModemManager"
+services --disabled="sshd" --enabled="NetworkManager,ModemManager"
 
 # livemedia-creator modifications.
 shutdown
@@ -63,21 +63,14 @@ livedir="LiveOS"
 for arg in \`cat /proc/cmdline\` ; do
   if [ "\${arg##rd.live.dir=}" != "\${arg}" ]; then
     livedir=\${arg##rd.live.dir=}
-    return
+    continue
   fi
   if [ "\${arg##live_dir=}" != "\${arg}" ]; then
     livedir=\${arg##live_dir=}
-    return
   fi
 done
 
-# enable swaps unless requested otherwise
-swaps=\`blkid -t TYPE=swap -o device\`
-if ! strstr "\`cat /proc/cmdline\`" noswap && [ -n "\$swaps" ] ; then
-  for s in \$swaps ; do
-    action "Enabling swap partition \$s" swapon \$s
-  done
-fi
+# enable swapfile unless requested otherwise
 if ! strstr "\`cat /proc/cmdline\`" noswap && [ -f /run/initramfs/live/\${livedir}/swap.img ] ; then
   action "Enabling swap file" swapon /run/initramfs/live/\${livedir}/swap.img
 fi
@@ -122,7 +115,6 @@ findPersistentHome() {
   for arg in \`cat /proc/cmdline\` ; do
     if [ "\${arg##persistenthome=}" != "\${arg}" ]; then
       homedev=\${arg##persistenthome=}
-      return
     fi
   done
 }
@@ -142,7 +134,7 @@ if [ -n "\$configdone" ]; then
   exit 0
 fi
 
-# add fedora user with no passwd
+# add liveuser user with no passwd
 action "Adding live user" useradd \$USERADDARGS -c "Live System User" liveuser
 passwd -d liveuser > /dev/null
 usermod -aG wheel liveuser > /dev/null
@@ -186,9 +178,7 @@ sed -i 's/rtcsync//' /etc/chrony.conf
 touch /.liveimg-configured
 
 # add static hostname to work around xauth bug
-# https://bugzilla.redhat.com/show_bug.cgi?id=679486
-echo "localhost" > /etc/hostname
-
+hostnamectl set-hostname "localhost-live"
 EOF
 
 # bah, hal starts way too late
@@ -271,7 +261,7 @@ releasever=$(rpm -q --qf '%{version}\n' --whatprovides system-release)
 basearch=$(uname -i)
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch
 echo "Packages within this LiveCD"
-rpm -qa
+rpm -qa --qf '%{size}\t%{name}-%{version}-%{release}.%{arch}\n' |sort -rn
 # Note that running rpm recreates the rpm db files which aren't needed or wanted
 rm -f /var/lib/rpm/__db*
 
@@ -281,18 +271,23 @@ rm -f /var/lib/rpm/__db*
 # make sure there aren't core files lying around
 rm -f /core*
 
+# remove random seed, the newly installed instance should make it's own
+rm -f /var/lib/systemd/random-seed
+
 # convince readahead not to collect
 # FIXME: for systemd
 
 echo 'File created by kickstart. See systemd-update-done.service(8).' \
     | tee /etc/.updated >/var/.updated
 
-# Remove random-seed
-rm /var/lib/systemd/random-seed
-
 # Remove the rescue kernel and image to save space
 # Installation will recreate these on the target
 rm -f /boot/*-rescue*
+
+# Remove machine-id on pre generated images
+rm -f /etc/machine-id
+touch /etc/machine-id
+
 %end
 
 %post
@@ -318,6 +313,18 @@ FOE
 mkdir ~liveuser/.config
 touch ~liveuser/.config/gnome-initial-setup-done
 
+# suppress anaconda spokes redundant with gnome-initial-setup
+cat >> /etc/sysconfig/anaconda << FOE
+[NetworkSpoke]
+visited=1
+
+[PasswordSpoke]
+visited=1
+
+[UserSpoke]
+visited=1
+FOE
+
 # make the installer show up
 if [ -f /usr/share/applications/liveinst.desktop ]; then
   # Show harddisk install in shell dash
@@ -327,7 +334,7 @@ if [ -f /usr/share/applications/liveinst.desktop ]; then
 
   cat >> /usr/share/glib-2.0/schemas/org.gnome.shell.gschema.override << FOE
 [org.gnome.shell]
-favorite-apps=['firefox.desktop', 'evolution.desktop', 'rhythmbox.desktop', 'shotwell.desktop', 'org.gnome.Nautilus.desktop', 'anaconda.desktop']
+favorite-apps=['firefox.desktop', 'org.gnome.Calendar.desktop', 'rhythmbox.desktop', 'org.gnome.Photos.desktop', 'org.gnome.Nautilus.desktop', 'anaconda.desktop']
 FOE
 
   # Make the welcome screen show up
@@ -336,6 +343,11 @@ FOE
     cp /usr/share/anaconda/gnome/fedora-welcome.desktop /usr/share/applications/
     cp /usr/share/anaconda/gnome/fedora-welcome.desktop ~liveuser/.config/autostart/
   fi
+
+  # Disable GNOME welcome tour so it doesn't overlap with Fedora welcome screen
+  cat >> /usr/share/glib-2.0/schemas/org.gnome.shell.gschema.override << FOE
+welcome-dialog-last-shown-version='4294967295'
+FOE
 
   # Copy Anaconda branding in place
   if [ -d /usr/share/lorax/product/usr/share/anaconda ]; then
@@ -367,20 +379,11 @@ EOF
 %end
 
 %packages
+@^workstation-product-environment
 @anaconda-tools
-@base-x
-@core
-@firefox
-@fonts
-@guest-desktop-agents
-@hardware-support
-@libreoffice
-@multimedia
-@networkmanager-submodules
-@printing
-@workstation-product
-gnome-terminal
+aajohan-comfortaa-fonts
 anaconda
+anaconda-install-env-deps
 anaconda-live
 dracut-config-generic
 dracut-live
@@ -389,13 +392,12 @@ kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
 kernel-modules
 kernel-modules-extra
-memtest86+
 syslinux
 -@dial-up
 -@input-methods
 -@standard
 -gfs2-utils
--reiserfs-utils
+-gnome-boxes
 
 # This package is needed to boot the iso on UEFI
 shim
