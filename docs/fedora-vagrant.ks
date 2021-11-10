@@ -52,7 +52,6 @@ kernel
 kernel-modules
 kernel-modules-extra
 
-memtest86+
 grub2-efi
 grub2
 shim
