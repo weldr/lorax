@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        36.1
+Version:        36.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Nov 10 2021 Brian C. Lane <bcl@redhat.com> 36.2-1
+- Remove memtest86+ from example kickstarts (bcl@redhat.com)
+- fedora-livemedia: Update example kickstart (bcl@redhat.com)
+- mount: Switch to using pycdio instead of pycdlib (bcl@redhat.com)
+- Move default releasever into pylorax DEFAULT_RELEASEVER (bcl@redhat.com)
+- runtime-postinstall: Drop raidstart/stop stub code (bcl@redhat.com)
+- runtime-install: Fix grub2 epoch, it is 1 not 0 (bcl@redhat.com)
+- Update runtime-install/cleanup for Marvell Prestera fw split (awilliam@redhat.com)
+
 * Thu Oct 28 2021 Brian C. Lane <bcl@redhat.com> 36.1-1
 - dnfbase: Handle defaults better (bcl@redhat.com)
 - ltmpl: Add version compare support to installpkg (bcl@redhat.com)
