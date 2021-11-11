@@ -74,30 +74,25 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
         Loops until self.server.kill is True
         """
         log.info("Processing logs from %s", self.client_address)
-        line = ""
+        data = b""
         while True:
             if self.server.kill:
                 break
 
             try:
-                data = str(self.request.recv(4096), "utf8")
-                if self.fp:
-                    self.fp.write(data)
-                    self.fp.flush()
-
-                # check the data for errors and set error flag
-                # need to assemble it into lines so we can test for the error
-                # string.
-                while data:
-                    more = data.split("\n", 1)
-                    line += more[0]
-                    if len(more) > 1:
-                        self.iserror(line)
-                        line = ""
-                        data = more[1]
+                data += self.request.recv(4096)
+                for line in data.splitlines(keepends=True):
+                    if line.endswith(b"\n"):
+                        # Ignore invalid UTF8 inside lines
+                        self.iserror(str(line[:-1], "utf8", "ignore"))
+                        if self.fp:
+                            self.fp.write(str(line, "utf8", "ignore"))
+                            self.fp.flush()
+                        data = b""
                     else:
-                        data = None
-
+                        # Not the end of the line, keep for later
+                        data = line
+                        break
             except socket.timeout:
                 pass
             except Exception as e:       # pylint: disable=broad-except
@@ -106,7 +101,6 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
 
     def finish(self):
         log.info("Shutting down log processing")
-        self.request.close()
         if self.fp:
             self.fp.close()
 
@@ -202,3 +196,4 @@ class LogMonitor(object):
         """Force shutdown of the monitoring thread"""
         self.server.kill = True
         self.server_thread.join()
+        self.server.server_close()
