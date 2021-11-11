@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        35.7
+Version:        35.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,23 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Nov 10 2021 Brian C. Lane <bcl@redhat.com> 35.8-1
+- mount: Switch to using pycdio instead of pycdlib (bcl@redhat.com)
+- fedora-livemedia: Turn off GNOME welcome tour (bcl@redhat.com)
+- dnfbase: Handle defaults better (bcl@redhat.com)
+- ltmpl: Add version compare support to installpkg (bcl@redhat.com)
+- fedora-livemedia: Add anaconda-install-img-deps (bcl@redhat.com)
+- Use fedora:35 for Dockerfile.test (bcl@redhat.com)
+- Move default releasever into pylorax DEFAULT_RELEASEVER (bcl@redhat.com)
+- runtime-postinstall: Drop raidstart/stop stub code (bcl@redhat.com)
+- Update runtime-install/cleanup for Marvell Prestera fw split (awilliam@redhat.com)
+- New lorax documentation - 35.7 (bcl@redhat.com)
+- Fix pylint warnings about string formatting (bcl@redhat.com)
+- tests: Ignore new pylint warnings (bcl@redhat.com)
+- runtime-install: exclude liquidio and netronome firmwares (awilliam@redhat.com)
+- runtime-cleanup: drop Marvell Prestera firmware files (awilliam@redhat.com)
+- runtime-cleanup: drop some Qualcomm smartphone firmwares (awilliam@redhat.com)
+
 * Tue Sep 07 2021 Brian C. Lane <bcl@redhat.com> 35.7-1
 - templates: Remove memtest86+ (bcl@redhat.com)
 
