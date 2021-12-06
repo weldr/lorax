@@ -165,7 +165,7 @@ class Mkisofs_aarch64(MakeISOTool):
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode=NO_EFI):
         cmd = ["mkisofs", "-o", output_iso, "-R", "-J", "-V", volume_name,
-               "-T"]
+               "-joliet-long", "-T"]
         if log.root.level < log.INFO:
             cmd.append("--verbose")
         if efimode > NO_EFI:
@@ -188,8 +188,8 @@ class Mkisofs_ppc(MakeISOTool):
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode=NO_EFI):
         cmd = ["mkisofs", "-o", output_iso, "-R", "-J", "-V", volume_name,
-               "-U", "-T", "-part", "-hfs", "-r", "-l", "-sysid", "PPC",
-               "-chrp-boot", "-no-desktop", "-allow-multidot",
+               "-joliet-long", "-U", "-T", "-part", "-hfs", "-r", "-l",
+               "-sysid", "PPC", "-chrp-boot", "-no-desktop", "-allow-multidot",
                "-map", self.requirements[0], "-hfs-bless", "boot/grub/powerpc-ieee1275"]
         if log.root.level < log.INFO:
             cmd.append("--verbose")
@@ -209,8 +209,8 @@ class Mkisofs_ppc64le(MakeISOTool):
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode=NO_EFI):
         cmd = ["mkisofs", "-o", output_iso, "-R", "-J", "-V", volume_name,
-               "-T", "-part", "-hfs", "-r", "-l", "-sysid", "PPC",
-               "-chrp-boot", "-no-desktop", "-allow-multidot",
+               "-joliet-long", "-T", "-part", "-hfs", "-r", "-l", "-sysid",
+               "PPC", "-chrp-boot", "-no-desktop", "-allow-multidot",
                "-map", self.requirements[0]]
         if log.root.level < log.INFO:
             cmd.append("--verbose")
@@ -230,6 +230,7 @@ class Mkisofs_s390(MakeISOTool):
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode=NO_EFI):
         cmd = ["mkisofs", "-o", output_iso, "-R", "-J", "-V", volume_name,
+               "-joliet-long",
                "-b", "images/cdboot.img",
                "-c", "images/boot.cat",
                "-boot-load-size", "4", "-no-emul-boot"]
@@ -251,6 +252,7 @@ class Mkisofs_x86_64(MakeISOTool):
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode=NO_EFI):
         cmd = ["mkisofs", "-o", output_iso, "-R", "-J", "-V", volume_name,
+               "-joliet-long",
                "-b", "isolinux/isolinux.bin",
                "-c", "isolinux/boot.cat",
                "-boot-load-size", "4", "-boot-info-table", "-no-emul-boot"]
@@ -276,7 +278,7 @@ class Xorrisofs_aarch64(MakeISOTool):
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode):
         cmd = ["xorrisofs", "-o", output_iso,
-               "-R", "-J", "-V", volume_name]
+               "-R", "-J", "-V", volume_name, "-joliet-long"]
         if log.root.level < log.INFO:
             cmd.append("--verbose")
         if efimode >= EFIBOOT:
@@ -299,7 +301,7 @@ class Xorrisofs_ppc64le(MakeISOTool):
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode=NO_EFI):
         cmd = ["xorrisofs", "-o", output_iso,
-               "-R", "-J", "-V", volume_name,
+               "-R", "-J", "-V", volume_name, "-joliet-long",
                "-U", "-r", "-l", "-sysid", "PPC",
                "-A", volume_name, "-chrp-boot"]
         if log.root.level < log.INFO:
@@ -320,7 +322,7 @@ class Xorrisofs_s390(MakeISOTool):
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode=NO_EFI):
         cmd = ["xorrisofs", "-o", output_iso,
-               "-R", "-J", "-V", volume_name,
+               "-R", "-J", "-V", volume_name, "-joliet-long",
                "-b", "images/cdboot.img", "-c", "images/boot.cat",
                "-boot-load-size", "4", "-no-emul-boot"]
         if log.root.level < log.INFO:
@@ -341,7 +343,7 @@ class Xorrisofs_x86_64(MakeISOTool):
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode=NO_EFI):
         cmd = ["xorrisofs", "-o", output_iso,
-               "-R", "-J", "-V", volume_name,
+               "-R", "-J", "-V", volume_name, "-joliet-long",
                "-isohybrid-mbr", self.requirements[0],
                "-b", "isolinux/isolinux.bin",
                "-c", "isolinux/boot.cat",
