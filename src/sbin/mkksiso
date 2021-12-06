@@ -605,7 +605,7 @@ def main():
 
     if os.getuid() != 0:
         log.error("You must run this as root, it needs to mount the iso and run mkefiboot")
-        sys.exit(-1)
+        return 1
 
     try:
         app = MakeKickstartISO(args.ks, args.input_iso, args.output_iso,
@@ -613,6 +613,10 @@ def main():
         app.run()
     except RuntimeError as e:
         log.error(str(e))
+        return 1
+
+    return 0
+
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
