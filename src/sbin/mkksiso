@@ -445,6 +445,9 @@ class MakeKickstartISO():
                     os.unlink(os.path.join(src, f))
 
     def run_mkefiboot(self, isodir, tmpdir):
+        if self.efimode == NO_EFI:
+            return
+
         self.mkefiboot.run(isodir, tmpdir)
         if self.efimode == MACBOOT:
             self.mkmacboot.run(isodir, tmpdir)
