@@ -182,7 +182,7 @@ class Mkisofs_aarch64(MakeISOTool):
 
 class Mkisofs_ppc(MakeISOTool):
     """Use the mkisofs tool to create the final iso (ppc)"""
-    tools = ["mkisofs"]
+    tools = ["mkisofs", "implantisomd5"]
     requirements = ["/usr/share/lorax/templates.d/99-generic/config_files/ppc/mapping"]
     arches = ["ppc"]
 
@@ -203,7 +203,7 @@ class Mkisofs_ppc(MakeISOTool):
 
 class Mkisofs_ppc64le(MakeISOTool):
     """Use the mkisofs tool to create the final iso (ppc64le)"""
-    tools = ["mkisofs"]
+    tools = ["mkisofs", "implantisomd5"]
     requirements = ["/usr/share/lorax/templates.d/99-generic/config_files/ppc/mapping"]
     arches = ["ppc64le"]
 
@@ -224,7 +224,7 @@ class Mkisofs_ppc64le(MakeISOTool):
 
 class Mkisofs_s390(MakeISOTool):
     """Use the mkisofs tool to create the final iso (s390)"""
-    tools = ["mkisofs"]
+    tools = ["mkisofs", "implantisomd5"]
     requirements = []
     arches = ["s390", "s390x"]
 
@@ -246,7 +246,7 @@ class Mkisofs_s390(MakeISOTool):
 
 class Mkisofs_x86_64(MakeISOTool):
     """Use the mkisofs tool to create the final iso (x86_64)"""
-    tools = ["mkisofs", "isohybrid"]
+    tools = ["mkisofs", "isohybrid", "implantisomd5"]
     requirements = []
     arches = ["x86_64", "i386"]
 
