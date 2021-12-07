@@ -398,6 +398,16 @@ class MakeKickstartISO():
             self.label = self.iso.label if volid is None else volid
             if not self.label:
                 raise RuntimeError("No volume id found, cannot create iso.")
+
+            # If the iso contains a .discinfo file check the arch against the host's
+            if os.path.exists(os.path.join(self.iso.mount_dir, ".discinfo")):
+                with open(os.path.join(self.iso.mount_dir, ".discinfo")) as f:
+                    discinfo = [l.strip() for l in f.readlines()]
+
+                log.info("iso arch = %s", discinfo[2])
+                if os.uname().machine != discinfo[2]:
+                    raise RuntimeError("iso arch does not match the host arch.")
+
             log.info("Volume Id = %s", self.label)
 
             if os.path.exists(os.path.join(self.iso.mount_dir, "images/efiboot.img")):
