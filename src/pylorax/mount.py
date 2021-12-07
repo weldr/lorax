@@ -58,7 +58,9 @@ class IsoMountpoint(object):
             self.mount_dir = self.initrd_path
 
         kernel_list = [("/isolinux/vmlinuz", "/isolinux/initrd.img"),
-                       ("/ppc/ppc64/vmlinuz", "/ppc/ppc64/initrd.img")]
+                       ("/ppc/ppc64/vmlinuz", "/ppc/ppc64/initrd.img"),
+                       ("/images/pxeboot/vmlinuz", "/images/pxeboot/initrd.img"),
+                       ("/images/kernel.img", "/images/initrd.img")]
 
         if os.path.isdir(self.mount_dir+"/repodata"):
             self.repo = self.mount_dir
