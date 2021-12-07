@@ -396,6 +396,8 @@ class MakeKickstartISO():
         try:
             self.iso = IsoMountpoint(self.input_iso)
             self.label = self.iso.label if volid is None else volid
+            if not self.label:
+                raise RuntimeError("No volume id found, cannot create iso.")
             log.info("Volume Id = %s", self.label)
 
             if os.path.exists(os.path.join(self.iso.mount_dir, "images/efiboot.img")):
