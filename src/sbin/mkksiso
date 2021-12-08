@@ -31,6 +31,9 @@ NO_EFI = 0
 EFIBOOT = 1
 MACBOOT = 2
 
+# Maximum filename length
+MAX_FNAME = 253
+
 class Tool():
     """A class to check for executables and required files"""
     tools = []
@@ -103,19 +106,29 @@ class MkmacbootTool(MkefibootTool):
 
 class MakeISOTool(Tool):
     """Class to hold details for specific iso creation tools"""
-    def check_file_sizes(self, grafts):
-        """Return True any file exceeds 4GiB"""
+    def check_files(self, grafts):
+        """Check file size and filename length for problems
+
+        Returns True if any file exceeds 4GiB
+        Raises a RuntimeError if any filename is longer than MAX_FNAME
+        This examines all the files included, so may take some time.
+        """
+        big_file = False
         for src, _ in grafts:
             if os.path.isdir(src):
                 for top, dirs, files in os.walk(src):
                     for f in files + dirs:
                         if os.stat(os.path.join(top,f)).st_size >= 4*1024**3:
-                            return True
+                            big_file = True
+                        if len(f) > MAX_FNAME:
+                            raise RuntimeError("iso contains filenames that are too long: %s" % f)
             else:
                 if os.stat(src).st_size >= 4*1024**3:
-                    return True
+                    big_file = True
+                if len(src) > MAX_FNAME:
+                    raise RuntimeError("iso contains filenames that are too long: %s" % f)
 
-        return False
+        return big_file
 
     def _exec(self, cmd, grafts, output_iso, efimode=NO_EFI, implantmd5=True):
         """Add the grafts and run the command and then implant the md5 checksums"""
@@ -173,7 +186,7 @@ class Mkisofs_aarch64(MakeISOTool):
         if efimode > EFIBOOT:
             cmd.extend(["-eltorito-alt-boot", "-e", "images/macboot.img", "-no-emul-boot"])
 
-        if self.check_file_sizes(grafts):
+        if self.check_files(grafts):
             cmd.append("-allow-limited-size")
 
         # Create the iso and implant the md5 checksums
@@ -194,7 +207,7 @@ class Mkisofs_ppc(MakeISOTool):
         if log.root.level < log.INFO:
             cmd.append("--verbose")
 
-        if self.check_file_sizes(grafts):
+        if self.check_files(grafts):
             cmd.append("-allow-limited-size")
 
         # Create the iso and implant the md5 checksums
@@ -215,7 +228,7 @@ class Mkisofs_ppc64le(MakeISOTool):
         if log.root.level < log.INFO:
             cmd.append("--verbose")
 
-        if self.check_file_sizes(grafts):
+        if self.check_files(grafts):
             cmd.append("-allow-limited-size")
 
         # Create the iso and implant the md5 checksums
@@ -237,7 +250,7 @@ class Mkisofs_s390(MakeISOTool):
         if log.root.level < log.INFO:
             cmd.append("--verbose")
 
-        if self.check_file_sizes(grafts):
+        if self.check_files(grafts):
             cmd.append("-allow-limited-size")
 
         # Create the iso and implant the md5 checksums
@@ -263,7 +276,7 @@ class Mkisofs_x86_64(MakeISOTool):
         if efimode > EFIBOOT:
             cmd.extend(["-eltorito-alt-boot", "-e", "images/macboot.img", "-no-emul-boot"])
 
-        if self.check_file_sizes(grafts):
+        if self.check_files(grafts):
             cmd.append("-allow-limited-size")
 
         # Create the iso, implant the md5 checksums, and create hybrid iso
@@ -286,7 +299,7 @@ class Xorrisofs_aarch64(MakeISOTool):
         if efimode == MACBOOT:
             cmd.extend(["-eltorito-alt-boot", "-e", "images/macboot.img", "-no-emul-boot"])
 
-        if self.check_file_sizes(grafts):
+        if self.check_files(grafts):
             cmd.extend(["-iso-level", "3"])
 
         # Create the iso and implant the md5 checksums
@@ -307,7 +320,7 @@ class Xorrisofs_ppc64le(MakeISOTool):
         if log.root.level < log.INFO:
             cmd.append("--verbose")
 
-        if self.check_file_sizes(grafts):
+        if self.check_files(grafts):
             cmd.extend(["-iso-level", "3"])
 
         # Create the iso and implant the md5 checksums
@@ -328,7 +341,7 @@ class Xorrisofs_s390(MakeISOTool):
         if log.root.level < log.INFO:
             cmd.append("--verbose")
 
-        if self.check_file_sizes(grafts):
+        if self.check_files(grafts):
             cmd.extend(["-iso-level", "3"])
 
         # Create the iso and implant the md5 checksums
@@ -355,7 +368,7 @@ class Xorrisofs_x86_64(MakeISOTool):
         if efimode == MACBOOT:
             cmd.extend(["-eltorito-alt-boot", "-e", "images/macboot.img", "-no-emul-boot", "-isohybrid-gpt-hfsplus"])
 
-        if self.check_file_sizes(grafts):
+        if self.check_files(grafts):
             cmd.extend(["-iso-level", "3"])
 
         # Create the iso and implant the md5 checksums
