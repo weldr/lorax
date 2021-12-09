@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        36.2
+Version:        36.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Dec 09 2021 Brian C. Lane <bcl@redhat.com> 36.3-1
+- mkksiso: Check the length of the filenames (bcl@redhat.com)
+- mkksiso: Check the iso's arch against the host's (bcl@redhat.com)
+- mkksiso: Add missing implantisomd5 tool requirements (bcl@redhat.com)
+- mkksiso: Raise error if no volume id is found (bcl@redhat.com)
+- mount: Add s390x support to IsoMountopoint (bcl@redhat.com)
+- mkksiso: Skip mkefiboot for non-UEFI isos (bcl@redhat.com)
+- mkksiso: Add -joliet-long (bcl@redhat.com)
+- mkksiso: Return 1 on errors (bcl@redhat.com)
+- Fix monitor problem with split UTF8 characters (bcl@redhat.com)
+
 * Wed Nov 10 2021 Brian C. Lane <bcl@redhat.com> 36.2-1
 - Remove memtest86+ from example kickstarts (bcl@redhat.com)
 - fedora-livemedia: Update example kickstart (bcl@redhat.com)
