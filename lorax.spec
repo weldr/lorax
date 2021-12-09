@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.9
+Version:        34.9.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,23 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Dec 09 2021 Brian C. Lane <bcl@redhat.com> 34.9.10-1
+- mkksiso: Check the length of the filenames (bcl@redhat.com)
+  Related: rhbz#2028104
+- mkksiso: Check the iso's arch against the host's (bcl@redhat.com)
+  Related: rhbz#2028104
+- mkksiso: Add missing implantisomd5 tool requirements (bcl@redhat.com)
+  Related: rhbz#2028104
+- mkksiso: Raise error if no volume id is found (bcl@redhat.com)
+  Related: rhbz#2028104
+- mount: Add s390x support to IsoMountopoint (bcl@redhat.com)
+  Resolves: rhbz#2028104
+- mkksiso: Skip mkefiboot for non-UEFI isos (bcl@redhat.com)
+- mkksiso: Add -joliet-long (bcl@redhat.com)
+  Related: rhbz#2028104
+- mkksiso: Return 1 on errors (bcl@redhat.com)
+  Related: rhbz#2028104
+
 * Wed Nov 03 2021 Brian C. Lane <bcl@redhat.com> 34.9.9-1
 - Change macboot default to false (bcl@redhat.com)
   Resolves: rhbz#2019512
