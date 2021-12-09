@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.63
+Version:        28.14.64
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -261,6 +261,28 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Dec 09 2021 Brian C. Lane <bcl@redhat.com> 28.14.64-1
+- mkksiso: Check the length of the filenames (bcl)
+  Related: rhbz#2028048
+- mkksiso: Check the iso's arch against the host's (bcl)
+  Related: rhbz#2028048
+- mkksiso: Add missing implantisomd5 tool requirements (bcl)
+  Related: rhbz#2028048
+- mkksiso: Raise error if no volume id is found (bcl)
+  Related: rhbz#2028048
+- mount: Add aarch64 and s390x support to IsoMountopoint (bcl)
+  Resolves: rhbz#2028089
+- mkksiso: Skip mkefiboot for non-UEFI isos (bcl)
+  Resolves: rhbz#2028097
+- mkksiso: Add -joliet-long (bcl)
+  Resolves: rhbz#2028044
+- mkksiso: Return 1 on errors (bcl)
+  Resolves: rhbz#2028048
+- Increase boot.iso rootfs to 4GiB (bcl)
+  Resolves: rhbz#2028059
+- Fix specfile to match the one from dist-git (bcl)
+  Related: rhbz#2001942
+
 * Fri Oct 15 2021 Brian C. Lane <bcl@redhat.com> 28.14.63-1
 - Handle all possible dnf group_install errors (bcl)
   Related: rhbz#1947958
