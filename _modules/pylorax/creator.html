@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.creator &mdash; Lorax 36.0 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 36.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
@@ -24,7 +24,7 @@
             <a href="../../index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                36.0
+                36.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -106,7 +106,7 @@
 <span class="kn">from</span> <span class="nn">pykickstart.version</span> <span class="kn">import</span> <span class="n">makeVersion</span>
 
 <span class="c1"># Use the Lorax treebuilder branch for iso creation</span>
-<span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">ArchData</span>
+<span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">DEFAULT_RELEASEVER</span><span class="p">,</span> <span class="n">ArchData</span>
 <span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
 <span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithRedirect</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">DracutChroot</span><span class="p">,</span> <span class="n">PartitionMount</span>
@@ -221,7 +221,7 @@
 
 <div class="viewcode-block" id="make_appliance"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_appliance">[docs]</a><span class="k">def</span> <span class="nf">make_appliance</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">networks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ram</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
                    <span class="n">vcpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span>
-                   <span class="n">releasever</span><span class="o">=</span><span class="s2">&quot;34&quot;</span><span class="p">):</span>
+                   <span class="n">releasever</span><span class="o">=</span><span class="n">DEFAULT_RELEASEVER</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate an appliance description file</span>
 
@@ -235,7 +235,7 @@
 <span class="sd">    :param str arch: CPU architecture. Default is &#39;x86_64&#39;</span>
 <span class="sd">    :param str title: Title, passed to template. Default is &#39;Linux&#39;</span>
 <span class="sd">    :param str project: Project, passed to template. Default is &#39;Linux&#39;</span>
-<span class="sd">    :param str releasever: Release version, passed to template. Default is 34</span>
+<span class="sd">    :param str releasever: Release version, passed to template.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">disk_img</span> <span class="ow">and</span> <span class="n">template</span> <span class="ow">and</span> <span class="n">outfile</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mkksiso &mdash; Lorax 36.0 documentation</title>
+  <title>mkksiso &mdash; Lorax 36.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
@@ -27,7 +27,7 @@
             <a href="index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                36.0
+                36.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -94,7 +94,9 @@ you can add a kickstart to a boot.iso and the kickstart will be executed when
 the iso is booted. If the original iso was created with EFI and Mac support the
 kickstart boot.iso will include this support as well.</p>
 <p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> needs to be run as root, it depends on mounting the original iso
-and you need to be root to be able to do that.</p>
+and you need to be root to be able to do that. The host system architecture
+needs to match that of the iso. <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> will raise an error if it finds a
+.discinfo on the iso with a mismatched arch.</p>
 <section id="mkksiso-cmdline-arguments">
 <h2>mkksiso cmdline arguments<a class="headerlink" href="#mkksiso-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
 <p>Add a kickstart and files to an iso</p>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax package &mdash; Lorax 36.0 documentation</title>
+  <title>pylorax package &mdash; Lorax 36.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
@@ -26,7 +26,7 @@
             <a href="index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                36.0
+                36.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -306,7 +306,7 @@ has been used.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pylorax.creator.make_appliance">
-<span class="sig-prename descclassname"><span class="pre">pylorax.creator.</span></span><span class="sig-name descname"><span class="pre">make_appliance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disk_img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">networks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ram</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vcpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Linux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Linux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releasever</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'34'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_appliance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.creator.make_appliance" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pylorax.creator.</span></span><span class="sig-name descname"><span class="pre">make_appliance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disk_img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">networks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ram</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vcpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Linux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Linux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releasever</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'36'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_appliance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.creator.make_appliance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate an appliance description file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -321,7 +321,7 @@ has been used.</p>
 <li><p><strong>arch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) -- CPU architecture. Default is 'x86_64'</p></li>
 <li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) -- Title, passed to template. Default is 'Linux'</p></li>
 <li><p><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) -- Project, passed to template. Default is 'Linux'</p></li>
-<li><p><strong>releasever</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) -- Release version, passed to template. Default is 34</p></li>
+<li><p><strong>releasever</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) -- Release version, passed to template.</p></li>
 </ul>
 </dd>
 </dl>
@@ -510,7 +510,7 @@ See the cmdline --help for livemedia-creator for the possible options</p>
 <span id="pylorax-dnfbase-module"></span><h2>pylorax.dnfbase module<a class="headerlink" href="#module-pylorax.dnfbase" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="pylorax.dnfbase.get_dnf_base_object">
-<span class="sig-prename descclassname"><span class="pre">pylorax.dnfbase.</span></span><span class="sig-name descname"><span class="pre">get_dnf_base_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">installroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mirrorlists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enablerepos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disablerepos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/var/tmp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releasever</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'34'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sslverify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dnfplugins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfbase.html#get_dnf_base_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfbase.get_dnf_base_object" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pylorax.dnfbase.</span></span><span class="sig-name descname"><span class="pre">get_dnf_base_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">installroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mirrorlists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enablerepos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disablerepos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/var/tmp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releasever</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'36'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sslverify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dnfplugins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfbase.html#get_dnf_base_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfbase.get_dnf_base_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a dnf Base object and setup the repositories and installroot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1196,9 +1196,40 @@ image and then optionally, based on the opts passed, creates tarfile.</p>
 <section id="module-pylorax.ltmpl">
 <span id="pylorax-ltmpl-module"></span><h2>pylorax.ltmpl module<a class="headerlink" href="#module-pylorax.ltmpl" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="pylorax.ltmpl.InstallpkgMixin">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pylorax.ltmpl.</span></span><span class="sig-name descname"><span class="pre">InstallpkgMixin</span></span><a class="reference internal" href="_modules/pylorax/ltmpl.html#InstallpkgMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.ltmpl.InstallpkgMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Helper class used with <a href="#id1"><span class="problematic" id="id2">*</span></a>Runner classes</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pylorax.ltmpl.InstallpkgMixin.installpkg">
+<span class="sig-name descname"><span class="pre">installpkg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pkgs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#InstallpkgMixin.installpkg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.ltmpl.InstallpkgMixin.installpkg" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>installpkg [--required|--optional] [--except PKGGLOB [--except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]</dt><dd><p>Request installation of all packages matching the given globs.
+Note that this is just a <em>request</em> - nothing is <em>actually</em> installed
+until the 'run_pkg_transaction' command is given.</p>
+<p>The non-except PKGGLOB can contain a version comparison. This should
+not be used as a substitute for package dependencies, it should be
+used to enforce installation of tools required by the templates. eg.
+grub2 changed the font location in 2.06-2 so the current templates
+require grub2 to be 2.06-2 or later.</p>
+<p>installpkg tmux&gt;=2.8 bash=5.0.0-1</p>
+<p>It supports the =,!=,&gt;,&gt;=,&lt;,&lt;= operators. == is an alias for =, and
+&lt;&gt; is an alias for !=</p>
+<p>There should be no spaces between the package name, the compare
+operator, and the version.</p>
+<p>NOTE: When testing for equality you must include the version AND
+release, otherwise it won't match anything.</p>
+<p>--required is now the default. If the PKGGLOB can be missing pass --optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="pylorax.ltmpl.LiveTemplateRunner">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pylorax.ltmpl.</span></span><span class="sig-name descname"><span class="pre">LiveTemplateRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fatalerrors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">templatedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LiveTemplateRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.ltmpl.LiveTemplateRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pylorax.ltmpl.TemplateRunner" title="pylorax.ltmpl.TemplateRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pylorax.ltmpl.TemplateRunner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#pylorax.ltmpl.TemplateRunner" title="pylorax.ltmpl.TemplateRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pylorax.ltmpl.TemplateRunner</span></code></a>, <a class="reference internal" href="#pylorax.ltmpl.InstallpkgMixin" title="pylorax.ltmpl.InstallpkgMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">pylorax.ltmpl.InstallpkgMixin</span></code></a></p>
 <p>This class parses and executes a limited Lorax template. Sample usage:</p>
 <blockquote>
 <div><p># install a bunch of packages
@@ -1207,18 +1238,6 @@ runner.run(&quot;live-install.tmpl&quot;)</p>
 <p>It is meant to be used with the live-install.tmpl which lists the per-arch
 pacages needed to build the live-iso output.</p>
 </div></blockquote>
-<dl class="py method">
-<dt class="sig sig-object py" id="pylorax.ltmpl.LiveTemplateRunner.installpkg">
-<span class="sig-name descname"><span class="pre">installpkg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pkgs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LiveTemplateRunner.installpkg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.ltmpl.LiveTemplateRunner.installpkg" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>installpkg [--required|--optional] [--except PKGGLOB [--except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]</dt><dd><p>Request installation of all packages matching the given globs.
-Note that this is just a <em>request</em> - nothing is <em>actually</em> installed
-until the 'run_pkg_transaction' command is given.</p>
-<p>--required is now the default. If the PKGGLOB can be missing pass --optional</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -1235,7 +1254,7 @@ until the 'run_pkg_transaction' command is given.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pylorax.ltmpl.LoraxTemplateRunner">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pylorax.ltmpl.</span></span><span class="sig-name descname"><span class="pre">LoraxTemplateRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fatalerrors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">templatedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pylorax.ltmpl.TemplateRunner" title="pylorax.ltmpl.TemplateRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pylorax.ltmpl.TemplateRunner</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#pylorax.ltmpl.TemplateRunner" title="pylorax.ltmpl.TemplateRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pylorax.ltmpl.TemplateRunner</span></code></a>, <a class="reference internal" href="#pylorax.ltmpl.InstallpkgMixin" title="pylorax.ltmpl.InstallpkgMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">pylorax.ltmpl.InstallpkgMixin</span></code></a></p>
 <p>This class parses and executes Lorax templates. Sample usage:</p>
 <blockquote>
 <div><p># install a bunch of packages
@@ -1381,18 +1400,6 @@ SECTION, where &quot;kernel&quot; = DEST.</p>
 treeinfo SECTION kernel DEST</p>
 </dd>
 </dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pylorax.ltmpl.LoraxTemplateRunner.installpkg">
-<span class="sig-name descname"><span class="pre">installpkg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pkgs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installpkg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installpkg" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>installpkg [--required|--optional] [--except PKGGLOB [--except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]</dt><dd><p>Request installation of all packages matching the given globs.
-Note that this is just a <em>request</em> - nothing is <em>actually</em> installed
-until the 'run_pkg_transaction' command is given.</p>
-<p>--required is now the default. If the PKGGLOB can be missing pass --optional</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1750,7 +1757,7 @@ iso's label.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pylorax.mount.IsoMountpoint.get_iso_label">
 <span class="sig-name descname"><span class="pre">get_iso_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/mount.html#IsoMountpoint.get_iso_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.mount.IsoMountpoint.get_iso_label" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the iso's label using pycdlib</p>
+<dd><p>Get the iso's label using pycdio</p>
 <p>Sets self.label if one is found</p>
 </dd></dl>
 
