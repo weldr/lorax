@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.mount &mdash; Lorax 36.0 documentation</title>
+  <title>pylorax.mount &mdash; Lorax 36.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
@@ -24,7 +24,7 @@
             <a href="../../index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                36.0
+                36.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -93,8 +93,7 @@
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;livemedia-creator&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pycdlib</span>
-<span class="kn">from</span> <span class="nn">pycdlib.pycdlibexception</span> <span class="kn">import</span> <span class="n">PyCdlibException</span>
+<span class="kn">import</span> <span class="nn">iso9660</span>
 
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
 
@@ -132,7 +131,8 @@
 
         <span class="n">kernel_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;/isolinux/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/isolinux/initrd.img&quot;</span><span class="p">),</span>
                        <span class="p">(</span><span class="s2">&quot;/ppc/ppc64/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/ppc/ppc64/initrd.img&quot;</span><span class="p">),</span>
-                       <span class="p">(</span><span class="s2">&quot;/images/pxeboot/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/images/pxeboot/initrd.img&quot;</span><span class="p">)]</span>
+                       <span class="p">(</span><span class="s2">&quot;/images/pxeboot/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/images/pxeboot/initrd.img&quot;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s2">&quot;/images/kernel.img&quot;</span><span class="p">,</span> <span class="s2">&quot;/images/initrd.img&quot;</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/repodata&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span>
@@ -164,15 +164,20 @@
 
 <div class="viewcode-block" id="IsoMountpoint.get_iso_label"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint.get_iso_label">[docs]</a>    <span class="k">def</span> <span class="nf">get_iso_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the iso&#39;s label using pycdlib</span>
+<span class="sd">        Get the iso&#39;s label using pycdio</span>
 
 <span class="sd">        Sets self.label if one is found</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">iso</span> <span class="o">=</span> <span class="n">pycdlib</span><span class="o">.</span><span class="n">PyCdlib</span><span class="p">()</span>
-            <span class="n">iso</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">iso</span><span class="o">.</span><span class="n">pvd</span><span class="o">.</span><span class="n">volume_identifier</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">PyCdlibException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">iso</span> <span class="o">=</span> <span class="n">iso9660</span><span class="o">.</span><span class="n">ISO9660</span><span class="o">.</span><span class="n">IFS</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">iso</span><span class="o">.</span><span class="n">is_open</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;error opening file&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">iso</span><span class="o">.</span><span class="n">get_volume_id</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;error reading volume id&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Problem reading label from </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div></div>
 </pre></div>
 

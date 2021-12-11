@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.monitor &mdash; Lorax 36.0 documentation</title>
+  <title>pylorax.monitor &mdash; Lorax 36.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
@@ -24,7 +24,7 @@
             <a href="../../index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                36.0
+                36.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -146,30 +146,25 @@
 <span class="sd">        Loops until self.server.kill is True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Processing logs from </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_address</span><span class="p">)</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">kill</span><span class="p">:</span>
                 <span class="k">break</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">),</span> <span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-
-                <span class="c1"># check the data for errors and set error flag</span>
-                <span class="c1"># need to assemble it into lines so we can test for the error</span>
-                <span class="c1"># string.</span>
-                <span class="k">while</span> <span class="n">data</span><span class="p">:</span>
-                    <span class="n">more</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">line</span> <span class="o">+=</span> <span class="n">more</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">more</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">iserror</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-                        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                        <span class="n">data</span> <span class="o">=</span> <span class="n">more</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">data</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+                        <span class="c1"># Ignore invalid UTF8 inside lines</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">iserror</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;utf8&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;utf8&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">))</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
-
+                        <span class="c1"># Not the end of the line, keep for later</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="n">line</span>
+                        <span class="k">break</span>
             <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>       <span class="c1"># pylint: disable=broad-except</span>
@@ -178,7 +173,6 @@
 
 <div class="viewcode-block" id="LogRequestHandler.finish"><a class="viewcode-back" href="../../pylorax.html#pylorax.monitor.LogRequestHandler.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Shutting down log processing&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
@@ -273,7 +267,8 @@
 <div class="viewcode-block" id="LogMonitor.shutdown"><a class="viewcode-back" href="../../pylorax.html#pylorax.monitor.LogMonitor.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Force shutdown of the monitoring thread&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">kill</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">server_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">server_close</span><span class="p">()</span></div></div>
 </pre></div>
 
            </div>

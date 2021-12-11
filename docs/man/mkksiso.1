@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "MKKSISO" "1" "Oct 11, 2021" "36.0" "Lorax"
+.TH "MKKSISO" "1" "Dec 11, 2021" "36.3" "Lorax"
 .SH NAME
 mkksiso \- Make Kickstart ISO Utility Documentation
 .INDENT 0.0
@@ -42,7 +42,9 @@ the iso is booted. If the original iso was created with EFI and Mac support the
 kickstart boot.iso will include this support as well.
 .sp
 \fBmkksiso\fP needs to be run as root, it depends on mounting the original iso
-and you need to be root to be able to do that.
+and you need to be root to be able to do that. The host system architecture
+needs to match that of the iso. \fBmkksiso\fP will raise an error if it finds a
+\&.discinfo on the iso with a mismatched arch.
 .SH MKKSISO CMDLINE ARGUMENTS
 .sp
 Add a kickstart and files to an iso

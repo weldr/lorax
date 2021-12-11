@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.ltmpl &mdash; Lorax 36.0 documentation</title>
+  <title>pylorax.ltmpl &mdash; Lorax 36.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
@@ -24,7 +24,7 @@
             <a href="../../index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                36.0
+                36.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -257,8 +257,149 @@
                     <span class="k">raise</span></div>
 
 
+<div class="viewcode-block" id="InstallpkgMixin"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.InstallpkgMixin">[docs]</a><span class="k">class</span> <span class="nc">InstallpkgMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Helper class used with *Runner classes&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_pkgver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkg_spec</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper to parse package version compare operators</span>
+
+<span class="sd">        Returns a list of matching package objects or an empty list</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">          &quot;bash&gt;4.01&quot;</span>
+<span class="sd">          &quot;tmux&gt;=3.1.4-5&quot;</span>
+<span class="sd">          &quot;grub2&lt;2.06&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Always return the highest of the filtered results</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">pkg_spec</span><span class="p">):</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">pkg_spec</span><span class="p">)</span><span class="o">.</span><span class="n">get_best_query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pcv</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([!&lt;&gt;=]+)&#39;</span><span class="p">,</span> <span class="n">pkg_spec</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Missing package name&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pcv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Missing version&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pcv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Too many comparisons&quot;</span><span class="p">)</span>
+
+            <span class="n">query</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">pcv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">get_best_query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)</span>
+
+            <span class="c1"># Parse the comparison operators</span>
+            <span class="k">if</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span> <span class="ow">or</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;==&quot;</span><span class="p">:</span>
+                <span class="n">query</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">evr__eq</span> <span class="o">=</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;!=&quot;</span> <span class="ow">or</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&lt;&gt;&quot;</span><span class="p">:</span>
+                <span class="n">query</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">evr__neq</span> <span class="o">=</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">:</span>
+                <span class="n">query</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">evr__gt</span> <span class="o">=</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&gt;=&quot;</span> <span class="ow">or</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;=&gt;&quot;</span><span class="p">:</span>
+                <span class="n">query</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">evr__gte</span> <span class="o">=</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">:</span>
+                <span class="n">query</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">evr__lt</span> <span class="o">=</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&lt;=&quot;</span> <span class="ow">or</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;=&lt;&quot;</span><span class="p">:</span>
+                <span class="n">query</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">evr__lte</span> <span class="o">=</span> <span class="n">pcv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="c1"># MUST be added last. Otherwise it will only return the latest, not the latest of the</span>
+        <span class="c1"># filtered results.</span>
+        <span class="n">query</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">apply</span><span class="p">()]</span>
+
+<div class="viewcode-block" id="InstallpkgMixin.installpkg"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.InstallpkgMixin.installpkg">[docs]</a>    <span class="k">def</span> <span class="nf">installpkg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">pkgs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        installpkg [--required|--optional] [--except PKGGLOB [--except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]</span>
+<span class="sd">          Request installation of all packages matching the given globs.</span>
+<span class="sd">          Note that this is just a *request* - nothing is *actually* installed</span>
+<span class="sd">          until the &#39;run_pkg_transaction&#39; command is given.</span>
+
+<span class="sd">          The non-except PKGGLOB can contain a version comparison. This should</span>
+<span class="sd">          not be used as a substitute for package dependencies, it should be</span>
+<span class="sd">          used to enforce installation of tools required by the templates. eg.</span>
+<span class="sd">          grub2 changed the font location in 2.06-2 so the current templates</span>
+<span class="sd">          require grub2 to be 2.06-2 or later.</span>
+
+<span class="sd">          installpkg tmux&gt;=2.8 bash=5.0.0-1</span>
+
+<span class="sd">          It supports the =,!=,&gt;,&gt;=,&lt;,&lt;= operators. == is an alias for =, and</span>
+<span class="sd">          &lt;&gt; is an alias for !=</span>
+
+<span class="sd">          There should be no spaces between the package name, the compare</span>
+<span class="sd">          operator, and the version.</span>
+
+<span class="sd">          NOTE: When testing for equality you must include the version AND</span>
+<span class="sd">          release, otherwise it won&#39;t match anything.</span>
+
+<span class="sd">          --required is now the default. If the PKGGLOB can be missing pass --optional</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--optional&#39;</span><span class="p">:</span>
+            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">required</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--required&#39;</span><span class="p">:</span>
+            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">excludes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="s1">&#39;--except&#39;</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">pkgs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;--except&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pkgs</span><span class="p">)</span> <span class="o">==</span> <span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;installpkg needs an argument after --except&quot;</span><span class="p">)</span>
+
+            <span class="c1"># TODO: Check for bare version compare operators</span>
+            <span class="n">excludes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pkgs</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[:</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">pkgs</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">2</span><span class="p">:]</span>
+
+        <span class="n">errors</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
+            <span class="c1"># Did a version compare operatore end up in the list?</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Version compare operators cannot be surrounded by spaces&quot;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Start by using Subject to generate a package query, which will</span>
+                <span class="c1"># give us a query object similar to what dbo.install would select,</span>
+                <span class="c1"># minus the handling for multilib. This query may contain</span>
+                <span class="c1"># multiple arches. Pull the package names out of that, filter any</span>
+                <span class="c1"># that match the excludes patterns, and pass those names back to</span>
+                <span class="c1"># dbo.install to do the actual, arch and version and multilib</span>
+                <span class="c1"># aware, package selction.</span>
+
+                <span class="c1"># dnf queries don&#39;t have a concept of negative globs which is why</span>
+                <span class="c1"># the filtering is done the hard way.</span>
+
+                <span class="c1"># Get the latest package, or package matching the selected version</span>
+                <span class="n">pkgnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pkgver</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgnames</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">PackageNotFoundError</span><span class="p">(</span><span class="s2">&quot;no package matched&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+                <span class="c1"># Apply excludes to the name only</span>
+                <span class="k">for</span> <span class="n">exclude</span> <span class="ow">in</span> <span class="n">excludes</span><span class="p">:</span>
+                    <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)]</span>
+
+                <span class="c1"># Convert to a sorted NVR list for installation</span>
+                <span class="n">pkgnvrs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">release</span><span class="p">)</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span><span class="p">])</span>
+
+                <span class="c1"># If the request is a glob, expand it in the log</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">p</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;installpkg: </span><span class="si">%s</span><span class="s2"> expands to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkgnvrs</span><span class="p">))</span>
+
+                <span class="k">for</span> <span class="n">pkgnvr</span> <span class="ow">in</span> <span class="n">pkgnvrs</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pkgnvr</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># pylint: disable=broad-except</span>
+                        <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+                            <span class="k">raise</span>
+                        <span class="c1"># Not required, log it and continue processing pkgs</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pkgnvr</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># pylint: disable=broad-except</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">errors</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">errors</span> <span class="ow">and</span> <span class="n">required</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Required installpkg failed.&quot;</span><span class="p">)</span></div></div>
+
+
 <span class="c1"># TODO: operate inside an actual chroot for safety? Not that RPM bothers..</span>
-<div class="viewcode-block" id="LoraxTemplateRunner"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner">[docs]</a><span class="k">class</span> <span class="nc">LoraxTemplateRunner</span><span class="p">(</span><span class="n">TemplateRunner</span><span class="p">):</span>
+<div class="viewcode-block" id="LoraxTemplateRunner"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner">[docs]</a><span class="k">class</span> <span class="nc">LoraxTemplateRunner</span><span class="p">(</span><span class="n">TemplateRunner</span><span class="p">,</span> <span class="n">InstallpkgMixin</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This class parses and executes Lorax templates. Sample usage:</span>
 
@@ -603,77 +744,6 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;command returned failure (</span><span class="si">%d</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="LoraxTemplateRunner.installpkg"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.installpkg">[docs]</a>    <span class="k">def</span> <span class="nf">installpkg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">pkgs</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        installpkg [--required|--optional] [--except PKGGLOB [--except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]</span>
-<span class="sd">          Request installation of all packages matching the given globs.</span>
-<span class="sd">          Note that this is just a *request* - nothing is *actually* installed</span>
-<span class="sd">          until the &#39;run_pkg_transaction&#39; command is given.</span>
-
-<span class="sd">          --required is now the default. If the PKGGLOB can be missing pass --optional</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--optional&#39;</span><span class="p">:</span>
-            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="n">required</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--required&#39;</span><span class="p">:</span>
-            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="n">excludes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">while</span> <span class="s1">&#39;--except&#39;</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">pkgs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;--except&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pkgs</span><span class="p">)</span> <span class="o">==</span> <span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;installpkg needs an argument after --except&quot;</span><span class="p">)</span>
-
-            <span class="n">excludes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pkgs</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[:</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">pkgs</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">2</span><span class="p">:]</span>
-
-        <span class="n">errors</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># Start by using Subject to generate a package query, which will</span>
-                <span class="c1"># give us a query object similar to what dbo.install would select,</span>
-                <span class="c1"># minus the handling for multilib. This query may contain</span>
-                <span class="c1"># multiple arches. Pull the package names out of that, filter any</span>
-                <span class="c1"># that match the excludes patterns, and pass those names back to</span>
-                <span class="c1"># dbo.install to do the actual, arch and version and multilib</span>
-                <span class="c1"># aware, package selction.</span>
-
-                <span class="c1"># dnf queries don&#39;t have a concept of negative globs which is why</span>
-                <span class="c1"># the filtering is done the hard way.</span>
-
-                <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">dnf</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">get_best_query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgnames</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">PackageNotFoundError</span><span class="p">(</span><span class="s2">&quot;no package matched&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-
-                <span class="c1"># Apply excludes to the name only</span>
-                <span class="k">for</span> <span class="n">exclude</span> <span class="ow">in</span> <span class="n">excludes</span><span class="p">:</span>
-                    <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)]</span>
-
-                <span class="c1"># Convert to a sorted NVR list for installation</span>
-                <span class="n">pkgnvrs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">release</span><span class="p">)</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span><span class="p">])</span>
-
-                <span class="c1"># If the request is a glob, expand it in the log</span>
-                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">p</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;installpkg: </span><span class="si">%s</span><span class="s2"> expands to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkgnvrs</span><span class="p">))</span>
-
-                <span class="k">for</span> <span class="n">pkgnvr</span> <span class="ow">in</span> <span class="n">pkgnvrs</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pkgnvr</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># pylint: disable=broad-except</span>
-                        <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
-                            <span class="k">raise</span>
-                        <span class="c1"># Not required, log it and continue processing pkgs</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pkgnvr</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># pylint: disable=broad-except</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-                <span class="n">errors</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">errors</span> <span class="ow">and</span> <span class="n">required</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Required installpkg failed.&quot;</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="LoraxTemplateRunner.removepkg"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removepkg">[docs]</a>    <span class="k">def</span> <span class="nf">removepkg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">pkgs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        removepkg PKGGLOB [PKGGLOB...]</span>
@@ -872,7 +942,7 @@
             <span class="k">except</span> <span class="n">CalledProcessError</span><span class="p">:</span>
                 <span class="k">pass</span></div></div>
 
-<div class="viewcode-block" id="LiveTemplateRunner"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LiveTemplateRunner">[docs]</a><span class="k">class</span> <span class="nc">LiveTemplateRunner</span><span class="p">(</span><span class="n">TemplateRunner</span><span class="p">):</span>
+<div class="viewcode-block" id="LiveTemplateRunner"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LiveTemplateRunner">[docs]</a><span class="k">class</span> <span class="nc">LiveTemplateRunner</span><span class="p">(</span><span class="n">TemplateRunner</span><span class="p">,</span> <span class="n">InstallpkgMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class parses and executes a limited Lorax template. Sample usage:</span>
 
@@ -888,72 +958,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pkgs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">LiveTemplateRunner</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fatalerrors</span><span class="p">,</span> <span class="n">templatedir</span><span class="p">,</span> <span class="n">defaults</span><span class="p">)</span>
-
-<div class="viewcode-block" id="LiveTemplateRunner.installpkg"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LiveTemplateRunner.installpkg">[docs]</a>    <span class="k">def</span> <span class="nf">installpkg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">pkgs</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        installpkg [--required|--optional] [--except PKGGLOB [--except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]</span>
-<span class="sd">          Request installation of all packages matching the given globs.</span>
-<span class="sd">          Note that this is just a *request* - nothing is *actually* installed</span>
-<span class="sd">          until the &#39;run_pkg_transaction&#39; command is given.</span>
-
-<span class="sd">          --required is now the default. If the PKGGLOB can be missing pass --optional</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--optional&#39;</span><span class="p">:</span>
-            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="n">required</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;--required&#39;</span><span class="p">:</span>
-            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="n">excludes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">while</span> <span class="s1">&#39;--except&#39;</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">pkgs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;--except&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pkgs</span><span class="p">)</span> <span class="o">==</span> <span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;installpkg needs an argument after --except&quot;</span><span class="p">)</span>
-
-            <span class="n">excludes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pkgs</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[:</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">pkgs</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">2</span><span class="p">:]</span>
-
-        <span class="n">errors</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># Start by using Subject to generate a package query, which will</span>
-                <span class="c1"># give us a query object similar to what dbo.install would select,</span>
-                <span class="c1"># minus the handling for multilib. This query may contain</span>
-                <span class="c1"># multiple arches. Pull the package names out of that, filter any</span>
-                <span class="c1"># that match the excludes patterns, and pass those names back to</span>
-                <span class="c1"># dbo.install to do the actual, arch and version and multilib</span>
-                <span class="c1"># aware, package selction.</span>
-
-                <span class="c1"># dnf queries don&#39;t have a concept of negative globs which is why</span>
-                <span class="c1"># the filtering is done the hard way.</span>
-
-                <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">dnf</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">get_best_query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgnames</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">PackageNotFoundError</span><span class="p">(</span><span class="s2">&quot;no package matched&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-
-                <span class="c1"># Apply excludes to the name only</span>
-                <span class="k">for</span> <span class="n">exclude</span> <span class="ow">in</span> <span class="n">excludes</span><span class="p">:</span>
-                    <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)]</span>
-
-                <span class="c1"># Convert to a sorted NVR list for installation</span>
-                <span class="n">pkgnvrs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">release</span><span class="p">)</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span><span class="p">])</span>
-
-                <span class="c1"># If the request is a glob, expand it in the log</span>
-                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">p</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;installpkg: </span><span class="si">%s</span><span class="s2"> expands to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkgnvrs</span><span class="p">))</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">pkgs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pkgnvrs</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pkgnames</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span><span class="p">])</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># pylint: disable=broad-except</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-                <span class="n">errors</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">errors</span> <span class="ow">and</span> <span class="n">required</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Required installpkg failed.&quot;</span><span class="p">)</span></div></div>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LiveTemplateRunner</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fatalerrors</span><span class="p">,</span> <span class="n">templatedir</span><span class="p">,</span> <span class="n">defaults</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

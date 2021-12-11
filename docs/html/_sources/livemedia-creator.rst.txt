@@ -171,7 +171,6 @@ changes. Here are the steps I used to convert the Fedora XFCE spin.
     dracut-live
     -dracut-config-rescue
     grub2-efi
-    memtest86+
     syslinux
 
 User created repositories
