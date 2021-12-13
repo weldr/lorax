@@ -10,7 +10,7 @@ remove usr/share/i18n
 ## perl is needed by /usr/bin/rxe_cfg from libibverbs
 
 ## no sound support, thanks
-removepkg flac-libs libsndfile pulseaudio* sound-theme-freedesktop
+removepkg flac-libs libsndfile pipewire pulseaudio* rtkit sound-theme-freedesktop wireplumber*
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
