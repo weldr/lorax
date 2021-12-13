@@ -11,6 +11,8 @@ remove usr/share/i18n
 
 ## no sound support, thanks
 removepkg flac-libs libsndfile pipewire pulseaudio* rtkit sound-theme-freedesktop wireplumber*
+## lv2appy requires removed libsndfile, we don't need the rest either
+removefrom lilv /usr/bin/*
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
