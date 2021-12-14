@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.13
+Version:        34.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Dec 14 2021 Brian C. Lane <bcl@redhat.com> 34.14-1
+- cleanup: remove binaries from lilv (awilliam@redhat.com)
+- runtime-cleanup: remove pipewire-related packages (awilliam@redhat.com)
+- mount: Switch to using pycdio instead of pycdlib (bcl@redhat.com)
+
 * Mon Nov 08 2021 Brian C. Lane <bcl@redhat.com> 34.13-1
 - Use fedora:34 for Dockerfile.test (bcl@redhat.com)
 - dnfbase: Handle defaults better (bcl@redhat.com)
