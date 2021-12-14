@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        36.3
+Version:        36.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Dec 14 2021 Brian C. Lane <bcl@redhat.com> 36.4-1
+- cleanup: remove binaries from lilv (awilliam@redhat.com)
+- runtime-cleanup: remove pipewire-related packages (awilliam@redhat.com)
+- New lorax documentation - 36.3 (bcl@redhat.com)
+
 * Thu Dec 09 2021 Brian C. Lane <bcl@redhat.com> 36.3-1
 - mkksiso: Check the length of the filenames (bcl@redhat.com)
 - mkksiso: Check the iso's arch against the host's (bcl@redhat.com)
