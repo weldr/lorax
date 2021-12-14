@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        35.8
+Version:        35.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -175,6 +175,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Dec 14 2021 Brian C. Lane <bcl@redhat.com> 35.9-1
+- cleanup: remove binaries from lilv (awilliam@redhat.com)
+- runtime-cleanup: remove pipewire-related packages (awilliam@redhat.com)
+
 * Wed Nov 10 2021 Brian C. Lane <bcl@redhat.com> 35.8-1
 - mount: Switch to using pycdio instead of pycdlib (bcl@redhat.com)
 - fedora-livemedia: Turn off GNOME welcome tour (bcl@redhat.com)
