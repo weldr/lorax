@@ -1,0 +1,11 @@
+[Unit]
+Description=Hardware RNG Entropy Gatherer Daemon
+ConditionVirtualization=!container
+ConditionKernelCommandLine=|inst.rngd
+ConditionKernelCommandLine=!inst.rngd=0
+
+# The "-f" option is required for the systemd service rngd to work with Type=simple
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/rngd
+ExecStart=/usr/sbin/rngd -f $RNGD_ARGS
