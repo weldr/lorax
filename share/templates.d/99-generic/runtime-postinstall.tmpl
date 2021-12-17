@@ -27,10 +27,6 @@ symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
 mkdir etc/systemd/system/local-fs.target.wants/
 symlink /lib/systemd/system/tmp.mount etc/systemd/system/local-fs.target.wants/tmp.mount
 
-## Start rngd
-mkdir etc/systemd/system/basic.target.wants/
-symlink /lib/systemd/system/rngd.service etc/systemd/system/basic.target.wants/rngd.service
-
 ## Disable unwanted systemd services
 systemctl disable systemd-readahead-collect.service \
                   systemd-readahead-replay.service \
@@ -43,6 +39,7 @@ systemctl mask fedora-configure.service fedora-loadmodules.service \
                fedora-wait-storage.service media.mount \
                systemd-tmpfiles-clean.service systemd-tmpfiles-clean.timer \
                ldconfig.service
+remove usr/lib/systemd/system/rngd.service
 
 ## remove because it cannot be disabled
 remove usr/lib/systemd/system-generators/lvm2-activation-generator
@@ -79,6 +76,11 @@ install ${configdir}/sshd_config.anaconda etc/ssh
 install ${configdir}/pam.sshd etc/pam.d/sshd
 install ${configdir}/pam.sshd etc/pam.d/login
 install ${configdir}/pam.sshd etc/pam.d/remote
+
+## set up inst.rngd support
+install ${configdir}/inst.rngd.service etc/systemd/system/inst.rngd.service
+mkdir etc/systemd/system/basic.target.wants/
+symlink /etc/systemd/system/inst.rngd.service etc/systemd/system/basic.target.wants/inst.rngd.service
 
 ## set up "install" user account
 append etc/passwd "install:x:0:0:root:/root:/usr/libexec/anaconda/run-anaconda"
