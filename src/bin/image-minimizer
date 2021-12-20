@@ -70,7 +70,7 @@ class ImageMinimizer:
         not_found = True
         for hdr in mi:
             not_found = False
-            rpms.add(hdr['name'].decode("utf8"))
+            rpms.add(hdr['name'])
         if self.verbose and not_found:
             print("%s package not found" % pattern)
 
@@ -145,8 +145,9 @@ class ImageMinimizer:
             self.ts.run(runCallback, "erase")
 
     def filter(self):
-        for line in (open(self.filename).readlines()):
-            self.parse_line(line.strip())
+        with open(self.filename) as f:
+            for line in f:
+                self.parse_line(line.strip())
         self.remove()
         self.remove_rpm()
 

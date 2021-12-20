@@ -266,6 +266,7 @@ man_pages = [
     ('lorax', 'lorax', u'Lorax Documentation', [u'Weldr Team'], 1),
     ('livemedia-creator', 'livemedia-creator', u'Live Media Creator Documentation', [u'Weldr Team'], 1),
     ('mkksiso', 'mkksiso', u'Make Kickstart ISO Utility Documentation', [u'Weldr Team'], 1),
+    ('image-minimizer', 'image-minimizer', u'Utility script to remove files and packages', [u'Weldr Team'], 1),
 ]
 
 # If true, show URL addresses after external links.
