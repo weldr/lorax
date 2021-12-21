@@ -1,0 +1,11 @@
+# test script for image-minimizer
+drop /etc/pki/rpm-gpg/*
+keep /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-primary
+keep /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-primary
+drop /usr/share/zoneinfo/*
+keep /usr/share/zoneinfo/America
+keep /usr/share/zoneinfo/US
+keep /usr/share/zoneinfo/UTC
+droprpm fedora-*
+keeprpm fedora-release
+keeprpm fedora-gpg-keys
