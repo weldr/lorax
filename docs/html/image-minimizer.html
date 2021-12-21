@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>image-minimizer &mdash; Lorax 36.5 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src" href="modules.html" />
+    <link rel="prev" title="Product and Updates Images" href="product-images.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Lorax
+          </a>
+              <div class="version">
+                36.5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mkksiso.html">mkksiso</a></li>
+<li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">image-minimizer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#image-minimizer-cmdline-arguments">image-minimizer cmdline arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#optional-arguments">Optional arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#positional-arguments">Positional arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">NOTES</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#commands">commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example">example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lorax</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>image-minimizer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/image-minimizer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="image-minimizer">
+<h1>image-minimizer<a class="headerlink" href="#image-minimizer" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Authors</dt>
+<dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
+</dd>
+</dl>
+<p><cite>image-minimizer</cite> is a script used as an interpreter for kickstart <cite>%post</cite>
+sections. It is used to remove rpm packages and individual files from the
+system that Anaconda has just installed.</p>
+<p>It processes a list of commands that tell it which files or rpms to remove, and
+which to keep.</p>
+<section id="image-minimizer-cmdline-arguments">
+<h2>image-minimizer cmdline arguments<a class="headerlink" href="#image-minimizer-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><cite>usage: image-minimizer [-h] [-i STRING] [--dryrun] [-v] STRING</cite></p>
+</div></blockquote>
+<section id="optional-arguments">
+<h3>Optional arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="option-list">
+<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
+<dd><p>show this help message and exit</p>
+</dd>
+<dt><kbd><span class="option">-i <var>STRING</var></span>, <span class="option">--installroot <var>STRING</var></span></kbd></dt>
+<dd><p>Root path to prepend to all file patterns and
+installation root for RPM operations. Defaults to
+INSTALL_ROOT or /mnt/sysimage/</p>
+</dd>
+<dt><kbd><span class="option">--dryrun</span></kbd></dt>
+<dd><p>If set, no filesystem changes are made.</p>
+</dd>
+<dt><kbd><span class="option">-v</span>, <span class="option">--verbose</span></kbd></dt>
+<dd><p>Display every action as it is performed.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="positional-arguments">
+<h3>Positional arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">STRING</dt>
+<dd class="field-odd"><p>Filename to process</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+</section>
+<section id="notes">
+<h2>NOTES<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>You cannot pass any arguments to <cite>image-minimizer</cite> when using it from the
+kickstart <cite>%post</cite>.</p>
+<p>When using this from a kickstart the image-minimizer package needs to be available.
+It is not included on the standard boot.iso, so you will need to include <cite>lorax</cite> in
+the <cite>%package</cite> section. You can use <cite>image-minimizer</cite> to remove lorax from the install.</p>
+<p>If you are using this with <cite>livemedia-creator</cite> it can be installed on the host
+system so that <cite>lorax</cite> isn't needed in the <cite>%package</cite> list, and it doesn't need
+to be removed.</p>
+</section>
+<section id="commands">
+<h2>commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<p>Commands are listed one per line, followed by a space, and then by the
+package, file, or glob.  The globs used are Unix style pathname patterns using
+<cite>*</cite>, <cite>?</cite>, and <cite>[]</cite> character ranges. globbing is implemented using the python
+glob module.</p>
+<ul class="simple">
+<li><p>drop &lt;PATTERN&gt;
+This will remove files from the installation.</p></li>
+<li><p>keep &lt;PATTERN&gt;
+This will keep files, and should follow any <cite>drop</cite> commands including globs.</p></li>
+<li><p>droprpm &lt;PATTERN&gt;
+Remove matching rpm packages. Dependencies are not remove, just individual
+packages matching the glob.</p></li>
+<li><p>keeprpm &lt;PATTERN&gt;
+Do not remove matching rpm packages, it should follow any <cite>droprpm</cite> commands
+that include globs.</p></li>
+</ul>
+</section>
+<section id="example">
+<h2>example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Example Anaconda <cite>%post</cite> usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">post</span> <span class="o">--</span><span class="n">interpreter</span><span class="o">=</span><span class="n">image</span><span class="o">-</span><span class="n">minimizer</span> <span class="o">--</span><span class="n">nochroot</span>
+
+<span class="n">drop</span> <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">modules</span><span class="o">/*/</span><span class="n">kernel</span><span class="o">/</span><span class="n">fs</span>
+<span class="n">keep</span> <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">modules</span><span class="o">/*/</span><span class="n">kernel</span><span class="o">/</span><span class="n">fs</span><span class="o">/</span><span class="n">ext</span><span class="o">*</span>
+<span class="n">keep</span> <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">modules</span><span class="o">/*/</span><span class="n">kernel</span><span class="o">/</span><span class="n">fs</span><span class="o">/</span><span class="n">mbcache</span><span class="o">*</span>
+<span class="n">keep</span> <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">modules</span><span class="o">/*/</span><span class="n">kernel</span><span class="o">/</span><span class="n">fs</span><span class="o">/</span><span class="n">squashfs</span>
+
+<span class="n">droprpm</span> <span class="n">make</span>
+<span class="n">droprpm</span> <span class="n">mtools</span>
+<span class="n">droprpm</span> <span class="n">mysql</span><span class="o">-</span><span class="n">libs</span>
+<span class="n">droprpm</span> <span class="n">perl</span>
+<span class="n">droprpm</span> <span class="n">perl</span><span class="o">-</span><span class="n">Pod</span><span class="o">-*</span>
+<span class="n">droprpm</span> <span class="n">syslinux</span>
+<span class="n">keeprpm</span> <span class="n">perl</span><span class="o">-</span><span class="n">Pod</span><span class="o">-</span><span class="n">Simple</span>
+
+<span class="c1"># Not needed after image-minimizer is done</span>
+<span class="n">droprpm</span> <span class="n">lorax</span>
+
+<span class="o">%</span><span class="n">end</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="product-images.html" class="btn btn-neutral float-left" title="Product and Updates Images" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="src" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, Red Hat, Inc..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -16,6 +16,7 @@ Contents:
    livemedia-creator
    mkksiso
    product-images
+   image-minimizer
    modules
 
 Documentation for other Lorax Branches

@@ -161,6 +161,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/lorax.1*
 %{_mandir}/man1/livemedia-creator.1*
 %{_mandir}/man1/mkksiso.1*
+%{_mandir}/man1/image-minimizer.1*
 %{_tmpfilesdir}/lorax.conf
 
 %files docs
