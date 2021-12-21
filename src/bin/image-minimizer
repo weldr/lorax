@@ -145,9 +145,13 @@ class ImageMinimizer:
             self.ts.run(runCallback, "erase")
 
     def filter(self):
+        if not os.path.isdir(self.prefix):
+            raise FileNotFoundError(f"No such directory: '{self.prefix}")
+
         with open(self.filename) as f:
             for line in f:
                 self.parse_line(line.strip())
+
         self.remove()
         self.remove_rpm()
 
