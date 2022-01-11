@@ -4,3 +4,4 @@ SyslogFacility AUTHPRIV
 PasswordAuthentication yes
 PermitEmptyPasswords yes
 PermitUserEnvironment yes
+Subsystem sftp internal-sftp
