@@ -64,7 +64,7 @@ installpkg glibc-all-langpacks
     installpkg grub2-efi-ia32-cdboot>=${GRUB2VER}
 %endif
 %if basearch in ("i386", "x86_64"):
-    installpkg biosdevname syslinux
+    installpkg biosdevname
     installpkg grub2-tools>=${GRUB2VER} grub2-tools-minimal>=${GRUB2VER}
     installpkg grub2-tools-extra>=${GRUB2VER}
 %endif
