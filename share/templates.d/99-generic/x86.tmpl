@@ -1,10 +1,8 @@
 <%page args="kernels, runtime_img, runtime_base, basearch, inroot, outroot, product, isolabel"/>
 <%
 configdir="tmp/config_files/x86"
-SYSLINUXDIR="usr/share/syslinux"
 PXEBOOTDIR="images/pxeboot"
 STAGE2IMG="images/install.img"
-BOOTDIR="isolinux"
 KERNELDIR=PXEBOOTDIR
 LORAXDIR="usr/share/lorax/"
 
@@ -29,23 +27,6 @@ mkdir images
 install ${runtime_img} ${STAGE2IMG}
 treeinfo stage2 mainimage images/${runtime_base}
 
-## install bootloader and config files
-mkdir ${BOOTDIR}
-install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
-install ${SYSLINUXDIR}/vesamenu.c32 ${BOOTDIR}
-install ${SYSLINUXDIR}/ldlinux.c32 ${BOOTDIR}
-install ${SYSLINUXDIR}/libcom32.c32 ${BOOTDIR}
-install ${SYSLINUXDIR}/libutil.c32 ${BOOTDIR}
-install ${configdir}/isolinux.cfg ${BOOTDIR}
-install ${configdir}/boot.msg ${BOOTDIR}
-install ${configdir}/grub.conf ${BOOTDIR}
-install usr/share/anaconda/boot/syslinux-splash.png ${BOOTDIR}/splash.png
-
-## configure bootloader
-replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
-replace @PRODUCT@ '${product.name}'  ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
-replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${BOOTDIR}/isolinux.cfg
-
 ## install kernels
 mkdir ${KERNELDIR}
 %for kernel in kernels:
@@ -60,8 +41,6 @@ mkdir ${KERNELDIR}
     %endif
 %endfor
 
-hardlink ${KERNELDIR}/vmlinuz ${BOOTDIR}
-hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %if basearch == 'x86_64':
     treeinfo images-xen kernel ${KERNELDIR}/vmlinuz
     treeinfo images-xen initrd ${KERNELDIR}/initrd.img
@@ -84,7 +63,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     %>
     %for img, hybrid in images:
         <%
-        efiargs += " -eltorito-alt-boot -e {0} -no-emul-boot {1}".format(img, hybrid)
+        efiargs += " --efi-boot {0} {1}".format(img, hybrid)
         efigraft += " {0}={1}/{0}".format(img,outroot)
         %>
         treeinfo images-${basearch} ${img|basename} ${img}
@@ -121,14 +100,10 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 
 ## make boot.iso
 runcmd xorrisofs ${isoargs} -o ${outroot}/images/boot.iso \
-       -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin \
-       -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
-       -boot-load-size 4 -boot-info-table -no-emul-boot \
        ${efiargs} -R -J -V '${isolabel}' \
        -graft-points \
        .discinfo=${outroot}/.discinfo \
        ${STAGE2IMG}=${outroot}/${STAGE2IMG} \
-       ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
        ${efigraft} ${filegraft}
 treeinfo images-${basearch} boot.iso images/boot.iso
