@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.10
+Version:        34.9.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Jan 20 2022 Brian C. Lane <bcl@redhat.com> 34.9.11-1
+- Enable sftp when using inst.sshd (bcl@redhat.com)
+  Resolves: rhbz#2040770
+- Drop ia32 uefi package installation (bcl@redhat.com)
+  Resolves: rhbz#2039035
+- Remove 32-bit UEFI packages from example kickstart (bcl@redhat.com)
+  Related: rhbz#2039035
+
 * Thu Dec 09 2021 Brian C. Lane <bcl@redhat.com> 34.9.10-1
 - mkksiso: Check the length of the filenames (bcl@redhat.com)
   Related: rhbz#2028104
