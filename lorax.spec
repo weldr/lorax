@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.64
+Version:        28.14.65
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -261,6 +261,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Jan 20 2022 Brian C. Lane <bcl@redhat.com> 28.14.65-1
+- Enable sftp when using inst.sshd (bcl)
+- Resolves: rhbz#2041770
+
 * Thu Dec 09 2021 Brian C. Lane <bcl@redhat.com> 28.14.64-1
 - mkksiso: Check the length of the filenames (bcl)
   Related: rhbz#2028048
