@@ -410,4 +410,6 @@ syslinux
 -gfs2-utils
 -dracut-config-rescue
 
+# Required for rd.live.check
+isomd5sum
 %end
