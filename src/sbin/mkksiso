@@ -250,10 +250,10 @@ class Mkisofs_ppc64le(MakeISOTool):
     arches = ["ppc64le"]
 
     def run(self, tmpdir, grafts, volume_name, output_iso, efimode=NO_EFI):
-        cmd = ["mkisofs", "-o", output_iso, "-R", "-J", "-V", volume_name,
-               "-joliet-long", "-T", "-part", "-hfs", "-r", "-l", "-sysid",
-               "PPC", "-chrp-boot", "-no-desktop", "-allow-multidot",
-               "-map", self.requirements[0]]
+        cmd = ["mkisofs", "-joliet-long", "-U", "-J", "-R", "-T",
+               "-o", output_iso, "-part", "-hfs", "-r", "-l",
+               "-sysid", "PPC", "-V", volume_name, "-chrp-boot",
+               "-map", self.requirements[0], "-no-desktop", "-allow-multidot"]
         if log.root.level < log.INFO:
             cmd.append("--verbose")
 
