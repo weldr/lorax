@@ -44,8 +44,9 @@ class Tool():
     def __init__(self):
         # If there are arches listed it must be running on one of them
         if self.arches and os.uname().machine not in self.arches:
-            log.debug("%s is not supported by this tool", os.uname().machine)
-            raise RuntimeError("%s not supported" % os.uname().machine)
+            msg = "%s class does not support %s arch" % (self.__class__.__name__, os.uname().machine)
+            log.debug(msg)
+            raise RuntimeError(msg)
 
         # Check the system to see if the tools are available and record their paths
         for e in self.tools:
