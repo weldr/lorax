@@ -104,6 +104,35 @@ class MkmacbootTool(MkefibootTool):
         return []
 
 
+class MkCdbootImg(Tool):
+    """Create the s390x cdboot.img"""
+    tools = ["mk-s390image"]
+    arches = ["s390x"]
+
+    def run(self, isodir, tmpdir, product="Fedora"):
+        def tf(f):
+            return os.path.join(tmpdir, f)
+
+        # First check for the needed files
+        for f in ["images/kernel.img", "images/initrd.img", "images/cdboot.prm"]:
+            if not os.path.exists(tf(f)):
+                log.debug("Missing file %s", f)
+                raise RuntimeError("Missing requirement %s" % f)
+
+        cmd = ["mk-s390image", tf("images/kernel.img"), tf("images/cdboot.img"),
+               "-r", tf("images/initrd.img"),
+               "-p", tf("images/cdboot.prm")]
+        log.debug(" ".join(cmd))
+        try:
+            subprocess.check_output(cmd)
+        except subprocess.CalledProcessError as e:
+            log.error(str(e))
+            raise RuntimeError("Running mk-s390image")
+
+        # images/cdboot.img always exists, already in grafts list
+        return []
+
+
 class MakeISOTool(Tool):
     """Class to hold details for specific iso creation tools"""
     def check_files(self, grafts):
@@ -477,6 +506,18 @@ class MakeKickstartISO():
         if self.efimode == MACBOOT:
             self.mkmacboot.run(isodir, tmpdir)
 
+    def run_mkcdbootimg(self, isodir, tmpdir):
+        """Rebuild the cdboot.img if this is running on s390x
+        """
+        try:
+            t = MkCdbootImg()
+        except RuntimeError as e:
+            # This is expected on everything except s390x
+            if "not supported" in str(e):
+                return
+            raise
+        t.run(isodir, tmpdir)
+
     def edit_configs(self, isodir, tmpdir):
         """Find and edit any configuration files
 
@@ -562,15 +603,18 @@ class MakeKickstartISO():
                     out_fp.write("\n")
 
     def _edit_s390(self, isodir, tmpdir):
-        """Edit the images/generic.prm file, adding the kickstart and extra arguments"""
-        orig_cfg = os.path.join(isodir, "images/generic.prm")
-        if not os.path.exists(orig_cfg):
-            log.warning("No images/generic.prm file found")
-            return []
+        """Edit the generic.prm and cdboot.prm files, adding the kickstart
+        and extra arguments
+        """
+        for cfg in ["images/generic.prm", "images/cdboot.prm"]:
+            orig_cfg = os.path.join(isodir, cfg)
+            if not os.path.exists(orig_cfg):
+                log.warning("No %s file found", cfg)
+                continue
 
-        # Append to the config file
-        with open(os.path.join(tmpdir, "images/generic.prm"), "a") as out_fp:
-            out_fp.write(self.add_args+"\n")
+            # Append to the config file
+            with open(os.path.join(tmpdir, cfg), "a") as out_fp:
+                out_fp.write(self.add_args+"\n")
 
     def run(self):
         """Modify the ISO"""
@@ -588,6 +632,9 @@ class MakeKickstartISO():
 
                 # Copy and edit the configuration files
                 self.edit_configs(self.iso.mount_dir, tmpdir)
+
+                # Recreate the cdboot.img on s390x
+                self.run_mkcdbootimg(self.iso.mount_dir, tmpdir)
 
                 # Run the mkefiboot tool on the edited EFI directory, add the new files to the grafts
                 self.run_mkefiboot(self.iso.mount_dir, tmpdir)
