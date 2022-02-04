@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        36.4
+Version:        36.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -176,6 +176,23 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Feb 03 2022 Brian C. Lane <bcl@redhat.com> 36.5-1
+- mkksiso: Improve debug message about unsupported arch (bcl@redhat.com)
+- mkksiso: Fix the order of the ppc mkisofs command (bcl@redhat.com)
+- mkksiso: mkfsiso argument order matters (bcl@redhat.com)
+- mkksiso: Add kickstart to s390x cdboot.prm (bcl@redhat.com)
+- cleanup: handle RPM database move to /usr (awilliam@redhat.com)
+- Install the variable font of the Cantarell font (akira@tagoh.org)
+- Update the template for f36 Change proposal:
+  https://fedoraproject.org/wiki/Changes/DefaultToNotoFonts (akira@tagoh.org)
+- Update Malayalam font to its new renamed package name rit-meera-new-fonts (pnemade@fedoraproject.org)
+- Enable sftp when using inst.sshd (bcl@redhat.com)
+- Add inst.rngd cmdline option (bcl@redhat.com)
+- docs: Update docs for image-minimizer (bcl@redhat.com)
+- tests: Add tests for image-minimizer (bcl@redhat.com)
+- image-minimizer: Check for missing root directory (bcl@redhat.com)
+- image-minimizer: Fix utf8 error and add docs (bcl@redhat.com)
+
 * Tue Dec 14 2021 Brian C. Lane <bcl@redhat.com> 36.4-1
 - cleanup: remove binaries from lilv (awilliam@redhat.com)
 - runtime-cleanup: remove pipewire-related packages (awilliam@redhat.com)
