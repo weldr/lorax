@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.66
+Version:        28.14.67
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -261,6 +261,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Feb 03 2022 Brian C. Lane <bcl@redhat.com> 28.14.67-1
+- mkksiso: Fix the order of the ppc mkisofs command (bcl)
+  Related: rhbz#2049205
+- mkksiso: mkfsiso argument order matters (bcl)
+  Resolves: rhbz#2049205
+- mkksiso: Improve debug message about unsupported arch (bcl)
+  Related: rhbz#2049190
+- mkksiso: Add kickstart to s390x cdboot.prm (bcl)
+  Resolves: rhbz#2049190
+
 * Mon Jan 31 2022 Brian C. Lane <bcl@redhat.com> 28.14.66-1
 - livemedia.ks: Add isomd5sum for use with rd.live.check (bcl)
 - Resolves: rhbz#2048447
