@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        36.5
+Version:        36.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -176,6 +176,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Feb 04 2022 Brian C. Lane <bcl@redhat.com> 36.6-1
+- mkksiso: Fix check for unsupported arch error (bcl@redhat.com)
+
 * Thu Feb 03 2022 Brian C. Lane <bcl@redhat.com> 36.5-1
 - mkksiso: Improve debug message about unsupported arch (bcl@redhat.com)
 - mkksiso: Fix the order of the ppc mkisofs command (bcl@redhat.com)
