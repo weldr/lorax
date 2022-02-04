@@ -514,7 +514,7 @@ class MakeKickstartISO():
             t = MkCdbootImg()
         except RuntimeError as e:
             # This is expected on everything except s390x
-            if "not supported" in str(e):
+            if "does not support" in str(e):
                 return
             raise
         t.run(isodir, tmpdir)
