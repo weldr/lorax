@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.67
+Version:        28.14.68
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -261,6 +261,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Feb 04 2022 Brian C. Lane <bcl@redhat.com> 28.14.68-1
+- mkksiso: Fix check for unsupported arch error (bcl)
+  Related: rhbz#2049205
+
 * Thu Feb 03 2022 Brian C. Lane <bcl@redhat.com> 28.14.67-1
 - mkksiso: Fix the order of the ppc mkisofs command (bcl)
   Related: rhbz#2049205
