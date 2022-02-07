@@ -92,7 +92,7 @@ removekmod sound drivers/media drivers/hwmon \
 ## LUKS setup. As of 2020-09 this is not built as a module, but keep it in here
 ## in case that changes again
 removekmod drivers/char --allbut virtio_console hw_random \
-                                  virtio-rng ipmi hmcdrv
+                                  virtio-rng ipmi hmcdrv nvram
 removekmod drivers/hid --allbut hid-logitech-dj hid-logitech-hidpp
 
 ## As of 2020-09 most of this are built-in too, but again, keep them listed
