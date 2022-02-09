@@ -234,7 +234,8 @@ removefrom linux-firmware /usr/lib/firmware/mellanox/mlxsw_spectrum*
 %endif
 removefrom lldpad /etc/*
 removefrom mdadm /etc/* /usr/lib/systemd/system/mdmonitor*
-removefrom mesa-dri-drivers /usr/${libdir}/dri/*_video.so
+## gallium-pipe stuff is for compute (opencl), not needed for video
+removefrom mesa-dri-drivers /usr/${libdir}/dri/*_video.so /usr/lib64/gallium-pipe/*
 removefrom mt-st /usr/sbin/*
 removefrom mtools /etc/*
 removefrom ncurses-libs /usr/${libdir}/libform*
