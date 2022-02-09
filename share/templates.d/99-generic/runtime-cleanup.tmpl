@@ -45,6 +45,11 @@ removefrom isomd5sum --allbut /usr/bin/checkisomd5
 ## and there's no need for a bunch of zsh files without zsh
 removefrom systemd /usr/share/zsh/site-functions/*
 
+## we only need syslinux to make the installer image bootable, we don't
+## run anything from it that uses mtools, and that's the only thing
+## that pulls in glibc-gconv-extra
+removepkg mtools glibc-gconv-extra
+
 ## various other things we remove to save space
 removepkg diffutils file
 removepkg libasyncns
