@@ -41,9 +41,9 @@ remove /etc/logrotate.d
 ## anaconda needs this to do media check
 removefrom isomd5sum --allbut /usr/bin/checkisomd5
 
-## systemd-nspawn isn't very useful and doesn't link anyway without iptables,
-## and there's no need for a bunch of zsh files without zsh
-removefrom systemd /usr/share/zsh/site-functions/*
+## there's no need for a bunch of zsh files without zsh,
+## systemd-analyze is quite large and not essential
+removefrom systemd /usr/bin/systemd-analyze /usr/share/zsh/site-functions/*
 
 ## we only need syslinux to make the installer image bootable, we don't
 ## run anything from it that uses mtools, and that's the only thing
