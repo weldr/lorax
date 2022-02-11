@@ -11,8 +11,6 @@ remove usr/share/i18n
 
 ## no sound support, thanks
 removepkg flac-libs libsndfile pipewire pulseaudio* rtkit sound-theme-freedesktop wireplumber*
-## lv2appy requires removed libsndfile, we don't need the rest either
-removefrom lilv /usr/bin/*
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
@@ -29,8 +27,6 @@ removepkg selinux-policy libselinux-utils
 ## The removepkg above removes it, create an empty one. See rhbz#1243168
 append etc/selinux/config ""
 
-removepkg fedora-release-rawhide
-
 ## keep enough of shadow-utils to create accounts
 removefrom shadow-utils --allbut /usr/bin/chage /usr/sbin/chpasswd \
                         /usr/sbin/groupadd /usr/sbin/useradd
@@ -39,9 +35,8 @@ removefrom shadow-utils --allbut /usr/bin/chage /usr/sbin/chpasswd \
 removefrom initscripts /usr/sbin/* /usr/share/locale/* /usr/share/doc/* /usr/share/man/*
 
 ## no storage device monitoring
-removepkg device-mapper-event dmraid-events sgpio
+removepkg device-mapper-event
 ## logrotate isn't useful in anaconda
-removepkg logrotate
 remove /etc/logrotate.d
 ## anaconda needs this to do media check
 removefrom isomd5sum --allbut /usr/bin/checkisomd5
@@ -57,17 +52,14 @@ removepkg mtools glibc-gconv-extra
 
 ## various other things we remove to save space
 removepkg diffutils file
-removepkg jasper-libs
 removepkg libasyncns
-removepkg libmcpp libtiff
-removepkg lvm2-libs mcpp
+removepkg libtiff
+removepkg lvm2-libs
 removepkg mobile-broadband-provider-info
-removepkg pkgconf pkgconf-m4 pkgconf-pkg-config ppp pth
-removepkg rmt rpcbind squashfs-tools system-config-firewall-base
+removepkg rmt rpcbind squashfs-tools
 removepkg tigervnc-license xml-common
-removepkg xorg-x11-font-utils bdftopcf mkfontscale fonttosfnt
+removepkg mkfontscale fonttosfnt
 removepkg xorg-x11-server-common
-removepkg ncurses
 
 ## other removals
 remove /home /media /opt /srv /tmp/*
@@ -109,11 +101,8 @@ remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
 ## remove unused themes, theme engines, icons, etc.
-removefrom gtk2 /usr/${libdir}/gtk-2.0/*/{engines,printbackends}/*
-removefrom gtk2 /usr/share/themes/*
 removefrom gtk3 /usr/${libdir}/gtk-3.0/*/printbackends/*
 removefrom gtk3 /usr/share/themes/*
-removefrom metacity --allbut /usr/bin/* /usr/${libdir}/*
 
 ## filesystem tools
 removefrom e2fsprogs /usr/share/locale/*
@@ -125,15 +114,14 @@ removefrom gsettings-desktop-schemas /usr/share/locale/*
 removefrom NetworkManager-libnm /usr/share/locale/*/NetworkManager.mo
 removefrom nm-connection-editor /usr/share/applications/*
 removefrom atk /usr/share/locale/*
-removefrom audit /etc/* /sbin/auditctl /sbin/aureport
-removefrom audit /sbin/ausearch /sbin/autrace /usr/bin/*
-removefrom audit-libs /etc/* /${libdir}/libauparse*
+removefrom audit /etc/* /usr/sbin/auditctl /usr/sbin/aureport
+removefrom audit /usr/sbin/ausearch /usr/sbin/autrace /usr/bin/*
+removefrom audit-libs /etc/* /usr/${libdir}/libauparse*
 removefrom bash /etc/* /usr/bin/bashbug* /usr/share/*
 removefrom bind-utils /usr/bin/host /usr/bin/nsupdate
 removefrom bitmap-fangsongti-fonts /usr/share/fonts/*
 removefrom ca-certificates /etc/pki/java/*
 removefrom ca-certificates /etc/pki/tls/certs/ca-bundle.trust.crt
-removefrom cairo /usr/${libdir}/libcairo-script* /usr/bin/cairo-sphinx
 removefrom coreutils /usr/bin/link /usr/bin/nice /usr/bin/stty /usr/bin/unlink
 removefrom coreutils /usr/bin/[ /usr/bin/base64 /usr/bin/chcon
 removefrom coreutils /usr/bin/cksum /usr/bin/csplit
@@ -178,11 +166,11 @@ removefrom gdk-pixbuf2 /usr/share/locale*
 removefrom glib2 /usr/bin/* /usr/share/locale/*
 removefrom glibc /etc/gai.conf /etc/rpc
 removefrom glibc /${libdir}/libBrokenLocale*
-removefrom glibc /${libdir}/libSegFault* /${libdir}/libanl*
+removefrom glibc /${libdir}/libanl*
 removefrom glibc /${libdir}/libnss_compat*
 # python-pyudev uses ctypes.util.find_library, which uses /sbin/ldconfig
 removefrom glibc /usr/libexec/* /usr/sbin/*
-removefrom glibc-common /usr/bin/catchsegv /usr/bin/gencat
+removefrom glibc-common /usr/bin/gencat
 removefrom glibc-common /usr/bin/getent
 removefrom glibc-common /usr/bin/locale /usr/bin/sprof
 # NB: we keep /usr/bin/localedef so anaconda can inspect payload locale info
@@ -190,15 +178,14 @@ removefrom glibc-common /usr/bin/tzselect
 removefrom glibc-common /usr/sbin/*
 removefrom gnutls /usr/share/locale/*
 removefrom google-noto-sans-cjk-ttc-fonts /usr/share/fonts/google-noto-cjk/NotoSansCJK-{Black,Bold,*Light,Medium,Thin}.ttc
+removefrom google-noto-sans-vf-fonts /usr/share/fonts/google-noto-vf/NotoSans-Italic-VF.ttf
 removefrom grep /etc/* /usr/share/locale/*
-removefrom gtk2 /usr/bin/update-gtk-immodules
 removefrom gtk3 /usr/${libdir}/gtk-3.0/*
 removefrom guile22 /usr/${libdir}/guile/2.2/ccache*
 removefrom gzip /usr/bin/{gzexe,zcmp,zdiff,zegrep,zfgrep,zforce,zgrep,zless,zmore,znew}
 removefrom hwdata /usr/share/hwdata/oui.txt /usr/share/hwdata/pnp.ids
 removefrom iproute --allbut /usr/sbin/{ip,routef,routel,rtpr}
 removefrom kbd --allbut */bin/{dumpkeys,kbd_mode,loadkeys,setfont,unicode_*,chvt}
-removefrom kmod /usr/sbin/weak-modules
 removefrom less /etc/*
 removefrom libX11-common /usr/share/X11/XErrorDB
 removefrom libcanberra /usr/${libdir}/libcanberra-*
@@ -217,7 +204,7 @@ removefrom linux-firmware /usr/lib/firmware/dvb*
 removefrom linux-firmware /usr/lib/firmware/*_12mhz*
 removefrom linux-firmware /usr/lib/firmware/v4l*
 removefrom linux-firmware /usr/lib/firmware/brcm/BCM-*
-removefrom linux-firmware /usr/lib/firmware/ttusb-budget/dspbootcode.bin
+removefrom linux-firmware /usr/lib/firmware/ttusb-budget/dspbootcode.bin*
 removefrom linux-firmware /usr/lib/firmware/emi26/*
 removefrom linux-firmware /usr/lib/firmware/emi62/*
 removefrom linux-firmware /usr/lib/firmware/cpia2/*
@@ -226,14 +213,14 @@ removefrom linux-firmware /usr/lib/firmware/vicam/*
 removefrom linux-firmware /usr/lib/firmware/dsp56k/*
 removefrom linux-firmware /usr/lib/firmware/sun/*
 removefrom linux-firmware /usr/lib/firmware/av7110/*
-removefrom linux-firmware /usr/lib/firmware/usbdux/*
-removefrom linux-firmware /usr/lib/firmware/f2255usb.bin
-removefrom linux-firmware /usr/lib/firmware/lgs8g75.fw
+removefrom linux-firmware /usr/lib/firmware/usbdux*
+removefrom linux-firmware /usr/lib/firmware/f2255usb.bin*
+removefrom linux-firmware /usr/lib/firmware/lgs8g75.fw*
 removefrom linux-firmware /usr/lib/firmware/TDA7706*
-removefrom linux-firmware /usr/lib/firmware/tlg2300_firmware.bin
+removefrom linux-firmware /usr/lib/firmware/tlg2300_firmware.bin*
 removefrom linux-firmware /usr/lib/firmware/s5p-mfc*
 removefrom linux-firmware /usr/lib/firmware/go7007/*
-removefrom linux-firmware /usr/lib/firmware/intel/IntcSST2.bin
+removefrom linux-firmware /usr/lib/firmware/intel/IntcSST2.bin*
 removefrom linux-firmware /usr/lib/firmware/intel/fw_sst*
 removefrom linux-firmware /usr/lib/firmware/intel/dsp*
 removefrom linux-firmware /usr/lib/firmware/as102*
@@ -277,7 +264,6 @@ removefrom openssh /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/ssh-*
 removefrom openssh-clients /usr/libexec/*
 removefrom openssh-server /etc/ssh/* /usr/libexec/openssh/sftp-server
-removefrom openssl /usr/bin/*
 removefrom pam /usr/sbin/* /usr/share/locale/*
 removefrom policycoreutils /etc/* /usr/bin/* /usr/share/locale/*
 removefrom polkit /usr/bin/*
@@ -300,25 +286,25 @@ removefrom smartmontools /usr/share/smartmontools/*
 removefrom tar /usr/share/locale/*
 removefrom usbutils /usr/bin/*
 removefrom util-linux --allbut \
-    /usr/bin/{dmesg,eject,getopt,kill,login,lsblk,more,mount,umount,mountpoint,findmnt} \
-    /etc/mtab /etc/pam.d/login /etc/pam.d/remote \
-    /usr/sbin/{agetty,blkid,blockdev,clock,fdisk,fsck,fstrim,hwclock,losetup,zramctl} \
-    /usr/sbin/{mkswap,swaplabel,nologin,sfdisk,swapoff,swapon,wipefs,partx,fsfreeze} \
-    /usr/bin/{logger,hexdump,flock,chmem,lsmem,lscpu}
+    /usr/bin/{chmem,eject,getopt,hexdump,login,lscpu,lsmem,lsblk} \
+    /etc/pam.d/login /etc/pam.d/remote \
+    /usr/sbin/{clock,fdisk,fsfreeze,fstrim,hwclock,nologin,sfdisk,swaplabel,wipefs,zramctl}
+removefrom util-linux-core --allbut \
+    /usr/bin/{dmesg,findmnt,flock,kill,logger,more,mount,mountpoint,umount} \
+    /etc/mtab \
+    /usr/sbin/{agetty,blkid,blockdev,fsck,losetup,mkswap,partx,swapoff,swapon}
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget /etc/* /usr/share/locale/*
 removefrom wpa_supplicant /usr/sbin/eapol_test
 removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
-removefrom xorg-x11-drv-openchrome /usr/${libdir}/libchrome*
 removefrom xorg-x11-drv-wacom /usr/bin/*
-removefrom xorg-x11-fonts-misc --allbut /usr/share/X11/fonts/misc/{6x13,encodings,fonts,*cursor}*
 removefrom yelp /usr/share/yelp/mathjax*
 
 %if branding.release:
     removefrom ${branding.logos} /usr/share/plymouth/*
     removefrom ${branding.logos} /etc/*
     removefrom ${branding.logos} /usr/share/icons/{Bluecurve,oxygen}/*
-    removefrom ${branding.logos} /usr/share/{firstboot,kde4,pixmaps}/*
+    removefrom ${branding.logos} /usr/share/{kde4,pixmaps}/*
 %endif
 
 ## cleanup /boot/ leaving vmlinuz, and .*hmac files
