@@ -5,10 +5,10 @@ import unittest
 
 from minimizer import ImageMinimizer
 
-class BuildStampTestCase(unittest.TestCase):
+class MinimizerTestCase(unittest.TestCase):
     def test_minimizer_ok(self):
         with tempfile.TemporaryDirectory(prefix="minimize.test.") as rootdir:
-            check_call(["dnf", "--installroot", rootdir, "install", "-y", \
+            check_call(["dnf", "--releasever=/", "--installroot", rootdir, "install", "-y", \
                         "filesystem"])
 
             im = ImageMinimizer("./tests/image-minimizer/im-script.txt", rootdir, False, False)
