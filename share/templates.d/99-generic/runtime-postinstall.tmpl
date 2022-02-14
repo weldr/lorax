@@ -117,3 +117,8 @@ remove etc/lvm/lvm.conf
 append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
 
 ## TODO: we could run prelink here if we wanted?
+
+## fix fonconfig cache containing timestamps
+runcmd chroot ${root} /usr/bin/find /usr/share/fonts -newermt "@${SOURCE_DATE_EPOCH}" -exec \
+    touch --no-dereference --date="@${SOURCE_DATE_EPOCH}" {} +
+runcmd chroot ${root} /usr/bin/fc-cache -f
