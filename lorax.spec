@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        36.6
+Version:        36.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -176,6 +176,21 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Feb 14 2022 Brian C. Lane <bcl@redhat.com> 36.7-1
+- postinstall: Restore reproducible build timestamps on /usr/share/fonts (bcl@redhat.com)
+- tests: Fix the image minimizer test dnf usage (bcl@redhat.com)
+- runtime-cleanup: drop kernel drivers/iio (awilliam@redhat.com)
+- runtime-cleanup: drop gallium-pipe drivers from mesa-dri-drivers (awilliam@redhat.com)
+- runtime-cleanup: drop yelp's local MathJax library copy (awilliam@redhat.com)
+- runtime-cleanup: drop eapol_test from wpa_supplicant (awilliam@redhat.com)
+- runtime-cleanup: drop /usr/bin/cyrusbdb2current (awilliam@redhat.com)
+- runtime-cleanup: drop systemd-analyze (awilliam@redhat.com)
+- runtime-cleanup: drop mtools and glibc-gconv-extra (awilliam@redhat.com)
+- runtime-cleanup: drop guile22's ccache (awilliam@redhat.com)
+- runtime-cleanup: fix warnings from old or changed packages (awilliam@redhat.com)
+- runtime-cleanup: drop Italic from google-noto-sans-vf-fonts (awilliam@redhat.com)
+- runtime-install: drop some unnecessary font packages (awilliam@redhat.com)
+
 * Fri Feb 04 2022 Brian C. Lane <bcl@redhat.com> 36.6-1
 - mkksiso: Fix check for unsupported arch error (bcl@redhat.com)
 
