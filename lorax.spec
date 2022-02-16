@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.13
+Version:        34.9.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Feb 16 2022 Brian C. Lane <bcl@redhat.com> 34.9.14-1
+- Keep nvram module (bcl@redhat.com)
+  Resolves: rhbz#2050877
+
 * Fri Feb 04 2022 Brian C. Lane <bcl@redhat.com> 34.9.13-1
 - mkksiso: Fix check for unsupported arch error (bcl@redhat.com)
   Related: rhbz#2049192
