@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        36.8
+Version:        36.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -176,6 +176,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Feb 28 2022 Brian C. Lane <bcl@redhat.com> 36.9-1
+- Don't move the restart-anaconda file (vponcova@redhat.com)
+
 * Wed Feb 16 2022 Brian C. Lane <bcl@redhat.com> 36.8-1
 - runtime-cleanup: Remove ncurses package (bcl@redhat.com)
 
