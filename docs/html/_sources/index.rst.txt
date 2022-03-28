@@ -22,7 +22,7 @@ Contents:
 Documentation for other Lorax Branches
 ======================================
 
-* `Fedora 35 <f36-branch/>`_
+* `Fedora 36 <f36-branch/>`_
 * `Fedora 35 <f35-branch/>`_
 * `Fedora 34 <f34-branch/>`_
 * `Fedora 33 <f33-branch/>`_
