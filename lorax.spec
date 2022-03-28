@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        36.9
+Version:        37.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -176,6 +176,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Mar 28 2022 Brian C. Lane <bcl@redhat.com> 37.0-1
+- New lorax documentation - 37.0 (bcl@redhat.com)
+- runtime-cleanup: keep 'unshare' binary present from util-linux-core (kkoukiou@redhat.com)
+
 * Mon Feb 28 2022 Brian C. Lane <bcl@redhat.com> 36.9-1
 - Don't move the restart-anaconda file (vponcova@redhat.com)
 
@@ -312,67 +316,3 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 - Makefile: Add test-in-podman and docs-in-podman build targets (bcl@redhat.com)
 - isolinux.cfg: Rename the 'vesa' menu entry to 'basic' (bcl@redhat.com)
 - composer-cli: Add support for start-ostree --url URL (bcl@redhat.com)
-
-* Mon Feb 15 2021 Brian C. Lane <bcl@redhat.com> 34.9-1
-- Use inst.rescue to trigger rescue mode (awilliam@redhat.com)
-  Resolves: rhbz#1928318
-* Mon Feb 08 2021 Brian C. Lane <bcl@redhat.com> 34.8-1
-- Use image dependencies metapackage (vslavik@redhat.com)
-- tests: Include the fedora-updates repo when testing boot.iso building (bcl@redhat.com)
-
-* Wed Jan 20 2021 Brian C. Lane <bcl@redhat.com> 34.7-1
-- live/x86.tmpl: Copy livecd-iso-to-disk script, if installed (david.ward@ll.mit.edu)
-- templates: Copy license files from the correct path (david.ward@ll.mit.edu)
-- test: Fix vm.install for non-LVM cloud images (martin@piware.de)
-
-* Wed Dec 16 2020 Brian C. Lane <bcl@redhat.com> 34.6-1
-- Remove LD_PRELOAD libgomp.so.1 from lmc --no-virt (bcl@redhat.com)
-- Add POSTIN scriptlet error to the log monitor list (bcl@redhat.com)
-- Improve lmc no-virt error handling (bcl@redhat.com)
-- lorax.spec: Drop GConf2 requirement (bcl@redhat.com)
-
-* Mon Nov 30 2020 Brian C. Lane <bcl@redhat.com> 34.5-1
-- Don't remove libldap_r libraries during runtime-cleanup.tmpl (spichugi@redhat.com)
-- Do not use '--loglevel' option when running Anaconda (vtrefny@redhat.com)
-- Makefile: quiet rsync use in testing (bcl@redhat.com)
-- Switch to using GitHub Actions instead of Travis CI (bcl@redhat.com)
-
-* Mon Nov 02 2020 Brian C. Lane <bcl@redhat.com> 34.4-1
-- Update the default release version to 34 (bcl@redhat.com)
-- Remove mdmonitor service from boot.iso (bcl@redhat.com)
-- Switch to using upstream mk-s390image for s390 cdboot.img creation (bcl@redhat.com)
-- sshd_config: Apply suggested changes (bcl@redhat.com)
-- lorax.spec: Add BuildRequires on systemd-rpm-macros for tmpfilesdir macro (bcl@redhat.com)
-
-* Wed Oct 07 2020 Brian C. Lane <bcl@redhat.com> 34.3-1
-- composer: Fix open file warnings (bcl@redhat.com)
-- ltmpl: Fix deprecated escape in docstring (bcl@redhat.com)
-- tests: Fix open file warning in test_execWithRedirect (bcl@redhat.com)
-- Cleanup imgutil open files and processes (bcl@redhat.com)
-- tests: Remove test_del_execReadlines (bcl@redhat.com)
-- Fix unclosed files (bcl@redhat.com)
-- test: Use Python dev mode during testing (bcl@redhat.com)
-- tests: Update composer-cli blueprint server tests (bcl@redhat.com)
-- runtime-cleanup: Delete .pyc files (bcl@redhat.com)
-- New lorax documentation - 34.3 (bcl@redhat.com)
-- doc: Add Blueprint documentation and example to composer-cli.rst (bcl@redhat.com)
-- docs: Update docs for lorax-composer removal (bcl@redhat.com)
-- tests: Remove unused lorax-composer tests (bcl@redhat.com)
-- Remove lorax-composer, it has been replaced by osbuild-composer (bcl@redhat.com)
-
-* Tue Sep 29 2020 Brian C. Lane <bcl@redhat.com> 34.2-1
-- runtime-cleanup: Remove ncurses package (bcl@redhat.com)
-
-* Mon Sep 14 2020 Brian C. Lane <bcl@redhat.com> 34.1-1
-- Fix broken single-item tuples in a few places (awilliam@redhat.com)
-- Drop dpaa2 firmware on non-aarch64 arches (awilliam@redhat.com)
-- Drop firmware for Mellanox Spectrum (awilliam@redhat.com)
-- runtime-cleanup: big refresh of stale things (awilliam@redhat.com)
-
-* Tue Sep 08 2020 Brian C. Lane <bcl@redhat.com> 34.0-1
-- New lorax documentation - 34.0 (bcl@redhat.com)
-- runtime-cleanup: strip a bunch of unnecessary firmwares (awilliam@redhat.com)
-- runtime-install: specify polkit-gnome to avoid lxpolkit and GTK2 (awilliam@redhat.com)
-- runtime-install: exclude gnome-firmware and sigrok-firmware (awilliam@redhat.com)
-- runtime-cleanup: Drop video playback acceleration drivers (awilliam@redhat.com)
-- runtime-install: don't install notification-daemon (awilliam@redhat.com)
