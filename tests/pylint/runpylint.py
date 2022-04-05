@@ -29,7 +29,7 @@ class LoraxLintConfig(PocketLintConfig):
 
     @property
     def ignoreNames(self):
-        return { "bots", "rpmbuild" }
+        return { "bots", "rpmbuild", "rel-eng" }
 
     @property
     def extraArgs(self):
