@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.14
+Version:        34.9.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Apr 06 2022 Brian C. Lane <bcl@redhat.com> 34.9.15-1
+- tito: Add the LoraxRHELTagger from rhel8-branch (bcl)
+  Related: rhbz#2070910
+- runtime-postinstall: Remove machine specific nvme files (bcl)
+  Resolves: rhbz#2070910
+
 * Wed Feb 16 2022 Brian C. Lane <bcl@redhat.com> 34.9.14-1
 - Keep nvram module (bcl@redhat.com)
   Resolves: rhbz#2050877
