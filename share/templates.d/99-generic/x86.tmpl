@@ -3,6 +3,7 @@
 configdir="tmp/config_files/x86"
 PXEBOOTDIR="images/pxeboot"
 STAGE2IMG="images/install.img"
+GRUB2DIR="boot/grub2"
 KERNELDIR=PXEBOOTDIR
 LORAXDIR="usr/share/lorax/"
 
@@ -22,6 +23,15 @@ if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
 else:
     isoargs = ""
 %>
+
+## configure grub2
+mkdir ${GRUB2DIR}
+install ${configdir}/grub2-bios.cfg ${GRUB2DIR}/grub.cfg
+replace @VERSION@ ${product.version} ${GRUB2DIR}/grub.cfg
+replace @PRODUCT@ '${product.name}'  ${GRUB2DIR}/grub.cfg
+replace @KERNELPATH@ /${KERNELDIR}/vmlinuz ${GRUB2DIR}/grub.cfg
+replace @INITRDPATH@ /${KERNELDIR}/initrd.img ${GRUB2DIR}/grub.cfg
+replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${GRUB2DIR}/grub.cfg
 
 mkdir images
 install ${runtime_img} ${STAGE2IMG}
@@ -45,6 +55,16 @@ mkdir ${KERNELDIR}
     treeinfo images-xen kernel ${KERNELDIR}/vmlinuz
     treeinfo images-xen initrd ${KERNELDIR}/initrd.img
 %endif
+
+
+## BIOS setup
+<%
+    biosgraft = "boot=${outroot}/boot"
+    biosgraft += " ${GRUB2DIR}/i386-pc=${inroot}/usr/lib/grub/i386-pc"
+    biosgraft += " images/eltorito.img=${outroot}/images/eltorito.img"
+%>
+treeinfo images-${basearch} eltorito.img images/eltorito.img
+
 
 ## WHeeeeeeee, EFI.
 <% efiargs=""; efigraft=""; efiarch32=None; efiarch64=None %>
@@ -98,12 +118,28 @@ mkdir ${KERNELDIR}
     <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
 %endfor
 
+## Make images/eltoritio.img
+runcmd grub2-mkimage -O i386-pc-eltorito -d ${inroot}/usr/lib/grub/i386-pc \
+       -o ${outroot}/images/eltorito.img \
+       -p /${GRUB2DIR} \
+       iso9660 biosdisk
+
 ## make boot.iso
 runcmd xorrisofs ${isoargs} -o ${outroot}/images/boot.iso \
-       ${efiargs} -R -J -V '${isolabel}' \
+       -R -J -V '${isolabel}' \
+       --grub2-mbr ${inroot}/usr/lib/grub/i386-pc/boot_hybrid.img \
+       -partition_offset 16 \
+       -appended_part_as_gpt \
+       -append_partition 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B ${outroot}/images/efiboot.img \
+       -iso_mbr_part_type EBD0A0A2-B9E5-4433-87C0-68B6B72699C7 \
+       -c boot.cat --boot-catalog-hide \
+       -b images/eltorito.img \
+       -no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info \
+       -eltorito-alt-boot \
+       -e '--interval:appended_partition_2:all::' -no-emul-boot \
        -graft-points \
        .discinfo=${outroot}/.discinfo \
        ${STAGE2IMG}=${outroot}/${STAGE2IMG} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
-       ${efigraft} ${filegraft}
+       ${biosgraft} ${efigraft} ${filegraft}
 treeinfo images-${basearch} boot.iso images/boot.iso

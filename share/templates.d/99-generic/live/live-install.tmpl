@@ -20,6 +20,7 @@
 %if basearch in ("i386", "x86_64"):
     installpkg biosdevname
     installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
+    installpkg grub2-pc-modules
 %endif
 %if basearch == "ppc64le":
     installpkg powerpc-utils
