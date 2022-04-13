@@ -77,17 +77,7 @@ treeinfo images-${basearch} eltorito.img images/eltorito.img
 %if (efiarch32 or efiarch64) and basearch != 'i386':
     <%
     efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
-    images = [("images/efiboot.img", "-isohybrid-gpt-basdat")]
-    if domacboot:
-        images.append(("images/macboot.img", "-isohybrid-gpt-hfsplus"))
     %>
-    %for img, hybrid in images:
-        <%
-        efiargs += " --efi-boot {0} {1}".format(img, hybrid)
-        efigraft += " {0}={1}/{0}".format(img,outroot)
-        %>
-        treeinfo images-${basearch} ${img|basename} ${img}
-    %endfor
     <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch32=efiarch32, efiarch64=efiarch64, isolabel=isolabel"/>
 %endif
 
