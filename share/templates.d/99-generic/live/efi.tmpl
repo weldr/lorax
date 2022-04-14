@@ -21,9 +21,6 @@ install boot/grub2/fonts/unicode.pf2 ${EFIBOOTDIR}/fonts/
 
 ## actually make the EFI images
 ${make_efiboot("images/efiboot.img")}
-%if domacboot:
-    ${make_efiboot("images/macboot.img", imgtype="apple")}
-%endif
 
 ## This is kinda gross, but then... so's EFI.
 <%def name="make_efiboot(img, include_kernel=False, disk=False, imgtype='default')">
@@ -32,7 +29,6 @@ ${make_efiboot("images/efiboot.img")}
     eficonf = "%s/grub.cfg" % (EFIBOOTDIR, )
     args = "--label=ANACONDA"
     if disk: args += " --disk"
-    if imgtype == "apple": args += ' --apple --icon=%s --diskname=%s --product="%s %s"' % (APPLE_EFI_ICON, APPLE_EFI_DISKNAME, product.name, product.version)
     %>
     %if include_kernel:
         copy ${KERNELDIR}/vmlinuz ${EFIBOOTDIR}
