@@ -16,6 +16,7 @@ URL:            https://github.com/weldr/lorax
 Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  make
 BuildRequires:  systemd-rpm-macros
 

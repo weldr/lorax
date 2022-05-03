@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-
-from distutils.core import setup
+from setuptools import setup
 import os
 import sys
 
