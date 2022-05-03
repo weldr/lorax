@@ -538,8 +538,8 @@ def make_live_images(opts, work_dir, disk_img):
             is_root_part = lambda dir: os.path.exists(dir+"/ostree/deploy")
         with PartitionMount(disk_img, mount_ok=is_root_part) as img_mount:
             if img_mount and img_mount.mount_dir:
+                mounted_sysroot_boot_dir = None
                 try:
-                    mounted_sysroot_boot_dir = None
                     if opts.ostree:
                         sys_root = find_ostree_root(img_mount.mount_dir)
                         mounted_sysroot_boot_dir = mount_boot_part_over_root(img_mount)
