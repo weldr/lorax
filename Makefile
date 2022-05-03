@@ -120,7 +120,7 @@ test-in-docker: test-in-podman
 test-in-podman:
 	$(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
 	@mkdir -p `pwd`/.test-results
-	$(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results \
+	$(DOCKER) run --rm -v `pwd`/.test-results/:/test-results \
 		-v `pwd`:/lorax-ro:ro --security-opt label=disable \
 		--env RUN_TESTS="$(RUN_TESTS)" \
 		welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
