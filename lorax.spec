@@ -161,7 +161,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_sbindir}/lorax
 %{_sbindir}/mkefiboot
 %{_sbindir}/livemedia-creator
-%{_sbindir}/mkksiso
+%{_bindir}/mkksiso
 %{_bindir}/image-minimizer
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf

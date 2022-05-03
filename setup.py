@@ -17,8 +17,8 @@ for root, dnames, fnames in os.walk("share"):
 
 # executable
 data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
-                                 "src/sbin/livemedia-creator", "src/sbin/mkksiso"]))
-data_files.append(("/usr/bin",  ["src/bin/image-minimizer"]))
+                                 "src/sbin/livemedia-creator"]))
+data_files.append(("/usr/bin",  ["src/bin/image-minimizer", "src/bin/mkksiso"]))
 
 # get the version
 sys.path.insert(0, "src")
