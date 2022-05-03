@@ -9,11 +9,12 @@ you can add a kickstart to a boot.iso and the kickstart will be executed when
 the iso is booted. If the original iso was created with EFI and Mac support the
 kickstart boot.iso will include this support as well.
 
-``mkksiso`` needs to be run as root, it depends on mounting the original iso
-and you need to be root to be able to do that. The host system architecture
-needs to match that of the iso. ``mkksiso`` will raise an error if it finds a
-.discinfo on the iso with a mismatched arch.
+``mkksiso`` The host system architecture needs to match that of the iso.
+``mkksiso`` will raise an error if it finds a .discinfo on the iso with a
+mismatched arch.
 
+As of version 37.1 ``mkksiso`` can be run by normal users. It no longer needs
+to mount the iso to add the kickstart or edit the configuration files.
 
 mkksiso cmdline arguments
 -------------------------
