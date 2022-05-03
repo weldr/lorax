@@ -1,0 +1,344 @@
+#!/usr/bin/python3
+#
+# Copyright (C) 2019 Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+import argparse
+import logging as log
+import os
+import shutil
+import shlex
+import subprocess
+import sys
+import tempfile
+
+
+# Maximum filename length
+MAX_FNAME = 253
+
+
+def GetISODetails(isopath):
+    """
+    Use xorriso to list the contents of the iso and get the volume id
+
+    Metadata about the iso is output to stderr, file listing is sent to stdout.
+
+    Returns a tuple of volume id, and the list of files on the iso
+    """
+    cmd = ["xorriso", "-indev", isopath, "-pkt_output", "on", "-find"]
+    out =  subprocess.run(cmd, check=True, capture_output=True, env={"LANG": "C"})
+
+    volid = ""
+    for line in out.stderr.decode("utf-8").splitlines():
+        if line.startswith("Volume id"):
+            volid = shlex.split(line)[-1]
+    if not volid:
+        raise RuntimeError(f"{isopath} is missing a volume id")
+
+    # Files on the iso
+    # The files are on stdout and are prefixed with 'R:1:' for result lines with trailing newlines.
+    files = []
+    for line in out.stdout.decode("utf-8").splitlines():
+        if line.startswith("R:1:"):
+            files.append(os.path.normpath(shlex.split(line)[-1]))
+
+    return volid, files
+
+
+def ExtractISOFiles(isopath, files, tmpdir):
+    """
+    Extract the given files (which must exist on the iso) into the temporary
+    directory.
+    """
+    cmd = ["osirrox", "-indev", isopath]
+    for f in files:
+        cmd.extend(["-extract", f, os.path.join(tmpdir, f)])
+    subprocess.run(cmd, check=True, capture_output=False, env={"LANG": "C"})
+
+
+# From pylorax/treebuilder.py
+# udev whitelist: 'a-zA-Z0-9#+.:=@_-' (see is_whitelisted in libudev-util.c)
+udev_blacklist=' !"$%&\'()*,/;<>?[\\]^`{|}~' # ASCII printable, minus whitelist
+udev_blacklist += ''.join(chr(i) for i in range(32)) # ASCII non-printable
+def udev_escape(label):
+    """
+    Escape the volume id label characters so they can be used on the ISO
+    """
+    out = ''
+    for ch in label:
+        out += ch if ch not in udev_blacklist else '\\x%02x' % ord(ch)
+    return out
+
+
+def CheckBigFiles(add_paths):
+    """
+    Check file size and filename length for problems
+
+    Returns True if any file exceeds 4GiB
+    Raises a RuntimeError if any filename is longer than MAX_FNAME
+    This examines all the files included, so may take some time.
+    """
+    big_file = False
+    for src in add_paths:
+        if os.path.isdir(src):
+            for top, dirs, files in os.walk(src):
+                for f in files + dirs:
+                    if len(f) > MAX_FNAME:
+                        raise RuntimeError("iso contains filenames that are too long: %s" % f)
+                    if os.stat(os.path.join(top,f)).st_size >= 4*1024**3:
+                        big_file = True
+        else:
+            if len(src) > MAX_FNAME:
+                raise RuntimeError("iso contains filenames that are too long: %s" % f)
+            if os.stat(src).st_size >= 4*1024**3:
+                big_file = True
+
+    return big_file
+
+
+def ImplantMD5(output_iso):
+    """
+    Add md5 checksums to the final iso
+    """
+    cmd = ["implantisomd5", output_iso]
+    log.debug(" ".join(cmd))
+    try:
+        subprocess.check_output(cmd)
+    except subprocess.CalledProcessError as e:
+        log.error(str(e))
+        raise RuntimeError("implantisomd5 failed")
+
+
+def EditIsolinux(new_args, new_volid, old_volid, tmpdir):
+    """
+    Modify the cmdline for an isolinux.cfg
+    Add the new arguments and change existing volid if requested
+    """
+    orig_cfg = os.path.join(tmpdir, "isolinux/isolinux.cfg")
+    if not os.path.exists(orig_cfg):
+        log.warning("No isolinux/isolinux.cfg file found")
+        return
+
+    change_volid = old_volid != new_volid
+
+    # Edit the config file, save the new one as .new
+    with open(orig_cfg, "r") as in_fp:
+        with open(orig_cfg + ".new", "w") as out_fp:
+            for line in in_fp:
+                if change_volid and old_volid in line:
+                    line = line.replace(old_volid, new_volid)
+                out_fp.write(line.rstrip("\n"))
+                if "append" in line:
+                    out_fp.write(" " + new_args)
+                out_fp.write("\n")
+            out_fp.close()
+        os.replace(orig_cfg + ".new", orig_cfg)
+
+
+def EditGrub2(new_args, new_volid, old_volid, tmpdir):
+    """
+    Modify the cmdline for GRUB2 UEFI and BIOS config files
+    Add the new arguments and change existing volid if requested
+    """
+    grub_cfgs = ["EFI/BOOT/grub.cfg", "EFI/BOOT/BOOT.conf",
+                 "/boot/grub2/grub.cfg", "boot/grub/grub.cfg"]
+
+    if not any(os.path.exists(os.path.join(tmpdir, c)) for c in grub_cfgs):
+        log.warning("No grub config files found")
+        return
+
+    change_volid = old_volid != new_volid
+
+    for cfg in grub_cfgs:
+        orig_cfg = os.path.join(tmpdir, cfg)
+        if not os.path.exists(orig_cfg):
+            continue
+
+        with open(orig_cfg, "r") as in_fp:
+            with open(orig_cfg + ".new", "w") as out_fp:
+                for line in in_fp:
+                    if change_volid and old_volid in line:
+                        line = line.replace(old_volid, new_volid)
+                    out_fp.write(line.rstrip("\n"))
+                    # Some start with linux (BIOS/aarch64), others with linuxefi (x86_64)
+                    if line.strip().startswith("linux"):
+                        out_fp.write(" "+new_args)
+                    out_fp.write("\n")
+                out_fp.close()
+        os.replace(orig_cfg + ".new", orig_cfg)
+
+
+def EditS390(new_args, new_volid, old_volid, tmpdir):
+    """
+    Modify the cmdline for s390 config files
+    Add the new arguments and change existing volid if requested
+    """
+    s390_cfgs = ["images/generic.prm", "images/cdboot.prm"]
+
+    if not any(os.path.exists(os.path.join(tmpdir, c)) for c in s390_cfgs):
+        log.warning("No s390 config files found")
+        return
+
+    change_volid = old_volid != new_volid
+
+    for cfg in s390_cfgs:
+        orig_cfg = os.path.join(tmpdir, cfg)
+        if not os.path.exists(orig_cfg):
+            log.warning("No %s file found", cfg)
+            continue
+
+        # Append to the config file
+        with open(orig_cfg, "r") as in_fp:
+            with open(orig_cfg + ".new", "w") as out_fp:
+                for line in in_fp:
+                    if change_volid and old_volid in line:
+                        line = line.replace(old_volid, new_volid)
+                    out_fp.write(line)
+                out_fp.write(new_args+"\n")
+                out_fp.close()
+        os.replace(orig_cfg + ".new", orig_cfg)
+
+
+def CheckDiscinfo(path):
+    """
+    If the ISO contains a .discinfo file, check the arch against the host arch
+
+    Raises a RuntimeError if the arch does not match
+    """
+    ## TODO -- is this even needed with the new method of rebuilding the iso?
+    if os.path.exists(path):
+        with open(path) as f:
+            discinfo = [l.strip() for l in f.readlines()]
+
+        log.info("iso arch = %s", discinfo[2])
+        if os.uname().machine != discinfo[2]:
+            raise RuntimeError("iso arch does not match the host arch.")
+
+
+def MakeKickstartISO(ks, input_iso, output_iso, add_paths, cmdline="", new_volid="", implantmd5=True):
+    """
+    Make a kickstart ISO from a boot.iso or dvd
+    """
+    # Gather information about the input iso
+    old_volid, files = GetISODetails(input_iso)
+    if not old_volid and not new_volid:
+        raise RuntimeError("No volume id found, cannot create iso.")
+
+    # Extract files that match the known config files.
+    known_configs = set([".discinfo", "isolinux/isolinux.cfg",
+                         "boot/grub2/grub.cfg", "boot/grub/grub.cfg",
+                         "EFI/BOOT/grub.cfg", "EFI/BOOT/BOOT.conf",
+                         "images/generic.prm", "images/cdboot.prm"])
+    extract_files = set(files) & known_configs
+    with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpdir:
+        ExtractISOFiles(input_iso, extract_files, tmpdir)
+        CheckDiscinfo(os.path.join(tmpdir, ".discinfo"))
+        new_volid = new_volid or old_volid
+        log.info("Volume Id = %s", new_volid)
+
+        # Escape the volume ids
+        new_volid = udev_escape(new_volid)
+        old_volid = udev_escape(old_volid)
+
+        new_args = "inst.ks=hd:LABEL=%s:/%s %s" % (new_volid or old_volid, os.path.basename(ks), cmdline)
+
+        # Add kickstart command and optionally change the volid of the available config files
+        EditIsolinux(new_args, new_volid, old_volid, tmpdir)
+        EditGrub2(new_args, new_volid, old_volid, tmpdir)
+        EditS390(new_args, new_volid, old_volid, tmpdir)
+
+        # Build the command to rebuild the iso with the changes and additions
+        cmd = ["xorriso", "-indev", input_iso, "-outdev", output_iso, "-boot_image", "any", "replay"]
+        if new_volid != old_volid:
+            cmd.extend(["-volid", new_volid])
+
+        # Update the config files that were extracted and modified
+        for root, _, files in os.walk(tmpdir, topdown=False):
+            isoroot = root.replace(tmpdir, "")
+            for f in files:
+                cmd.extend(["-update", os.path.join(root, f), os.path.join(isoroot, f)])
+
+        # Add the kickstart and the new files and directories
+        for p in [ks, *add_paths]:
+            cmd.extend(["-map", p, os.path.basename(p)])
+
+        if CheckBigFiles(add_paths):
+            cmd.extend(["-iso-level", "3"])
+
+        log.debug("Running: %s", " ".join(cmd))
+        subprocess.run(cmd, check=True, capture_output=False, env={"LANG": "C"})
+
+    if implantmd5:
+        ImplantMD5(output_iso)
+
+
+def setup_args():
+    """ Return argparse.Parser object of cmdline."""
+    parser = argparse.ArgumentParser(description="Add a kickstart and files to an iso")
+
+    parser.add_argument("-a", "--add", action="append", dest="add_paths", default=[],
+                        type=os.path.abspath,
+                        help="File or directory to add to ISO (may be used multiple times)")
+    parser.add_argument("-c", "--cmdline", dest="cmdline", metavar="CMDLINE", default="",
+                        help="Arguments to add to kernel cmdline")
+    parser.add_argument("--debug", action="store_const", const=log.DEBUG,
+                        dest="loglevel", default=log.INFO,
+                        help="print debugging info")
+    parser.add_argument("--no-md5sum", action="store_false", default=True,
+                        help="Do not run implantisomd5 on the ouput iso")
+
+    parser.add_argument("ks", type=os.path.abspath, help="Kickstart to add to the ISO")
+    parser.add_argument("input_iso", type=os.path.abspath, help="ISO to modify")
+    parser.add_argument("output_iso", type=os.path.abspath, help="Full pathname of iso to be created")
+    parser.add_argument("-V", "--volid", dest="volid", help="Set the ISO volume id, defaults to input's", default=None)
+    args = parser.parse_args()
+
+    return args
+
+
+def main():
+    args = setup_args()
+    log.basicConfig(format='%(levelname)s:%(message)s', level=args.loglevel)
+
+    try:
+        errors = False
+        for t in ["xorriso", "osirrox"]:
+            if not shutil.which(t):
+                log.error("%s binary is missing", t)
+                errors = True
+
+        for f in [args.ks, args.input_iso] + args.add_paths:
+            if not os.path.exists(f):
+                log.error("%s is missing", f)
+                errors = True
+
+        if os.path.exists(args.output_iso):
+            log.error("%s already exists", args.output_iso)
+            errors = True
+
+        if errors:
+            raise RuntimeError("Problems running %s" % sys.argv[0])
+
+        MakeKickstartISO(args.ks, args.input_iso, args.output_iso,
+                         args.add_paths, args.cmdline, args.volid, args.no_md5sum)
+    except RuntimeError as e:
+        log.error(str(e))
+        return 1
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
