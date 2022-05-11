@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mkksiso &mdash; Lorax 37.0 documentation</title>
+  <title>mkksiso &mdash; Lorax 37.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
@@ -27,7 +27,7 @@
             <a href="index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                37.0
+                37.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -94,10 +94,12 @@
 you can add a kickstart to a boot.iso and the kickstart will be executed when
 the iso is booted. If the original iso was created with EFI and Mac support the
 kickstart boot.iso will include this support as well.</p>
-<p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> needs to be run as root, it depends on mounting the original iso
-and you need to be root to be able to do that. The host system architecture
-needs to match that of the iso. <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> will raise an error if it finds a
-.discinfo on the iso with a mismatched arch.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> The host system architecture needs to match that of the iso.
+<code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> will raise an error if it finds a .discinfo on the iso with a
+mismatched arch.</p>
+<p>As of version 37.1 <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> can be run by normal users. It no longer needs
+to mount the iso to add the kickstart or edit the configuration files so you
+do not need to be root.</p>
 <section id="mkksiso-cmdline-arguments">
 <h2>mkksiso cmdline arguments<a class="headerlink" href="#mkksiso-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
 <p>Add a kickstart and files to an iso</p>
@@ -158,9 +160,10 @@ network connection. Then run <code class="docutils literal notranslate"><span cl
 kernel cmdline will have <code class="docutils literal notranslate"><span class="pre">inst.ks=...</span></code> added to it so that it will be
 executed when the iso is booted (be careful not to boot on a system you don't
 want to wipe out! There will be no prompting).</p>
-<p>By default the volume id of the iso is preserved. You can set a custom volid
-by passing <code class="docutils literal notranslate"><span class="pre">-V</span></code> and the string to set. The kernel cmdline will be changes, and the iso will have th custom volume id.
-eg.:</p>
+<p>By default the volume id of the iso is preserved. You can set a custom volid by
+passing <code class="docutils literal notranslate"><span class="pre">-V</span></code> and the string to set. The kernel cmdline will be changes, and
+the iso will have th custom volume id.</p>
+<p>eg.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">-</span><span class="n">V</span> <span class="s2">&quot;Test Only&quot;</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
 </pre></div>
 </div>
@@ -206,17 +209,15 @@ contents to the system without any prompting.</p>
 </section>
 <section id="how-it-works">
 <h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> first examines the system to make sure the tools it needs are installed,
-it will work with <code class="docutils literal notranslate"><span class="pre">xorrisofs</span></code> or <code class="docutils literal notranslate"><span class="pre">mkisofs</span></code> installed. It mounts the source iso,
-and copies the directories that need to be modified to a temporary directory.</p>
-<p>It then modifies the boot configuration files to include the <code class="docutils literal notranslate"><span class="pre">inst.ks</span></code> command,
-and checks to see if the original iso supports EFI. If it does it regenerates the
-EFI boot images with the new configuration, and then runs the available iso creation
-tool to add the new files and directories to the new iso. If the architecture is
-<code class="docutils literal notranslate"><span class="pre">x86_64</span></code> it will also make sure the iso can be booted as an iso or from a USB
-stick (hybridiso).</p>
+<p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> only depends on <code class="docutils literal notranslate"><span class="pre">xorriso</span></code> and <code class="docutils literal notranslate"><span class="pre">isomd5sum</span></code>. It takes advantage of
+<code class="docutils literal notranslate"><span class="pre">xorriso</span></code>'s ability to extract files, replace files, and add files to the iso
+without need to mount it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> extracts all of the config files it knows about, and then modifies
+the boot configuration files to include the <code class="docutils literal notranslate"><span class="pre">inst.ks</span></code> command. It adds any
+extra command line arguments you specify, and then builds the new iso with the configuration
+files replaced, and new files and directories added.</p>
 <p>The last step is to update the iso checksums so that booting with test enabled
-will pass.</p>
+will pass. It uses <code class="docutils literal notranslate"><span class="pre">implantisomd5</span></code> from the <code class="docutils literal notranslate"><span class="pre">isomd5sum</span></code> project.</p>
 </section>
 </section>
 
