@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.0
+Version:        37.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -177,6 +177,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed May 11 2022 Brian C. Lane <bcl@redhat.com> 37.1-1
+- New lorax documentation - 37.1 (bcl@redhat.com)
+- docs: Update the mkksiso documentation (bcl@redhat.com)
+- setup.py: Install mkksiso to /usr/bin (bcl@redhat.com)
+- pylorax: Move variable out of try block (bcl@redhat.com)
+- setup.py: Use setup from setuptools not distutils (bcl@redhat.com)
+- Makefile: Remove -it options for test-in-podman (bcl@redhat.com)
+- mkksiso: Rewrite to use xorriso features (bcl@redhat.com)
+- docs: Fix typo in index.html (bcl@redhat.com)
+
 * Mon Mar 28 2022 Brian C. Lane <bcl@redhat.com> 37.0-1
 - New lorax documentation - 37.0 (bcl@redhat.com)
 - runtime-cleanup: keep 'unshare' binary present from util-linux-core (kkoukiou@redhat.com)
