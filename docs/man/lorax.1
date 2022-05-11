@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "LORAX" "1" "Mar 28, 2022" "37.0" "Lorax"
+.TH "LORAX" "1" "May 11, 2022" "37.1" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .INDENT 0.0
@@ -326,7 +326,7 @@ selected repositories.
 .sp
 To drive these processes Lorax uses a custom template system, based on \fI\%Mako
 templates\fP with the addition of custom
-commands (documented in \fBpylorax.ltmpl.LoraxTemplateRunner\fP). Mako
+commands (documented in \fI\%pylorax.ltmpl.LoraxTemplateRunner\fP). Mako
 supports \fB%if/%endif\fP blocks as well as free\-form python code inside \fB<%
 %>\fP tags and variable substitution with \fB${}\fP\&. The default templates are
 shipped with lorax in \fB/usr/share/lorax/templates.d/99\-generic/\fP and use the
@@ -347,25 +347,25 @@ unneeded services are disabled, some of which can interfere with the
 installation. A number of template commands are used here:
 .INDENT 0.0
 .IP \(bu 2
-\fBappend\fP to add text to a file.
+\fI\%append\fP to add text to a file.
 .IP \(bu 2
-\fBchmod\fP changes the file\(aqs mode.
+\fI\%chmod\fP changes the file\(aqs mode.
 .IP \(bu 2
-\fBinstall\fP to install a file into the installroot.
+\fI\%install\fP to install a file into the installroot.
 .IP \(bu 2
-\fBmkdir\fP makes a new directory.
+\fI\%mkdir\fP makes a new directory.
 .IP \(bu 2
-\fBmove\fP to move a file into the installroot
+\fI\%move\fP to move a file into the installroot
 .IP \(bu 2
-\fBreplace\fP does text substitution in a file
+\fI\%replace\fP does text substitution in a file
 .IP \(bu 2
-\fBremove\fP deletes a file
+\fI\%remove\fP deletes a file
 .IP \(bu 2
-\fBruncmd\fP run arbitrary commands.
+\fI\%runcmd\fP run arbitrary commands.
 .IP \(bu 2
-\fBsymlink\fP creates a symlink
+\fI\%symlink\fP creates a symlink
 .IP \(bu 2
-\fBsystemctl\fP runs systemctl in the installroot
+\fI\%systemctl\fP runs systemctl in the installroot
 .UNINDENT
 .SS runtime\-cleanup.tmpl
 .sp
@@ -373,15 +373,15 @@ The \fBruntime\-cleanup.tmpl\fP template is used to remove files that aren\(aqt 
 by the installation environment. In addition to the \fBremove\fP template command it uses:
 .INDENT 0.0
 .IP \(bu 2
-\fBremovepkg\fP
+\fI\%removepkg\fP
 remove all of a specific package\(aqs contents. A package may be pulled in as a dependency, but
 not really used. eg. sound support.
 .IP \(bu 2
-\fBremovefrom\fP
+\fI\%removefrom\fP
 Removes some files from a package. A file glob can be used, or the \-\-allbut option to
 remove everything except a select few.
 .IP \(bu 2
-\fBremovekmod\fP
+\fI\%removekmod\fP
 Removes kernel modules
 .UNINDENT
 .SS The squashfs filesystem
@@ -397,7 +397,7 @@ on the architecture that the iso is being created for. They are also stored in
 \fB/usr/share/lorax/templates.d/99\-generic\fP and are named after the arch, like
 \fBx86.tmpl\fP and \fBaarch64.tmpl\fP\&. They handle creation of the tree, copying
 configuration template files, configuration variable substitution, treeinfo
-metadata (via the \fBtreeinfo\fP
+metadata (via the \fI\%treeinfo\fP
 template command). Kernel and initrd are copied from the installroot to their
 final locations and then xorrisofs is run to create the boot.iso
 .SH CUSTOM TEMPLATES

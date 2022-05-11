@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.creator &mdash; Lorax 37.0 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 37.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
@@ -24,7 +24,7 @@
             <a href="../../index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                37.0
+                37.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -611,8 +611,8 @@
             <span class="n">is_root_part</span> <span class="o">=</span> <span class="k">lambda</span> <span class="nb">dir</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="nb">dir</span><span class="o">+</span><span class="s2">&quot;/ostree/deploy&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">PartitionMount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">mount_ok</span><span class="o">=</span><span class="n">is_root_part</span><span class="p">)</span> <span class="k">as</span> <span class="n">img_mount</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">img_mount</span> <span class="ow">and</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">:</span>
+                <span class="n">mounted_sysroot_boot_dir</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">mounted_sysroot_boot_dir</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">ostree</span><span class="p">:</span>
                         <span class="n">sys_root</span> <span class="o">=</span> <span class="n">find_ostree_root</span><span class="p">(</span><span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span>
                         <span class="n">mounted_sysroot_boot_dir</span> <span class="o">=</span> <span class="n">mount_boot_part_over_root</span><span class="p">(</span><span class="n">img_mount</span><span class="p">)</span>

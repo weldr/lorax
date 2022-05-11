@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "MKKSISO" "1" "Mar 28, 2022" "37.0" "Lorax"
+.TH "MKKSISO" "1" "May 11, 2022" "37.1" "Lorax"
 .SH NAME
 mkksiso \- Make Kickstart ISO Utility Documentation
 .INDENT 0.0
@@ -41,10 +41,13 @@ you can add a kickstart to a boot.iso and the kickstart will be executed when
 the iso is booted. If the original iso was created with EFI and Mac support the
 kickstart boot.iso will include this support as well.
 .sp
-\fBmkksiso\fP needs to be run as root, it depends on mounting the original iso
-and you need to be root to be able to do that. The host system architecture
-needs to match that of the iso. \fBmkksiso\fP will raise an error if it finds a
-\&.discinfo on the iso with a mismatched arch.
+\fBmkksiso\fP The host system architecture needs to match that of the iso.
+\fBmkksiso\fP will raise an error if it finds a .discinfo on the iso with a
+mismatched arch.
+.sp
+As of version 37.1 \fBmkksiso\fP can be run by normal users. It no longer needs
+to mount the iso to add the kickstart or edit the configuration files so you
+do not need to be root.
 .SH MKKSISO CMDLINE ARGUMENTS
 .sp
 Add a kickstart and files to an iso
@@ -115,8 +118,10 @@ kernel cmdline will have \fBinst.ks=...\fP added to it so that it will be
 executed when the iso is booted (be careful not to boot on a system you don\(aqt
 want to wipe out! There will be no prompting).
 .sp
-By default the volume id of the iso is preserved. You can set a custom volid
-by passing \fB\-V\fP and the string to set. The kernel cmdline will be changes, and the iso will have th custom volume id.
+By default the volume id of the iso is preserved. You can set a custom volid by
+passing \fB\-V\fP and the string to set. The kernel cmdline will be changes, and
+the iso will have th custom volume id.
+.sp
 eg.:
 .INDENT 0.0
 .INDENT 3.5
@@ -200,19 +205,17 @@ When this iso is booted it will execute the kickstart and install the liveimg
 contents to the system without any prompting.
 .SH HOW IT WORKS
 .sp
-\fBmkksiso\fP first examines the system to make sure the tools it needs are installed,
-it will work with \fBxorrisofs\fP or \fBmkisofs\fP installed. It mounts the source iso,
-and copies the directories that need to be modified to a temporary directory.
+\fBmkksiso\fP only depends on \fBxorriso\fP and \fBisomd5sum\fP\&. It takes advantage of
+\fBxorriso\fP\(aqs ability to extract files, replace files, and add files to the iso
+without need to mount it.
 .sp
-It then modifies the boot configuration files to include the \fBinst.ks\fP command,
-and checks to see if the original iso supports EFI. If it does it regenerates the
-EFI boot images with the new configuration, and then runs the available iso creation
-tool to add the new files and directories to the new iso. If the architecture is
-\fBx86_64\fP it will also make sure the iso can be booted as an iso or from a USB
-stick (hybridiso).
+\fBmkksiso\fP extracts all of the config files it knows about, and then modifies
+the boot configuration files to include the \fBinst.ks\fP command. It adds any
+extra command line arguments you specify, and then builds the new iso with the configuration
+files replaced, and new files and directories added.
 .sp
 The last step is to update the iso checksums so that booting with test enabled
-will pass.
+will pass. It uses \fBimplantisomd5\fP from the \fBisomd5sum\fP project.
 .SH AUTHOR
 Weldr Team
 .SH COPYRIGHT
