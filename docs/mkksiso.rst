@@ -14,7 +14,8 @@ kickstart boot.iso will include this support as well.
 mismatched arch.
 
 As of version 37.1 ``mkksiso`` can be run by normal users. It no longer needs
-to mount the iso to add the kickstart or edit the configuration files.
+to mount the iso to add the kickstart or edit the configuration files so you
+do not need to be root.
 
 mkksiso cmdline arguments
 -------------------------
@@ -62,8 +63,10 @@ kernel cmdline will have ``inst.ks=...`` added to it so that it will be
 executed when the iso is booted (be careful not to boot on a system you don't
 want to wipe out! There will be no prompting).
 
-By default the volume id of the iso is preserved. You can set a custom volid
-by passing ``-V`` and the string to set. The kernel cmdline will be changes, and the iso will have th custom volume id.
+By default the volume id of the iso is preserved. You can set a custom volid by
+passing ``-V`` and the string to set. The kernel cmdline will be changes, and
+the iso will have th custom volume id.
+
 eg.::
 
     mkksiso -V "Test Only" /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
@@ -117,16 +120,14 @@ contents to the system without any prompting.
 How it works
 ------------
 
-``mkksiso`` first examines the system to make sure the tools it needs are installed,
-it will work with ``xorrisofs`` or ``mkisofs`` installed. It mounts the source iso,
-and copies the directories that need to be modified to a temporary directory.
+``mkksiso`` only depends on ``xorriso`` and ``isomd5sum``. It takes advantage of
+``xorriso``'s ability to extract files, replace files, and add files to the iso
+without need to mount it.
 
-It then modifies the boot configuration files to include the ``inst.ks`` command,
-and checks to see if the original iso supports EFI. If it does it regenerates the
-EFI boot images with the new configuration, and then runs the available iso creation
-tool to add the new files and directories to the new iso. If the architecture is
-``x86_64`` it will also make sure the iso can be booted as an iso or from a USB
-stick (hybridiso).
+``mkksiso`` extracts all of the config files it knows about, and then modifies
+the boot configuration files to include the ``inst.ks`` command. It adds any
+extra command line arguments you specify, and then builds the new iso with the configuration
+files replaced, and new files and directories added.
 
 The last step is to update the iso checksums so that booting with test enabled
-will pass.
+will pass. It uses ``implantisomd5`` from the ``isomd5sum`` project.
