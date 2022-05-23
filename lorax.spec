@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.1
+Version:        37.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -177,6 +177,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon May 23 2022 Brian C. Lane <bcl@redhat.com> 37.2-1
+- cleanup: drop phanfw.bin from linux-firmware (awilliam@redhat.com)
+- cleanup: strip more mellanox firmware files (awilliam@redhat.com)
+- cleanup: strip qcom/vpu* from linux-firmware (awilliam@redhat.com)
+- cleanup: drop qcom/apq8096 firmwares (awilliam@redhat.com)
+
 * Wed May 11 2022 Brian C. Lane <bcl@redhat.com> 37.1-1
 - New lorax documentation - 37.1 (bcl@redhat.com)
 - docs: Update the mkksiso documentation (bcl@redhat.com)
