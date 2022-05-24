@@ -47,7 +47,10 @@ check:
 test:
 	@echo "*** Running tests ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -X dev -m pytest -v --cov-branch \
-					--cov=pylorax ./tests/pylorax/ ./tests/image-minimizer/
+					--cov=pylorax \
+					./tests/pylorax/ \
+					./tests/image-minimizer/ \
+					./tests/mkksiso/
 
 	coverage3 report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo

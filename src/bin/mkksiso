@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import argparse
+from collections import OrderedDict
 import logging as log
 import os
 import shutil
@@ -27,6 +28,86 @@ import tempfile
 
 # Maximum filename length
 MAX_FNAME = 253
+
+
+def SplitCmdline(cmdline):
+    """
+    Split the commandline into an OrderedDict of arguments
+
+    If the argument appears multiple times its entry will have a list of the values,
+    and its position in the dictionary will be that of the first occurrence.
+    If the argument has no value its entry will be [None]
+    Arguments with a single value will be [VALUE]
+
+    Quotes strings are maintained, and values may contain equals signs which
+    will be preserved.
+    """
+    kernel_args = OrderedDict()
+    for a in shlex.split(cmdline):
+        if "=" in a:
+            k,v = a.split("=", 1)
+        else:
+            k, v = a, None
+        if k in kernel_args:
+            kernel_args[k].append(v)
+        else:
+            kernel_args[k] = [v]
+
+    return kernel_args
+
+
+def quote(s):
+    """
+    Return a quoted string if it contains spaces.
+    Otherwise just return the string.
+    """
+    if " " in s:
+        return f"\"{s}\""
+    return s
+
+
+def JoinKernelArgs(kernel_args):
+    """
+    Join an OrderedDict of kernel argument and values into a kernel cmdline string
+
+    The dictionary is the output from SplitCmdline.
+    Values with spaces are quoted with ""
+    """
+    kernel_cmdline = []
+    for k, vs in kernel_args.items():
+        for v in vs:
+            if v is None:
+                kernel_cmdline.append(f"{k}")
+            else:
+                kernel_cmdline.append(f"{k}={quote(v)}")
+    return " ".join(kernel_cmdline)
+
+
+def AlterKernelArgs(kernel_args, rm_args, add_args):
+    """
+    Modify the kernel argument OrderedDict
+
+    This first removes all arguments listed in rm_args. It will ignore
+    arguments that are not present.
+
+    It then extends the arguments listed in the add_args dictionary if they are
+    already present, otherwise it adds them to kernel_args
+
+    It returns the modified kernel_args OrderedDict.
+    """
+    # Remove arguments
+    for k in rm_args:
+        if k in kernel_args:
+            del kernel_args[k]
+
+    # Add new arguments and update existing ones
+    for k, vs in add_args.items():
+        if k in kernel_args:
+            kernel_args[k].extend(vs)
+        else:
+            kernel_args[k] = vs
+
+    return kernel_args
 
 
 def GetISODetails(isopath):
