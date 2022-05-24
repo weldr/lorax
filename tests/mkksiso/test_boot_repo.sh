@@ -18,7 +18,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Make new iso with kickstart and extra-repo"
-        rlRun -t -c "$CLI --add $TMP_DIR/extra-repo $2 $1 $TMP_DIR/ks-boot.iso"
+        rlRun -t -c "$CLI --add $TMP_DIR/extra-repo --ks $2 $1 $TMP_DIR/ks-boot.iso"
         rlAssertExists "$TMP_DIR/ks-boot.iso"
     rlPhaseEnd
 

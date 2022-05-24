@@ -365,7 +365,7 @@ def MakeKickstartISO(ks, input_iso, output_iso, add_paths, cmdline="", new_volid
         ImplantMD5(output_iso)
 
 
-def setup_args():
+def setup_arg_parser():
     """ Return argparse.Parser object of cmdline."""
     parser = argparse.ArgumentParser(description="Add a kickstart and files to an iso")
 
@@ -379,18 +379,19 @@ def setup_args():
                         help="print debugging info")
     parser.add_argument("--no-md5sum", action="store_false", default=True,
                         help="Do not run implantisomd5 on the ouput iso")
+    parser.add_argument("--ks", metavar="KICKSTART",
+                        help="Kickstart to add to the ISO")
+    parser.add_argument("-V", "--volid", dest="volid", help="Set the ISO volume id, defaults to input's", default=None)
 
-    parser.add_argument("ks", type=os.path.abspath, help="Kickstart to add to the ISO")
     parser.add_argument("input_iso", type=os.path.abspath, help="ISO to modify")
     parser.add_argument("output_iso", type=os.path.abspath, help="Full pathname of iso to be created")
-    parser.add_argument("-V", "--volid", dest="volid", help="Set the ISO volume id, defaults to input's", default=None)
-    args = parser.parse_args()
 
-    return args
+    return parser
 
 
 def main():
-    args = setup_args()
+    parser = setup_arg_parser()
+    args = parser.parse_args()
     log.basicConfig(format='%(levelname)s:%(message)s', level=args.loglevel)
 
     try:
@@ -400,7 +401,7 @@ def main():
                 log.error("%s binary is missing", t)
                 errors = True
 
-        for f in [args.ks, args.input_iso] + args.add_paths:
+        for f in [args.input_iso] + args.add_paths:
             if not os.path.exists(f):
                 log.error("%s is missing", f)
                 errors = True

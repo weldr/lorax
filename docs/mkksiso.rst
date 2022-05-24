@@ -20,31 +20,10 @@ do not need to be root.
 mkksiso cmdline arguments
 -------------------------
 
-Add a kickstart and files to an iso
-
-    ``usage: mkksiso [-h] [-a ADD_PATHS] [-c CMDLINE] [--debug] ks input_iso output_iso``
-
-Optional arguments
-^^^^^^^^^^^^^^^^^^
-
-      -h, --help            show this help message and exit
-      -a ADD_PATHS, --add ADD_PATHS
-                            File or directory to add to ISO (may be used multiple
-                            times)
-      -c CMDLINE, --cmdline CMDLINE
-                            Arguments to add to kernel cmdline
-      --debug               print debugging info
-      -V VOLID, --volid VOLID
-                            Set the ISO volume id, defaults to input's
-
-Positional arguments
-^^^^^^^^^^^^^^^^^^^^
-
-    :ks: Kickstart to add to the ISO
-
-    :input_iso: ISO to modify
-
-    :output_iso: Full pathname of iso to be created
+.. argparse::
+   :filename: ../src/bin/mkksiso
+   :func: setup_arg_parser
+   :prog: mkksiso
 
 
 Create a kickstart boot.iso or DVD
@@ -56,7 +35,7 @@ Create a kickstart like you normally would, kickstart documentation can be
 content on the DVD you can use the ``cdrom`` command to install without a
 network connection. Then run ``mkksiso`` like this::
 
-    mkksiso /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
+    mkksiso --ks /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
 
 This will create a new iso with the kickstart in the root directory, and the
 kernel cmdline will have ``inst.ks=...`` added to it so that it will be
@@ -69,7 +48,7 @@ the iso will have th custom volume id.
 
 eg.::
 
-    mkksiso -V "Test Only" /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
+    mkksiso -V "Test Only" --ks /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
 
 
 Adding package repos to a boot.iso
@@ -85,7 +64,7 @@ the kickstart like this::
 
 Run ``mkksiso`` like so::
 
-    mkksiso --add /PATH/TO/REPO/ /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
+    mkksiso --add /PATH/TO/REPO/ --ks /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
 
 
 Create a liveimg boot.iso
@@ -111,7 +90,7 @@ and in the kickstart reference it with the ``liveimg`` command like this::
 It is also a good idea to use the ``--checksum`` argument to ``liveimg``  to be
 sure the file hasn't been corrupted::
 
-    mkksiso --add /PATH/TO/root.tar.xz /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
+    mkksiso --add /PATH/TO/root.tar.xz --ks /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW-ISO
 
 When this iso is booted it will execute the kickstart and install the liveimg
 contents to the system without any prompting.

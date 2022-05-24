@@ -18,7 +18,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Make a new iso with kickstart and root.tar.xz"
-        rlRun -t -c "$CLI --add $TMP_DIR/root.tar.xz $2 $1 $TMP_DIR/liveimg-boot.iso"
+        rlRun -t -c "$CLI --add $TMP_DIR/root.tar.xz --ks $2 $1 $TMP_DIR/liveimg-boot.iso"
         rlAssertExists "$TMP_DIR/liveimg-boot.iso"
     rlPhaseEnd
 
