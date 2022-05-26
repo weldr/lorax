@@ -66,9 +66,9 @@ def quote(s):
     return s
 
 
-def JoinKernelArgs(kernel_args):
+def ListKernelArgs(kernel_args):
     """
-    Join an OrderedDict of kernel argument and values into a kernel cmdline string
+    Return a list of quoted kernel arguments and values
 
     The dictionary is the output from SplitCmdline.
     Values with spaces are quoted with ""
@@ -80,7 +80,18 @@ def JoinKernelArgs(kernel_args):
                 kernel_cmdline.append(f"{k}")
             else:
                 kernel_cmdline.append(f"{k}={quote(v)}")
-    return " ".join(kernel_cmdline)
+
+    return kernel_cmdline
+
+
+def JoinKernelArgs(kernel_args):
+    """
+    Return a string of quoted kernel arguments and values
+
+    The dictionary is the output from SplitCmdline.
+    Values with spaces are quoted with ""
+    """
+    return " ".join(ListKernelArgs(kernel_args))
 
 
 def AlterKernelArgs(kernel_args, rm_args, add_args):
@@ -108,6 +119,27 @@ def AlterKernelArgs(kernel_args, rm_args, add_args):
             kernel_args[k] = vs
 
     return kernel_args
+
+
+def WrapKernelArgs(kernel_args, width=80):
+    """
+    Return a wordwrapped string
+
+    It breaks the lines at spaces inbetween commands,
+    preserving quoted strings verbatim.
+    """
+    result = kernel_args[0]
+    cols = len(result)
+    for arg in kernel_args[1:]:
+        if 1 + cols + len(arg) > width:
+            result += "\n"
+            result += arg
+            cols = len(arg)
+        else:
+            result += " " + arg
+            cols = cols + len(arg) + 1
+    result += "\n"
+    return result
 
 
 def GetISODetails(isopath):
@@ -226,10 +258,31 @@ def RebuildS390CDBoot(tmpdir):
         raise RuntimeError("Running mk-s390image")
 
 
-def EditIsolinux(new_args, new_volid, old_volid, tmpdir):
+def GetCmdline(line, commands):
+    """
+    Get the cmdline portion of a line that starts with a command
+
+    returns the indented command prefix, and the cmdline.
+    """
+    for c in commands:
+        if c not in line:
+            continue
+
+        # The command must be the first non-whitespace word
+        first, _ = line.strip().split(" ", 1)
+        if first != c:
+            continue
+
+        indent, prefix, cmdline = line.partition(c)
+        return indent+prefix, cmdline.strip()
+
+    return "", line
+
+
+def EditIsolinux(rm_args, add_args, new_volid, old_volid, tmpdir):
     """
     Modify the cmdline for an isolinux.cfg
-    Add the new arguments and change existing volid if requested
+    Remove args, add new arguments and change existing volid if requested
     """
     orig_cfg = tmpdir + "/isolinux/isolinux.cfg"
     if not os.path.exists(orig_cfg):
@@ -244,15 +297,19 @@ def EditIsolinux(new_args, new_volid, old_volid, tmpdir):
             for line in in_fp:
                 if change_volid and old_volid in line:
                     line = line.replace(old_volid, new_volid)
-                out_fp.write(line.rstrip("\n"))
-                if "append" in line:
-                    out_fp.write(" " + new_args)
-                out_fp.write("\n")
+                prefix, cmdline = GetCmdline(line, ["append"])
+                if prefix:
+                    args = SplitCmdline(cmdline)
+                    new_args = AlterKernelArgs(args, rm_args, add_args)
+                    out_fp.write(prefix+" "+JoinKernelArgs(new_args))
+                    out_fp.write("\n")
+                else:
+                    out_fp.write(line)
             out_fp.close()
         os.replace(orig_cfg + ".new", orig_cfg)
 
 
-def EditGrub2(new_args, new_volid, old_volid, tmpdir):
+def EditGrub2(rm_args, add_args, new_volid, old_volid, tmpdir):
     """
     Modify the cmdline for GRUB2 UEFI and BIOS config files
     Add the new arguments and change existing volid if requested
@@ -276,16 +333,20 @@ def EditGrub2(new_args, new_volid, old_volid, tmpdir):
                 for line in in_fp:
                     if change_volid and old_volid in line:
                         line = line.replace(old_volid, new_volid)
-                    out_fp.write(line.rstrip("\n"))
                     # Some start with linux (BIOS/aarch64), others with linuxefi (x86_64)
-                    if line.strip().startswith("linux"):
-                        out_fp.write(" "+new_args)
-                    out_fp.write("\n")
+                    prefix, cmdline = GetCmdline(line, ["linuxefi", "linux"])
+                    if prefix:
+                        args = SplitCmdline(cmdline)
+                        new_args = AlterKernelArgs(args, rm_args, add_args)
+                        out_fp.write(prefix+" "+JoinKernelArgs(new_args))
+                        out_fp.write("\n")
+                    else:
+                        out_fp.write(line)
                 out_fp.close()
         os.replace(orig_cfg + ".new", orig_cfg)
 
 
-def EditS390(new_args, new_volid, old_volid, tmpdir):
+def EditS390(rm_args, add_args, new_volid, old_volid, tmpdir):
     """
     Modify the cmdline for s390 config files
     Add the new arguments and change existing volid if requested
@@ -304,15 +365,23 @@ def EditS390(new_args, new_volid, old_volid, tmpdir):
             log.warning("No %s file found", cfg)
             continue
 
-        # Append to the config file
         with open(orig_cfg, "r") as in_fp:
-            with open(orig_cfg + ".new", "w") as out_fp:
-                for line in in_fp:
-                    if change_volid and old_volid in line:
-                        line = line.replace(old_volid, new_volid)
-                    out_fp.write(line)
-                out_fp.write(new_args+"\n")
-                out_fp.close()
+            # Read the config file and turn it into a line
+            lines = in_fp.readlines()
+
+        cmdline = " ".join(l.strip() for l in lines)
+        # Replace the volid
+        if change_volid and old_volid in cmdline:
+            cmdline = cmdline.replace(old_volid, new_volid)
+        args = SplitCmdline(cmdline)
+        new_args = AlterKernelArgs(args, rm_args, add_args)
+
+        cmdline = ListKernelArgs(new_args)
+
+        # Write the new config file, breaking at 80 columns
+        with open(orig_cfg + ".new", "w") as out_fp:
+            out_fp.write(WrapKernelArgs(cmdline, width=80))
+            out_fp.close()
         os.replace(orig_cfg + ".new", orig_cfg)
 
 
@@ -332,10 +401,14 @@ def CheckDiscinfo(path):
             raise RuntimeError("iso arch does not match the host arch.")
 
 
-def MakeKickstartISO(ks, input_iso, output_iso, add_paths, cmdline="", new_volid="", implantmd5=True):
+def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
+                    cmdline="", rm_args="", new_volid="", implantmd5=True):
     """
     Make a kickstart ISO from a boot.iso or dvd
     """
+    if add_paths is None:
+        add_paths = []
+
     # Gather information about the input iso
     old_volid, files = GetISODetails(input_iso)
     if not old_volid and not new_volid:
@@ -358,12 +431,17 @@ def MakeKickstartISO(ks, input_iso, output_iso, add_paths, cmdline="", new_volid
         new_volid = udev_escape(new_volid)
         old_volid = udev_escape(old_volid)
 
-        new_args = "inst.ks=hd:LABEL=%s:/%s %s" % (new_volid or old_volid, os.path.basename(ks), cmdline)
+        remove_args = rm_args.split(' ') if rm_args else []
+        add_args = SplitCmdline(cmdline)
+
+        if ks:
+            add_args["inst.ks"] = ["hd:LABEL=%s:/%s" % (new_volid or old_volid, os.path.basename(ks))]
+            add_paths.append(ks)
 
         # Add kickstart command and optionally change the volid of the available config files
-        EditIsolinux(new_args, new_volid, old_volid, tmpdir)
-        EditGrub2(new_args, new_volid, old_volid, tmpdir)
-        EditS390(new_args, new_volid, old_volid, tmpdir)
+        EditIsolinux(remove_args, add_args, new_volid, old_volid, tmpdir)
+        EditGrub2(remove_args, add_args, new_volid, old_volid, tmpdir)
+        EditS390(remove_args, add_args, new_volid, old_volid, tmpdir)
 
         if os.uname().machine.startswith("s390"):
             RebuildS390CDBoot(tmpdir)
@@ -380,7 +458,7 @@ def MakeKickstartISO(ks, input_iso, output_iso, add_paths, cmdline="", new_volid
                 cmd.extend(["-update", root + "/" + f, isoroot + "/" + f])
 
         # Add the kickstart and the new files and directories
-        for p in [ks, *add_paths]:
+        for p in add_paths:
             cmd.extend(["-map", p, os.path.basename(p)])
 
         if CheckBigFiles(add_paths):
@@ -402,6 +480,8 @@ def setup_arg_parser():
                         help="File or directory to add to ISO (may be used multiple times)")
     parser.add_argument("-c", "--cmdline", dest="cmdline", metavar="CMDLINE", default="",
                         help="Arguments to add to kernel cmdline")
+    parser.add_argument("-r", "--rm-args", dest="rm_args", metavar="ARGS", default="",
+                        help="Space separated list of arguments to remove from the kernel cmdline")
     parser.add_argument("--debug", action="store_const", const=log.DEBUG,
                         dest="loglevel", default=log.INFO,
                         help="print debugging info")
@@ -429,7 +509,10 @@ def main():
                 log.error("%s binary is missing", t)
                 errors = True
 
-        for f in [args.input_iso] + args.add_paths:
+        files = [args.input_iso, *args.add_paths]
+        if args.ks:
+            files += [args.ks]
+        for f in files:
             if not os.path.exists(f):
                 log.error("%s is missing", f)
                 errors = True
@@ -438,11 +521,20 @@ def main():
             log.error("%s already exists", args.output_iso)
             errors = True
 
+        if "=" in args.rm_args:
+            log.error("--rm-args should only list the arguments to remove, not values")
+            errors = True
+
+        if not any([args.ks, args.add_paths, args.cmdline, args.rm_args, args.volid]):
+            log.error("Nothing to do - pass one or more of --ks, --add, --cmdline, --rm-args, --volid")
+            errors = True
+
         if errors:
             raise RuntimeError("Problems running %s" % sys.argv[0])
 
-        MakeKickstartISO(args.ks, args.input_iso, args.output_iso,
-                         args.add_paths, args.cmdline, args.volid, args.no_md5sum)
+        MakeKickstartISO(args.input_iso, args.output_iso, args.ks,
+                         args.add_paths, args.cmdline, args.rm_args,
+                         args.volid, args.no_md5sum)
     except RuntimeError as e:
         log.error(str(e))
         return 1

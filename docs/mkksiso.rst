@@ -93,6 +93,39 @@ When this iso is booted it will execute the kickstart and install the liveimg
 contents to the system without any prompting.
 
 
+Modifying kernel cmdline arguments
+----------------------------------
+
+You can add arguments to the kernel cmdline in the ISO config files by using
+``--cmdline``, like this::
+
+    mkksiso --cmdline "console=ttyS0,115200n8" /PATH/TO/ISO /PATH/TO/NEW-ISO
+
+
+Removing arguments
+^^^^^^^^^^^^^^^^^^
+
+mkksiso version 37.3 and later support removing arguments from the cmdline. This can be done
+with or without adding a kickstart to the iso::
+
+    mkksiso --rm "quiet console" /PATH/TO/ISO /PATH/TO/NEW-ISO
+
+will remove the quiet and console arguments from all the the kernel cmdlines on the ISO.
+
+
+Changing existing arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With the combination of ``--rm`` and ``--command`` it is now possible to change
+existing arguments. For example let's say the ISO has a console=tty3 set on the
+cmdline. You want to change that to ttyS0 so you run this::
+
+    mkksiso --cmdline "console=ttyS0,115200n8" --rm "console" /PATH/TO/ISO /PATH/TO/NEW-ISO
+
+which will first remove all instances of console in the config files, and
+then add the new console argument.
+
+
 How it works
 ------------
 
