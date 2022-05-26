@@ -1,0 +1,3 @@
+ro inst.stage2=hd:LABEL=Fedora-mkksiso-rawhide-test inst.ks=file:///installer.ks
+quoted="A longer string with spaces that is quoted should not be split"
+console=ttyS0,115200n8 console=tty1

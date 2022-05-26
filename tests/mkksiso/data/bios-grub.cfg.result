@@ -1,0 +1,36 @@
+set default="1"
+
+function load_video {
+  insmod all_video
+}
+
+load_video
+set gfxpayload=keep
+insmod gzio
+insmod part_gpt
+insmod ext2
+
+set timeout=60
+### END /etc/grub.d/00_header ###
+
+search --no-floppy --set=root -l 'Fedora-mkksiso-rawhide-test'
+
+### BEGIN /etc/grub.d/10_linux ###
+menuentry 'Install Fedora rawhide' --class fedora --class gnu-linux --class gnu --class os {
+	linux /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=Fedora-mkksiso-rawhide-test inst.ks=file:///installer.ks quoted="A longer string with spaces that is quoted should not be split" console=ttyS0,115200n8 console=tty1
+	initrd /images/pxeboot/initrd.img
+}
+menuentry 'Test this media & install Fedora rawhide' --class fedora --class gnu-linux --class gnu --class os {
+	linux /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=Fedora-mkksiso-rawhide-test rd.live.check inst.ks=file:///installer.ks quoted="A longer string with spaces that is quoted should not be split" console=ttyS0,115200n8 console=tty1
+	initrd /images/pxeboot/initrd.img
+}
+submenu 'Troubleshooting -->' {
+	menuentry 'Install Fedora rawhide in basic graphics mode' --class fedora --class gnu-linux --class gnu --class os {
+		linux /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=Fedora-mkksiso-rawhide-test nomodeset inst.ks=file:///installer.ks quoted="A longer string with spaces that is quoted should not be split" console=ttyS0,115200n8 console=tty1
+		initrd /images/pxeboot/initrd.img
+	}
+	menuentry 'Rescue a Fedora system' --class fedora --class gnu-linux --class gnu --class os {
+		linux /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=Fedora-mkksiso-rawhide-test inst.rescue inst.ks=file:///installer.ks quoted="A longer string with spaces that is quoted should not be split" console=ttyS0,115200n8 console=tty1
+		initrd /images/pxeboot/initrd.img
+	}
+}

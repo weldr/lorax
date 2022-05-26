@@ -2,6 +2,7 @@ anaconda-tui
 beakerlib
 e2fsprogs
 git
+isomd5sum
 libselinux-python3
 make
 pbzip2
@@ -26,4 +27,5 @@ rsync
 squashfs-tools
 sudo
 which
+xorriso
 xz-lzma-compat

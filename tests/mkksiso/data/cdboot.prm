@@ -1,0 +1,3 @@
+ro inst.stage2=hd:LABEL=Fedora-rawhide-test
+console=ttyUSB0
+quiet
