@@ -1,0 +1,3 @@
+ro ramdisk_size=40000 cio_ignore=all,!condev
+console=ttyUSB0
+quiet
