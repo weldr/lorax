@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.2
+Version:        37.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -177,6 +177,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Jun 01 2022 Brian C. Lane <bcl@redhat.com> 37.3-1
+- Add grub2 BIOS boot support to live iso template (bcl@redhat.com)
+  Resolves: rhbz#2092065
+- Drop grafting variables (bcl@redhat.com)
+- Drop macboot.img and simplify efiboot.img use (bcl@redhat.com)
+- Add grub2 BIOS boot support (bcl@redhat.com)
+- Remove syslinux support (bcl@redhat.com)
+
 * Mon May 23 2022 Brian C. Lane <bcl@redhat.com> 37.2-1
 - cleanup: drop phanfw.bin from linux-firmware (awilliam@redhat.com)
 - cleanup: strip more mellanox firmware files (awilliam@redhat.com)
