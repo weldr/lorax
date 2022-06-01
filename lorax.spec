@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.3
+Version:        37.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -177,6 +177,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Jun 01 2022 Brian C. Lane <bcl@redhat.com> 37.4-1
+- mkksiso: Fix grub2 editing error (bcl@redhat.com)
+
 * Wed Jun 01 2022 Brian C. Lane <bcl@redhat.com> 37.3-1
 - Add grub2 BIOS boot support to live iso template (bcl@redhat.com)
   Resolves: rhbz#2092065
