@@ -153,7 +153,7 @@ def EditGrub2(new_args, new_volid, old_volid, tmpdir):
     Add the new arguments and change existing volid if requested
     """
     grub_cfgs = ["EFI/BOOT/grub.cfg", "EFI/BOOT/BOOT.conf",
-                 "/boot/grub2/grub.cfg", "boot/grub/grub.cfg"]
+                 "boot/grub2/grub.cfg", "boot/grub/grub.cfg"]
 
     if not any(os.path.exists(os.path.join(tmpdir, c)) for c in grub_cfgs):
         log.warning("No grub config files found")
