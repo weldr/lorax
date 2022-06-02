@@ -46,8 +46,11 @@ check:
 test:
 	@echo "*** Running tests ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -X dev -m pytest -v --cov-branch \
-					--cov=pylorax ./tests/pylorax/
-
+					--cov=pylorax \
+					--cov=mkksiso \
+					--cov=minimizer \
+					./tests/pylorax/ \
+					./tests/mkksiso/
 	coverage3 report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
 
@@ -109,15 +112,15 @@ test-in-copy:
 	cp /lorax/.coverage /test-results/
 
 test-in-docker:
-	sudo $(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
+	$(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
 	@mkdir -p `pwd`/.test-results
-	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results \
+	$(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results \
 		-v `pwd`:/lorax-ro:ro --security-opt label=disable \
 		--env RUN_TESTS="$(RUN_TESTS)" \
 		welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
 
 docs-in-docker:
-	sudo $(DOCKER) run -it --rm -v `pwd`:/lorax-ro:ro \
+	$(DOCKER) run -it --rm -v `pwd`:/lorax-ro:ro \
 		-v `pwd`/docs/:/lorax-ro/docs/ \
 		--env LORAX_VERSION=$(DOCS_VERSION) \
 		--env LOCAL_UID=`id -u` --env LOCAL_GID=`id -g` \
