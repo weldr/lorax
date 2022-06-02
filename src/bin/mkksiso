@@ -64,7 +64,7 @@ def ExtractISOFiles(isopath, files, tmpdir):
     """
     cmd = ["osirrox", "-indev", isopath]
     for f in files:
-        cmd.extend(["-extract", f, os.path.join(tmpdir, f)])
+        cmd.extend(["-extract", f, tmpdir + "/" + f])
     subprocess.run(cmd, check=True, capture_output=False, env={"LANG": "C"})
 
 
@@ -97,7 +97,7 @@ def CheckBigFiles(add_paths):
                 for f in files + dirs:
                     if len(f) > MAX_FNAME:
                         raise RuntimeError("iso contains filenames that are too long: %s" % f)
-                    if os.stat(os.path.join(top,f)).st_size >= 4*1024**3:
+                    if os.stat(top + "/" + f).st_size >= 4*1024**3:
                         big_file = True
         else:
             if len(src) > MAX_FNAME:
@@ -126,7 +126,7 @@ def EditIsolinux(new_args, new_volid, old_volid, tmpdir):
     Modify the cmdline for an isolinux.cfg
     Add the new arguments and change existing volid if requested
     """
-    orig_cfg = os.path.join(tmpdir, "isolinux/isolinux.cfg")
+    orig_cfg = tmpdir + "/isolinux/isolinux.cfg"
     if not os.path.exists(orig_cfg):
         log.warning("No isolinux/isolinux.cfg file found")
         return
@@ -155,14 +155,14 @@ def EditGrub2(new_args, new_volid, old_volid, tmpdir):
     grub_cfgs = ["EFI/BOOT/grub.cfg", "EFI/BOOT/BOOT.conf",
                  "boot/grub2/grub.cfg", "boot/grub/grub.cfg"]
 
-    if not any(os.path.exists(os.path.join(tmpdir, c)) for c in grub_cfgs):
+    if not any(os.path.exists(tmpdir + "/" + c) for c in grub_cfgs):
         log.warning("No grub config files found")
         return
 
     change_volid = old_volid != new_volid
 
     for cfg in grub_cfgs:
-        orig_cfg = os.path.join(tmpdir, cfg)
+        orig_cfg = tmpdir + "/" + cfg
         if not os.path.exists(orig_cfg):
             continue
 
@@ -187,14 +187,14 @@ def EditS390(new_args, new_volid, old_volid, tmpdir):
     """
     s390_cfgs = ["images/generic.prm", "images/cdboot.prm"]
 
-    if not any(os.path.exists(os.path.join(tmpdir, c)) for c in s390_cfgs):
+    if not any(os.path.exists(tmpdir + "/" + c) for c in s390_cfgs):
         log.warning("No s390 config files found")
         return
 
     change_volid = old_volid != new_volid
 
     for cfg in s390_cfgs:
-        orig_cfg = os.path.join(tmpdir, cfg)
+        orig_cfg = tmpdir + "/" + cfg
         if not os.path.exists(orig_cfg):
             log.warning("No %s file found", cfg)
             continue
@@ -244,7 +244,7 @@ def MakeKickstartISO(ks, input_iso, output_iso, add_paths, cmdline="", new_volid
     extract_files = set(files) & known_configs
     with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpdir:
         ExtractISOFiles(input_iso, extract_files, tmpdir)
-        CheckDiscinfo(os.path.join(tmpdir, ".discinfo"))
+        CheckDiscinfo(tmpdir + "/.discinfo")
         new_volid = new_volid or old_volid
         log.info("Volume Id = %s", new_volid)
 
@@ -268,7 +268,7 @@ def MakeKickstartISO(ks, input_iso, output_iso, add_paths, cmdline="", new_volid
         for root, _, files in os.walk(tmpdir, topdown=False):
             isoroot = root.replace(tmpdir, "")
             for f in files:
-                cmd.extend(["-update", os.path.join(root, f), os.path.join(isoroot, f)])
+                cmd.extend(["-update", root + "/" + f, isoroot + "/" + f])
 
         # Add the kickstart and the new files and directories
         for p in [ks, *add_paths]:
