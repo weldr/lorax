@@ -48,6 +48,8 @@ test:
 	@echo "*** Running tests ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -X dev -m pytest -v --cov-branch \
 					--cov=pylorax \
+					--cov=mkksiso \
+					--cov=minimizer \
 					./tests/pylorax/ \
 					./tests/image-minimizer/ \
 					./tests/mkksiso/
