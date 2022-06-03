@@ -61,12 +61,7 @@ Requires:       hfsplus-tools
 %endif
 %endif
 
-%ifarch %{ix86} x86_64
-Requires:       syslinux >= 6.03-1
-Requires:       syslinux-nonlinux >= 6.03-1
-%endif
-
-%ifarch ppc64le
+%ifarch %{ix86} x86_64 ppc64le
 Requires:       grub2
 Requires:       grub2-tools
 %endif
