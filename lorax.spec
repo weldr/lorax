@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.4
+Version:        37.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -172,6 +172,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Jun 03 2022 Brian C. Lane <bcl@redhat.com> 37.5-1
+- example ks: Drop syslinux and add grub2-tools package for livemedia (bcl@redhat.com)
+- templates: Set @ISOLABEL@ in the bios-grub.cfg file to the isolabel (bcl@redhat.com)
+- Update spec for syslinux->grub2 switch (awilliam@redhat.com)
+
 * Wed Jun 01 2022 Brian C. Lane <bcl@redhat.com> 37.4-1
 - mkksiso: Fix grub2 editing error (bcl@redhat.com)
 
