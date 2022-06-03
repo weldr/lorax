@@ -52,6 +52,7 @@ replace @VERSION@ ${product.version} ${GRUB2DIR}/grub.cfg
 replace @PRODUCT@ '${product.name}'  ${GRUB2DIR}/grub.cfg
 replace @KERNELPATH@ /${KERNELDIR}/vmlinuz ${GRUB2DIR}/grub.cfg
 replace @INITRDPATH@ /${KERNELDIR}/initrd.img ${GRUB2DIR}/grub.cfg
+replace @ISOLABEL@ '${isolabel}' ${GRUB2DIR}/grub.cfg
 replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${GRUB2DIR}/grub.cfg
 replace @EXTRA@ '${extra_boot_args}' ${GRUB2DIR}/grub.cfg
 
