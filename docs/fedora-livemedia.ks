@@ -392,7 +392,6 @@ kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
 kernel-modules
 kernel-modules-extra
-syslinux
 -@dial-up
 -@input-methods
 -@standard
@@ -403,6 +402,7 @@ syslinux
 shim
 shim-ia32
 grub2
+grub2-tools
 grub2-efi
 grub2-efi-*-cdboot
 grub2-efi-ia32

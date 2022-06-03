@@ -55,7 +55,6 @@ kernel-modules-extra
 grub2-efi
 grub2
 shim
-syslinux
 -dracut-config-rescue
 
 # dracut needs these included
