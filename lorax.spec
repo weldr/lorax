@@ -61,7 +61,7 @@ Requires:       hfsplus-tools
 %endif
 %endif
 
-%ifarch %{ix86} x86_64 ppc64le
+%ifarch x86_64 ppc64le
 Requires:       grub2
 Requires:       grub2-tools
 %endif
