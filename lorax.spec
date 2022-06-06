@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        37.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 License:        GPLv2+
@@ -14,6 +14,8 @@ URL:            https://github.com/weldr/lorax
 # git checkout -b archive-branch lorax-%%{version}-%%{release}
 # tito build --tgz
 Source0:        %{name}-%{version}.tar.gz
+
+ExcludeArch: %{ix86}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -172,6 +174,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Jun 04 2022 Stephen Gallagher <sgallagh@redhat.com> 37.5-2
+- Do not build for x86-32
+
 * Fri Jun 03 2022 Brian C. Lane <bcl@redhat.com> 37.5-1
 - example ks: Drop syslinux and add grub2-tools package for livemedia (bcl@redhat.com)
 - templates: Set @ISOLABEL@ in the bios-grub.cfg file to the isolabel (bcl@redhat.com)
