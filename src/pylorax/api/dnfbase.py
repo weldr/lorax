@@ -122,6 +122,9 @@ def get_base_object(conf):
     dbc.metadata_expire = 0
     dbc.metadata_expire_filter = "never"
 
+    # Read the system variables (eg. so that CentOS8 $stream and $infra will work)
+    dbc.substitutions.update_from_etc("/")
+
     # write the dnf configuration file
     with open(dnfconf, "w") as f:
         f.write(dbc.dump())
