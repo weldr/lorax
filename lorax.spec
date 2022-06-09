@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.68
+Version:        28.14.69
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -261,6 +261,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu Jun 09 2022 Brian C. Lane <bcl@redhat.com> 28.14.69-1
+- runtime-cleanup: Use branding package name instead of product.name (bcl)
+  Related: rhbz#2052154
+- treebuilder: Add branding package to template variables (bcl)
+  Related: rhbz#2052154
+- api: Read substitution variables from the host (bcl)
+  Resolves: rhbz#2095053
+- tests: Switch to using centos:stream8 for Dockerfile.test (bcl)
+  Related: rhbz#2095053
+
 * Fri Feb 04 2022 Brian C. Lane <bcl@redhat.com> 28.14.68-1
 - mkksiso: Fix check for unsupported arch error (bcl)
   Related: rhbz#2049205
