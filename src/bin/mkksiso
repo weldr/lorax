@@ -234,6 +234,30 @@ def ImplantMD5(output_iso):
         raise RuntimeError("implantisomd5 failed")
 
 
+def RebuildS390CDBoot(tmpdir):
+    """
+    On s390x the cdboot.img needs to be rebuilt with the new cmdline arguments
+    """
+    # First check for the needed files
+    missing = []
+    for f in ["images/kernel.img", "images/initrd.img", "images/cdboot.prm"]:
+        if not os.path.exists(tmpdir + "/" + f):
+            log.debug("Missing file %s", f)
+            missing.append(f)
+    if missing:
+        raise RuntimeError("Missing requirement %s" % ", ".join(missing))
+
+    cmd = ["mk-s390image", tmpdir + "/images/kernel.img", tmpdir + "/images/cdboot.img",
+           "-r", tmpdir + "/images/initrd.img",
+           "-p", tmpdir + "/images/cdboot.prm"]
+    log.debug(" ".join(cmd))
+    try:
+        subprocess.check_output(cmd)
+    except subprocess.CalledProcessError as e:
+        log.error(str(e))
+        raise RuntimeError("Running mk-s390image")
+
+
 def GetCmdline(line, commands):
     """
     Get the cmdline portion of a line that starts with a command
@@ -394,7 +418,8 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
     known_configs = set([".discinfo", "isolinux/isolinux.cfg",
                          "boot/grub2/grub.cfg", "boot/grub/grub.cfg",
                          "EFI/BOOT/grub.cfg", "EFI/BOOT/BOOT.conf",
-                         "images/generic.prm", "images/cdboot.prm"])
+                         "images/generic.prm", "images/cdboot.prm",
+                         "images/kernel.img", "images/initrd.img"])
     extract_files = set(files) & known_configs
     with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpdir:
         ExtractISOFiles(input_iso, extract_files, tmpdir)
@@ -417,6 +442,9 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
         EditIsolinux(remove_args, add_args, new_volid, old_volid, tmpdir)
         EditGrub2(remove_args, add_args, new_volid, old_volid, tmpdir)
         EditS390(remove_args, add_args, new_volid, old_volid, tmpdir)
+
+        if os.uname().machine.startswith("s390"):
+            RebuildS390CDBoot(tmpdir)
 
         # Build the command to rebuild the iso with the changes and additions
         cmd = ["xorriso", "-indev", input_iso, "-outdev", output_iso, "-boot_image", "any", "replay"]
