@@ -348,6 +348,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 - Improve lmc no-virt error handling (bcl@redhat.com)
 - lorax.spec: Drop GConf2 requirement (bcl@redhat.com)
 
+* Wed Dec 02 2020 Brian C. Lane <bcl@redhat.com> 34.3-4
+- lorax.spec: Update for RHEL 9 Alpha changes (bcl@redhat.com)
+- lorax: Strip ' from product cmdline argument (bcl@redhat.com)
+- Change rootfs default size to 3GiB (sgallagh@redhat.com)
+
 * Mon Nov 30 2020 Brian C. Lane <bcl@redhat.com> 34.5-1
 - Don't remove libldap_r libraries during runtime-cleanup.tmpl (spichugi@redhat.com)
 - Do not use '--loglevel' option when running Anaconda (vtrefny@redhat.com)
@@ -360,11 +365,6 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 - Switch to using upstream mk-s390image for s390 cdboot.img creation (bcl@redhat.com)
 - sshd_config: Apply suggested changes (bcl@redhat.com)
 - lorax.spec: Add BuildRequires on systemd-rpm-macros for tmpfilesdir macro (bcl@redhat.com)
-
-* Wed Dec 02 2020 Brian C. Lane <bcl@redhat.com> 34.3-4
-- lorax.spec: Update for RHEL 9 Alpha changes (bcl@redhat.com)
-- lorax: Strip ' from product cmdline argument (bcl@redhat.com)
-- Change rootfs default size to 3GiB (sgallagh@redhat.com)
 
 * Thu Oct 29 2020 Brian C. Lane <bcl@redhat.com> - 34.3-4
 - Drop unused proc/mount patch
