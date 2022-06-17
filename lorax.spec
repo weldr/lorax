@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.15
+Version:        34.9.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,22 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Jun 17 2022 Brian C. Lane <bcl@redhat.com> 34.9.16-1
+- Makefile: Add local-srpm target to create a .src.rpm from HEAD (bcl)
+  Related: rhbz#2088631
+- mkksiso: Fix s390x support (bcl)
+  Related: rhbz#2088631
+- mkksiso: Remove use of os.path.join (bcl)
+  Related: rhbz#2088631
+- Makefile: Add mkksiso to coverage report (bcl)
+  Related: rhbz#2088631
+- setup.py: Install mkksiso to /usr/bin (bcl)
+  Related: rhbz#2088631
+- mkksiso: Fix grub2 editing error (bcl)
+  Related: rhbz#2088631
+- mkksiso: Rewrite to use xorriso features (bcl)
+  Resolves: rhbz#2088631
+
 * Wed Apr 06 2022 Brian C. Lane <bcl@redhat.com> 34.9.15-1
 - tito: Add the LoraxRHELTagger from rhel8-branch (bcl)
   Related: rhbz#2070910
