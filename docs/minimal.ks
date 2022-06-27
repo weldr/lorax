@@ -17,8 +17,6 @@ keyboard --xlayouts=us --vckeymap=us
 lang en_US.UTF-8
 # SELinux configuration
 selinux --enforcing
-# Installation logging level
-logging --level=info
 # Shutdown after installation
 shutdown
 # System timezone
@@ -40,19 +38,53 @@ passwd -d root > /dev/null
 rm /var/lib/systemd/random-seed
 %end
 
+# Architecture specific packages
+# The bootloader package requirements are different
+%pre
+PKGS=/tmp/arch-packages.ks
+echo > $PKGS
+ARCH=$(uname -m)
+case $ARCH in
+    x86_64)
+        echo "%packages" >> $PKGS
+        echo "shim" >> $PKGS
+        echo "grub2" >> $PKGS
+        echo "grub2-efi" >> $PKGS
+        echo "efibootmgr" >> $PKGS
+        echo "%end" >> $PKGS
+    ;;
+    aarch64)
+        echo "%packages" >> $PKGS
+        echo "efibootmgr" >> $PKGS
+        echo "grub2-efi" >> $PKGS
+        echo "shim-aa64" >> $PKGS
+        echo "%end" >> $PKGS
+    ;;
+    ppc64le)
+        echo "%packages" >> $PKGS
+        echo "powerpc-utils" >> $PKGS
+        echo "grub2-tools" >> $PKGS
+        echo "grub2-tools-minimal" >> $PKGS
+        echo "grub2-tools-extra" >> $PKGS
+        echo "grub2-ppc64le" >> $PKGS
+        echo "%end" >> $PKGS
+    ;;
+    s390x)
+        echo "%packages" >> $PKGS
+        echo "s390utils-base" >> $PKGS
+        echo "%end" >> $PKGS
+    ;;
+esac
+%end
+
+%include /tmp/arch-packages.ks
+
 %packages
 @core
 kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
 kernel-modules
 kernel-modules-extra
-
-memtest86+
-grub2-efi
-grub2
-shim
-syslinux
--dracut-config-rescue
 
 # dracut needs these included
 dracut-network
