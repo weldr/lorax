@@ -378,8 +378,54 @@ EOF
 
 %end
 
+
+# Architecture specific packages
+# The bootloader package requirements are different, and workstation-product-environment
+# is only available on x86_64
+%pre
+PKGS=/tmp/arch-packages.ks
+echo > $PKGS
+ARCH=$(uname -m)
+case $ARCH in
+    x86_64)
+        echo "%packages" >> $PKGS
+        echo "@^workstation-product-environment" >> $PKGS
+        echo "shim" >> $PKGS
+        echo "shim-ia32" >> $PKGS
+        echo "grub2" >> $PKGS
+        echo "grub2-efi" >> $PKGS
+        echo "grub2-efi-ia32" >> $PKGS
+        echo "grub2-efi-*-cdboot" >> $PKGS
+        echo "efibootmgr" >> $PKGS
+        echo "%end" >> $PKGS
+    ;;
+    aarch64)
+        echo "%packages" >> $PKGS
+        echo "efibootmgr" >> $PKGS
+        echo "grub2-efi-aa64-cdboot" >> $PKGS
+        echo "shim-aa64" >> $PKGS
+        echo "%end" >> $PKGS
+    ;;
+    ppc64le)
+        echo "%packages" >> $PKGS
+        echo "powerpc-utils" >> $PKGS
+        echo "grub2-tools" >> $PKGS
+        echo "grub2-tools-minimal" >> $PKGS
+        echo "grub2-tools-extra" >> $PKGS
+        echo "grub2-ppc64le" >> $PKGS
+        echo "%end" >> $PKGS
+    ;;
+    s390x)
+        echo "%packages" >> $PKGS
+        echo "s390utils-base" >> $PKGS
+        echo "%end" >> $PKGS
+    ;;
+esac
+%end
+
+%include /tmp/arch-packages.ks
+
 %packages
-@^workstation-product-environment
 @anaconda-tools
 aajohan-comfortaa-fonts
 anaconda
@@ -397,16 +443,6 @@ kernel-modules-extra
 -@standard
 -gfs2-utils
 -gnome-boxes
-
-# This package is needed to boot the iso on UEFI
-shim
-shim-ia32
-grub2
-grub2-tools
-grub2-efi
-grub2-efi-*-cdboot
-grub2-efi-ia32
-efibootmgr
 
 # no longer in @core since 2018-10, but needed for livesys script
 initscripts
