@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.5
+Version:        37.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -172,6 +172,19 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Jun 28 2022 Brian C. Lane <bcl@redhat.com> 37.6-1
+- tests: Use Fedora 36 for test-in-podman (bcl@redhat.com)
+- Add include for architecture specific packages to example kickstarts (bcl@redhat.com)
+- templates: adjust for mellanox firmware split to subpackage (awilliam@redhat.com)
+- mkksiso: Fix s390x support (bcl@redhat.com)
+- spec: Don't require grub2 on x86-32 (bcl@redhat.com)
+- mkksiso: Remove use of os.path.join (bcl@redhat.com)
+- Makefile: Add mkksiso and image-minimizer to coverage report (bcl@redhat.com)
+- tests: Add tests for mkksiso (bcl@redhat.com)
+- mkksiso: Add kernel cmdline customization support (bcl@redhat.com)
+- mkksiso: Move kickstart to --ks KICKSTART (bcl@redhat.com)
+- mkksiso: Add helper functions for kernel cmdline modifications (bcl@redhat.com)
+
 * Fri Jun 03 2022 Brian C. Lane <bcl@redhat.com> 37.5-1
 - example ks: Drop syslinux and add grub2-tools package for livemedia (bcl@redhat.com)
 - templates: Set @ISOLABEL@ in the bios-grub.cfg file to the isolabel (bcl@redhat.com)
