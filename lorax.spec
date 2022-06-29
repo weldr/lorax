@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.16
+Version:        34.9.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,22 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Jun 29 2022 Brian C. Lane <bcl@redhat.com> 34.9.17-1
+- minimal.ks: Add include for architecture specific packages (bcl)
+  Related: rhbz#2051548
+- livemedia.ks: Add include for architecture specific packages (bcl)
+  Resolves: rhbz#2051548
+- tests: Add tests for mkksiso (bcl)
+  Related: rhbz#2037015
+- mkksiso: Add kernel cmdline customization support (bcl)
+  Resolves: rhbz#2037015
+- mkksiso: Move kickstart to --ks KICKSTART (bcl)
+  Related: rhbz#2037015
+- mkksiso: Add helper functions for kernel cmdline modifications (bcl)
+  Related: rhbz#2037015
+- lorax.spec: Fix changelog order (bcl)
+  Resolves: rhbz#1972099
+
 * Fri Jun 17 2022 Brian C. Lane <bcl@redhat.com> 34.9.16-1
 - Makefile: Add local-srpm target to create a .src.rpm from HEAD (bcl)
   Related: rhbz#2088631
