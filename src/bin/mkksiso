@@ -175,10 +175,14 @@ def ExtractISOFiles(isopath, files, tmpdir):
     Extract the given files (which must exist on the iso) into the temporary
     directory.
     """
-    cmd = ["osirrox", "-indev", isopath]
+    cmd = ["osirrox", "-indev", isopath, "-chmod_r", "u+rwx", "/", "--"]
     for f in files:
         cmd.extend(["-extract", f, tmpdir + "/" + f])
+    cmd.extend(["-rollback_end"])
     subprocess.run(cmd, check=True, capture_output=False, env={"LANG": "C"})
+
+    # Make sure the user can write to any extracted directories
+
 
 
 # From pylorax/treebuilder.py
