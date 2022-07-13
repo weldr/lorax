@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.17
+Version:        34.9.18
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Jul 13 2022 Brian C. Lane <bcl@redhat.com> 34.9.18-1
+- mkksiso: Set u+rw permission on extracted files and directories (bcl)
+  Related: rhbz#2088631
+- lorax.spec: Fix changelog (bcl)
+  Resolves: rhbz#1972099
+
 * Wed Jun 29 2022 Brian C. Lane <bcl@redhat.com> 34.9.17-1
 - minimal.ks: Add include for architecture specific packages (bcl)
   Related: rhbz#2051548
