@@ -464,6 +464,8 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
             cmd.extend(["-map", p, os.path.basename(p)])
 
         if CheckBigFiles(add_paths):
+            if "-as" not in cmd:
+                cmd.extend(["-as", "mkisofs"])
             cmd.extend(["-iso-level", "3"])
 
         log.debug("Running: %s", " ".join(cmd))
