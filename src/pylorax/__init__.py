@@ -95,7 +95,7 @@ class Lorax(BaseLoraxClass):
         locale.setlocale(locale.LC_ALL, 'C')
 
     def configure(self, conf_file="/etc/lorax/lorax.conf"):
-        self.conf = configparser.SafeConfigParser()
+        self.conf = configparser.ConfigParser()
 
         # set defaults
         self.conf.add_section("lorax")
