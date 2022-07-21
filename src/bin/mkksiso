@@ -468,6 +468,14 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
                 cmd.extend(["-as", "mkisofs"])
             cmd.extend(["-iso-level", "3"])
 
+        if os.uname().machine.startswith("ppc64le"):
+            if "-as" not in cmd:
+                cmd.extend(["-as", "mkisofs"])
+            cmd.extend(["-U"])
+
+        ## NOTE: If any xorriso commands need to be added after this they need
+        ##       to be preceeded by an '--' entry to exit the '-as mkisofs' mode
+
         log.debug("Running: %s", " ".join(cmd))
         subprocess.run(cmd, check=True, capture_output=False, env={"LANG": "C"})
 
