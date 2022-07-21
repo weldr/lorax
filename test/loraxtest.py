@@ -64,7 +64,7 @@ class VirtMachineTestCase(unittest.TestCase):
 
         # Peek into internal data structure, because there's no way to get the
         # TestResult at this point. `errors` is a list of tuples (method, error)
-        errors = list(e[1] for e in self._outcome.errors if e[1])
+        errors = list(e[1] for e in self._outcome.result.errors if e[1])
 
         if errors and self.sit:
             for e in errors:
