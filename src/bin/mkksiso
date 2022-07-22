@@ -499,10 +499,12 @@ def setup_arg_parser():
                         help="print debugging info")
     parser.add_argument("--no-md5sum", action="store_false", default=True,
                         help="Do not run implantisomd5 on the ouput iso")
-    parser.add_argument("--ks", metavar="KICKSTART",
-                        help="Kickstart to add to the ISO")
+    parser.add_argument("--ks", type=os.path.abspath, metavar="KICKSTART",
+                        help="Optional kickstart to add to the ISO")
     parser.add_argument("-V", "--volid", dest="volid", help="Set the ISO volume id, defaults to input's", default=None)
 
+    parser.add_argument("ks_pos", nargs="?", type=os.path.abspath, metavar="KICKSTART",
+                        help="Optional kickstart to add to the ISO")
     parser.add_argument("input_iso", type=os.path.abspath, help="ISO to modify")
     parser.add_argument("output_iso", type=os.path.abspath, help="Full pathname of iso to be created")
 
@@ -522,8 +524,8 @@ def main():
                 errors = True
 
         files = [args.input_iso, *args.add_paths]
-        if args.ks:
-            files += [args.ks]
+        if args.ks or args.ks_pos:
+            files += [args.ks or args.ks_pos]
         for f in files:
             if not os.path.exists(f):
                 log.error("%s is missing", f)
@@ -537,14 +539,18 @@ def main():
             log.error("--rm-args should only list the arguments to remove, not values")
             errors = True
 
-        if not any([args.ks, args.add_paths, args.cmdline, args.rm_args, args.volid]):
+        if args.ks and args.ks_pos:
+            log.error("Use either --ks KICKSTART or positional KICKSTART but not both")
+            errors = True
+
+        if not any([args.ks or args.ks_pos, args.add_paths, args.cmdline, args.rm_args, args.volid]):
             log.error("Nothing to do - pass one or more of --ks, --add, --cmdline, --rm-args, --volid")
             errors = True
 
         if errors:
             raise RuntimeError("Problems running %s" % sys.argv[0])
 
-        MakeKickstartISO(args.input_iso, args.output_iso, args.ks,
+        MakeKickstartISO(args.input_iso, args.output_iso, args.ks or args.ks_pos,
                          args.add_paths, args.cmdline, args.rm_args,
                          args.volid, args.no_md5sum)
     except RuntimeError as e:
