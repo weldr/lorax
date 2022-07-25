@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.18
+Version:        34.9.19
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Jul 25 2022 Brian C. Lane <bcl@redhat.com> 34.9.19-1
+- mkksiso: Optionally support 3 arguments or --ks (bcl)
+  Resolves: rhbz#2037015
+- mkksiso: Add -U to xorriso on ppc64le (bcl)
+  Resolves: rhbz#2109665
+- mkksiso: Fix passing -iso-level to xorriso (bcl)
+  Related: rhbz#2109665
+
 * Wed Jul 13 2022 Brian C. Lane <bcl@redhat.com> 34.9.18-1
 - mkksiso: Set u+rw permission on extracted files and directories (bcl)
   Related: rhbz#2088631
