@@ -6,7 +6,7 @@ remove usr/share/i18n
 
 ## not required packages installed as dependencies
 ## perl is needed on s390x
-## perl needed for powerpc-utils and fbset on PPC
+## perl needed for powerpc-utils on PPC
 ## perl is needed by /usr/bin/rxe_cfg from libibverbs
 
 ## no sound support, thanks
@@ -100,7 +100,7 @@ removekmod sound drivers/media drivers/hwmon \
 ## LUKS setup.
 removekmod drivers/char --allbut virtio_console hw_random \
                                   virtio-rng ipmi hmcdrv
-removekmod drivers/hid --allbut hid-logitech-dj hid-logitech-hidpp
+removekmod drivers/hid --allbut hid-logitech-dj hid-logitech-hidpp hid-multitouch
 removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt fb_sys_fops
 remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
@@ -205,6 +205,7 @@ removefrom gmp /usr/${libdir}/libgmpxx.* /usr/${libdir}/libmp.*
 removefrom gnome-bluetooth-libs /usr/${libdir}/libgnome-bluetooth*
 removefrom gnome-bluetooth-libs /usr/share/*
 removefrom gnutls /usr/share/locale/*
+removefrom google-noto-sans-cjk-ttc-fonts /usr/share/fonts/google-noto-cjk/NotoSansCJK-{Black,Bold,*Light,Medium,Thin}.ttc
 removefrom grep /etc/* /usr/share/locale/*
 removefrom gstreamer /usr/bin/* /usr/${libdir}/gstreamer-0.10/*
 removefrom gstreamer /usr/${libdir}/libgst* /usr/libexec/* /usr/share/locale/*
@@ -247,7 +248,7 @@ removefrom libxml2-python /usr/${libdir}/python?.?/site-packages/libxml2mod.la
 removefrom lldpad /etc/*
 removefrom lua /usr/bin/*
 removefrom madan-fonts /usr/share/fonts/madan/*
-removefrom mdadm /etc/*
+removefrom mdadm /etc/* /usr/lib/systemd/system/mdmonitor*
 removefrom module-init-tools /etc/* /usr/sbin/insmod.static /usr/sbin/weak-modules
 removefrom mt-st /etc/* /usr/sbin/*
 removefrom mtools /etc/*
@@ -276,7 +277,6 @@ removefrom nfs-utils /usr/sbin/rpc.svcgssd /usr/sbin/rpcdebug
 removefrom nfs-utils /usr/sbin/showmount /usr/sbin/sm-notify
 removefrom nfs-utils /usr/sbin/start-statd /var/lib/nfs/etab
 removefrom nfs-utils /var/lib/nfs/rmtab /var/lib/nfs/state /var/lib/nfs/xtab
-removefrom nhn-nanum-gothic-fonts /usr/share/fonts/nhn-nanum/NanumGothic*Bold.ttf
 removefrom nss-softokn /usr/${libdir}/nss/*
 removefrom openldap /etc/openldap/* /usr/${libdir}/libldap_r-*
 removefrom openssh /usr/libexec/*
@@ -298,7 +298,7 @@ removefrom pygtk2 /usr/bin/* /usr/${libdir}/pygtk/*
 removefrom pykickstart /usr/bin/* /usr/share/locale/*
 removefrom readline /usr/${libdir}/libhistory*
 removefrom libreport /usr/bin/* /usr/share/locale/*
-removefrom rpm /usr/bin/* /usr/share/locale/*
+removefrom rpm /usr/share/locale/*
 removefrom rsync /etc/*
 removefrom sed /usr/share/locale/*
 removefrom smartmontools /etc/* /usr/sbin/smartd
@@ -315,7 +315,7 @@ removefrom util-linux --allbut \
     /etc/mtab /etc/pam.d/login /etc/pam.d/remote \
     /usr/sbin/{agetty,blkid,blockdev,clock,fdisk,fsck,fstrim,hwclock,losetup} \
     /usr/sbin/{mkswap,swaplabel,nologin,sfdisk,swapoff,swapon,wipefs,partx,fsfreeze} \
-    /usr/bin/{logger,hexdump,flock}
+    /usr/bin/{logger,hexdump,flock,lscpu,chmem,lsmem}
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget /etc/* /usr/share/locale/*
 removefrom xorg-x11-drv-intel /usr/${libdir}/libI*

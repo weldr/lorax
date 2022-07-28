@@ -3,6 +3,8 @@
 
 ## anaconda package
 installpkg anaconda anaconda-widgets kexec-tools-anaconda-addon anaconda-install-env-deps
+installpkg oscap-anaconda-addon
+
 ## Other available payloads
 installpkg dnf
 installpkg rpm-ostree ostree
@@ -22,7 +24,6 @@ installpkg grubby
                            --except crystalhd-firmware --except ivtv-firmware \
                            --except cx18-firmware --except iscan-firmware \
                            --except uhd-firmware --except lulzbot-marlin-firmware
-    installpkg b43-openfwwf
 %endif
 
 ## install all of the glibc langpacks since otherwise we get no locales
@@ -31,13 +32,6 @@ installpkg glibc-all-langpacks
 ## arch-specific packages (bootloaders etc.)
 %if basearch == "aarch64":
     installpkg efibootmgr grub2-efi-aa64-cdboot grubby shim-aa64
-%endif
-%if basearch in ("arm", "armhfp"):
-    installpkg kernel-lpae
-    installpkg uboot-tools
-%endif
-%if basearch == "i386":
-    installpkg gpart
 %endif
 %if basearch == "x86_64":
     installpkg grub2-tools-efi
@@ -50,20 +44,21 @@ installpkg glibc-all-langpacks
     installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
 %endif
 %if basearch in ("ppc", "ppc64", "ppc64le"):
-    installpkg fbset hfsutils powerpc-utils lsvpd ppc64-diag
+    installpkg powerpc-utils lsvpd ppc64-diag
     installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
-    installpkg grub2-${basearch}
+    # We only have ppc64le in RHEL8 26-Jul-2018
+    installpkg grub2-ppc64le
 %endif
 %if basearch == "s390x":
-    installpkg lsscsi s390utils-base s390utils-cmsfs-fuse s390utils-hmcdrvfs
+    installpkg lsscsi s390utils-base s390utils-cmsfs-fuse
+    installpkg s390utils-hmcdrvfs
 %endif
 
 ## yay, plymouth
 installpkg plymouth
 
 ## extra dracut modules
-installpkg anaconda-dracut dracut-network dracut-config-generic dracut-fips
-installpkg prefixdevname
+installpkg anaconda-dracut dracut-network dracut-config-generic
 
 ## import-state.service for switchroot
 installpkg initscripts
@@ -80,26 +75,24 @@ installpkg kbd kbd-misc
 installpkg tar xz curl bzip2
 
 ## basic system stuff
-installpkg systemd-sysv systemd-units
+installpkg systemd
 installpkg rsyslog
 
 ## xorg/GUI packages
-%if basearch != "s390x":
 installpkg xorg-x11-drivers xorg-x11-server-Xorg
-%endif
 installpkg xorg-x11-server-utils xorg-x11-xauth
 installpkg dbus-x11 metacity gsettings-desktop-schemas
 installpkg nm-connection-editor
 installpkg librsvg2
 
 ## filesystem tools
-installpkg btrfs-progs jfsutils xfsprogs reiserfs-utils gfs2-utils ntfs-3g ntfsprogs
+installpkg xfsprogs gfs2-utils
 installpkg system-storage-manager
 installpkg device-mapper-persistent-data
 installpkg xfsdump
 
 ## extra storage packages
-# hostname is needed for iscsi to work, see RHBZ#1593917
+# hostname is needed for iscsi to work, see RHBZ#1599183
 installpkg udisks2 udisks2-iscsi hostname
 
 ## extra libblockdev plugins
@@ -115,22 +108,16 @@ installpkg selinux-policy-targeted audit
 ## network tools/servers
 installpkg ethtool openssh-server nfs-utils openssh-clients
 installpkg tigervnc-server-minimal
-%if basearch != "s390x":
 installpkg tigervnc-server-module
-%endif
 installpkg net-tools
-installpkg bridge-utils
 installpkg nmap-ncat
+installpkg prefixdevname
 installpkg ipcalc
 
 ## hardware utilities/libraries
 installpkg pciutils usbutils ipmitool
 installpkg mt-st smartmontools
 installpkg hdparm
-%if basearch not in ("aarch64", "ppc64le", "s390x"):
-installpkg pcmciautils
-%endif
-## see bug #1483278
 %if basearch not in ("arm", "armhfp"):
     installpkg libmlx4 rdma-core
 %endif
@@ -149,17 +136,15 @@ installpkg lklug-fonts
 installpkg lohit-assamese-fonts
 installpkg lohit-bengali-fonts
 installpkg lohit-devanagari-fonts
-installpkg lohit-gu*-fonts
+installpkg lohit-gujarati-fonts
+installpkg lohit-gurmukhi-fonts
 installpkg lohit-kannada-fonts
 installpkg lohit-odia-fonts
 installpkg lohit-tamil-fonts
 installpkg lohit-telugu-fonts
 installpkg madan-fonts
-installpkg nhn-nanum-gothic-fonts
 installpkg smc-meera-fonts
 installpkg thai-scalable-waree-fonts
-installpkg vlgothic-fonts
-installpkg wqy-microhei-fonts
 installpkg sil-abyssinica-fonts
 installpkg xorg-x11-fonts-misc
 installpkg aajohan-comfortaa-fonts
@@ -168,26 +153,20 @@ installpkg sil-scheherazade-fonts
 installpkg jomolhari-fonts
 installpkg khmeros-base-fonts
 installpkg sil-padauk-fonts
+installpkg google-noto-sans-cjk-ttc-fonts
 
 ## debugging/bug reporting tools
 installpkg gdb-gdbserver
 installpkg libreport-plugin-bugzilla libreport-plugin-reportuploader
-installpkg fpaste
+installpkg libreport-rhel-anaconda-bugzilla
+installpkg python3-pyatspi
 
 ## extra tools not required by anaconda
-installpkg vim-minimal strace lsof dump xz less
-installpkg wget rsync bind-utils ftp mtr vconfig
-installpkg icfg spice-vdagent
+installpkg vim-minimal strace lsof dump xz less 
+installpkg rsync bind-utils ftp mtr wget 
+installpkg spice-vdagent
 installpkg gdisk hexedit sg3_utils
-
-## satisfy libnotify's desktop-notification-daemon with the least crazy option
-installpkg notification-daemon
-
-## Docker enabled boot.iso
-# Not all arches currently have docker
-%if basearch not in ("ppc", "ppc64", "s390"):
-    installpkg docker-anaconda-addon
-%endif
+installpkg perl-interpreter
 
 ## actually install all the requested packages
 run_pkg_transaction

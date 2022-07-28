@@ -35,8 +35,6 @@ symlink /lib/systemd/system/rngd.service etc/systemd/system/basic.target.wants/r
 ## Disable unwanted systemd services
 systemctl disable systemd-readahead-collect.service \
                   systemd-readahead-replay.service \
-                  mdmonitor.service \
-                  mdmonitor-takeover.service \
                   lvm2-monitor.service \
                   dnf-makecache.timer
 ## These services can't be disabled normally (they're linked into place in
