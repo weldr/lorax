@@ -3,6 +3,13 @@
 
 ## anaconda package
 installpkg anaconda anaconda-widgets kexec-tools-anaconda-addon anaconda-install-img-deps
+installpkg oscap-anaconda-addon
+installpkg redhat-release-eula
+
+## FIXME Pull in device-mapper-multipath
+## This *should* be pulled in by libblockdev-plugins-all and libblockdev-mpath but it is not
+installpkg device-mapper-multipath
+
 ## Other available payloads
 installpkg dnf
 installpkg rpm-ostree ostree
@@ -21,29 +28,16 @@ installpkg grubby
     installpkg --optional *-firmware --except alsa* --except midisport-firmware \
                            --except crystalhd-firmware --except ivtv-firmware \
                            --except cx18-firmware --except iscan-firmware \
-                           --except uhd-firmware --except lulzbot-marlin-firmware \
-                           --except gnome-firmware --except sigrok-firmware
-    installpkg b43-openfwwf
+                           --except uhd-firmware --except lulzbot-marlin-firmware
 %endif
 
 ## install all of the glibc langpacks since otherwise we get no locales
 installpkg glibc-all-langpacks
 
+
 ## arch-specific packages (bootloaders etc.)
 %if basearch == "aarch64":
-    installpkg efibootmgr
-    installpkg grub2-efi-aa64-cdboot shim-aa64
-    installpkg uboot-tools
-%endif
-%if basearch in ("arm", "armhfp"):
-    installpkg efibootmgr
-    installpkg grub2-efi-arm-cdboot
-    installpkg grubby-deprecated
-    installpkg kernel-lpae
-    installpkg uboot-tools
-%endif
-%if basearch == "i386":
-    installpkg gpart
+    installpkg efibootmgr grub2-efi-aa64-cdboot grubby shim-aa64
 %endif
 %if basearch == "x86_64":
     installpkg grub2-tools-efi
@@ -54,13 +48,15 @@ installpkg glibc-all-langpacks
     installpkg biosdevname memtest86+ syslinux
     installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
 %endif
-%if basearch == "ppc64le":
+%if basearch in ("ppc", "ppc64", "ppc64le"):
     installpkg powerpc-utils lsvpd ppc64-diag
     installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
-    installpkg grub2-${basearch}
+    # We only have ppc64le in RHEL8 26-Jul-2018
+    installpkg grub2-ppc64le
 %endif
 %if basearch == "s390x":
-    installpkg lsscsi s390utils-base s390utils-cmsfs-fuse s390utils-hmcdrvfs
+    installpkg lsscsi s390utils-base s390utils-cmsfs-fuse
+    installpkg s390utils-hmcdrvfs
 %endif
 
 ## yay, plymouth
@@ -84,7 +80,7 @@ installpkg kbd kbd-misc
 installpkg tar xz curl bzip2
 
 ## basic system stuff
-installpkg systemd-sysv systemd-units
+installpkg systemd
 installpkg rsyslog
 
 ## xorg/GUI packages
@@ -96,13 +92,13 @@ installpkg librsvg2
 installpkg gnome-kiosk
 
 ## filesystem tools
-installpkg btrfs-progs jfsutils xfsprogs reiserfs-utils ntfs-3g ntfsprogs
-installpkg system-storage-manager
+installpkg xfsprogs
 installpkg device-mapper-persistent-data
 installpkg xfsdump
+installpkg libblockdev-plugins-all libblockdev
 
 ## extra storage packages
-# hostname is needed for iscsi to work, see RHBZ#1593917
+# hostname is needed for iscsi to work, see RHBZ#1599183
 installpkg udisks2 udisks2-iscsi hostname
 
 ## extra libblockdev plugins
@@ -112,10 +108,6 @@ installpkg libblockdev-lvm-dbus
 installpkg volume_key
 installpkg nss-tools
 
-## blivet-gui-runtime requires PolicyKit-authentication-agent, if we
-## don't tell dnf what to pick it picks lxpolkit, which drags in gtk2
-installpkg polkit-gnome
-
 ## SELinux support
 installpkg selinux-policy-targeted audit
 
@@ -124,66 +116,65 @@ installpkg ethtool openssh-server nfs-utils openssh-clients
 installpkg tigervnc-server-minimal
 installpkg tigervnc-server-module
 installpkg net-tools
-installpkg bridge-utils
 installpkg nmap-ncat
+installpkg prefixdevname
 installpkg ipcalc
 
 ## hardware utilities/libraries
 installpkg pciutils usbutils ipmitool
 installpkg mt-st smartmontools
 installpkg hdparm
-%if basearch not in ("aarch64", "ppc64le", "s390x"):
-installpkg pcmciautils
-%endif
-## see bug #1483278
 %if basearch not in ("arm", "armhfp"):
     installpkg libmlx4 rdma-core
 %endif
-installpkg rng-tools
 %if basearch in ("i386", "x86_64", "aarch64"):
 installpkg dmidecode
 %endif
 installpkg nvme-cli
 
 ## fonts & themes
-installpkg aajohan-comfortaa-fonts
-installpkg abattis-cantarell-fonts
 installpkg bitmap-fangsongti-fonts
 installpkg dejavu-sans-fonts dejavu-sans-mono-fonts
-installpkg google-noto-sans-cjk-ttc-fonts
-installpkg google-noto-sans-gurmukhi-fonts
-installpkg google-noto-sans-sinhala-vf-fonts
-installpkg jomolhari-fonts
-installpkg khmeros-base-fonts
+installpkg kacst-farsi-fonts
+installpkg kacst-qurn-fonts
+installpkg lklug-fonts
 installpkg lohit-assamese-fonts
 installpkg lohit-bengali-fonts
 installpkg lohit-devanagari-fonts
 installpkg lohit-gujarati-fonts
+installpkg lohit-gurmukhi-fonts
 installpkg lohit-kannada-fonts
-installpkg lohit-marathi-fonts
 installpkg lohit-odia-fonts
 installpkg lohit-tamil-fonts
 installpkg lohit-telugu-fonts
-installpkg paktype-naskh-basic-fonts
-installpkg sil-abyssinica-fonts
-installpkg sil-padauk-fonts
-installpkg sil-scheherazade-fonts
+installpkg madan-fonts
 installpkg smc-meera-fonts
 installpkg thai-scalable-waree-fonts
+installpkg sil-abyssinica-fonts
 installpkg xorg-x11-fonts-misc
+installpkg aajohan-comfortaa-fonts
+installpkg abattis-cantarell-fonts
+installpkg sil-scheherazade-fonts
+installpkg jomolhari-fonts
+installpkg khmeros-base-fonts
+installpkg sil-padauk-fonts
+installpkg google-noto-sans-cjk-ttc-fonts
 
 ## debugging/bug reporting tools
 installpkg gdb-gdbserver
 installpkg libreport-plugin-bugzilla libreport-plugin-reportuploader
-installpkg fpaste
+installpkg libreport-rhel-anaconda-bugzilla
 installpkg python3-pyatspi
 
 ## extra tools not required by anaconda
-installpkg nano nano-default-editor
-installpkg vim-minimal strace lsof dump xz less
-installpkg wget rsync bind-utils ftp mtr vconfig
-installpkg icfg spice-vdagent
+installpkg vim-minimal strace lsof xz less
+installpkg rsync bind-utils ftp mtr wget 
 installpkg gdisk hexedit sg3_utils
+installpkg perl-interpreter
+installpkg restore
+
+# TODO: spice-vdagent is supposed to be removed, but Anaconda still needs it.
+installpkg spice-vdagent
 
 ## actually install all the requested packages
 run_pkg_transaction
