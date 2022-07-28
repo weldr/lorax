@@ -115,7 +115,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %>
 
 # Add the license files
-%for f in glob("usr/share/licenses/*-release-common/*"):
+%for f in glob("/usr/share/licenses/*-release/*"):
     install ${f} ${f|basename}
     <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
 %endfor
