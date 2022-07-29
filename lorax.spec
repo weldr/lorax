@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.69
+Version:        28.14.70
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -261,6 +261,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Jul 29 2022 Brian C. Lane <bcl@redhat.com> 28.14.70-1
+- templates: Update runtime-* templates (bcl)
+  Resolves: rhbz#2042101
+- templates: Don't include redhat.exec on s390 (bcl)
+  Related: rhbz#2042101
+- templates: Drop non-64bit PPC support from live grub.cfg (bcl)
+  Related: rhbz#2042101
+- templates: Update config_files for inst.* usage (bcl)
+  Related: rhbz#2042101
+- tests: Run the 'test-in-docker' tests for github PRs (bcl)
+  Resolves: rhbz#2095578
+
 * Thu Jun 09 2022 Brian C. Lane <bcl@redhat.com> 28.14.69-1
 - runtime-cleanup: Use branding package name instead of product.name (bcl)
   Related: rhbz#2052154
