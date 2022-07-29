@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.19
+Version:        34.9.20
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Jul 29 2022 Brian C. Lane <bcl@redhat.com> 34.9.20-1
+- templates: Update runtime-* templates (bcl)
+  Resolves: rhbz#2042057
+- templates: Update path to license files (bcl)
+  Related: rhbz#2042057
+- templates: Update boot timeout to 5s (bcl)
+  Related: rhbz#2042057
+
 * Mon Jul 25 2022 Brian C. Lane <bcl@redhat.com> 34.9.19-1
 - mkksiso: Optionally support 3 arguments or --ks (bcl)
   Resolves: rhbz#2037015
