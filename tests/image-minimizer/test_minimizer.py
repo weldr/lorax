@@ -9,7 +9,7 @@ class MinimizerTestCase(unittest.TestCase):
     def test_minimizer_ok(self):
         with tempfile.TemporaryDirectory(prefix="minimize.test.") as rootdir:
             check_call(["dnf", "--releasever=/", "--installroot", rootdir, "install", "-y", \
-                        "filesystem"])
+                        "filesystem", "tzdata"])
 
             im = ImageMinimizer("./tests/image-minimizer/im-script.txt", rootdir, False, False)
             im.filter()
