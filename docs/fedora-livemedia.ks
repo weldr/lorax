@@ -302,7 +302,7 @@ download-updates=false
 FOE
 
 # don't autostart gnome-software session service
-rm -f /etc/xdg/autostart/gnome-software-service.desktop
+rm -f /etc/xdg/autostart/org.gnome.Software.desktop
 
 # disable the gnome-software shell search provider
 cat >> /usr/share/gnome-shell/search-providers/org.gnome.Software-search-provider.ini << FOE
