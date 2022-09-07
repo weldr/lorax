@@ -214,9 +214,8 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
     fake_dbo = FakeDNF(conf=DataHolder(installroot=mount_dir))
     # Fake arch with only basearch set
     arch = ArchData(kernel_arch)
-    # TODO: Need to get release info from someplace...
-    product = DataHolder(name=opts.project, version=opts.releasever, release="",
-                            variant="", bugurl="", isfinal=False)
+    product = DataHolder(name=opts.project, version=opts.releasever, release=opts.release,
+                            variant=opts.variant, bugurl=opts.bugurl, isfinal=opts.isfinal)
 
     rb = RuntimeBuilder(product, arch, fake_dbo, skip_branding=True)
     compression, compressargs = squashfs_args(opts)
@@ -336,9 +335,8 @@ def make_livecd(opts, mount_dir, work_dir):
     kernel_arch = get_arch(mount_dir)
 
     arch = ArchData(kernel_arch)
-    # TODO: Need to get release info from someplace...
-    product = DataHolder(name=opts.project, version=opts.releasever, release="",
-                            variant="", bugurl="", isfinal=False)
+    product = DataHolder(name=opts.project, version=opts.releasever, release=opts.release,
+                            variant=opts.variant, bugurl=opts.bugurl, isfinal=opts.isfinal)
 
     # Link /images to work_dir/images to make the templates happy
     if os.path.islink(joinpaths(mount_dir, "images")):
