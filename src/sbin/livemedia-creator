@@ -49,6 +49,9 @@ def main():
 
     # Check for invalid combinations of options, print all the errors and exit.
     errors = []
+    if opts.project != "Linux" and opts.product:
+        errors.append("Use one of --project or --product not both.")
+
     if not opts.disk_image and not opts.fs_image and not opts.ks:
         errors.append("Image creation requires a kickstart file")
 
@@ -160,6 +163,10 @@ def main():
 
     if not os.path.exists(opts.result_dir):
         os.makedirs(opts.result_dir)
+
+    # Alias --product to --project
+    if opts.product:
+        opts.project = opts.product
 
     # AMI image is just a fsimage with an AMI label
     if opts.make_ami:

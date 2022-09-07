@@ -304,8 +304,10 @@ def lmc_parser(dracut_default=""):
     vagrant_group.add_argument("--vagrantfile",
                                help="optional vagrantfile")
 
-    parser.add_argument("--project", default="Linux",
-                        help="substituted for @PROJECT@ in bootloader config files")
+    parser.add_argument("--project", default="Linux", metavar="PRODUCT",
+                        help="substituted for @PRODUCT@ in bootloader config files")
+    parser.add_argument("-p", "--product", default="", help="Alias for --project",
+                        metavar="PRODUCT")
     parser.add_argument("--releasever", default=DEFAULT_RELEASEVER,
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
