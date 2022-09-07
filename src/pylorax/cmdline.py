@@ -213,6 +213,15 @@ def lmc_parser(dracut_default=""):
     parser.add_argument("--extra-boot-args", default="", dest="extra_boot_args",
                         help="Extra arguments to add to the bootloader kernel cmdline in the templates")
 
+    parser.add_argument("--release", default="", dest="release",
+                        help="Release for product information")
+    parser.add_argument("--variant", default="", dest="variant",
+                        help="Variant for product information")
+    parser.add_argument("--bugurl", default="", dest="bugurl",
+                        help="Issue tracker URL for product information")
+    parser.add_argument("--final", action="store_true",
+                        help="Mark the image as a final release in the product information")
+
     image_group = parser.add_argument_group("disk/fs image arguments")
     image_group.add_argument("--disk-image", type=os.path.abspath,
                              help="Path to existing disk image to use for creating final image.")
