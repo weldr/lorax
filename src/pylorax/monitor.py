@@ -51,6 +51,7 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
     ]
 
     re_tests = [
+        r"Process [0-9]+ \(anaconda\) of user [0-9]+ dumped core",
         r"packaging: base repo .* not valid",
         r"packaging: .* requires .*"
     ]
