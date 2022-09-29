@@ -6,18 +6,11 @@
     installpkg efibootmgr
     installpkg grub2-efi-aa64-cdboot shim-aa64
 %endif
-%if basearch in ("arm", "armhfp"):
-    installpkg efibootmgr
-    installpkg grub2-efi-arm-cdboot
-    installpkg uboot-tools
-%endif
 %if basearch == "x86_64":
     installpkg grub2-tools-efi
     installpkg efibootmgr
     installpkg shim-x64 grub2-efi-x64-cdboot
     installpkg shim-ia32 grub2-efi-ia32-cdboot
-%endif
-%if basearch in ("i386", "x86_64"):
     installpkg biosdevname
     installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
     installpkg grub2-pc-modules

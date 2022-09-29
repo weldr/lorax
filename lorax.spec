@@ -71,10 +71,6 @@ Requires:       openssh
 Requires:       s390utils >= 2.15.0-2
 %endif
 
-%ifarch %{arm}
-Requires:       uboot-tools
-%endif
-
 # Moved image-minimizer tool to lorax
 Provides:       appliance-tools-minimizer = %{version}-%{release}
 Obsoletes:      appliance-tools-minimizer < 007.7-3
@@ -99,7 +95,7 @@ Requires: lorax = %{version}-%{release}
 Requires: qemu
 
 # Fedora edk2 builds currently only support these arches
-%ifarch %{ix86} x86_64 %{arm} aarch64
+%ifarch x86_64 aarch64
 Requires: edk2-ovmf
 %endif
 Recommends: qemu-kvm

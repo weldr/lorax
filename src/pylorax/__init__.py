@@ -65,16 +65,13 @@ DEFAULT_PLATFORM_ID = "platform:f36"
 DEFAULT_RELEASEVER = "36"
 
 class ArchData(DataHolder):
-    lib64_arches = ("x86_64", "ppc64le", "s390x", "ia64", "aarch64")
-    bcj_arch = dict(i386="x86", x86_64="x86",
-                    ppc64le="powerpc",
-                    arm="arm", armhfp="arm")
+    bcj_arch = dict(x86_64="x86", ppc64le="powerpc")
 
     def __init__(self, buildarch):
         super(ArchData, self).__init__()
         self.buildarch = buildarch
         self.basearch = dnf.rpm.basearch(buildarch)
-        self.libdir = "lib64" if self.basearch in self.lib64_arches else "lib"
+        self.libdir = "lib64"
         self.bcj = self.bcj_arch.get(self.basearch)
 
 class Lorax(BaseLoraxClass):
