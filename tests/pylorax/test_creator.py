@@ -152,6 +152,7 @@ class CreatorTest(unittest.TestCase):
                 # Make a fake kernel and initrd
                 mkFakeBoot(mount_dir)
                 opts = DataHolder(project="Fedora", releasever="devel", compression="xz", compress_args=[],
+                                  release="", variant="", bugurl="", isfinal=False,
                                   arch="x86_64", squashfs_only=True)
                 make_runtime(opts, mount_dir, work_dir)
 
@@ -401,12 +402,14 @@ class CreatorTest(unittest.TestCase):
                 with mock.patch('pylorax.treebuilder.TreeBuilder.rebuild_initrds') as ri:
                     # Test with no dracut args
                     opts = DataHolder(project="Fedora", releasever="32", lorax_templates=lorax_templates, volid=None,
+                                      release="", variant="", bugurl="", isfinal=False,
                                       domacboot=False, extra_boot_args="", dracut_args=None, dracut_conf=None)
                     make_livecd(opts, joinpaths(tmpdir, "mount_dir"), joinpaths(tmpdir, "work_dir"))
                     ri.assert_called_with(add_args=DRACUT_DEFAULT)
 
                     # Test with --dracut-arg
                     opts = DataHolder(project="Fedora", releasever="32", lorax_templates=lorax_templates, volid=None,
+                                      release="", variant="", bugurl="", isfinal=False,
                                       domacboot=False, extra_boot_args="", 
                                       dracut_args=["--xz",  "--omit plymouth", "--add livenet dmsquash-live dmsquash-live-ntfs"], dracut_conf=None)
                     make_livecd(opts, joinpaths(tmpdir, "mount_dir"), joinpaths(tmpdir, "work_dir"))
@@ -415,6 +418,7 @@ class CreatorTest(unittest.TestCase):
 
                     # Test with --dracut-conf
                     opts = DataHolder(project="Fedora", releasever="32", lorax_templates=lorax_templates, volid=None,
+                                      release="", variant="", bugurl="", isfinal=False,
                                       domacboot=False, extra_boot_args="", dracut_args=None, 
                                       dracut_conf="/var/tmp/project/lmc-dracut.conf")
                     make_livecd(opts, joinpaths(tmpdir, "mount_dir"), joinpaths(tmpdir, "work_dir"))
