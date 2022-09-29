@@ -35,14 +35,10 @@ from pylorax.imgutils import DracutChroot
 from pylorax.executils import runcmd, runcmd_output, execWithCapture
 
 templatemap = {
-    'i386':    'x86.tmpl',
     'x86_64':  'x86.tmpl',
     'ppc64le': 'ppc64le.tmpl',
-    's390':    's390.tmpl',
     's390x':   's390.tmpl',
     'aarch64': 'aarch64.tmpl',
-    'arm':     'arm.tmpl',
-    'armhfp':  'arm.tmpl',
 }
 
 def generate_module_info(moddir, outfile=None):

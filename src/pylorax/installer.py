@@ -137,8 +137,6 @@ class QEMUInstall(object):
     """
     # Mapping of arch to qemu command
     QEMU_CMDS = {"x86_64":  "qemu-system-x86_64",
-                 "i386":    "qemu-system-i386",
-                 "arm":     "qemu-system-arm",
                  "aarch64": "qemu-system-aarch64",
                  "ppc64le": "qemu-system-ppc64"
                 }

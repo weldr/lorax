@@ -65,16 +65,12 @@ replace @EXTRA@ '${extra_boot_args}' ${GRUB2DIR}/grub.cfg
 %if exists("boot/efi/EFI/*/gcdx64.efi"):
     <% efiarch64 = 'X64' %>
 %endif
-%if (efiarch32 or efiarch64) and basearch != 'i386':
+%if (efiarch32 or efiarch64):
     <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch32=efiarch32, efiarch64=efiarch64, isolabel=isolabel, extra_boot_args=extra_boot_args"/>
 %endif
 
 # Create optional product.img and updates.img
 <% filegraft=""; images=["product", "updates"]; compressargs=""; %>
-%if basearch == 'i386':
-    # Limit the amount of memory xz uses on i386
-    <% compressargs="--xz -9 --memlimit-compress=3700MiB" %>
-%endif
 %for img in images:
     %if exists("%s/%s/" % (LORAXDIR, img)):
         installimg ${compressargs} ${LORAXDIR}/${img}/ images/${img}.img
