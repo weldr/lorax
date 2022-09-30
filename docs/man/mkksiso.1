@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "MKKSISO" "1" "May 11, 2022" "37.1" "Lorax"
+.TH "MKKSISO" "1" "Sep 30, 2022" "38.0" "Lorax"
 .SH NAME
 mkksiso \- Make Kickstart ISO Utility Documentation
 .INDENT 0.0
@@ -51,41 +51,24 @@ do not need to be root.
 .SH MKKSISO CMDLINE ARGUMENTS
 .sp
 Add a kickstart and files to an iso
+
 .INDENT 0.0
 .INDENT 3.5
-\fBusage: mkksiso [\-h] [\-a ADD_PATHS] [\-c CMDLINE] [\-\-debug] ks input_iso output_iso\fP
+.sp
+.nf
+.ft C
+usage: mkksiso [\-h] [\-a ADD_PATHS] [\-c CMDLINE] [\-r ARGS] [\-\-debug] [\-\-no\-md5sum] [\-\-ks KICKSTART]
+               [\-V VOLID]
+               [KICKSTART] input_iso output_iso
+.ft P
+.fi
 .UNINDENT
 .UNINDENT
-.SS Optional arguments
-.INDENT 0.0
-.INDENT 3.5
-.INDENT 0.0
-.TP
-.B  \-h\fP,\fB  \-\-help
-show this help message and exit
-.TP
-.BI \-a \ ADD_PATHS\fR,\fB \ \-\-add \ ADD_PATHS
-File or directory to add to ISO (may be used multiple
-times)
-.TP
-.BI \-c \ CMDLINE\fR,\fB \ \-\-cmdline \ CMDLINE
-Arguments to add to kernel cmdline
-.TP
-.B  \-\-debug
-print debugging info
-.TP
-.BI \-V \ VOLID\fR,\fB \ \-\-volid \ VOLID
-Set the ISO volume id, defaults to input\(aqs
-.UNINDENT
-.UNINDENT
-.UNINDENT
-.SS Positional arguments
-.INDENT 0.0
-.INDENT 3.5
+.SS Positional Arguments
 .INDENT 0.0
 .TP
-.B ks
-Kickstart to add to the ISO
+.B KICKSTART
+Optional kickstart to add to the ISO
 .TP
 .B input_iso
 ISO to modify
@@ -93,7 +76,39 @@ ISO to modify
 .B output_iso
 Full pathname of iso to be created
 .UNINDENT
-.UNINDENT
+.SS options
+.INDENT 0.0
+.TP
+.B \-a, \-\-add
+File or directory to add to ISO (may be used multiple times)
+.sp
+Default: []
+.TP
+.B \-c, \-\-cmdline
+Arguments to add to kernel cmdline
+.sp
+Default: \(dq\(dq
+.TP
+.B \-r, \-\-rm\-args
+Space separated list of arguments to remove from the kernel cmdline
+.sp
+Default: \(dq\(dq
+.TP
+.B \-\-debug
+print debugging info
+.sp
+Default: 20
+.TP
+.B \-\-no\-md5sum
+Do not run implantisomd5 on the ouput iso
+.sp
+Default: True
+.TP
+.B \-\-ks
+Optional kickstart to add to the ISO
+.TP
+.B \-V, \-\-volid
+Set the ISO volume id, defaults to input\(aqs
 .UNINDENT
 .SH CREATE A KICKSTART BOOT.ISO OR DVD
 .sp
@@ -107,7 +122,7 @@ network connection. Then run \fBmkksiso\fP like this:
 .sp
 .nf
 .ft C
-mkksiso /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
+mkksiso \-\-ks /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
 .ft P
 .fi
 .UNINDENT
@@ -128,7 +143,7 @@ eg.:
 .sp
 .nf
 .ft C
-mkksiso \-V "Test Only" /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
+mkksiso \-V \(dqTest Only\(dq \-\-ks /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
 .ft P
 .fi
 .UNINDENT
@@ -157,7 +172,7 @@ Run \fBmkksiso\fP like so:
 .sp
 .nf
 .ft C
-mkksiso \-\-add /PATH/TO/REPO/ /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
+mkksiso \-\-add /PATH/TO/REPO/ \-\-ks /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
 .ft P
 .fi
 .UNINDENT
@@ -195,7 +210,7 @@ sure the file hasn\(aqt been corrupted:
 .sp
 .nf
 .ft C
-mkksiso \-\-add /PATH/TO/root.tar.xz /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
+mkksiso \-\-add /PATH/TO/root.tar.xz \-\-ks /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NEW\-ISO
 .ft P
 .fi
 .UNINDENT
@@ -203,6 +218,54 @@ mkksiso \-\-add /PATH/TO/root.tar.xz /PATH/TO/KICKSTART /PATH/TO/ISO /PATH/TO/NE
 .sp
 When this iso is booted it will execute the kickstart and install the liveimg
 contents to the system without any prompting.
+.SH MODIFYING KERNEL CMDLINE ARGUMENTS
+.sp
+You can add arguments to the kernel cmdline in the ISO config files by using
+\fB\-\-cmdline\fP, like this:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkksiso \-\-cmdline \(dqconsole=ttyS0,115200n8\(dq /PATH/TO/ISO /PATH/TO/NEW\-ISO
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Removing arguments
+.sp
+mkksiso version 37.3 and later support removing arguments from the cmdline. This can be done
+with or without adding a kickstart to the iso:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkksiso \-\-rm \(dqquiet console\(dq /PATH/TO/ISO /PATH/TO/NEW\-ISO
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+will remove the quiet and console arguments from all the the kernel cmdlines on the ISO.
+.SS Changing existing arguments
+.sp
+With the combination of \fB\-\-rm\fP and \fB\-\-command\fP it is now possible to change
+existing arguments. For example let\(aqs say the ISO has a console=tty3 set on the
+cmdline. You want to change that to ttyS0 so you run this:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkksiso \-\-cmdline \(dqconsole=ttyS0,115200n8\(dq \-\-rm \(dqconsole\(dq /PATH/TO/ISO /PATH/TO/NEW\-ISO
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+which will first remove all instances of console in the config files, and
+then add the new console argument.
 .SH HOW IT WORKS
 .sp
 \fBmkksiso\fP only depends on \fBxorriso\fP and \fBisomd5sum\fP\&. It takes advantage of

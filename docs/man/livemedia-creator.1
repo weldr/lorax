@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "LIVEMEDIA-CREATOR" "1" "May 11, 2022" "37.1" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Sep 30, 2022" "38.0" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .INDENT 0.0
@@ -83,21 +83,21 @@ usage: livemedia\-creator [\-h]
                          [\-\-no\-virt] [\-\-proxy PROXY] [\-\-anaconda\-arg ANACONDA_ARGS]
                          [\-\-armplatform ARMPLATFORM] [\-\-location LOCATION] [\-\-logfile LOGFILE]
                          [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP] [\-\-resultdir RESULT_DIR]
-                         [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS]
-                         [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image] [\-\-fs\-image FS_IMAGE]
-                         [\-\-image\-name IMAGE_NAME] [\-\-tar\-disk\-name TAR_DISK_NAME]
-                         [\-\-fs\-label FS_LABEL] [\-\-image\-size\-align IMAGE_SIZE_ALIGN]
-                         [\-\-image\-type IMAGE_TYPE] [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2]
-                         [\-\-qcow2\-arg QEMU_ARGS] [\-\-compression COMPRESSION]
-                         [\-\-compress\-arg COMPRESS_ARGS] [\-\-app\-name APP_NAME]
-                         [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE] [\-\-ram MEMORY]
-                         [\-\-vcpus VCPUS] [\-\-vnc VNC] [\-\-arch ARCH] [\-\-kernel\-args KERNEL_ARGS]
-                         [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi] [\-\-no\-kvm] [\-\-with\-rng WITH_RNG]
-                         [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS]
+                         [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS] [\-r RELEASE]
+                         [\-t VARIANT] [\-b URL] [\-\-isfinal] [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image]
+                         [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME]
+                         [\-\-tar\-disk\-name TAR_DISK_NAME] [\-\-fs\-label FS_LABEL]
+                         [\-\-image\-size\-align IMAGE_SIZE_ALIGN] [\-\-image\-type IMAGE_TYPE]
+                         [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2] [\-\-qcow2\-arg QEMU_ARGS]
+                         [\-\-compression COMPRESSION] [\-\-compress\-arg COMPRESS_ARGS]
+                         [\-\-app\-name APP_NAME] [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE]
+                         [\-\-ram MEMORY] [\-\-vcpus VCPUS] [\-\-vnc VNC] [\-\-arch ARCH]
+                         [\-\-kernel\-args KERNEL_ARGS] [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi] [\-\-no\-kvm]
+                         [\-\-with\-rng WITH_RNG] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS]
                          [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE] [\-\-live\-rootfs\-keep\-size]
                          [\-\-oci\-config OCI_CONFIG] [\-\-oci\-runtime OCI_RUNTIME]
                          [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE]
-                         [\-\-project PROJECT] [\-\-releasever RELEASEVER] [\-\-volid VOLID]
+                         [\-\-project PRODUCT] [\-p PRODUCT] [\-\-releasever RELEASEVER] [\-\-volid VOLID]
                          [\-\-squashfs\-only] [\-\-timeout TIMEOUT] [\-V]
 .ft P
 .fi
@@ -226,17 +226,40 @@ Default: False
 .B \-\-extra\-boot\-args
 Extra arguments to add to the bootloader kernel cmdline in the templates
 .sp
-Default: ""
+Default: \(dq\(dq
+.TP
+.B \-r, \-\-release
+release information
+.sp
+Default: \(dq\(dq
+.TP
+.B \-t, \-\-variant
+variant name
+.sp
+Default: \(dq\(dq
+.TP
+.B \-b, \-\-bugurl
+bug reporting URL for the product
+.sp
+Default: \(dqyour distribution provided bug reporting tool\(dq
+.TP
+.B \-\-isfinal
+Default: False
 .TP
 .B \-\-project
-substituted for @PROJECT@ in bootloader config files
+substituted for @PRODUCT@ in bootloader config files
 .sp
-Default: "Linux"
+Default: \(dqLinux\(dq
+.TP
+.B \-p, \-\-product
+Alias for \-\-project
+.sp
+Default: \(dq\(dq
 .TP
 .B \-\-releasever
 substituted for @VERSION@ in bootloader config files
 .sp
-Default: "36"
+Default: \(dq36\(dq
 .TP
 .B \-\-volid
 volume id
@@ -275,7 +298,7 @@ Name of the archive member for make\-tar\-disk.
 .B \-\-fs\-label
 Label to set on fsimage, default is \(aqAnaconda\(aq
 .sp
-Default: "Anaconda"
+Default: \(dqAnaconda\(dq
 .TP
 .B \-\-image\-size\-align
 Create a disk image with a size that is a multiple of this value in MiB.
@@ -303,7 +326,7 @@ Default: []
 .B \-\-compression
 Compression binary for make\-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.
 .sp
-Default: "xz"
+Default: \(dqxz\(dq
 .TP
 .B \-\-compress\-arg
 Arguments to pass to compression. Pass once for each argument
@@ -322,7 +345,7 @@ Path to template to use for appliance data.
 .B \-\-app\-file
 Appliance template results file.
 .sp
-Default: "appliance.xml"
+Default: \(dqappliance.xml\(dq
 .UNINDENT
 .SS qemu arguments
 .INDENT 0.0
@@ -347,7 +370,7 @@ Additional argument to pass to the installation kernel
 .B \-\-ovmf\-path
 Path to OVMF firmware
 .sp
-Default: "/usr/share/edk2/ovmf/"
+Default: \(dq/usr/share/edk2/ovmf/\(dq
 .TP
 .B \-\-virt\-uefi
 Use OVMF firmware to boot the VM in UEFI mode
@@ -362,7 +385,7 @@ Default: False
 .B \-\-with\-rng
 RNG device for QEMU (none for no RNG)
 .sp
-Default: "/dev/random"
+Default: \(dq/dev/random\(dq
 .UNINDENT
 .SS dracut arguments: (default: )
 .INDENT 0.0
@@ -508,7 +531,7 @@ This works for F16 builds but for F15 and before you need to pass
 something on the cmdline that activate the network, like sshd:
 .INDENT 4.0
 .INDENT 3.5
-\fBlivemedia\-creator \-\-kernel\-args="sshd"\fP
+\fBlivemedia\-creator \-\-kernel\-args=\(dqsshd\(dq\fP
 .UNINDENT
 .UNINDENT
 .IP 8. 4
@@ -576,7 +599,7 @@ You also need to use a specific mirror instead of mirrormanager so that the
 packages will get cached, so your kickstart url would look like:
 .INDENT 0.0
 .INDENT 3.5
-\fBurl \-\-url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"\fP
+\fBurl \-\-url=\(dqhttp://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/\(dq\fP
 .UNINDENT
 .UNINDENT
 .sp
@@ -590,8 +613,8 @@ named \fBupdates\fP which is reserved for Anaconda\(aqs use. eg.:
 .nf
 .ft C
 url \-\-url=PRIMARY\-REPO\-URL \-\-proxy=PROXY\-URL
-repo \-\-name="repo1" \-\-baseurl=FIRST\-REPO\-URL \-\-proxy=PROXY\-URL
-repo \-\-name="repo2" \-\-baseurl=SECOND\-REPO_URL \-\-proxy=PROXY\-URL
+repo \-\-name=\(dqrepo1\(dq \-\-baseurl=FIRST\-REPO\-URL \-\-proxy=PROXY\-URL
+repo \-\-name=\(dqrepo2\(dq \-\-baseurl=SECOND\-REPO_URL \-\-proxy=PROXY\-URL
 .ft P
 .fi
 .UNINDENT
@@ -682,10 +705,10 @@ Each entry has the following attributes:
 base name of the disk image file
 .sp
 \fBformat\fP
-"raw"
+\(dqraw\(dq
 .sp
 \fBchecksum_type\fP
-"sha256"
+\(dqsha256\(dq
 .sp
 \fBchecksum\fP
 sha256 checksum of the disk image
@@ -980,7 +1003,7 @@ Import the resulting disk image into the OpenStack system, either via the web UI
 .sp
 .nf
 .ft C
-glance image\-create \-\-name "fedora\-openstack" \-\-is\-public true \-\-disk\-format qcow2 \e
+glance image\-create \-\-name \(dqfedora\-openstack\(dq \-\-is\-public true \-\-disk\-format qcow2 \e
 \-\-container\-format bare \-\-file ./fedora\-openstack.qcow2
 .ft P
 .fi
@@ -1086,7 +1109,7 @@ Make sure that the kickstart you are using creates a /boot/efi partition by incl
 .sp
 .nf
 .ft C
-part /boot/efi \-\-fstype="efi" \-\-size=500
+part /boot/efi \-\-fstype=\(dqefi\(dq \-\-size=500
 .ft P
 .fi
 .UNINDENT

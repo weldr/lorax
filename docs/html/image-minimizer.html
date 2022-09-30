@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>image-minimizer &mdash; Lorax 37.1 documentation</title>
+  <title>image-minimizer &mdash; Lorax 38.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -27,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                37.1
+                38.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -83,9 +84,9 @@
            <div itemprop="articleBody">
              
   <section id="image-minimizer">
-<h1>image-minimizer<a class="headerlink" href="#image-minimizer" title="Permalink to this headline">¶</a></h1>
+<h1>image-minimizer<a class="headerlink" href="#image-minimizer" title="Permalink to this heading">¶</a></h1>
 <dl class="field-list simple">
-<dt class="field-odd">Authors</dt>
+<dt class="field-odd">Authors<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
 </dd>
 </dl>
@@ -95,12 +96,12 @@ system that Anaconda has just installed.</p>
 <p>It processes a list of commands that tell it which files or rpms to remove, and
 which to keep.</p>
 <section id="image-minimizer-cmdline-arguments">
-<h2>image-minimizer cmdline arguments<a class="headerlink" href="#image-minimizer-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>image-minimizer cmdline arguments<a class="headerlink" href="#image-minimizer-cmdline-arguments" title="Permalink to this heading">¶</a></h2>
 <blockquote>
 <div><p><cite>usage: image-minimizer [-h] [-i STRING] [--dryrun] [-v] STRING</cite></p>
 </div></blockquote>
 <section id="optional-arguments">
-<h3>Optional arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Optional arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h3>
 <blockquote>
 <div><dl class="option-list">
 <dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
@@ -121,10 +122,10 @@ INSTALL_ROOT or /mnt/sysimage/</p>
 </div></blockquote>
 </section>
 <section id="positional-arguments">
-<h3>Positional arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Positional arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this heading">¶</a></h3>
 <blockquote>
 <div><dl class="field-list simple">
-<dt class="field-odd">STRING</dt>
+<dt class="field-odd">STRING<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Filename to process</p>
 </dd>
 </dl>
@@ -132,7 +133,7 @@ INSTALL_ROOT or /mnt/sysimage/</p>
 </section>
 </section>
 <section id="notes">
-<h2>NOTES<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>NOTES<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <p>You cannot pass any arguments to <cite>image-minimizer</cite> when using it from the
 kickstart <cite>%post</cite>.</p>
 <p>When using this from a kickstart the image-minimizer package needs to be available.
@@ -143,7 +144,7 @@ system so that <cite>lorax</cite> isn't needed in the <cite>%package</cite> list
 to be removed.</p>
 </section>
 <section id="commands">
-<h2>commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<h2>commands<a class="headerlink" href="#commands" title="Permalink to this heading">¶</a></h2>
 <p>Commands are listed one per line, followed by a space, and then by the
 package, file, or glob.  The globs used are Unix style pathname patterns using
 <cite>*</cite>, <cite>?</cite>, and <cite>[]</cite> character ranges. globbing is implemented using the python
@@ -162,7 +163,7 @@ that include globs.</p></li>
 </ul>
 </section>
 <section id="example">
-<h2>example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<h2>example<a class="headerlink" href="#example" title="Permalink to this heading">¶</a></h2>
 <p>Example Anaconda <cite>%post</cite> usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">post</span> <span class="o">--</span><span class="n">interpreter</span><span class="o">=</span><span class="n">image</span><span class="o">-</span><span class="n">minimizer</span> <span class="o">--</span><span class="n">nochroot</span>
 

@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "LORAX" "1" "May 11, 2022" "37.1" "Lorax"
+.TH "LORAX" "1" "Sep 30, 2022" "38.0" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .INDENT 0.0
@@ -36,7 +36,7 @@ lorax \- Lorax Documentation
 Brian C. Lane <\fI\%bcl@redhat.com\fP>
 .UNINDENT
 .sp
-"I am the Lorax.  I speak for the trees [and images]."
+\(dqI am the Lorax.  I speak for the trees [and images].\(dq
 .sp
 The \fI\%lorax\fP tool is used to create the
 \fI\%Anaconda\fP installer boot.iso as
@@ -114,12 +114,12 @@ Default: []
 .B \-t, \-\-variant
 variant name
 .sp
-Default: ""
+Default: \(dq\(dq
 .TP
 .B \-b, \-\-bugurl
 bug reporting URL for the product
 .sp
-Default: "your distribution provided bug reporting tool"
+Default: \(dqyour distribution provided bug reporting tool\(dq
 .TP
 .B \-\-isfinal
 Default: False
@@ -127,7 +127,7 @@ Default: False
 .B \-c, \-\-config
 config file
 .sp
-Default: "/etc/lorax/lorax.conf"
+Default: \(dq/etc/lorax/lorax.conf\(dq
 .TP
 .B \-\-proxy
 repo proxy url:port
@@ -169,7 +169,7 @@ Default: ./lorax.log
 .B \-\-tmp
 Top level temporary directory
 .sp
-Default: "/var/tmp/lorax"
+Default: \(dq/var/tmp/lorax\(dq
 .TP
 .B \-\-cachedir
 DNF cache directory. Default is a temporary dir.
