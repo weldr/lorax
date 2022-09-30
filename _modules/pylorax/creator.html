@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.creator &mdash; Lorax 37.1 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 38.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -24,7 +25,7 @@
             <a href="../../index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                37.1
+                38.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -287,9 +288,8 @@
     <span class="n">fake_dbo</span> <span class="o">=</span> <span class="n">FakeDNF</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="n">DataHolder</span><span class="p">(</span><span class="n">installroot</span><span class="o">=</span><span class="n">mount_dir</span><span class="p">))</span>
     <span class="c1"># Fake arch with only basearch set</span>
     <span class="n">arch</span> <span class="o">=</span> <span class="n">ArchData</span><span class="p">(</span><span class="n">kernel_arch</span><span class="p">)</span>
-    <span class="c1"># TODO: Need to get release info from someplace...</span>
-    <span class="n">product</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-                            <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">isfinal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">release</span><span class="p">,</span>
+                            <span class="n">variant</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">variant</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">bugurl</span><span class="p">,</span> <span class="n">isfinal</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">isfinal</span><span class="p">)</span>
 
     <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">fake_dbo</span><span class="p">,</span> <span class="n">skip_branding</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
@@ -409,9 +409,8 @@
     <span class="n">kernel_arch</span> <span class="o">=</span> <span class="n">get_arch</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">)</span>
 
     <span class="n">arch</span> <span class="o">=</span> <span class="n">ArchData</span><span class="p">(</span><span class="n">kernel_arch</span><span class="p">)</span>
-    <span class="c1"># TODO: Need to get release info from someplace...</span>
-    <span class="n">product</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-                            <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">isfinal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">release</span><span class="p">,</span>
+                            <span class="n">variant</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">variant</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">bugurl</span><span class="p">,</span> <span class="n">isfinal</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">isfinal</span><span class="p">)</span>
 
     <span class="c1"># Link /images to work_dir/images to make the templates happy</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">)):</span>
