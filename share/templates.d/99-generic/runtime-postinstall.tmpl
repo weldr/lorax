@@ -91,7 +91,6 @@ replace "root:\*:" "root::" etc/shadow
 install ${configdir}/org.gtk.Settings.Debug.gschema.override usr/share/glib-2.0/schemas
 runcmd chroot ${root} glib-compile-schemas /usr/share/glib-2.0/schemas
 
-move usr/libexec/anaconda/auditd sbin
 
 ## for compatibility with Ancient Anaconda Traditions
 symlink lib/modules /modules
