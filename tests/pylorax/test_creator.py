@@ -254,6 +254,27 @@ class CreatorTest(unittest.TestCase):
         errors = check_kickstart(ks, opts)
         self.assertTrue("The kickstart must activate networking" in errors[0])
 
+    def test_no_network_file(self):
+        """Test a kickstart with file url and no network command"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=file://usr/local/installtree\n"
+                                   "part / --size=4096\n"
+                                   "shutdown\n")
+        self.assertEqual(check_kickstart(ks, opts), [])
+
+    def test_network_file(self):
+        """Test a kickstart with file url and network command"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("network --bootproto=dhcp --activate\n"
+                                   "url --url=file://usr/local/installtree\n"
+                                   "part / --size=4096\n"
+                                   "shutdown\n")
+        self.assertEqual(check_kickstart(ks, opts), [])
+
     def test_displaymode(self):
         """Test a kickstart with displaymode set"""
         opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
