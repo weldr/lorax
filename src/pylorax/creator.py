@@ -606,9 +606,13 @@ def check_kickstart(ks, opts):
         errors.append("repo can only be used with the url install method. Add url to your "
                       "kickstart file.")
 
-    if ks.handler.method.method in ("url", "nfs") and not ks.handler.network.seen:
-        errors.append("The kickstart must activate networking if "
-                      "the url or nfs install method is used.")
+    # file: url does not need networking
+    # other url and nfs sources do need networking
+    if not ks.handler.network.seen:
+        if ks.handler.method.method == "nfs" or \
+           (ks.handler.method.method == "url" and not ks.handler.method.url.startswith("file:")):
+            errors.append("The kickstart must activate networking if "
+                          "the url or nfs install method is used.")
 
     if ks.handler.displaymode.displayMode is not None:
         errors.append("The kickstart must not set a display mode (text, cmdline, "
