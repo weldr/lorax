@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        38.0
+Version:        38.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Oct 11 2022 Brian C. Lane <bcl@redhat.com> 38.1-1
+- livemedia-creator: Allow file: url without networking (bcl@redhat.com)
+- Update kdump addon package name (vslavik@redhat.com)
+- Drop anaconda auditd replacement (vslavik@redhat.com)
+
 * Fri Sep 30 2022 Brian C. Lane <bcl@redhat.com> 38.0-1
 - New lorax documentation - 38.0 (bcl@redhat.com)
 - tests: Update test_creator.py for new cmdline options (bcl@redhat.com)
