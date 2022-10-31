@@ -504,7 +504,7 @@ class DracutChroot(object):
         # cleanup bind mounts
         for _, d in self.bind:
             # In case parallel building of two or more images
-            # some mounts in /var/tmp/lorax can be buzy at the moment of unmounting
+            # some mounts in /var/tmp/lorax can be busy at the moment of unmounting
             umount(self.root + d, maxretry=10, retrysleep=5)
 
     def Run(self, args):
