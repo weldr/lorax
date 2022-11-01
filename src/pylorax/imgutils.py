@@ -498,14 +498,14 @@ class DracutChroot(object):
         return self
 
     def __exit__(self, exc_type, exc_value, tracebk):
-        umount(self.root + '/proc')
-        umount(self.root + '/dev')
+        umount(self.root + '/proc', delete=False)
+        umount(self.root + '/dev', delete=False)
 
         # cleanup bind mounts
         for _, d in self.bind:
             # In case parallel building of two or more images
             # some mounts in /var/tmp/lorax can be busy at the moment of unmounting
-            umount(self.root + d, maxretry=10, retrysleep=5)
+            umount(self.root + d, maxretry=10, retrysleep=5, delete=False)
 
     def Run(self, args):
         runcmd(["dracut"] + args, root=self.root)
