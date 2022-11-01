@@ -1,7 +1,5 @@
 from setuptools import setup
 import os
-import sys
-
 
 # config file
 data_files = [("/etc/lorax", ["etc/lorax.conf"]),
@@ -18,20 +16,8 @@ data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
                                  "src/sbin/livemedia-creator"]))
 data_files.append(("/usr/bin",  ["src/bin/image-minimizer", "src/bin/mkksiso"]))
 
-# get the version
-sys.path.insert(0, "src")
-try:
-    import pylorax.version
-except ImportError:
-    vernum = "devel"
-else:
-    vernum = pylorax.version.num
-finally:
-    sys.path = sys.path[1:]
-
-
 setup(name="lorax",
-      version=vernum,
+      version="38.1",
       description="Lorax",
       long_description="Tools for creating bootable images, including the Anaconda boot.iso",
       author="Martin Gracik, Will Woods <wwoods@redhat.com>, Brian C. Lane <bcl@redhat.com>",
