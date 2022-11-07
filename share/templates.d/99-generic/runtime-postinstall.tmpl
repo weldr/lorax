@@ -30,7 +30,8 @@ symlink /lib/systemd/system/tmp.mount etc/systemd/system/local-fs.target.wants/t
 systemctl disable systemd-readahead-collect.service \
                   systemd-readahead-replay.service \
                   lvm2-monitor.service \
-                  dnf-makecache.timer
+                  dnf-makecache.timer \
+                  sshd.socket
 ## These services can't be disabled normally (they're linked into place in
 ## /usr/lib/systemd rather than /etc/systemd), so we have to mask them.
 systemctl mask fedora-configure.service fedora-loadmodules.service \
