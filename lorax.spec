@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        38.1
+Version:        38.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Nov 09 2022 Brian C. Lane <bcl@redhat.com> 38.2-1
+- runtime-postinstall: Disable sshd.socket (bcl@redhat.com)
+- docs: Document mock and SELinux not working together (bcl@redhat.com)
+- imgutils: Don't delete dirs created for DracutChroot (bcl@redhat.com)
+- tito: Use .tito instead of old ./rel-eng directory (bcl@redhat.com)
+- setup.py: Set the version number (bcl@redhat.com)
+- Improvement of unmounting /proc, /dev and binds (soksanichenko@cloudlinux.com)
+
 * Tue Oct 11 2022 Brian C. Lane <bcl@redhat.com> 38.1-1
 - livemedia-creator: Allow file: url without networking (bcl@redhat.com)
 - Update kdump addon package name (vslavik@redhat.com)
