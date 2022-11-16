@@ -36,9 +36,7 @@ mkdir ${BOOTDIR}
 install ${configdir}/bootinfo.txt ${BOOTDIR}
 
 mkdir ${GRUBDIR}/powerpc-ieee1275
-## "()" means the current device to grub2
-runcmd grub2-mkimage --format=powerpc-ieee1275 --directory=/usr/lib/grub/powerpc-ieee1275 --prefix="()/"${GRUBDIR} \
---output=${outroot}/${GRUBDIR}/powerpc-ieee1275/core.elf iso9660 ext2 ofnet net tftp http
+install /usr/lib/grub/powerpc-ieee1275/core.elf ${GRUBDIR}/powerpc-ieee1275
 install /usr/lib/grub/powerpc-ieee1275/*.mod ${GRUBDIR}/powerpc-ieee1275
 install /usr/lib/grub/powerpc-ieee1275/*.lst ${GRUBDIR}/powerpc-ieee1275
 
