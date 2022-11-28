@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        38.2
+Version:        38.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Nov 28 2022 Brian C. Lane <bcl@redhat.com> 38.3-1
+- Use unicode.pf2 from /usr/share/grub/ (bcl@redhat.com)
+- On ppc64le Use core.elf from grub2 package (bcl@redhat.com)
+
 * Wed Nov 09 2022 Brian C. Lane <bcl@redhat.com> 38.2-1
 - runtime-postinstall: Disable sshd.socket (bcl@redhat.com)
 - docs: Document mock and SELinux not working together (bcl@redhat.com)
