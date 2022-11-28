@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.21
+Version:        34.9.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Nov 28 2022 Brian C. Lane <bcl@redhat.com> 34.9.22-1
+- On ppc64le Use core.elf from grub2 package (bcl)
+  Resolves: rhbz#2143994
+
 * Fri Nov 18 2022 Brian C. Lane <bcl@redhat.com> 34.9.21-1
 - livemedia-creator: Allow file: url without networking (bcl)
 - Resolves: rhbz#2132511
