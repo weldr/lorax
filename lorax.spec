@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.8
+Version:        37.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -172,6 +172,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Nov 28 2022 Brian C. Lane <bcl@redhat.com> 37.9-1
+- Use unicode.pf2 from /usr/share/grub/ (bcl@redhat.com)
+- On ppc64le Use core.elf from grub2 package (bcl@redhat.com)
+
 * Mon Jul 25 2022 Brian C. Lane <bcl@redhat.com> 37.8-1
 - mkksiso: Optionally support 3 arguments or --ks (bcl@redhat.com)
 - mkksiso: Add -U to xorriso on ppc64le (bcl@redhat.com)
