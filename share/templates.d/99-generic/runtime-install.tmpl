@@ -42,6 +42,7 @@ installpkg glibc-all-langpacks
 %if basearch == "aarch64":
     installpkg efibootmgr
     installpkg grub2-efi-aa64-cdboot>=${GRUB2VER}
+    installpkg grub2-tools>=${GRUB2VER}
     installpkg shim-aa64
     installpkg uboot-tools
 %endif

@@ -17,7 +17,7 @@ install boot/efi/EFI/*/shim${efiarch32|lower}.efi ${EFIBOOTDIR}/BOOT${efiarch32}
 install boot/efi/EFI/*/mm${efiarch32|lower}.efi ${EFIBOOTDIR}/
 install boot/efi/EFI/*/gcd${efiarch32|lower}.efi ${EFIBOOTDIR}/grub${efiarch32|lower}.efi
 %endif
-install boot/grub2/fonts/unicode.pf2 ${EFIBOOTDIR}/fonts/
+install usr/share/grub/unicode.pf2 ${EFIBOOTDIR}/fonts/
 
 ## actually make the EFI images
 ${make_efiboot("images/efiboot.img")}
