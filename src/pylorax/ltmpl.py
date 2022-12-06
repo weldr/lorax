@@ -34,12 +34,21 @@ from pylorax.base import DataHolder
 from pylorax.executils import runcmd, runcmd_output
 from pylorax.imgutils import mkcpio, ProcMount
 
+import collections.abc
 from mako.lookup import TemplateLookup
 from mako.exceptions import text_error_template
 import sys, traceback
 import struct
-import dnf
-import collections.abc
+
+import libdnf5 as dnf5
+from libdnf5.common import QueryCmp_EQ as EQ
+from libdnf5.common import QueryCmp_GT as GT
+from libdnf5.common import QueryCmp_LT as LT
+from libdnf5.common import QueryCmp_GTE as GTE
+from libdnf5.common import QueryCmp_LTE as LTE
+from libdnf5.common import QueryCmp_GLOB as GLOB
+action_is_inbound = dnf5.base.transaction.transaction_item_action_is_inbound
+
 
 class LoraxTemplate(object):
     def __init__(self, directories=None):
@@ -198,9 +207,15 @@ class InstallpkgMixin:
           "tmux>=3.1.4-5"
           "grub2<2.06"
         """
+        query = dnf5.rpm.PackageQuery(self.dbo)
+
         # Always return the highest of the filtered results
         if not any(g for g in ['=', '<', '>', '!'] if g in pkg_spec):
-            query = dnf.subject.Subject(pkg_spec).get_best_query(self.dbo.sack)
+            # glob?
+            if any(g for g in ['*', '?', '[', ']'] if g in pkg_spec):
+                query.filter_name([pkg_spec], GLOB)
+            else:
+                query.filter_name([pkg_spec], EQ)
         else:
             pcv = re.split(r'([!<>=]+)', pkg_spec)
             if not pcv[0]:
@@ -210,26 +225,34 @@ class InstallpkgMixin:
             if len(pcv) != 3:
                 raise RuntimeError("Too many comparisons")
 
-            query = dnf.subject.Subject(pcv[0]).get_best_query(self.dbo.sack)
+            query.filter_name([pcv[0]], EQ)
 
             # Parse the comparison operators
-            if pcv[1] == "=" or pcv[1] == "==":
-                query.filterm(evr__eq = pcv[2])
-            elif pcv[1] == "!=" or pcv[1] == "<>":
-                query.filterm(evr__neq = pcv[2])
-            elif pcv[1] == ">":
-                query.filterm(evr__gt = pcv[2])
-            elif pcv[1] == ">=" or pcv[1] == "=>":
-                query.filterm(evr__gte = pcv[2])
-            elif pcv[1] == "<":
-                query.filterm(evr__lt = pcv[2])
-            elif pcv[1] == "<=" or pcv[1] == "=<":
-                query.filterm(evr__lte = pcv[2])
+            cmp_map = {
+                    "=":    EQ,
+                    "==":   EQ,
+                    ">":    GT,
+                    ">=":   GTE,
+                    "=>":   GTE,
+                    "<":    LT,
+                    "<=":   LTE,
+                    "=<":   LTE,
+            }
+            if pcv[1] in cmp_map:
+                if ":" not in pcv[2]:
+                    # Filter wants an epoch, assume 0 for unversioned compares
+                    query.filter_evr(["0:"+pcv[2]], cmp_map[pcv[1]])
+                else:
+                    query.filter_evr([pcv[2]], cmp_map[pcv[1]])
+            elif pcv[1] in ["<>", "!="]:
+                raise RuntimeError(f"libdnf5 does not support using '{pcv[1]}' to compare versions")
+            else:
+                raise RuntimeError(f"Unknown comparison '{pcv[1]}' operator")
 
         # MUST be added last. Otherwise it will only return the latest, not the latest of the
         # filtered results.
-        query.filterm(latest=True)
-        return [pkg for pkg in query.apply()]
+        query.filter_latest_evr()
+        return list(query)
 
     def installpkg(self, *pkgs):
         '''
@@ -277,12 +300,13 @@ class InstallpkgMixin:
             pkgs = pkgs[:idx] + pkgs[idx+2:]
 
         errors = False
-        for p in pkgs:
+        for pkg in pkgs:
             # Did a version compare operatore end up in the list?
-            if p[0] in ['=', '<', '>', '!']:
+            if pkg[0] in ['=', '<', '>', '!']:
                 raise RuntimeError("Version compare operators cannot be surrounded by spaces")
 
             try:
+## XXX TODO Update the description here
                 # Start by using Subject to generate a package query, which will
                 # give us a query object similar to what dbo.install would select,
                 # minus the handling for multilib. This query may contain
@@ -295,31 +319,37 @@ class InstallpkgMixin:
                 # the filtering is done the hard way.
 
                 # Get the latest package, or package matching the selected version
-                pkgnames = self._pkgver(p)
+                ## TODO -- rename this, it is no longer names, it is package objects
+                pkgnames = self._pkgver(pkg)
                 if not pkgnames:
-                    raise dnf.exceptions.PackageNotFoundError("no package matched", p)
+## XXX How does it translate exceptions?
+#                    raise dnf.exceptions.PackageNotFoundError("no package matched", pkg)
+                    raise RuntimeError(f"no package matched {pkg}")
+
+                # XXX DEBUG - I am seeing 2 entries for the same package name when the sack
+                # isn't setup correctly, might just leave this here...
+                if len(pkgnames) == 2 and pkgnames[0].get_nevra() == pkgnames[1].get_nevra():
+                    raise RuntimeError("Duplicate packages found in _pkgver request")
 
                 # Apply excludes to the name only
                 for exclude in excludes:
-                    pkgnames = [pkg for pkg in pkgnames if not fnmatch.fnmatch(pkg.name, exclude)]
-
-                # Convert to a sorted NVR list for installation
-                pkgnvrs = sorted(["{}-{}-{}".format(pkg.name, pkg.version, pkg.release) for pkg in pkgnames])
+                    pkgnames = [p for p in pkgnames if not fnmatch.fnmatch(p.get_name(), exclude)]
 
                 # If the request is a glob, expand it in the log
-                if any(g for g in ['*','?','.'] if g in p):
-                    logger.info("installpkg: %s expands to %s", p, ",".join(pkgnvrs))
+                if any(g for g in ['*','?','.'] if g in pkg):
+                    logger.info("installpkg: %s expands to %s", pkg, ",".join(p.get_nevra() for p in pkgnames))
 
-                for pkgnvr in pkgnvrs:
+                for p in pkgnames:
                     try:
-                        self.dbo.install(pkgnvr)
+                        self.goal.add_rpm_install(p)
                     except Exception as e: # pylint: disable=broad-except
                         if required:
                             raise
                         # Not required, log it and continue processing pkgs
-                        logger.error("installpkg %s failed: %s", pkgnvr, str(e))
+                        logger.error("installpkg %s failed: %s", p.get_nevra(), str(e))
+
             except Exception as e: # pylint: disable=broad-except
-                logger.error("installpkg %s failed: %s", p, str(e))
+                logger.error("installpkg %s failed: %s", pkg, str(e))
                 errors = True
 
         if errors and required:
@@ -363,6 +393,11 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
         self.inroot = inroot
         self.outroot = outroot
         self.dbo = dbo
+        self.transaction = None
+        if dbo:
+            self.goal = dnf5.base.Goal(self.dbo)
+        else:
+            self.goal = None
         builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
                               glob=lambda g: list(rglob(g, root=inroot)))
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
@@ -375,15 +410,26 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
     def _in(self, path):
         return joinpaths(self.inroot, path)
 
-    def _filelist(self, *pkgs):
-        """ Return the list of files in the packages """
+    def _filelist(self, *pkg_specs):
+        """ Return the list of files in the packages matching the globs """
+        # libdnf5's filter_installed query will not work unless the base it reset and reloaded.
+        # Instead we use the transaction that was run, and examine the inbound transaction
+        # packages from get_transaction_packages()
+        if self.transaction is None:
+            raise RuntimeError("Transaction needs to be run before calling _filelists")
+
         pkglist = []
-        for pkg_glob in pkgs:
-            pkglist += list(self.dbo.sack.query().installed().filter(name__glob=pkg_glob))
+        for tp in self.transaction.get_transaction_packages():
+            if not action_is_inbound(tp.get_action()):
+                continue
+
+            pkg = tp.get_package()
+            if any(fnmatch.fnmatch(pkg.get_name(), spec) for spec in pkg_specs):
+                pkglist.append(pkg)
 
         # dnf/hawkey doesn't make any distinction between file, dir or ghost like yum did
         # so only return the files.
-        return set(f for pkg in pkglist for f in pkg.files if not os.path.isdir(self._out(f)))
+        return set(f for pkg in pkglist for f in pkg.get_files() if not os.path.isdir(self._out(f)))
 
     def _getsize(self, *files):
         return sum(os.path.getsize(self._out(f)) for f in files if os.path.isfile(self._out(f)))
@@ -393,17 +439,26 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
         Write the list of installed packages to /root/ on the boot.iso
 
         If lorax is called with a debug repo find the corresponding debuginfo package
-        names and write them to /root/debubg-pkgs.log on the boot.iso
+        names and write them to /root/debug-pkgs.log on the boot.iso
         The non-debuginfo packages are written to /root/lorax-packages.log
         """
         os.makedirs(self._out("root/"), exist_ok=True)
-        available = self.dbo.sack.query().available()
         pkgs = []
         debug_pkgs = []
-        for p in list(self.dbo.transaction.install_set):
-            pkgs.append(f"{p.name}-{p.version}-{p.release}.{p.arch}")
-            if available.filter(name=p.name+"-debuginfo"):
-                debug_pkgs.append(f"{p.name}-debuginfo-{p.epoch}:{p.version}-{p.release}")
+        for tp in self.transaction.get_transaction_packages():
+            if not action_is_inbound(tp.get_action()):
+                continue
+
+            # Get the underlying package
+            p = tp.get_package()
+            pkgs.append(p.get_nevra())
+
+            # Is a corresponding debuginfo package available?
+            q = dnf5.rpm.PackageQuery(self.dbo)
+            q.filter_available()
+            q.filter_name([f"{p.get_name()}-debuginfo"], EQ)
+            if len(list(q)) > 0:
+                debug_pkgs.append(f"{p.get_name()}-debuginfo-{p.get_evr()}")
 
         with open(self._out("root/lorax-packages.log"), "w") as f:
             f.write("\n".join(sorted(pkgs)))
@@ -698,38 +753,38 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
         '''
         try:
             logger.info("Checking dependencies")
-            self.dbo.resolve()
-        except dnf.exceptions.DepsolveError as e:
+            self.transaction = self.goal.resolve()
+        except Exception as e:
             logger.error("Dependency check failed: %s", e)
             raise
-        logger.info("%d packages selected", len(self.dbo.transaction))
-        if len(self.dbo.transaction) == 0:
+        num_pkgs = len(self.transaction.get_transaction_packages())
+        logger.info("%d packages selected", num_pkgs)
+        if num_pkgs == 0:
             raise RuntimeError("No packages in transaction")
 
         # Write out the packages installed, including debuginfo packages
         self._write_package_log()
 
-        pkgs_to_download = self.dbo.transaction.install_set
         logger.info("Downloading packages")
-        progress = LoraxDownloadCallback()
+
+        downloader_callbacks = LoraxDownloadCallback(num_pkgs)
+        self.dbo.set_download_callbacks(dnf5.repo.DownloadCallbacksUniquePtr(downloader_callbacks))
         try:
-            self.dbo.download_packages(pkgs_to_download, progress)
-        except dnf.exceptions.DownloadError as e:
+            self.transaction.download()
+        except Exception as e:
             logger.error("Failed to download the following packages: %s", e)
             raise
 
         logger.info("Preparing transaction from installation source")
+
+        display = LoraxRpmCallback()
+        self.transaction.set_callbacks(dnf5.rpm.TransactionCallbacksUniquePtr(display))
         with ProcMount(self.outroot):
             try:
-                display = LoraxRpmCallback()
-                self.dbo.do_transaction(display=display)
-            except BaseException as e:
+                self.transaction.run()
+            except Exception as e:
                 logger.error("The transaction process has ended abruptly: %s", e)
                 raise
-
-        # Reset the package sack to pick up the installed packages
-        self.dbo.reset(repos=False)
-        self.dbo.fill_sack(load_system_repo=True, load_available_repos=False)
 
         # At this point dnf should know about the installed files. Double check that it really does.
         if len(self._filelist("anaconda-core")) == 0:
@@ -884,6 +939,8 @@ class LiveTemplateRunner(TemplateRunner, InstallpkgMixin):
     """
     def __init__(self, dbo, fatalerrors=True, templatedir=None, defaults=None):
         self.dbo = dbo
+        self.transaction = None
+        self.goal = dnf5.base.Goal(self.dbo)
         self.pkgs = []
         self.pkgnames = []
 

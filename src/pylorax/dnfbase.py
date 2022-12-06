@@ -16,9 +16,10 @@
 import logging
 log = logging.getLogger("pylorax")
 
-import dnf
 import os
 import shutil
+
+import libdnf5 as dnf5
 
 from pylorax import DEFAULT_PLATFORM_ID, DEFAULT_RELEASEVER
 from pylorax.sysutils import flatconfig
@@ -74,36 +75,37 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         if not os.path.isdir(logdir):
             os.mkdir(logdir)
 
-    dnfbase = dnf.Base()
+    dnfbase = dnf5.base.Base()
     # Enable DNF pluings
     # NOTE: These come from the HOST system's environment
-    if dnfplugins:
-        if dnfplugins[0] == "*":
-            # Enable them all
-            dnfbase.init_plugins()
-        else:
-            # Only enable the listed plugins
-            dnfbase.init_plugins(disabled_glob=["*"], enable_plugins=dnfplugins)
-    conf = dnfbase.conf
-    conf.logdir = logdir
-    conf.cachedir = cachedir
+    # XXX - dnfbase has add_plugin and load_plugins but neither seem to provide the ability to
+    #       enable/disable based on glob. dnfbase.setup() already calls load_plugins()
+#    if dnfplugins:
+#        if dnfplugins[0] == "*":
+#            # Enable them all
+#            dnfbase.init_plugins()
+#        else:
+#            # Only enable the listed plugins
+#            dnfbase.init_plugins(disabled_glob=["*"], enable_plugins=dnfplugins)
 
-    conf.install_weak_deps = False
-    conf.releasever = releasever
-    conf.installroot = installroot
-    conf.prepend_installroot('persistdir')
-    # this is a weird 'AppendOption' thing that, when you set it,
-    # actually appends. Doing this adds 'nodocs' to the existing list
-    # of values, over in libdnf, it does not replace the existing values.
-    conf.tsflags = ['nodocs']
+    conf = dnfbase.get_config()
+    conf.logdir().set(logdir)
+    conf.cachedir().set(cachedir)
+    conf.install_weak_deps().set(False)
+## MISSING    conf.releasever = releasever
+    conf.installroot().set(installroot)
+##    conf.prepend_installroot('persistdir')
+    # Load the file lists too
+    conf.optional_metadata_types().set(['filelists'])
+    conf.tsflags().add(["nodocs"])
     # Log details about the solver
-    conf.debug_solver = True
+    conf.debug_solver().set(True)
 
     if proxy:
-        conf.proxy = proxy
+        conf.proxy().set(proxy)
 
     if sslverify == False:
-        conf.sslverify = False
+        conf.sslverify().set(False)
 
     # DNF 3.2 needs to have module_platform_id set, otherwise depsolve won't work correctly
     if not os.path.exists("/etc/os-release"):
@@ -113,7 +115,7 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         os_release = flatconfig("/etc/os-release")
         platform_id = os_release.get("PLATFORM_ID", DEFAULT_PLATFORM_ID)
     log.info("Using %s for module_platform_id", platform_id)
-    conf.module_platform_id = platform_id
+    conf.module_platform_id().set(platform_id)
 
     # Add .repo files
     if repos:
@@ -122,8 +124,10 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             os.mkdir(reposdir)
         for r in repos:
             shutil.copy2(r, reposdir)
-        conf.reposdir = [reposdir]
-        dnfbase.read_all_repos()
+        conf.reposdir().set(reposdir)
+
+    dnfbase.setup()
+    sack = dnfbase.get_repo_sack()
 
     # add the sources
     for i, r in enumerate(sources):
@@ -131,19 +135,14 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-repo-%d" % i
-        repo = dnf.repo.Repo(repo_name, conf)
-        repo.baseurl = [r]
+        repo = sack.create_repo(repo_name)
+        rc = repo.get_config()
+        rc.baseurl().set(r)
         if proxy:
-            repo.proxy = proxy
-        repo.enable()
-        dnfbase.repos.add(repo)
+            rc.proxy().set(proxy)
+        rc.skip_if_unavailable().set(False)
+##        repo.enable()
         log.info("Added '%s': %s", repo_name, r)
-        log.info("Fetching metadata...")
-        try:
-            repo.load()
-        except dnf.exceptions.RepoError as e:
-            log.error("Error fetching metadata for %s: %s", repo_name, e)
-            return None
 
     # add the mirrorlists
     for i, r in enumerate(mirrorlists):
@@ -151,39 +150,39 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-mirrorlist-%d" % i
-        repo = dnf.repo.Repo(repo_name, conf)
-        repo.mirrorlist = r
+        repo = sack.create_repo(repo_name)
+        rc = repo.get_config()
+        rc.mirrorlist().set(r)
         if proxy:
-            repo.proxy = proxy
-        repo.enable()
-        dnfbase.repos.add(repo)
+            rc.proxy().set(proxy)
+        rc.skip_if_unavailable().set(False)
+##        repo.enable()
         log.info("Added '%s': %s", repo_name, r)
-        log.info("Fetching metadata...")
-        try:
-            repo.load()
-        except dnf.exceptions.RepoError as e:
-            log.error("Error fetching metadata for %s: %s", repo_name, e)
-            return None
 
-    # Enable repos listed on the cmdline
-    for r in enablerepos:
-        repolist = dnfbase.repos.get_matching(r)
-        if not repolist:
-            log.warning("%s is an unknown repo, not enabling it", r)
-        else:
-            repolist.enable()
-            log.info("Enabled repo %s", r)
+## XXX How do you iterate repos ?
+#    # Enable repos listed on the cmdline
+#    for r in enablerepos:
+#        repolist = dnfbase.repos.get_matching(r)
+#        if not repolist:
+#            log.warning("%s is an unknown repo, not enabling it", r)
+#        else:
+#            repolist.enable()
+#            log.info("Enabled repo %s", r)
+#
+#    # Disable repos listed on the cmdline
+#    for r in disablerepos:
+#        repolist = dnfbase.repos.get_matching(r)
+#        if not repolist:
+#            log.warning("%s is an unknown repo, not disabling it", r)
+#        else:
+#            repolist.disable()
+#            log.info("Disabled repo %s", r)
 
-    # Disable repos listed on the cmdline
-    for r in disablerepos:
-        repolist = dnfbase.repos.get_matching(r)
-        if not repolist:
-            log.warning("%s is an unknown repo, not disabling it", r)
-        else:
-            repolist.disable()
-            log.info("Disabled repo %s", r)
+    if repos:
+        sack.create_repos_from_reposdir()
 
-    dnfbase.fill_sack(load_system_repo=False)
-    dnfbase.read_comps()
+    log.info("Fetching metadata...")
+    sack.update_and_load_enabled_repos(False)
+    ## XXX Need to do anything to load comps?
 
     return dnfbase

@@ -21,6 +21,8 @@ import shutil
 import tempfile
 import unittest
 
+import libdnf5 as dnf5
+
 from pylorax.dnfbase import get_dnf_base_object
 from pylorax.ltmpl import LoraxTemplate, LoraxTemplateRunner
 from pylorax.ltmpl import brace_expand, split_and_expand, rglob, rexists
@@ -121,7 +123,8 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         makeFakeRPM(self.repo1_dir, "fake-bart", 2, "2.3.0", "1")
         makeFakeRPM(self.repo1_dir, "fake-homer", 0, "0.4.0", "2")
         makeFakeRPM(self.repo1_dir, "lots-of-files", 0, "0.1.1", "1",
-                    ["/lorax-files/file-one.txt",
+                    ["/etc/just-a-file.txt",
+                     "/lorax-files/file-one.txt",
                      "/lorax-files/file-two.txt",
                      "/lorax-files/file-three.txt"])
         makeFakeRPM(self.repo1_dir, "known-path", 0, "0.1.8", "1", ["/known-path/file-one.txt"])
@@ -165,7 +168,6 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
             self.runner._pkgver("=")
         self.assertEqual(str(e.exception), "Missing package name")
 
-
         with self.assertRaises(RuntimeError) as e:
             self.runner._pkgver("foopkg=")
         self.assertEqual(str(e.exception), "Missing version")
@@ -174,19 +176,29 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
             self.runner._pkgver("foopkg>1.0.0-1<1.0.6-1")
         self.assertEqual(str(e.exception), "Too many comparisons")
 
+        # These should raise RuntimeError
+        matrix = [
+                ("fake-milhouse!=1.3.0-1", "libdnf5 does not support using '!=' to compare versions"),
+                ("fake-milhouse<>1.3.0-1", "libdnf5 does not support using '<>' to compare versions"),
+                ("fake-milhouse<<1.1.1-1", "Unknown comparison '<<' operator")]
+
+        for t in matrix:
+            with self.assertRaises(RuntimeError) as e:
+                self.runner._pkgver(t[0])
+            self.assertEqual(str(e.exception), t[1])
 
     def test_00_pkgver(self):
         """Test all the version comparison operators with pkgver"""
         matrix = [
             ("fake-milhouse>=2.1.0-1", ""),                         # Not available
             ("fake-bart>=2:3.0.0-2", ""),                           # Not available
+            ("fake-bart", "fake-bart-2:2.3.0-1"),
             ("fake-bart>2:1.13.0-6", "fake-bart-2:2.3.0-1"),
             ("fake-bart<2:1.13.0-6", "fake-bart-1.0.0-6"),
+            ("exact==1.3.17-1", "exact-1.3.17-1"),
             ("fake-milhouse==1.3.0-1", "fake-milhouse-1.3.0-1"),
             ("fake-milhouse=1.3.0-1", "fake-milhouse-1.3.0-1"),
             ("fake-milhouse=1.0.0-4", "fake-milhouse-1.0.0-4"),
-            ("fake-milhouse!=1.3.0-1", "fake-milhouse-1.0.7-1"),
-            ("fake-milhouse<>1.3.0-1", "fake-milhouse-1.0.7-1"),
             ("fake-milhouse>1.0.0-4", "fake-milhouse-1.3.0-1"),
             ("fake-milhouse>=1.3.0", "fake-milhouse-1.3.0-1"),
             ("fake-milhouse>=1.0.7-1", "fake-milhouse-1.3.0-1"),
@@ -196,20 +208,20 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
             ("fake-milhouse<1.3.0", "fake-milhouse-1.0.7-1"),
             ("fake-milhouse<1.3.0-1", "fake-milhouse-1.0.7-1"),
             ("fake-milhouse<1.0.7-1", "fake-milhouse-1.0.0-4"),
+            ("fake-mil*", "fake-milhouse-1.3.0-1"),
         ]
 
-        def nevra(pkg):
-            if pkg.epoch:
-                return "{}-{}:{}-{}".format(pkg.name, pkg.epoch, pkg.version, pkg.release)
-            else:
-                return "{}-{}-{}".format(pkg.name, pkg.version, pkg.release)
+        def nevr(pkg):
+            return pkg.get_name() + "-" + pkg.get_evr()
 
-        print([nevra(p) for p in list(self.dnfbase.sack.query().available())])
+        q = dnf5.rpm.PackageQuery(self.dnfbase)
+        q.filter_available()
+        print([nevr(p) for p in q])
         for t in matrix:
             r = self.runner._pkgver(t[0])
             if t[1]:
                 self.assertTrue(len(r) > 0, t[0])
-                self.assertEqual(nevra(self.runner._pkgver(t[0])[0]), t[1], t[0])
+                self.assertEqual(nevr(self.runner._pkgver(t[0])[0]), t[1], t[0])
             else:
                 self.assertEqual(r, [], t[0])
 
@@ -246,6 +258,7 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
 
     def test_install_file(self):
         """Test append, and install template commands"""
+        self.assertTrue(os.path.exists(self.root_dir))
         self.runner.run("install-cmd.tmpl")
         self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/etc/lorax-test")))
         with open(joinpaths(self.root_dir, "/etc/lorax-test")) as f:

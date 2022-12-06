@@ -26,6 +26,8 @@ from shutil import copytree, copy2
 from subprocess import CalledProcessError
 from pathlib import Path
 import itertools
+import libdnf5 as dnf5
+from libdnf5.common import QueryCmp_EQ as EQ
 
 from pylorax.sysutils import joinpaths, remove
 from pylorax.base import DataHolder
@@ -64,21 +66,29 @@ def generate_module_info(moddir, outfile=None):
         out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
 
 class RuntimeBuilder(object):
-    '''Builds the anaconda runtime image.'''
-    def __init__(self, product, arch, dbo, templatedir=None,
+    '''Builds the anaconda runtime image.
+
+    NOTE: dbo is optional, but if it is not included root must be set.
+    '''
+    def __init__(self, product, arch, dbo=None, templatedir=None,
                  installpkgs=None, excludepkgs=None,
                  add_templates=None,
                  add_template_vars=None,
-                 skip_branding=False):
-        root = dbo.conf.installroot
+                 skip_branding=False,
+                 root=None):
         self.dbo = dbo
+        if dbo:
+            root = dbo.get_config().installroot().get_value()
+
+        if not root:
+            raise RuntimeError("No root directory passed to RuntimeBuilder")
+
         self._runner = LoraxTemplateRunner(inroot=root, outroot=root,
                                            dbo=dbo, templatedir=templatedir)
         self.add_templates = add_templates or []
         self.add_template_vars = add_template_vars or {}
         self._installpkgs = installpkgs or []
         self._excludepkgs = excludepkgs or []
-        self.dbo.reset()
 
         # use a copy of product so we can modify it locally
         product = product.copy()
@@ -103,21 +113,21 @@ class RuntimeBuilder(object):
             return DataHolder(release=None, logos=None)
 
         release = None
-        q = self.dbo.sack.query()
-        a = q.available()
-        pkgs = sorted([p.name for p in a.filter(provides='system-release')
-                                    if not p.name.startswith("generic")])
+        query = dnf5.rpm.PackageQuery(self.dbo)
+        query.filter_provides(["system-release"], EQ)
+        pkgs = sorted([p for p in list(query)
+                               if not p.get_name().startswith("generic")])
         if not pkgs:
             logger.error("No system-release packages found, could not get the release")
             return DataHolder(release=None, logos=None)
 
-        logger.debug("system-release packages: %s", pkgs)
+        logger.debug("system-release packages: %s", ",".join(p.get_name() for p in pkgs))
         if product.variant:
-            variant = [p for p in pkgs if p.endswith("-"+product.variant.lower())]
+            variant = [p.get_name() for p in pkgs if p.get_name().endswith("-"+product.variant.lower())]
             if variant:
                 release = variant[0]
         if not release:
-            release = pkgs[0]
+            release = pkgs[0].get_name()
 
         # release
         logger.info('got release: %s', release)
@@ -147,10 +157,11 @@ class RuntimeBuilder(object):
         '''debugging data: write out lists of package contents'''
         if not os.path.isdir(pkglistdir):
             os.makedirs(pkglistdir)
-        q = self.dbo.sack.query()
-        for pkgobj in q.installed():
-            with open(joinpaths(pkglistdir, pkgobj.name), "w") as fobj:
-                for fname in pkgobj.files:
+        q = dnf5.rpm.PackageQuery(self.dbo)
+        q.filter_installed()
+        for pkgobj in list(q):
+            with open(joinpaths(pkglistdir, pkgobj.get_name()), "w") as fobj:
+                for fname in pkgobj.get_files():
                     fobj.write("{0}\n".format(fname))
 
     def postinstall(self):
@@ -220,10 +231,11 @@ class RuntimeBuilder(object):
         '''debugging data: write a big list of pkg sizes'''
         fobj = open(pkgsizefile, "w")
         getsize = lambda f: os.lstat(f).st_size if os.path.exists(f) else 0
-        q = self.dbo.sack.query()
-        for p in sorted(q.installed()):
-            pkgsize = sum(getsize(joinpaths(self.vars.root,f)) for f in p.files)
-            fobj.write("{0.name}.{0.arch}: {1}\n".format(p, pkgsize))
+        q = dnf5.rpm.PackageQuery(self.dbo)
+        q.filter_installed()
+        for p in sorted(list(q), key=lambda x: x.get_name()):
+            pkgsize = sum(getsize(joinpaths(self.vars.root,f)) for f in p.get_files())
+            fobj.write(f"{p.get_name()}.{p.get_arch()}: {pkgsize}\n")
 
     def generate_module_data(self):
         root = self.vars.root
@@ -264,11 +276,7 @@ class RuntimeBuilder(object):
         return rc
 
     def finished(self):
-        """ Done using RuntimeBuilder
-
-        Close the dnf base object
-        """
-        self.dbo.close()
+        pass
 
 class TreeBuilder(object):
     '''Builds the arch-specific boot images.

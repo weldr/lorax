@@ -67,6 +67,9 @@ class FakeDNF(object):
     def reset(self):
         pass
 
+    def get_config(self):
+        return self.conf
+
 def is_image_mounted(disk_img):
     """
     Check to see if the disk_img is mounted
@@ -210,14 +213,12 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
     """
     kernel_arch = get_arch(mount_dir)
 
-    # Fake dnf  object
-    fake_dbo = FakeDNF(conf=DataHolder(installroot=mount_dir))
     # Fake arch with only basearch set
     arch = ArchData(kernel_arch)
     product = DataHolder(name=opts.project, version=opts.releasever, release=opts.release,
                             variant=opts.variant, bugurl=opts.bugurl, isfinal=opts.isfinal)
 
-    rb = RuntimeBuilder(product, arch, fake_dbo, skip_branding=True)
+    rb = RuntimeBuilder(product, arch, skip_branding=True, root=mount_dir)
     compression, compressargs = squashfs_args(opts)
 
     if opts.squashfs_only:

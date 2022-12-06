@@ -32,9 +32,10 @@ import os
 import tempfile
 import shutil
 
-import dnf
-import dnf.logging
-import librepo
+#import libdnf5 as dnf5
+#import dnf.logging
+#import librepo
+
 import pylorax
 from pylorax import DRACUT_DEFAULT, log_selinux_state
 from pylorax.cmdline import lorax_parser
@@ -78,19 +79,6 @@ def remove_tempdirs():
 
 def setup_logging(opts):
     pylorax.setup_logging(opts.logfile, log)
-
-    # dnf logging
-    dnf_log.setLevel(dnf.logging.DDEBUG)
-    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/dnf.log"
-    fh = logging.FileHandler(filename=logfile, mode="w")
-    fh.setLevel(logging.NOTSET)
-    fmt = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
-    fh.setFormatter(fmt)
-    dnf_log.addHandler(fh)
-
-    # Setup librepo logging
-    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/dnf.librepo.log"
-    librepo.log_set_file(logfile)
 
 
 def main():

@@ -39,7 +39,7 @@ from glob import glob
 from pylorax.base import BaseLoraxClass, DataHolder
 import pylorax.output as output
 
-import dnf
+import libdnf5 as dnf5
 
 from pylorax.sysutils import joinpaths, remove, linktree
 
@@ -64,13 +64,51 @@ DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "
 DEFAULT_PLATFORM_ID = "platform:f39"
 DEFAULT_RELEASEVER = "39"
 
+# XXX - Temporarily lifted from dnf.rpm module
+def _invert(dct):
+    return {v: k for k in dct for v in dct[k]}
+
+_BASEARCH_MAP = _invert({
+    'aarch64': ('aarch64',),
+    'alpha': ('alpha', 'alphaev4', 'alphaev45', 'alphaev5', 'alphaev56',
+              'alphaev6', 'alphaev67', 'alphaev68', 'alphaev7', 'alphapca56'),
+    'arm': ('armv5tejl', 'armv5tel', 'armv5tl', 'armv6l', 'armv7l', 'armv8l'),
+    'armhfp': ('armv6hl', 'armv7hl', 'armv7hnl', 'armv8hl'),
+    'i386': ('i386', 'athlon', 'geode', 'i386', 'i486', 'i586', 'i686'),
+    'ia64': ('ia64',),
+    'mips': ('mips',),
+    'mipsel': ('mipsel',),
+    'mips64': ('mips64',),
+    'mips64el': ('mips64el',),
+    'loongarch64': ('loongarch64',),
+    'noarch': ('noarch',),
+    'ppc': ('ppc',),
+    'ppc64': ('ppc64', 'ppc64iseries', 'ppc64p7', 'ppc64pseries'),
+    'ppc64le': ('ppc64le',),
+    'riscv32' : ('riscv32',),
+    'riscv64' : ('riscv64',),
+    'riscv128' : ('riscv128',),
+    's390': ('s390',),
+    's390x': ('s390x',),
+    'sh3': ('sh3',),
+    'sh4': ('sh4', 'sh4a'),
+    'sparc': ('sparc', 'sparc64', 'sparc64v', 'sparcv8', 'sparcv9',
+              'sparcv9v'),
+    'x86_64': ('x86_64', 'amd64', 'ia32e'),
+})
+
+
 class ArchData(DataHolder):
     bcj_arch = dict(x86_64="x86", ppc64le="powerpc")
+
+    def _basearch(self, arch):
+        # :api
+        return _BASEARCH_MAP[arch]
 
     def __init__(self, buildarch):
         super(ArchData, self).__init__()
         self.buildarch = buildarch
-        self.basearch = dnf.rpm.basearch(buildarch)
+        self.basearch = self._basearch(buildarch)
         self.libdir = "lib64"
         self.bcj = self.bcj_arch.get(self.basearch)
 
@@ -228,10 +266,10 @@ class Lorax(BaseLoraxClass):
 
         # do we have a proper dnf base object?
         logger.info("checking dnf base object")
-        if not isinstance(dbo, dnf.Base):
+        if not isinstance(dbo, dnf5.base.Base):
             logger.critical("no dnf base object")
             sys.exit(1)
-        self.inroot = dbo.conf.installroot
+        self.inroot = dbo.get_config().installroot().get_value()
         logger.debug("using install root: %s", self.inroot)
 
         if not buildarch:
@@ -255,7 +293,7 @@ class Lorax(BaseLoraxClass):
             logger.fatal("the volume id cannot be longer than 32 characters")
             sys.exit(1)
 
-        # NOTE: rb.root = dbo.conf.installroot (== self.inroot)
+        # NOTE: rb.root = dbo.get_config().installroot().get_value() (== self.inroot)
         rb = RuntimeBuilder(product=self.product, arch=self.arch,
                             dbo=dbo, templatedir=self.templatedir,
                             installpkgs=installpkgs,
@@ -372,11 +410,12 @@ class Lorax(BaseLoraxClass):
 def get_buildarch(dbo):
     # get architecture of the available anaconda package
     buildarch = None
-    q = dbo.sack.query()
-    a = q.available()
-    for anaconda in a.filter(name="anaconda-core"):
-        if anaconda.arch != "src":
-            buildarch = anaconda.arch
+    q = dnf5.rpm.PackageQuery(dbo)
+    q.filter_available()
+    q.filter_name(["anaconda-core"])
+    for anaconda in list(q):
+        if anaconda.get_arch() != "src":
+            buildarch = anaconda.get_arch()
             break
     if not buildarch:
         logger.critical("no anaconda-core package in the repository")
