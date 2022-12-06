@@ -29,3 +29,5 @@ sudo
 which
 xorriso
 xz-lzma-compat
+
+python3-libdnf5
