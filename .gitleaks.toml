@@ -1,0 +1,6 @@
+[allowlist]
+description = "Allow known fake secrets in lorax tests and documentation"
+## These are go regexp patterns. See go doc regexp/syntax
+regexes = [
+    '\$6\$CHO2\$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31L\.\.\.'
+]
