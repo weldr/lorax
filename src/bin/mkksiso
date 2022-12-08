@@ -236,6 +236,37 @@ def ImplantMD5(output_iso):
         raise RuntimeError("implantisomd5 failed")
 
 
+def RebuildEFIBoot(input_iso, tmpdir):
+    """
+    On x86 the efiboot.img needs to be rebuilt from the new /EFI/BOOT/ files
+
+    returns new efiboot.img file with a temporary name.
+    """
+    if not os.path.exists(tmpdir+"/EFI/BOOT/BOOT.conf"):
+        raise RuntimeError("Missing mkefiboot requirement: EFI/BOOT/BOOT.conf")
+
+    # Extract the EFI directory files from the iso
+    with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpefi:
+        ExtractISOFiles(input_iso, ["EFI"], tmpefi)
+
+        # Copy the modified config files over
+        shutil.copytree(tmpdir+"/EFI", tmpefi+"/EFI", dirs_exist_ok=True)
+
+        efibootimg = tempfile.NamedTemporaryFile(prefix="efibootimg-")
+        cmd = ["mkefiboot", "--label=ANACONDA"]
+        if log.root.level < log.INFO:
+            cmd.append("--debug")
+        cmd.extend([tmpefi + "/EFI/BOOT", efibootimg.name])
+        log.debug(" ".join(cmd))
+        try:
+            subprocess.check_output(cmd)
+        except subprocess.CalledProcessError as e:
+            log.error(str(e))
+            raise RuntimeError("Running mkefiboot")
+
+        return efibootimg
+
+
 def RebuildS390CDBoot(tmpdir):
     """
     On s390x the cdboot.img needs to be rebuilt with the new cmdline arguments
@@ -404,7 +435,8 @@ def CheckDiscinfo(path):
 
 
 def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
-                    cmdline="", rm_args="", new_volid="", implantmd5=True):
+                    cmdline="", rm_args="", new_volid="", implantmd5=True,
+                    skip_efi=False):
     """
     Make a kickstart ISO from a boot.iso or dvd
     """
@@ -416,10 +448,14 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
     if not old_volid and not new_volid:
         raise RuntimeError("No volume id found, cannot create iso.")
 
+    log.debug("ISO files:")
+    for f in files:
+        log.debug("    %s", f)
+
     # Extract files that match the known config files.
     known_configs = set([".discinfo", "isolinux/isolinux.cfg",
                          "boot/grub2/grub.cfg", "boot/grub/grub.cfg",
-                         "EFI/BOOT/grub.cfg", "EFI/BOOT/BOOT.conf",
+                         "EFI/BOOT/BOOT.conf", "EFI/BOOT/grub.cfg",
                          "images/generic.prm", "images/cdboot.prm",
                          "images/kernel.img", "images/initrd.img"])
     extract_files = set(files) & known_configs
@@ -448,10 +484,22 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
         if os.uname().machine.startswith("s390"):
             RebuildS390CDBoot(tmpdir)
 
+        # If this is a UEFI iso rebuild the efiboot.img file and put it in /efiboot.img
+        efibootimg = None
+        if not skip_efi and "EFI/BOOT/BOOT.conf" in files:
+            if os.getuid() != 0:
+                raise RuntimeError("mkefiboot requires root privileges")
+
+            efibootimg = RebuildEFIBoot(input_iso, tmpdir)
+
         # Build the command to rebuild the iso with the changes and additions
         cmd = ["xorriso", "-indev", input_iso, "-outdev", output_iso, "-boot_image", "any", "replay"]
         if new_volid != old_volid:
             cmd.extend(["-volid", new_volid])
+
+        # Replace the embedded efiboot.img on partition 2
+        if efibootimg:
+            cmd.extend(["-append_partition", "2", "C12A7328-F81F-11D2-BA4B-00A0C93EC93B", efibootimg.name])
 
         # Update the config files that were extracted and modified
         for root, _, files in os.walk(tmpdir, topdown=False):
@@ -482,6 +530,12 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
     if implantmd5:
         ImplantMD5(output_iso)
 
+    # Generate a report of the layout of the new iso
+    if log.root.level < log.INFO:
+        cmd = ["xorriso", "-indev", output_iso, "-report_el_torito", "plain", "-report_system_area", "plain"]
+        log.debug("Running: %s", " ".join(cmd))
+        subprocess.run(cmd, check=False, capture_output=False, env={"LANG": "C"})
+
 
 def setup_arg_parser():
     """ Return argparse.Parser object of cmdline."""
@@ -502,6 +556,8 @@ def setup_arg_parser():
     parser.add_argument("--ks", type=os.path.abspath, metavar="KICKSTART",
                         help="Optional kickstart to add to the ISO")
     parser.add_argument("-V", "--volid", dest="volid", help="Set the ISO volume id, defaults to input's", default=None)
+    parser.add_argument("--skip-mkefiboot", action="store_true", dest="skip_efi",
+                        help="Skip running mkefiboot")
 
     parser.add_argument("ks_pos", nargs="?", type=os.path.abspath, metavar="KICKSTART",
                         help="Optional kickstart to add to the ISO")
@@ -552,7 +608,7 @@ def main():
 
         MakeKickstartISO(args.input_iso, args.output_iso, args.ks or args.ks_pos,
                          args.add_paths, args.cmdline, args.rm_args,
-                         args.volid, args.no_md5sum)
+                         args.volid, args.no_md5sum, args.skip_efi)
     except RuntimeError as e:
         log.error(str(e))
         return 1
