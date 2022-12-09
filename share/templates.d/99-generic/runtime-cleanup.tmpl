@@ -233,6 +233,27 @@ removefrom linux-firmware /usr/lib/firmware/phanfw.bin*
 removefrom linux-firmware /usr/lib/firmware/mediatek/mt81*/*
 removefrom linux-firmware /usr/lib/firmware/mediatek/sof/*
 removefrom linux-firmware /usr/lib/firmware/mediatek/sof-tplg/*
+## these are old versions that current qed driver will never load
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values-8.10.9.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values-8.10.9.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values-8.14.6.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values-8.18.9.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values-8.20.0.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values-8.30.12.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values-8.33.12.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values-8.37.7.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values-8.40.33.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.10.10.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.10.5.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.15.3.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.20.0.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.33.1.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.33.11.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.37.2.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.37.7.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.4.2.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.42.2.0.bin*
+removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.7.3.0.bin*
 %if basearch != "aarch64":
     removefrom linux-firmware /usr/lib/firmware/dpaa2/*
 %endif
