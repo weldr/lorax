@@ -229,6 +229,10 @@ removefrom linux-firmware /usr/lib/firmware/qcom/venus*/*
 removefrom linux-firmware /usr/lib/firmware/qcom/vpu*/*
 removefrom linux-firmware /usr/lib/firmware/meson/vdec/*
 removefrom linux-firmware /usr/lib/firmware/phanfw.bin*
+## these are for SoCs used in Chromebooks, our kernel does not build the drivers
+removefrom linux-firmware /usr/lib/firmware/mediatek/mt81*/*
+removefrom linux-firmware /usr/lib/firmware/mediatek/sof/*
+removefrom linux-firmware /usr/lib/firmware/mediatek/sof-tplg/*
 %if basearch != "aarch64":
     removefrom linux-firmware /usr/lib/firmware/dpaa2/*
 %endif
