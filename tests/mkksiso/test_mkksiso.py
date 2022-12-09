@@ -233,6 +233,8 @@ class ISOTestCase(unittest.TestCase):
     def test_MakeKickstartISO(self):
         """
         Test the full process of editing the cmdline and adding a kickstart
+
+        NOTE: This does not run mkefiboot since it needs root and will not work in a container
         """
         rm_args = "console quiet inst.cmdline"
         cmdline = "inst.ks=file:///installer.ks quoted=\"A longer string with spaces that is quoted should not be split\" console=ttyS0,115200n8 console=tty1"
@@ -240,7 +242,7 @@ class ISOTestCase(unittest.TestCase):
 
         self.out_iso = tempfile.mktemp(prefix="mkksiso-")
         MakeKickstartISO(self.test_iso, self.out_iso, cmdline=cmdline, rm_args=rm_args,
-                new_volid=new_volid, implantmd5=True)
+                new_volid=new_volid, implantmd5=True, skip_efi=True)
 
         with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpdir:
             ExtractISOFiles(self.out_iso, self.expected_files, tmpdir)
