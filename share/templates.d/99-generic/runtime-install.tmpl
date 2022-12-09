@@ -26,13 +26,16 @@ installpkg grubby
     ## for enterprise switch devices, netinst deployment does not work on
     ## these so there is no point shipping them - see
     ## https://bugzilla.redhat.com/show_bug.cgi?id=2011615
+    ## bfa-firmware contains only obsolete files - see
+    ## https://bugzilla.redhat.com/show_bug.cgi?id=2152202
     installpkg --optional *-firmware --except alsa* --except midisport-firmware \
                            --except crystalhd-firmware --except ivtv-firmware \
                            --except cx18-firmware --except iscan-firmware \
                            --except uhd-firmware --except lulzbot-marlin-firmware \
                            --except gnome-firmware --except sigrok-firmware \
                            --except liquidio-firmware --except netronome-firmware \
-                           --except mrvlprestera-firmware --except mlxsw_spectrum-firmware
+                           --except mrvlprestera-firmware --except mlxsw_spectrum-firmware \
+                           --except bfa-firmware
     installpkg b43-openfwwf
 %endif
 
