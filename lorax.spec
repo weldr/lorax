@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.9
+Version:        37.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -172,6 +172,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Dec 12 2022 Brian C. Lane <bcl@redhat.com> 37.10-1
+- tests: Add tzdata package to minimizer test setup (bcl@redhat.com)
+- test: Use Fedora 37 container (bcl@redhat.com)
+- mkksiso: Disable running mkefiboot in container tests (bcl@redhat.com)
+- mkksiso: Rebuild efiboot.img for UEFI enabled isos (bcl@redhat.com)
+- gitleaks: Add config file to ignore known fake secrets (bcl@redhat.com)
+- workflows: Switch to actions/checkout@v3 (bcl@redhat.com)
+
 * Mon Nov 28 2022 Brian C. Lane <bcl@redhat.com> 37.9-1
 - Use unicode.pf2 from /usr/share/grub/ (bcl@redhat.com)
 - On ppc64le Use core.elf from grub2 package (bcl@redhat.com)
