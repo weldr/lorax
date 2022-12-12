@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        38.3
+Version:        38.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Dec 12 2022 Brian C. Lane <bcl@redhat.com> 38.4-1
+- runtime-cleanup: drop old versions of qed firmware (awilliam@redhat.com)
+- runtime-cleanup: drop Mediatek SoC firmwares (awilliam@redhat.com)
+- runtime-install: drop bfa-firmware (awilliam@redhat.com)
+- mkksiso: Disable running mkefiboot in container tests (bcl@redhat.com)
+- mkksiso: Rebuild efiboot.img for UEFI enabled isos (bcl@redhat.com)
+- gitleaks: Add config file to ignore known fake secrets (bcl@redhat.com)
+- fedora-livemedia.ks: Use livesys-scripts (bcl@redhat.com)
+- workflows: Switch to actions/checkout@v3 (bcl@redhat.com)
+
 * Mon Nov 28 2022 Brian C. Lane <bcl@redhat.com> 38.3-1
 - Use unicode.pf2 from /usr/share/grub/ (bcl@redhat.com)
 - On ppc64le Use core.elf from grub2 package (bcl@redhat.com)
