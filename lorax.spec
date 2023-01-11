@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.22
+Version:        34.9.23
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Jan 11 2023 Brian C. Lane <bcl@redhat.com> 34.9.23-1
+- rsyslog.conf: Set WorkDirectory to /var/lib/rsyslog (bcl)
+  Resolves: rhbz#2158731
+- lorax.spec: fix changelog entry for 2132511 (bcl)
+  Related: rhbz#2132511
+
 * Mon Nov 28 2022 Brian C. Lane <bcl@redhat.com> 34.9.22-1
 - On ppc64le Use core.elf from grub2 package (bcl)
   Resolves: rhbz#2143994
