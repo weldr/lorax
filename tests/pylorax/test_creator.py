@@ -177,6 +177,7 @@ class CreatorTest(unittest.TestCase):
                 # Make a fake kernel and initrd
                 mkFakeBoot(mount_dir)
                 opts = DataHolder(project="Fedora", releasever="devel", compression="xz", compress_args=[],
+                                  release="", variant="", bugurl="", isfinal=False,
                                   arch="x86_64", squashfs_only=False)
                 make_runtime(opts, mount_dir, work_dir)
 
