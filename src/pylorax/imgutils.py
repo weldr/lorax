@@ -484,7 +484,7 @@ class DracutChroot(object):
         self.bind = [("/var/tmp", "/var/tmp")] + (bind if bind else [])
 
     def __enter__(self):
-        for d in [d for _, d in self.bind] + ["/proc", "/dev"]:
+        for d in [d for _, d in self.bind] + ["/proc", "/dev", "/etc/dracut.conf.d"]:
             if not os.path.exists(self.root + d):
                 logger.warning("Making missing dracut chroot directory: %s", d)
                 os.makedirs(self.root + d)
@@ -507,7 +507,28 @@ class DracutChroot(object):
             # some mounts in /var/tmp/lorax can be busy at the moment of unmounting
             umount(self.root + d, maxretry=10, retrysleep=5, delete=False)
 
+    def _copy_conf(self, args):
+        """Check the arguments for --conf, copy the file into the chroot under
+        /etc/dracut.conf.d/, and rewrite the file path to point to the new location.
+        """
+        try:
+            i = args.index("--conf")
+        except ValueError:
+            return args
+
+        try:
+            path = args[i+1]
+            if path.startswith("--"):
+                raise ValueError()
+        except (IndexError, ValueError):
+            raise RuntimeError("dracut --conf is missing a file path")
+
+        shutil.copy(path, self.root + "/etc/dracut.conf.d/")
+        args[i+1] = "/etc/dracut.conf.d/" + os.path.basename(path)
+        return args
+
     def Run(self, args):
+        args = self._copy_conf(args)
         runcmd(["dracut"] + args, root=self.root)
 
 

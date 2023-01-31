@@ -28,6 +28,7 @@ from pylorax.imgutils import mkcpio, mktar, mksquashfs, mksparse, mkqcow2, loop_
 from pylorax.imgutils import get_loop_name, LoopDev, dm_attach, dm_detach, DMDev, Mount
 from pylorax.imgutils import mkdosimg, mkext4img, mkbtrfsimg, mkhfsimg, default_image_name
 from pylorax.imgutils import mount, umount, kpartx_disk_img, PartitionMount, mkfsimage_from_disk
+from pylorax.imgutils import DracutChroot
 from pylorax.sysutils import joinpaths
 
 def mkfakerootdir(rootdir):
@@ -357,3 +358,37 @@ class ImgUtilsTest(unittest.TestCase):
                 self.assertTrue(os.path.exists(fs_img.name))
                 file_details = get_file_magic(fs_img.name)
                 self.assertTrue("ext2 filesystem" in file_details, file_details)
+
+class DracutChrootTest(unittest.TestCase):
+    @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
+    def test_init(self):
+        """Test creating mount directories in the chroot"""
+        with tempfile.TemporaryDirectory(prefix="lorax.test.") as root_dir:
+            with DracutChroot(root_dir) as _dc:
+                for d in ["/var/tmp", "/proc", "/dev", "/etc/dracut.conf.d"]:
+                    self.assertTrue(os.path.exists(joinpaths(root_dir, d)))
+
+    @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
+    def test_copy_conf(self):
+        with tempfile.NamedTemporaryFile(prefix="lorax.test.conf.") as dracut_conf:
+            with open(dracut_conf.name, "w") as f:
+                f.write("fake dracut config file")
+
+            with tempfile.TemporaryDirectory(prefix="lorax.test.") as root_dir:
+                with DracutChroot(root_dir) as dc:
+                    args = dc._copy_conf(["one", "two", "--conf", dracut_conf.name, "three"])
+                    confname = os.path.basename(dracut_conf.name)
+                    self.assertEqual(args[3], f"/etc/dracut.conf.d/{confname}")
+                    self.assertTrue(os.path.exists(joinpaths(root_dir, f"/etc/dracut.conf.d/{confname}")))
+
+                    # Missing config file
+                    with self.assertRaises(FileNotFoundError):
+                        args = dc._copy_conf(["one", "two", "--conf", "/not/a/path/dracut.conf"])
+
+                    # No config file, truncated args
+                    with self.assertRaises(RuntimeError):
+                        args = dc._copy_conf(["one", "two", "--conf"])
+
+                    # Missing config file, next argument
+                    with self.assertRaises(RuntimeError):
+                        args = dc._copy_conf(["one", "two", "--conf", "--three"])
