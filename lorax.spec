@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        38.4
+Version:        38.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Feb 08 2023 Brian C. Lane <bcl@redhat.com> 38.5-1
+- Fix using --dracut-conf with DracutChroot (bcl@redhat.com)
+- tests: Fix DataHolder for CreatorTest (bcl@redhat.com)
+- runtime-install: Update for
+  https://fedoraproject.org/wiki/Changes/NotoFontsForMoreLang (akira@tagoh.org)
+- SPDX migration (bcl@redhat.com)
+- rsyslogd.conf: Rewrite using current config syntax (bcl@redhat.com)
+- Add comment for squashfs-only (dick@mrns.nl)
+- runtime-install: exclude some more unneeded firmware packages (awilliam@redhat.com)
+- runtime-install: stop excluding bfa-firmware again (retired) (awilliam@redhat.com)
+
 * Mon Dec 12 2022 Brian C. Lane <bcl@redhat.com> 38.4-1
 - runtime-cleanup: drop old versions of qed firmware (awilliam@redhat.com)
 - runtime-cleanup: drop Mediatek SoC firmwares (awilliam@redhat.com)
