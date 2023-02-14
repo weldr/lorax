@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        38.5
+Version:        38.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Feb 14 2023 Brian C. Lane <bcl@redhat.com> 38.6-1
+- templates.d/99-generic/live: Enable automatic persistence for live media (ngompa@fedoraproject.org)
+- Update for Noto CJK Variable Fonts (pwu@redhat.com)
+
 * Wed Feb 08 2023 Brian C. Lane <bcl@redhat.com> 38.5-1
 - Fix using --dracut-conf with DracutChroot (bcl@redhat.com)
 - tests: Fix DataHolder for CreatorTest (bcl@redhat.com)
