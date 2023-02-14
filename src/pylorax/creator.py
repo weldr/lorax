@@ -36,7 +36,7 @@ from pykickstart.version import makeVersion
 # Use the Lorax treebuilder branch for iso creation
 from pylorax import DEFAULT_RELEASEVER, ArchData
 from pylorax.base import DataHolder
-from pylorax.executils import execWithRedirect
+from pylorax.executils import execWithRedirect, runcmd_output
 from pylorax.imgutils import DracutChroot, PartitionMount
 from pylorax.imgutils import mount, umount, Mount
 from pylorax.imgutils import mksquashfs, mkrootfsimg
@@ -230,9 +230,25 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
                   compression=compression, compressargs=compressargs)
 
 
+def allow_explicit_plymouth_arg(sys_root_dir):
+    """
+    Allow for plymouth when expressly requested in dracut configuration files.
+
+    :param str sys_root_dir: Path to root of the system
+    """
+    plymouth_config = [runcmd_output(["sed", "-n", "-r", "s/(add_|\<)dracutmodules\+=[\"\'].* plymouth /&/ p"] +
+        glob.glob(joinpaths(sys_root_dir, "usr/lib/dracut/dracut.conf.d/*.conf")) +
+        glob.glob(joinpaths(sys_root_dir, "etc/dracut.conf.d/*.conf")) +
+        [joinpaths(sys_root_dir, "etc/dracut.conf")])]
+
+    if len(plymouth_config) > 0:
+        DRACUT_DEFAULT.remove('--omit')
+        DRACUT_DEFAULT.remove('plymouth')
+
+
 def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
     """
-    Rebuild intrds for pxe live image (root=live:http://)
+    Rebuild initrds for pxe live image (root=live:http://)
 
     :param opts: options passed to livemedia-creator
     :type opts: argparse options
@@ -240,9 +256,13 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
     :param str results_dir: Path of directory for storing results
     """
     # cmdline dracut args override the defaults, but need to be parsed
-    log.info("dracut args = %s", dracut_args(opts))
 
-    args = ["--nomdadmconf", "--nolvmconf"] + dracut_args(opts)
+    allow_explicit_plymouth_arg(sys_root_dir)
+
+    args = dracut_args(opts)
+    log.info("dracut args = %s", args)
+
+    args = ["--nomdadmconf", "--nolvmconf"] + args
 
     kdir = "boot"
     if opts.ostree:
@@ -366,8 +386,10 @@ def make_livecd(opts, mount_dir, work_dir):
                      templatedir=joinpaths(opts.lorax_templates,"live/"),
                      extra_boot_args=opts.extra_boot_args)
     log.info("Rebuilding initrds")
-    log.info("dracut args = %s", dracut_args(opts))
-    tb.rebuild_initrds(add_args=dracut_args(opts))
+    allow_explicit_plymouth_arg(mount_dir)
+    args = dracut_args(opts)
+    log.info("dracut args = %s", args)
+    tb.rebuild_initrds(add_args=args)
     log.info("Building boot.iso")
     tb.build()
 
