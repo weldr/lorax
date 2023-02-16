@@ -63,7 +63,7 @@ class ImageMinimizer:
     def add_pattern_rpm(self, rpms, pattern):
         if self.ts is None:
             if self.prefix is None:
-                raise Exception('Must specify installation root for droprpm/keeprpm')
+                raise RuntimeError('Must specify installation root for droprpm/keeprpm')
             self.ts = rpm.TransactionSet(self.prefix)
         mi = self.ts.dbMatch()
         mi.pattern('name', rpm.RPMMIRE_GLOB, pattern)
@@ -107,7 +107,7 @@ class ImageMinimizer:
             elif command == 'droprpm':
                 self.add_pattern_rpm(self.drops_rpm, pattern)
             else:
-                raise Exception('Unknown Command: ' + command)
+                raise RuntimeError('Unknown Command: ' + command)
 
     def remove(self):
         for tag in sorted(self.drops, reverse=True):
