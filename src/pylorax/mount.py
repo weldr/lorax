@@ -77,8 +77,8 @@ class IsoMountpoint(object):
                     self.initrd = self.mount_dir+initrd
                     break
             else:
-                raise Exception("Missing kernel and initrd file in iso, failed"
-                                " to search under: {0}".format(kernel_list))
+                raise RuntimeError("Missing kernel and initrd file in iso, failed"
+                                   " to search under: {0}".format(kernel_list))
         except:
             self.umount()
             raise
