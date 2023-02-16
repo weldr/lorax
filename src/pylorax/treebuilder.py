@@ -312,7 +312,7 @@ class TreeBuilder(object):
             args.append("--force")
 
         if not self.kernels:
-            raise Exception("No kernels found, cannot rebuild_initrds")
+            raise RuntimeError("No kernels found, cannot rebuild_initrds")
 
         with DracutChroot(self.vars.inroot) as dracut:
             for kernel in self.kernels:
