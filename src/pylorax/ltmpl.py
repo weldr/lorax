@@ -323,7 +323,7 @@ class InstallpkgMixin:
                 errors = True
 
         if errors and required:
-            raise Exception("Required installpkg failed.")
+            raise RuntimeError("Required installpkg failed.")
 
 
 # TODO: operate inside an actual chroot for safety? Not that RPM bothers..
@@ -704,7 +704,7 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
             raise
         logger.info("%d packages selected", len(self.dbo.transaction))
         if len(self.dbo.transaction) == 0:
-            raise Exception("No packages in transaction")
+            raise RuntimeError("No packages in transaction")
 
         # Write out the packages installed, including debuginfo packages
         self._write_package_log()
@@ -732,7 +732,7 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
 
         # At this point dnf should know about the installed files. Double check that it really does.
         if len(self._filelist("anaconda-core")) == 0:
-            raise Exception("Failed to reset dbo to installed package set")
+            raise RuntimeError("Failed to reset dbo to installed package set")
 
     def removefrom(self, pkg, *globs):
         '''
