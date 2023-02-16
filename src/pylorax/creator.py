@@ -95,7 +95,7 @@ def find_ostree_root(phys_root):
     log.debug("ostree_sysroots = %s", ostree_sysroots)
     if ostree_sysroots:
         if len(ostree_sysroots) > 1:
-            raise Exception("Too many deployment roots found: %s" % ostree_sysroots)
+            raise RuntimeError("Too many deployment roots found: %s" % ostree_sysroots)
         ostree_root = os.path.relpath(ostree_sysroots[0], phys_root)
     return ostree_root
 
@@ -252,7 +252,7 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
 
     kernels = [kernel for kernel in findkernels(sys_root_dir, kdir)]
     if not kernels:
-        raise Exception("No initrds found, cannot rebuild_initrds")
+        raise RuntimeError("No initrds found, cannot rebuild_initrds")
 
     if opts.ostree:
         # Dracut assumes to have some dirs in disk image
