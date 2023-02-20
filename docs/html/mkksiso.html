@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mkksiso &mdash; Lorax 38.0 documentation</title>
+  <title>mkksiso &mdash; Lorax 38.8 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
@@ -13,6 +13,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -28,7 +29,7 @@
             <a href="index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                38.0
+                38.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -45,8 +46,8 @@
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">mkksiso</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#mkksiso-cmdline-arguments">mkksiso cmdline arguments</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#options">options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#named-arguments">Named Arguments</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#create-a-kickstart-boot-iso-or-dvd">Create a kickstart boot.iso or DVD</a></li>
@@ -78,8 +79,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>mkksiso</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">mkksiso</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/mkksiso.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -103,20 +104,20 @@ kickstart boot.iso will include this support as well.</p>
 <p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> The host system architecture needs to match that of the iso.
 <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> will raise an error if it finds a .discinfo on the iso with a
 mismatched arch.</p>
-<p>As of version 37.1 <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> can be run by normal users. It no longer needs
-to mount the iso to add the kickstart or edit the configuration files so you
-do not need to be root.</p>
+<p>As of version 38.4 <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> needs to be run as root to create a fully
+bootable iso. Booting on a UEFI system with the iso written to a flash drive
+requires updating the config files in the embedded efiboot image in the iso. If
+you do not need this functionality you can still run it as a user by passing
+<cite>--skip-mkefiboot</cite>.</p>
 <section id="mkksiso-cmdline-arguments">
 <h2>mkksiso cmdline arguments<a class="headerlink" href="#mkksiso-cmdline-arguments" title="Permalink to this heading">¶</a></h2>
 <p><p>Add a kickstart and files to an iso</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mkksiso</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ADD_PATHS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CMDLINE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">md5sum</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KICKSTART</span><span class="p">]</span>
-               <span class="p">[</span><span class="o">-</span><span class="n">V</span> <span class="n">VOLID</span><span class="p">]</span>
-               <span class="p">[</span><span class="n">KICKSTART</span><span class="p">]</span> <span class="n">input_iso</span> <span class="n">output_iso</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mkksiso</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ADD_PATHS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CMDLINE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">md5sum</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KICKSTART</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">mkefiboot</span><span class="p">]</span> <span class="p">[</span><span class="n">KICKSTART</span><span class="p">]</span> <span class="n">input_iso</span> <span class="n">output_iso</span>
 </pre></div>
 </div>
-<section id="Positional Arguments">
-<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">¶</a></h3>
+<section id="positional-arguments">
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>KICKSTART</kbd></dt>
 <dd><p>Optional kickstart to add to the ISO</p>
@@ -129,8 +130,8 @@ do not need to be root.</p>
 </dd>
 </dl>
 </section>
-<section id="options">
-<h3>options<a class="headerlink" href="#options" title="Permalink to this heading">¶</a></h3>
+<section id="named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-a, --add</kbd></dt>
 <dd><p>File or directory to add to ISO (may be used multiple times)</p>
@@ -157,6 +158,10 @@ do not need to be root.</p>
 </dd>
 <dt><kbd>-V, --volid</kbd></dt>
 <dd><p>Set the ISO volume id, defaults to input's</p>
+</dd>
+<dt><kbd>--skip-mkefiboot</kbd></dt>
+<dd><p>Skip running mkefiboot</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>

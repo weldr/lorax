@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax &mdash; Lorax 38.0 documentation</title>
+  <title>pylorax &mdash; Lorax 38.8 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
@@ -12,6 +12,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -25,7 +26,7 @@
             <a href="../index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                38.0
+                38.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -59,9 +60,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Module code</a> &raquo;</li>
-      <li>pylorax</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pylorax</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -134,8 +135,8 @@
 <span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--install&quot;</span><span class="p">,</span> <span class="s2">&quot;/.buildstamp&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;fips&quot;</span><span class="p">]</span>
 
 <span class="c1"># Used for DNF conf.module_platform_id</span>
-<span class="n">DEFAULT_PLATFORM_ID</span> <span class="o">=</span> <span class="s2">&quot;platform:f36&quot;</span>
-<span class="n">DEFAULT_RELEASEVER</span> <span class="o">=</span> <span class="s2">&quot;36&quot;</span>
+<span class="n">DEFAULT_PLATFORM_ID</span> <span class="o">=</span> <span class="s2">&quot;platform:f38&quot;</span>
+<span class="n">DEFAULT_RELEASEVER</span> <span class="o">=</span> <span class="s2">&quot;38&quot;</span>
 
 <div class="viewcode-block" id="ArchData"><a class="viewcode-back" href="../pylorax.html#pylorax.ArchData">[docs]</a><span class="k">class</span> <span class="nc">ArchData</span><span class="p">(</span><span class="n">DataHolder</span><span class="p">):</span>
     <span class="n">bcj_arch</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x86_64</span><span class="o">=</span><span class="s2">&quot;x86&quot;</span><span class="p">,</span> <span class="n">ppc64le</span><span class="o">=</span><span class="s2">&quot;powerpc&quot;</span><span class="p">)</span>
@@ -223,7 +224,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">templatedir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find the template directory.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the template directory.</span>
 
 <span class="sd">        Pick the first directory under sharedir/templates.d/ if it exists.</span>
 <span class="sd">        Otherwise use the sharedir</span>
@@ -460,7 +461,7 @@
 
 
 <div class="viewcode-block" id="setup_logging"><a class="viewcode-back" href="../pylorax.html#pylorax.setup_logging">[docs]</a><span class="k">def</span> <span class="nf">setup_logging</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">theLogger</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup the various logs</span>
 
 <span class="sd">    :param logfile: filename to write the log to</span>
@@ -500,7 +501,7 @@
 
 
 <div class="viewcode-block" id="find_templates"><a class="viewcode-back" href="../pylorax.html#pylorax.find_templates">[docs]</a><span class="k">def</span> <span class="nf">find_templates</span><span class="p">(</span><span class="n">templatedir</span><span class="o">=</span><span class="s2">&quot;/usr/share/lorax&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Find the templates to use.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Find the templates to use.</span>
 
 <span class="sd">    :param str templatedir: Top directory to search for templates</span>
 <span class="sd">    :returns: Path to templates</span>
@@ -519,7 +520,7 @@
     <span class="k">return</span> <span class="n">templatedir</span></div>
 
 <div class="viewcode-block" id="log_selinux_state"><a class="viewcode-back" href="../pylorax.html#pylorax.log_selinux_state">[docs]</a><span class="k">def</span> <span class="nf">log_selinux_state</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Log the current state of selinux&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log the current state of selinux&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">is_selinux_enabled</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">security_getenforce</span><span class="p">():</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;selinux is enabled and in Enforcing mode&quot;</span><span class="p">)</span>

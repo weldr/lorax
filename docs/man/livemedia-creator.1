@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "LIVEMEDIA-CREATOR" "1" "Sep 30, 2022" "38.0" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Feb 20, 2023" "38.8" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .INDENT 0.0
@@ -77,33 +77,20 @@ Create Live Install Media
 .sp
 .nf
 .ft C
-usage: livemedia\-creator [\-h]
-                         (\-\-make\-iso | \-\-make\-disk | \-\-make\-fsimage | \-\-make\-appliance | \-\-make\-ami | \-\-make\-tar | \-\-make\-tar\-disk | \-\-make\-pxe\-live | \-\-make\-ostree\-live | \-\-make\-oci | \-\-make\-vagrant)
-                         [\-\-iso ISO] [\-\-iso\-only] [\-\-iso\-name ISO_NAME] [\-\-ks KS] [\-\-image\-only]
-                         [\-\-no\-virt] [\-\-proxy PROXY] [\-\-anaconda\-arg ANACONDA_ARGS]
-                         [\-\-armplatform ARMPLATFORM] [\-\-location LOCATION] [\-\-logfile LOGFILE]
-                         [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP] [\-\-resultdir RESULT_DIR]
-                         [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS] [\-r RELEASE]
-                         [\-t VARIANT] [\-b URL] [\-\-isfinal] [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image]
-                         [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME]
-                         [\-\-tar\-disk\-name TAR_DISK_NAME] [\-\-fs\-label FS_LABEL]
-                         [\-\-image\-size\-align IMAGE_SIZE_ALIGN] [\-\-image\-type IMAGE_TYPE]
-                         [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2] [\-\-qcow2\-arg QEMU_ARGS]
-                         [\-\-compression COMPRESSION] [\-\-compress\-arg COMPRESS_ARGS]
-                         [\-\-app\-name APP_NAME] [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE]
-                         [\-\-ram MEMORY] [\-\-vcpus VCPUS] [\-\-vnc VNC] [\-\-arch ARCH]
-                         [\-\-kernel\-args KERNEL_ARGS] [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi] [\-\-no\-kvm]
-                         [\-\-with\-rng WITH_RNG] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS]
-                         [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE] [\-\-live\-rootfs\-keep\-size]
-                         [\-\-oci\-config OCI_CONFIG] [\-\-oci\-runtime OCI_RUNTIME]
-                         [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE]
-                         [\-\-project PRODUCT] [\-p PRODUCT] [\-\-releasever RELEASEVER] [\-\-volid VOLID]
-                         [\-\-squashfs\-only] [\-\-timeout TIMEOUT] [\-V]
+usage: livemedia\-creator [\-h] (\-\-make\-iso | \-\-make\-disk | \-\-make\-fsimage | \-\-make\-appliance | \-\-make\-ami | \-\-make\-tar | \-\-make\-tar\-disk | \-\-make\-pxe\-live | \-\-make\-ostree\-live | \-\-make\-oci | \-\-make\-vagrant)
+                         [\-\-iso ISO] [\-\-iso\-only] [\-\-iso\-name ISO_NAME] [\-\-ks KS] [\-\-image\-only] [\-\-no\-virt] [\-\-proxy PROXY] [\-\-anaconda\-arg ANACONDA_ARGS] [\-\-armplatform ARMPLATFORM] [\-\-location LOCATION]
+                         [\-\-logfile LOGFILE] [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP] [\-\-resultdir RESULT_DIR] [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS] [\-r RELEASE] [\-t VARIANT]
+                         [\-b URL] [\-\-isfinal] [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image] [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME] [\-\-tar\-disk\-name TAR_DISK_NAME] [\-\-fs\-label FS_LABEL]
+                         [\-\-image\-size\-align IMAGE_SIZE_ALIGN] [\-\-image\-type IMAGE_TYPE] [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2] [\-\-qcow2\-arg QEMU_ARGS] [\-\-compression COMPRESSION] [\-\-compress\-arg COMPRESS_ARGS]
+                         [\-\-app\-name APP_NAME] [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE] [\-\-ram MEMORY] [\-\-vcpus VCPUS] [\-\-vnc VNC] [\-\-arch ARCH] [\-\-kernel\-args KERNEL_ARGS] [\-\-ovmf\-path OVMF_PATH]
+                         [\-\-virt\-uefi] [\-\-no\-kvm] [\-\-with\-rng WITH_RNG] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE] [\-\-live\-rootfs\-keep\-size]
+                         [\-\-oci\-config OCI_CONFIG] [\-\-oci\-runtime OCI_RUNTIME] [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE] [\-\-project PRODUCT] [\-p PRODUCT] [\-\-releasever RELEASEVER]
+                         [\-\-volid VOLID] [\-\-squashfs\-only] [\-\-timeout TIMEOUT] [\-V]
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-.SS options
+.SS Named Arguments
 .INDENT 0.0
 .TP
 .B \-\-make\-iso
@@ -259,13 +246,13 @@ Default: \(dq\(dq
 .B \-\-releasever
 substituted for @VERSION@ in bootloader config files
 .sp
-Default: \(dq36\(dq
+Default: \(dq38\(dq
 .TP
 .B \-\-volid
 volume id
 .TP
 .B \-\-squashfs\-only
-Use a plain squashfs filesystem for the runtime. Only used by --make-iso, ignored for others.
+Use a plain squashfs filesystem for the runtime.
 .sp
 Default: False
 .TP
@@ -826,6 +813,10 @@ Older versions of mock, between 1.3.4 and 2.0, will need to pass
 systemd\-nspawn which cannot create the needed loop device nodes. Passing
 \fB\-\-old\-chroot\fP will use the old system where \fB/dev/loop*\fP is setup for
 you.
+.sp
+SELinux and mock do not work well together. Inside mock SELinux is reported as
+disabled so the images produced will not have the correct SELinux labels. If
+this is important you should run livemedia\-creator on the host, or in a VM.
 .UNINDENT
 .UNINDENT
 .sp

@@ -392,6 +392,10 @@ As of lorax version 22.2 you can use livemedia-creator and anaconda version
     ``--old-chroot`` will use the old system where ``/dev/loop*`` is setup for
     you.
 
+    SELinux and mock do not work well together. Inside mock SELinux is reported as
+    disabled so the images produced will not have the correct SELinux labels. If
+    this is important you should run livemedia-creator on the host, or in a VM.
+
 On the host system:
 
 1. yum install -y mock
