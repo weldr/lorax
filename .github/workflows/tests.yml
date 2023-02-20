@@ -10,9 +10,9 @@ on:
       - master
       - rhel8-branch
       - rhel7-branch
-      - f31-branch
-      - f32-branch
-      - f33-branch
+      - f38-branch
+      - f37-branch
+      - f36-branch
 
 jobs:
   unit-tests:
