@@ -61,8 +61,8 @@ else:
 DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "--add", "fips"]
 
 # Used for DNF conf.module_platform_id
-DEFAULT_PLATFORM_ID = "platform:f36"
-DEFAULT_RELEASEVER = "36"
+DEFAULT_PLATFORM_ID = "platform:f38"
+DEFAULT_RELEASEVER = "38"
 
 class ArchData(DataHolder):
     bcj_arch = dict(x86_64="x86", ppc64le="powerpc")
