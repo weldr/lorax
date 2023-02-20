@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        38.6
+Version:        38.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Feb 20 2023 Brian C. Lane <bcl@redhat.com> 38.7-1
+- Don't strip gtk4 binaries or libtiff (#2170716) (awilliam@redhat.com)
+- image-minimizer: Use RuntimeError instead of Exception (bcl@redhat.com)
+- creator: Use RuntimeError instead of Exception (bcl@redhat.com)
+- treebuilder: Use RuntimeError instead of Exception (bcl@redhat.com)
+- mount: Use RuntimeError instead of Exception (bcl@redhat.com)
+- ltmpl: Use RuntimeError instead of Exception (bcl@redhat.com)
+- spec: Use autosetup to make patching easier (bcl@redhat.com)
+- Revert "templates.d/99-generic/live: Enable automatic persistence for live media" (awilliam@redhat.com)
+- Strip some things from gtk4 (awilliam@redhat.com)
+
 * Tue Feb 14 2023 Brian C. Lane <bcl@redhat.com> 38.6-1
 - templates.d/99-generic/live: Enable automatic persistence for live media (ngompa@fedoraproject.org)
 - Update for Noto CJK Variable Fonts (pwu@redhat.com)
