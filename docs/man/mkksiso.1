@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "MKKSISO" "1" "Sep 30, 2022" "38.0" "Lorax"
+.TH "MKKSISO" "1" "Feb 20, 2023" "39.0" "Lorax"
 .SH NAME
 mkksiso \- Make Kickstart ISO Utility Documentation
 .INDENT 0.0
@@ -45,9 +45,11 @@ kickstart boot.iso will include this support as well.
 \fBmkksiso\fP will raise an error if it finds a .discinfo on the iso with a
 mismatched arch.
 .sp
-As of version 37.1 \fBmkksiso\fP can be run by normal users. It no longer needs
-to mount the iso to add the kickstart or edit the configuration files so you
-do not need to be root.
+As of version 38.4 \fBmkksiso\fP needs to be run as root to create a fully
+bootable iso. Booting on a UEFI system with the iso written to a flash drive
+requires updating the config files in the embedded efiboot image in the iso. If
+you do not need this functionality you can still run it as a user by passing
+\fI\-\-skip\-mkefiboot\fP\&.
 .SH MKKSISO CMDLINE ARGUMENTS
 .sp
 Add a kickstart and files to an iso
@@ -57,9 +59,7 @@ Add a kickstart and files to an iso
 .sp
 .nf
 .ft C
-usage: mkksiso [\-h] [\-a ADD_PATHS] [\-c CMDLINE] [\-r ARGS] [\-\-debug] [\-\-no\-md5sum] [\-\-ks KICKSTART]
-               [\-V VOLID]
-               [KICKSTART] input_iso output_iso
+usage: mkksiso [\-h] [\-a ADD_PATHS] [\-c CMDLINE] [\-r ARGS] [\-\-debug] [\-\-no\-md5sum] [\-\-ks KICKSTART] [\-V VOLID] [\-\-skip\-mkefiboot] [KICKSTART] input_iso output_iso
 .ft P
 .fi
 .UNINDENT
@@ -76,7 +76,7 @@ ISO to modify
 .B output_iso
 Full pathname of iso to be created
 .UNINDENT
-.SS options
+.SS Named Arguments
 .INDENT 0.0
 .TP
 .B \-a, \-\-add
@@ -109,6 +109,11 @@ Optional kickstart to add to the ISO
 .TP
 .B \-V, \-\-volid
 Set the ISO volume id, defaults to input\(aqs
+.TP
+.B \-\-skip\-mkefiboot
+Skip running mkefiboot
+.sp
+Default: False
 .UNINDENT
 .SH CREATE A KICKSTART BOOT.ISO OR DVD
 .sp

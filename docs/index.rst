@@ -22,7 +22,7 @@ Contents:
 Documentation for other Lorax Branches
 ======================================
 
-* `Fedora 37 <f38-branch/>`_
+* `Fedora 38 <f38-branch/>`_
 * `Fedora 37 <f37-branch/>`_
 * `Fedora 36 <f36-branch/>`_
 * `RHEL9 lorax-composer <rhel9-branch/>`_
