@@ -263,8 +263,10 @@ def lmc_parser(dracut_default=""):
     virt_group = parser.add_argument_group("qemu arguments")
     virt_group.add_argument("--ram", metavar="MEMORY", type=int, default=2048,
                             help="Memory to allocate for installer in megabytes.")
+    virt_group.add_argument("--cpu", metavar="CPU",
+                            help="Passed to qemu -cpu command. Default is to use -cpu host.")
     virt_group.add_argument("--vcpus", type=int, default=None,
-                            help="Passed to qemu -smp command")
+                            help="Passed to qemu -smp command. Number of virtual cpus.")
     virt_group.add_argument("--vnc",
                             help="Passed to qemu -display command. eg. vnc=127.0.0.1:5, default is to "
                                  "choose the first unused vnc port.")

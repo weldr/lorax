@@ -172,6 +172,9 @@ class QEMUInstall(object):
         if not os.path.exists("/usr/bin/"+qemu_cmd[0]):
             raise InstallError("%s does not exist, cannot run qemu" % qemu_cmd[0])
 
+        # Default to using the host cpu capabilities
+        qemu_cmd += ["-cpu", opts.cpu or "host"]
+
         qemu_cmd += ["-no-user-config"]
         qemu_cmd += ["-m", str(memory)]
         if vcpus:
