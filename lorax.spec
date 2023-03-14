@@ -168,6 +168,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Mar 14 2023 Brian C. Lane <bcl@redhat.com> 39.0-1
+- Add setpriv as ostree containers dependency (#2125655) (jkonecny@redhat.com)
+- livemedia-creator: Do not omit plymouth module from dracut (bcl@redhat.com)
+- New lorax documentation - 39.0 (bcl@redhat.com)
+- workflow: Update list of push branches for workflow tests (bcl@redhat.com)
+- Prepare for version 39.0 release (bcl@redhat.com)
+
 * Mon Feb 20 2023 Brian C. Lane <bcl@redhat.com> 38.7-1
 - Don't strip gtk4 binaries or libtiff (#2170716) (awilliam@redhat.com)
 - image-minimizer: Use RuntimeError instead of Exception (bcl@redhat.com)
