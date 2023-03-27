@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        38.9
+Version:        38.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Mar 27 2023 Brian C. Lane <bcl@redhat.com> 38.10-1
+- Pass vga=791 for live basic graphics mode on BIOS (#2176782) (awilliam@redhat.com)
+
 * Tue Mar 14 2023 Brian C. Lane <bcl@redhat.com> 38.9-1
 - Add setpriv as ostree containers dependency (#2125655) (jkonecny@redhat.com)
 
