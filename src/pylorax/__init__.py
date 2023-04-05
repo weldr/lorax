@@ -206,7 +206,6 @@ class Lorax(BaseLoraxClass):
         if not os.path.isdir(logdir):
             os.makedirs(logdir)
 
-        self.init_stream_logging()
         self.init_file_logging(logdir)
 
         logger.debug("version is %s", vernum)
