@@ -442,6 +442,9 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
         names and write them to /root/debug-pkgs.log on the boot.iso
         The non-debuginfo packages are written to /root/lorax-packages.log
         """
+        if self.transaction is None:
+            raise RuntimeError("Transaction needs to be run before calling _write_package_log")
+
         os.makedirs(self._out("root/"), exist_ok=True)
         pkgs = []
         debug_pkgs = []
@@ -468,6 +471,39 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
             with open(self._out("root/debug-pkgs.log"), "w") as f:
                 f.write("\n".join(sorted(debug_pkgs)))
                 f.write("\n")
+
+    def _writepkglists(self, pkglistdir):
+        """Write package file lists to a directory.
+        Each file is named for the package and contains the files installed
+        """
+        if self.transaction is None:
+            raise RuntimeError("Transaction needs to be run before calling _writepkglists")
+
+        if not os.path.isdir(pkglistdir):
+            os.makedirs(pkglistdir)
+        for tp in self.transaction.get_transaction_packages():
+            if not action_is_inbound(tp.get_action()):
+                continue
+
+            pkgobj = tp.get_package()
+            with open(joinpaths(pkglistdir, pkgobj.get_name()), "w") as fobj:
+                for fname in pkgobj.get_files():
+                    fobj.write("{0}\n".format(fname))
+
+    def _writepkgsizes(self, pkgsizefile):
+        """Write a file with the size of the files installed by the package"""
+        if self.transaction is None:
+            raise RuntimeError("Transaction needs to be run before calling _writepkgsizes")
+
+        with open(pkgsizefile, "w") as fobj:
+            for tp in sorted(self.transaction.get_transaction_packages(),
+                             key=lambda x: x.get_package().get_name()):
+                if not action_is_inbound(tp.get_action()):
+                    continue
+
+                pkgobj = tp.get_package()
+                pkgsize = self._getsize(*pkgobj.get_files())
+                fobj.write(f"{pkgobj.get_name()}.{pkgobj.get_arch()}: {pkgsize}\n")
 
     def install(self, srcglob, dest):
         '''

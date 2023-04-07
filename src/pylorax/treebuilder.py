@@ -155,14 +155,11 @@ class RuntimeBuilder(object):
 
     def writepkglists(self, pkglistdir):
         '''debugging data: write out lists of package contents'''
-        if not os.path.isdir(pkglistdir):
-            os.makedirs(pkglistdir)
-        q = dnf5.rpm.PackageQuery(self.dbo)
-        q.filter_installed()
-        for pkgobj in list(q):
-            with open(joinpaths(pkglistdir, pkgobj.get_name()), "w") as fobj:
-                for fname in pkgobj.get_files():
-                    fobj.write("{0}\n".format(fname))
+        self._runner._writepkglists(pkglistdir)
+
+    def writepkgsizes(self, pkgsizefile):
+        '''debugging data: write a big list of pkg sizes'''
+        self._runner._writepkgsizes(pkgsizefile)
 
     def postinstall(self):
         '''Do some post-install setup work with runtime-postinstall.tmpl'''
@@ -226,16 +223,6 @@ class RuntimeBuilder(object):
                 status = False
 
         return status
-
-    def writepkgsizes(self, pkgsizefile):
-        '''debugging data: write a big list of pkg sizes'''
-        fobj = open(pkgsizefile, "w")
-        getsize = lambda f: os.lstat(f).st_size if os.path.exists(f) else 0
-        q = dnf5.rpm.PackageQuery(self.dbo)
-        q.filter_installed()
-        for p in sorted(list(q), key=lambda x: x.get_name()):
-            pkgsize = sum(getsize(joinpaths(self.vars.root,f)) for f in p.get_files())
-            fobj.write(f"{p.get_name()}.{p.get_arch()}: {pkgsize}\n")
 
     def generate_module_data(self):
         root = self.vars.root

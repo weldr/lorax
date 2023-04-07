@@ -313,6 +313,7 @@ class Lorax(BaseLoraxClass):
         buildstamp.write(joinpaths(self.inroot, ".buildstamp"))
 
         if self.debug:
+            logger.info("writing debug data to pkglists and original-pkgsizes.txt")
             rb.writepkglists(joinpaths(logdir, "pkglists"))
             rb.writepkgsizes(joinpaths(logdir, "original-pkgsizes.txt"))
 
