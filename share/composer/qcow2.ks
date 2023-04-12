@@ -43,11 +43,9 @@ kernel
 -dracut-config-rescue
 
 shim
-shim-ia32
 grub2
 grub2-efi
 grub2-efi-*-cdboot
-grub2-efi-ia32
 efibootmgr
 
 # NOTE lorax-composer will add the recipe packages below here, including the final %end

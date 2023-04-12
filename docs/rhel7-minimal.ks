@@ -55,10 +55,6 @@ shim
 syslinux
 -dracut-config-rescue
 
-# Boot on 32bit UEFI
-shim-ia32
-grub2-efi-ia32
-
 # NOTE: To build a bootable UEFI disk image livemedia-creator needs to be
 #       run on a UEFI system or virt.
 %end
