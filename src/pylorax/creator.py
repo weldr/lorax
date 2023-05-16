@@ -417,10 +417,15 @@ def calculate_disk_size(opts, ks):
     # Disk size for a filesystem image should only be the size of /
     # to prevent surprises when using the same kickstart for different installations.
     unique_partitions = dict((p.mountpoint, p) for p in ks.handler.partition.partitions)
+
     if opts.no_virt and (opts.make_iso or opts.make_fsimage):
         disk_size = 2 + sum(p.size for p in unique_partitions.values() if p.mountpoint == "/")
+        if disk_size == 2:
+            raise RuntimeError("No / partition in the kickstart. Unable to calculate required disk size.")
     else:
         disk_size = 2 + sum(p.size for p in unique_partitions.values())
+        if disk_size == 2:
+            raise RuntimeError("No partitions in the kickstart. Unable to calculate required disk size.")
 
         # reqpart can add 1M, 2M, 200M based on platform. Add 500M to be sure
         if ks.handler.reqpart.seen:
