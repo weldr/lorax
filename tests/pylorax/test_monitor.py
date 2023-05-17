@@ -20,6 +20,24 @@ class LogMonitorTest(unittest.TestCase):
         finally:
             monitor.shutdown()
 
+    def test_monitor_repo(self):
+        monitor = LogMonitor(timeout=1)
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((monitor.host, monitor.port))
+                # Test a base repo cdrom failure
+                # This does NOT cause an error, it can happen when using rhsm in the kickstart
+                s.sendall("18:10:59,811 ERR anaconda:packaging: base repo (CDROM/file:///run/install/sources/mount-0000-cdrom) not valid -- removing it\n".encode("utf8"))
+                time.sleep(1)
+                self.assertFalse(monitor.server.log_check())
+
+                # Test a base repo failure message
+                s.sendall("18:10:59,811 ERR anaconda:packaging: base repo (https://foo.bar) not valid -- removing it\n".encode("utf8"))
+                time.sleep(1)
+                self.assertTrue(monitor.server.log_check())
+        finally:
+            monitor.shutdown()
+
     def test_monitor_IGNORED(self):
         monitor = LogMonitor(timeout=1)
         try:
