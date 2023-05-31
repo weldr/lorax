@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        39.0
+Version:        39.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,18 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed May 31 2023 Brian C. Lane <bcl@redhat.com> 39.1-1
+- livemedia-creator: Reorganize the qemu arch patch (bcl@redhat.com)
+- Make sure -machine is passed to qemu (hadess@hadess.net)
+- Only allow UEFI support to be enabled on x86_64 (hadess@hadess.net)
+- Throw an error when KVM is enabled on non-native installs (hadess@hadess.net)
+- docs: Clarify that kickstarts need a part command (bcl@redhat.com)
+- livemedia-creator: Raise an error when no partitions are in the ks (bcl@redhat.com)
+- monitor: Skip repo errors involving CDROM/file source (bcl@redhat.com)
+- logging: Remove duplicate stream logging (bcl@redhat.com)
+- Pass vga=791 for live basic graphics mode on BIOS (#2176782) (awilliam@redhat.com)
+- livemedia-creator: Use -cpu host by default, add -cpu option to override (bcl@redhat.com)
+
 * Tue Mar 14 2023 Brian C. Lane <bcl@redhat.com> 39.0-1
 - Add setpriv as ostree containers dependency (#2125655) (jkonecny@redhat.com)
 - livemedia-creator: Do not omit plymouth module from dracut (bcl@redhat.com)
