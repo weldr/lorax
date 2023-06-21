@@ -89,25 +89,32 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
 #            dnfbase.init_plugins(disabled_glob=["*"], enable_plugins=dnfplugins)
 
     conf = dnfbase.get_config()
-    conf.logdir().set(logdir)
-    conf.cachedir().set(cachedir)
-    conf.install_weak_deps().set(False)
+    conf.logdir = logdir
+    conf.cachedir = cachedir
+    conf.install_weak_deps = False
+    conf.installroot = installroot
+
+## TODO used for? substitutions?
 ## MISSING    conf.releasever = releasever
-    conf.installroot().set(installroot)
+
+## TODO needed anymore?
 ##    conf.prepend_installroot('persistdir')
+
     # Load the file lists too
-    conf.optional_metadata_types().set(['filelists'])
-    conf.tsflags().add(["nodocs"])
+    conf.optional_metadata_types =['filelists']
+
+## TODO confirm this appends
+    conf.tsflags = ["nodocs"]
+
     # Log details about the solver
-    conf.debug_solver().set(True)
+    conf.debug_solver = True
 
     if proxy:
-        conf.proxy().set(proxy)
+        conf.proxy = proxy
 
     if sslverify == False:
-        conf.sslverify().set(False)
+        conf.sslverify = False
 
-    # DNF 3.2 needs to have module_platform_id set, otherwise depsolve won't work correctly
     if not os.path.exists("/etc/os-release"):
         log.warning("/etc/os-release is missing, cannot determine platform id, falling back to %s", DEFAULT_PLATFORM_ID)
         platform_id = DEFAULT_PLATFORM_ID
@@ -115,7 +122,7 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         os_release = flatconfig("/etc/os-release")
         platform_id = os_release.get("PLATFORM_ID", DEFAULT_PLATFORM_ID)
     log.info("Using %s for module_platform_id", platform_id)
-    conf.module_platform_id().set(platform_id)
+    conf.module_platform_id = platform_id
 
     # Add .repo files
     if repos:
@@ -124,7 +131,7 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             os.mkdir(reposdir)
         for r in repos:
             shutil.copy2(r, reposdir)
-        conf.reposdir().set(reposdir)
+        conf.reposdir = reposdir
 
     dnfbase.setup()
     sack = dnfbase.get_repo_sack()
@@ -137,11 +144,9 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         repo_name = "lorax-repo-%d" % i
         repo = sack.create_repo(repo_name)
         rc = repo.get_config()
-        rc.baseurl().set(r)
+        rc.baseurl = r
         if proxy:
-            rc.proxy().set(proxy)
-        rc.skip_if_unavailable().set(False)
-##        repo.enable()
+            rc.proxy = proxy
         log.info("Added '%s': %s", repo_name, r)
 
     # add the mirrorlists
@@ -152,14 +157,13 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         repo_name = "lorax-mirrorlist-%d" % i
         repo = sack.create_repo(repo_name)
         rc = repo.get_config()
-        rc.mirrorlist().set(r)
+        rc.mirrorlist = r
         if proxy:
-            rc.proxy().set(proxy)
-        rc.skip_if_unavailable().set(False)
-##        repo.enable()
+            rc.proxy = proxy
         log.info("Added '%s': %s", repo_name, r)
 
-## XXX How do you iterate repos ?
+## TODO XXX How do you iterate repos ?
+# https://dnf5.readthedocs.io/en/latest/api/python/libdnf5_repo_repo_query.html
 #    # Enable repos listed on the cmdline
 #    for r in enablerepos:
 #        repolist = dnfbase.repos.get_matching(r)
@@ -183,6 +187,6 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
 
     log.info("Fetching metadata...")
     sack.update_and_load_enabled_repos(False)
-    ## XXX Need to do anything to load comps?
+## TODO XXX Need to do anything to load comps?
 
     return dnfbase

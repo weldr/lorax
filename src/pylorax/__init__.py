@@ -269,7 +269,7 @@ class Lorax(BaseLoraxClass):
         if not isinstance(dbo, dnf5.base.Base):
             logger.critical("no dnf base object")
             sys.exit(1)
-        self.inroot = dbo.get_config().installroot().get_value()
+        self.inroot = dbo.get_config().installroot
         logger.debug("using install root: %s", self.inroot)
 
         if not buildarch:
@@ -293,7 +293,7 @@ class Lorax(BaseLoraxClass):
             logger.fatal("the volume id cannot be longer than 32 characters")
             sys.exit(1)
 
-        # NOTE: rb.root = dbo.get_config().installroot().get_value() (== self.inroot)
+        # NOTE: rb.root = dbo.get_config().installroot (== self.inroot)
         rb = RuntimeBuilder(product=self.product, arch=self.arch,
                             dbo=dbo, templatedir=self.templatedir,
                             installpkgs=installpkgs,

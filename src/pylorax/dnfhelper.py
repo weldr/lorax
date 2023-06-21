@@ -78,9 +78,9 @@ class LoraxDownloadCallback(dnf5.repo.DownloadCallbacks):
         self._update()
         return 0
 
-    def mirror_failure(self, user_cb_data, msg, url):
+    def mirror_failure(self, user_cb_data, msg, url, metadata):
         message = f"{url} - {msg}"
-        logger.critical("Mirror failure on '%s': %s", self.nevra, message)
+        logger.critical("Mirror failure on '%s': %s (%s)", self.nevra, message, metadata)
         return 0
 
 

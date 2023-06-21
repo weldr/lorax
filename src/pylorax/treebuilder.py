@@ -78,7 +78,7 @@ class RuntimeBuilder(object):
                  root=None):
         self.dbo = dbo
         if dbo:
-            root = dbo.get_config().installroot().get_value()
+            root = dbo.get_config().installroot
 
         if not root:
             raise RuntimeError("No root directory passed to RuntimeBuilder")
