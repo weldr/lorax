@@ -41,6 +41,7 @@ import sys, traceback
 import struct
 
 import libdnf5 as dnf5
+from libdnf5.base import GoalProblem_NO_PROBLEM as NO_PROBLEM
 from libdnf5.common import QueryCmp_EQ as EQ
 from libdnf5.common import QueryCmp_GT as GT
 from libdnf5.common import QueryCmp_LT as LT
@@ -787,12 +788,12 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
           Actually install all the packages requested by previous 'installpkg'
           commands.
         '''
-        try:
-            logger.info("Checking dependencies")
-            self.transaction = self.goal.resolve()
-        except Exception as e:
-            logger.error("Dependency check failed: %s", e)
-            raise
+        logger.info("Checking dependencies")
+        self.transaction = self.goal.resolve()
+        if self.transaction.get_problems() != NO_PROBLEM:
+            err = "\n".join(self.transaction.get_resolve_logs_as_strings())
+            logger.error("Dependency check failed: %s", err)
+            raise RuntimeError(err)
         num_pkgs = len(self.transaction.get_transaction_packages())
         logger.info("%d packages selected", num_pkgs)
         if num_pkgs == 0:
