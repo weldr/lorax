@@ -20,14 +20,38 @@ import os
 import shutil
 
 import libdnf5 as dnf5
+from libdnf5.common import QueryCmp_GLOB as GLOB
+from libdnf5.common import QueryCmp_EQ as EQ
 
 from pylorax import DEFAULT_PLATFORM_ID, DEFAULT_RELEASEVER
 from pylorax.sysutils import flatconfig
 
+
+def _repo_onoff(dbo, repo_id, enabled):
+    """Helper function for enabling/disabling repos"""
+    rq = dnf5.repo.RepoQuery(dbo)
+    if any(g for g in ['*', '?', '[', ']'] if g in repo_id):
+        rq.filter_id(repo_id, GLOB)
+    else:
+        rq.filter_id(repo_id, EQ)
+    if len(rq) == 0:
+        log.warning("%s is an unknown repo, not %s it", repo_id, "enabling" if enabled else "disabling")
+        return
+
+    for r in rq:
+        if enabled:
+            r.enable()
+            log.info("Enabled repo %s", r.get_id())
+        else:
+            r.disable()
+            log.info("Disabled repo %s", r.get_id())
+
+
 def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
                         enablerepos=None, disablerepos=None,
                         tempdir="/var/tmp", proxy=None, releasever=DEFAULT_RELEASEVER,
-                        cachedir=None, logdir=None, sslverify=True, dnfplugins=None):
+                        cachedir=None, logdir=None, sslverify=True, dnfplugins=None,
+                        basearch=None):
     """ Create a dnf Base object and setup the repositories and installroot
 
         :param string installroot: Full path to the installroot
@@ -40,9 +64,12 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         :param string releasever: Release version to pass to dnf
         :param string cachedir: Directory to use for caching packages
         :param bool noverifyssl: Set to True to ignore the CA of ssl certs. eg. use self-signed ssl for https repos.
+        :param string basearch: Architecture to use for $basearch substitution in repo urls
 
         If tempdir is not set /var/tmp is used.
         If cachedir is None a dnf.cache directory is created inside tmpdir
+
+        If basearch is not set it uses the host system's machine type.
     """
     def sanitize_repo(repo):
         """Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum"""
@@ -75,7 +102,17 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         if not os.path.isdir(logdir):
             os.mkdir(logdir)
 
+    # Used for url substitutions for $basearch
+    if not basearch:
+        basearch = os.uname().machine
+
     dnfbase = dnf5.base.Base()
+    # TODO Add dnf5 plugin support
+    # Currently the documentation is not complete enough to use plugins with dnf5
+    # So print a warning and carry on if any have been selected
+    if dnfplugins:
+        log.warning("plugins are not yet supported with libdnf5, skipping: %s", dnfplugins)
+
     # Enable DNF pluings
     # NOTE: These come from the HOST system's environment
     # XXX - dnfbase has add_plugin and load_plugins but neither seem to provide the ability to
@@ -94,17 +131,9 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
     conf.install_weak_deps = False
     conf.installroot = installroot
 
-## TODO used for? substitutions?
-## MISSING    conf.releasever = releasever
-
-## TODO needed anymore?
-##    conf.prepend_installroot('persistdir')
-
     # Load the file lists too
-    conf.optional_metadata_types =['filelists']
-
-## TODO confirm this appends
-    conf.tsflags = ["nodocs"]
+    conf.optional_metadata_types = ['filelists']
+    conf.tsflags += ("nodocs",)
 
     # Log details about the solver
     conf.debug_solver = True
@@ -162,31 +191,38 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             rc.proxy = proxy
         log.info("Added '%s': %s", repo_name, r)
 
-## TODO XXX How do you iterate repos ?
-# https://dnf5.readthedocs.io/en/latest/api/python/libdnf5_repo_repo_query.html
-#    # Enable repos listed on the cmdline
-#    for r in enablerepos:
-#        repolist = dnfbase.repos.get_matching(r)
-#        if not repolist:
-#            log.warning("%s is an unknown repo, not enabling it", r)
-#        else:
-#            repolist.enable()
-#            log.info("Enabled repo %s", r)
-#
-#    # Disable repos listed on the cmdline
-#    for r in disablerepos:
-#        repolist = dnfbase.repos.get_matching(r)
-#        if not repolist:
-#            log.warning("%s is an unknown repo, not disabling it", r)
-#        else:
-#            repolist.disable()
-#            log.info("Disabled repo %s", r)
-
     if repos:
         sack.create_repos_from_reposdir()
 
+    # Enable repos listed on the cmdline
+    for r in enablerepos:
+        _repo_onoff(dnfbase, r, True)
+
+    # Disable repos listed on the cmdline
+    for r in disablerepos:
+        _repo_onoff(dnfbase, r, False)
+
+    # Make sure there are enabled repos
+    rq = dnf5.repo.RepoQuery(dnfbase)
+    rq.filter_enabled(True)
+    if len(rq) == 0:
+        log.error("No enabled repos")
+        return None
+    log.info("Using repos: %s", ", ".join(r.get_id() for r in rq))
+
+    # Add substitutions to all enabled repos
+    for r in rq:
+        # Substitutions used with the repo url
+        r.set_substitutions({
+                "releasever": releasever,
+                "basearch": basearch,
+        })
+
     log.info("Fetching metadata...")
-    sack.update_and_load_enabled_repos(False)
-## TODO XXX Need to do anything to load comps?
+    try:
+        sack.update_and_load_enabled_repos(False)
+    except RuntimeError as e:
+        log.error("Problem fetching metadata: %s", e)
+        return None
 
     return dnfbase
