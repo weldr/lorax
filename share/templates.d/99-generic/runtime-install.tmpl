@@ -26,13 +26,26 @@ installpkg grubby
     ## for enterprise switch devices, netinst deployment does not work on
     ## these so there is no point shipping them - see
     ## https://bugzilla.redhat.com/show_bug.cgi?id=2011615
+    ## various iwl package names were changed in linux-firmware-20230625-151
+    ## so need to be excluded or else dnf gets sad - see
+    ## https://pagure.io/releng/issue/11511 . These exclusions can
+    ## be dropped after F38 goes EOL
     installpkg --optional *-firmware --except alsa* --except midisport-firmware \
                            --except crystalhd-firmware --except ivtv-firmware \
                            --except cx18-firmware --except iscan-firmware \
                            --except uhd-firmware --except lulzbot-marlin-firmware \
                            --except gnome-firmware --except sigrok-firmware \
                            --except liquidio-firmware --except netronome-firmware \
-                           --except mrvlprestera-firmware --except mlxsw_spectrum-firmware
+                           --except mrvlprestera-firmware --except mlxsw_spectrum-firmware \
+                           --except iwl3945-firmware --except iwl4965-firmware \
+                           --except iwl100-firmware --except iwl105-firmware \
+                           --except iwl135-firmware --except iwl1000-firmware \
+                           --except iwl2000-firmware --except iwl2030-firmware \
+                           --except iwl5000-firmware --except iwl5150-firmware \
+                           --except iwl6000-firmware --except iwl6000g2a-firmware \
+                           --except iwl6000g2b-firmware --except iwl6050-firmware \
+                           --except iwl3160-firmware --except iwl7260-firmware \
+                           --except iwlax2xx-firmware
     installpkg b43-openfwwf
 %endif
 
