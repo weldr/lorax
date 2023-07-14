@@ -311,7 +311,7 @@ class ImgUtilsTest(unittest.TestCase):
                 mkhfsimg(work_dir, disk_img.name, label="test")
                 self.assertTrue(os.path.exists(disk_img.name))
                 file_details = get_file_magic(disk_img.name)
-                self.assertTrue("Macintosh HFS" in file_details, file_details)
+                self.assertTrue(any(s in file_details for s in ("Macintosh HFS", "Apple HFS")), file_details)
 
     def test_default_image_name(self):
         """Test default_image_name function"""
