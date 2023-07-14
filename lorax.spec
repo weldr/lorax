@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        39.1
+Version:        39.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,18 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Jul 14 2023 Brian C. Lane <bcl@redhat.com> 39.2-1
+- pylint: Ignore false positive from pylint on rawhide (bcl@redhat.com)
+- tests: Fix image_minimizer test dnf usage (bcl@redhat.com)
+- tests: Fix HFS test to work with new get_file_magic output (bcl@redhat.com)
+- ltmpl: Use ProcMount while running the dnf transaction (bcl@redhat.com)
+- imgutils: Split part DracutChroot into ProcMount (bcl@redhat.com)
+- runtime-postinstall: Remove libuser.conf (bcl@redhat.com)
+- runtime-install: exclude renamed iwl firmware packages (awilliam@redhat.com)
+- test_minimizer: dnf5 wants --use-host-config (bcl@redhat.com)
+- Install nvme-cli tool and remove machine specific nvme files (bcl@redhat.com)
+- Revert "Add blacklist_exceptions to multipath.conf" (jstodola@redhat.com)
+
 * Wed May 31 2023 Brian C. Lane <bcl@redhat.com> 39.1-1
 - livemedia-creator: Reorganize the qemu arch patch (bcl@redhat.com)
 - Make sure -machine is passed to qemu (hadess@hadess.net)
