@@ -32,7 +32,7 @@ from pylorax.sysutils import joinpaths, cpfile, mvfile, replace, remove
 from pylorax.dnfhelper import LoraxDownloadCallback, LoraxRpmCallback
 from pylorax.base import DataHolder
 from pylorax.executils import runcmd, runcmd_output
-from pylorax.imgutils import mkcpio
+from pylorax.imgutils import mkcpio, ProcMount
 
 from mako.lookup import TemplateLookup
 from mako.exceptions import text_error_template
@@ -719,12 +719,13 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
             raise
 
         logger.info("Preparing transaction from installation source")
-        try:
-            display = LoraxRpmCallback()
-            self.dbo.do_transaction(display=display)
-        except BaseException as e:
-            logger.error("The transaction process has ended abruptly: %s", e)
-            raise
+        with ProcMount(self.outroot):
+            try:
+                display = LoraxRpmCallback()
+                self.dbo.do_transaction(display=display)
+            except BaseException as e:
+                logger.error("The transaction process has ended abruptly: %s", e)
+                raise
 
         # Reset the package sack to pick up the installed packages
         self.dbo.reset(repos=False)

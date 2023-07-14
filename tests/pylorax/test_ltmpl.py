@@ -213,6 +213,7 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
             else:
                 self.assertEqual(r, [], t[0])
 
+    @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
     def test_01_runner_multi_repo(self):
         """Test installing packages with updates in a 2nd repo"""
         # If this does not raise an error it means that:
