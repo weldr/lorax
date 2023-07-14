@@ -473,20 +473,20 @@ class PartitionMount(object):
         execWithRedirect("kpartx", ["-d", "-s", self.disk_img])
 
 
-class DracutChroot(object):
-    """Setup the chroot for running dracut inside it, cleanup when done
+class ProcMount(object):
+    """Setup /proc, /dev, and optional bind mounts. Cleanup when done.
 
-    This mount /proc, /dev, and /var/tmp plus optional bind mounted directories
+    This mount /proc, /dev, and optional bind mounted directories
     as a list of (source, destination) tuples where destination is relative to the chroot.
     """
     def __init__(self, root, bind=None):
         self.root = root
-        self.bind = [("/var/tmp", "/var/tmp")] + (bind if bind else [])
+        self.bind = bind if bind else []
 
     def __enter__(self):
-        for d in [d for _, d in self.bind] + ["/proc", "/dev", "/etc/dracut.conf.d"]:
+        for d in [d for _, d in self.bind] + ["/proc", "/dev"]:
             if not os.path.exists(self.root + d):
-                logger.warning("Making missing dracut chroot directory: %s", d)
+                logger.warning("Making missing mount directory: %s", d)
                 os.makedirs(self.root + d)
 
         runcmd(["mount", "-t", "proc", "-o", "nosuid,noexec,nodev", "proc", self.root + "/proc" ])
@@ -506,6 +506,13 @@ class DracutChroot(object):
             # In case parallel building of two or more images
             # some mounts in /var/tmp/lorax can be busy at the moment of unmounting
             umount(self.root + d, maxretry=10, retrysleep=5, delete=False)
+
+class DracutChroot(ProcMount):
+    def __init__(self, root, bind=None):
+        super(DracutChroot, self).__init__(root, [("/var/tmp", "/var/tmp")] + (bind if bind else []))
+
+        if not os.path.exists(self.root + "/etc/dracut.conf.d/"):
+            os.makedirs(self.root + "/etc/dracut.conf.d/")
 
     def _copy_conf(self, args):
         """Check the arguments for --conf, copy the file into the chroot under
