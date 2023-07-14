@@ -16,6 +16,9 @@ class LoraxLintConfig(PocketLintConfig):
                                 FalsePositive(r"raise-missing-from"),
                                 FalsePositive(r"redundant-u-string-prefix"),
                                 FalsePositive(r"unspecified-encoding"),
+                                # Python 3.12 problems with pylint/astroid
+                                # see https://github.com/pylint-dev/pylint/issues/8852
+                                FalsePositive(r"Class 'datetime' has no '(now|utcfromtimestamp)' member"),
                               ]
 
     @property
