@@ -105,6 +105,11 @@ installpkg kbd kbd-misc
 ## required for anaconda-dracut (img-lib etc.)
 installpkg tar xz curl bzip2
 
+## this is only recommended by librsvg2 since 2023-07, but in the
+## installer environment many icons used are only present as SVGs,
+## so we really need it
+installpkg rsvg-pixbuf-loader
+
 ## basic system stuff
 installpkg systemd-sysv systemd-units
 installpkg rsyslog
