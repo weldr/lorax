@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        39.2
+Version:        39.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Aug 07 2023 Brian C. Lane <bcl@redhat.com> 39.3-1
+- runtime-install: excluded renamed olpc firmware package (awilliam@redhat.com)
+
 * Fri Jul 14 2023 Brian C. Lane <bcl@redhat.com> 39.2-1
 - pylint: Ignore false positive from pylint on rawhide (bcl@redhat.com)
 - tests: Fix image_minimizer test dnf usage (bcl@redhat.com)
