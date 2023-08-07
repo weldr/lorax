@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.10
+Version:        37.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -172,6 +172,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Aug 07 2023 Brian C. Lane <bcl@redhat.com> 37.11-1
+- runtime-install: excluded renamed olpc firmware package (awilliam@redhat.com)
+- runtime-install: exclude renamed iwl firmware packages (awilliam@redhat.com)
+
 * Mon Dec 12 2022 Brian C. Lane <bcl@redhat.com> 37.10-1
 - tests: Add tzdata package to minimizer test setup (bcl@redhat.com)
 - test: Use Fedora 37 container (bcl@redhat.com)
