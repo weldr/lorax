@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        38.10
+Version:        38.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Aug 07 2023 Brian C. Lane <bcl@redhat.com> 38.11-1
+- runtime-install: excluded renamed olpc firmware package (awilliam@redhat.com)
+- runtime-install: exclude renamed iwl firmware packages (awilliam@redhat.com)
+
 * Mon Mar 27 2023 Brian C. Lane <bcl@redhat.com> 38.10-1
 - Pass vga=791 for live basic graphics mode on BIOS (#2176782) (awilliam@redhat.com)
 
