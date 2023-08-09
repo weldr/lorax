@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        37.11
+Version:        37.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -172,6 +172,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Aug 09 2023 Brian C. Lane <bcl@redhat.com> 37.12-1
+- Exclude more obsoleted libertas firmware packages (awilliam@redhat.com)
+
 * Mon Aug 07 2023 Brian C. Lane <bcl@redhat.com> 37.11-1
 - runtime-install: excluded renamed olpc firmware package (awilliam@redhat.com)
 - runtime-install: exclude renamed iwl firmware packages (awilliam@redhat.com)
