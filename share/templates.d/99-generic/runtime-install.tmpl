@@ -31,7 +31,7 @@ installpkg grubby
     ## various iwl package names were changed in linux-firmware-20230625-151
     ## so need to be excluded or else dnf gets sad - see
     ## https://pagure.io/releng/issue/11511 . These exclusions can
-    ## be dropped after F38 goes EOL . Ditto libertas-usb8388-olpc-firmware
+    ## be dropped after F38 goes EOL . Ditto libertas separate packages
     ## obsoleted in linux-firmware-20230804-152
     installpkg --optional *-firmware --except alsa* --except midisport-firmware \
                            --except crystalhd-firmware --except ivtv-firmware \
@@ -50,7 +50,10 @@ installpkg grubby
                            --except iwl6000-firmware --except iwl6000g2a-firmware \
                            --except iwl6000g2b-firmware --except iwl6050-firmware \
                            --except iwl3160-firmware --except iwl7260-firmware \
-                           --except iwlax2xx-firmware --except libertas-usb8388-olpc-firmware
+                           --except iwlax2xx-firmware \
+                           --except libertas-sd8686-firmware --except libertas-sd8787-firmware \
+                           --except libertas-usb8388-firmware \
+                           --except libertas-usb8388-olpc-firmware
     installpkg b43-openfwwf
 %endif
 
