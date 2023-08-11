@@ -28,6 +28,8 @@ installpkg grubby
     ## https://bugzilla.redhat.com/show_bug.cgi?id=2011615
     ## bfa-firmware contains only obsolete files - see
     ## https://bugzilla.redhat.com/show_bug.cgi?id=2152202
+    ## qcom-firmware we pull in again lower down but *only* on aarch64, it is
+    ## no use on other arches - https://bugzilla.redhat.com/show_bug.cgi?id=2178852
     ## various iwl package names were changed in linux-firmware-20230625-151
     ## so need to be excluded or else dnf gets sad - see
     ## https://pagure.io/releng/issue/11511 . These exclusions can
@@ -53,7 +55,8 @@ installpkg grubby
                            --except iwlax2xx-firmware \
                            --except libertas-sd8686-firmware --except libertas-sd8787-firmware \
                            --except libertas-usb8388-firmware \
-                           --except libertas-usb8388-olpc-firmware
+                           --except libertas-usb8388-olpc-firmware \
+                           --except qcom-firmware
     installpkg b43-openfwwf
 %endif
 
@@ -67,6 +70,7 @@ installpkg glibc-all-langpacks
     installpkg grub2-tools>=${GRUB2VER}
     installpkg shim-aa64
     installpkg uboot-tools
+    installpkg qcom-firmware
 %endif
 %if basearch == "x86_64":
     installpkg grub2-tools-efi>=${GRUB2VER}
