@@ -27,7 +27,7 @@ import os
 # Let's make it so log-level can be adjusted using an env var
 logging.basicConfig(
     format="[%(asctime)s %(name)s:%(levelname)s | %(message)s",
-    level=os.getenv("LORAX_LOG_LEVEL"),
+    level=os.getenv("LORAX_LOG_LEVEL", logging.INFO),
 )
 logger = logging.getLogger("pylorax")
 logger.addHandler(logging.NullHandler())
