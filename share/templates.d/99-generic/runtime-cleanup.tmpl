@@ -329,7 +329,12 @@ removefrom yelp /usr/share/yelp/mathjax*
     removefrom ${branding.logos} /usr/share/plymouth/*
     removefrom ${branding.logos} /etc/*
     removefrom ${branding.logos} /usr/share/icons/{Bluecurve,oxygen}/*
-    removefrom ${branding.logos} /usr/share/{kde4,pixmaps}/*
+
+    # Keep /usr/share/pixmaps/fedora-logo-sprite.svg if it exists
+    # See https://github.com/weldr/lorax/issues/1340
+    removefrom ${branding.logos} /usr/share/kde4/*
+    removefrom ${branding.logos} /usr/share/pixmaps/bootloader/*
+    removefrom ${branding.logos} /usr/share/pixmaps/*.png
 %endif
 
 ## cleanup /boot/ leaving vmlinuz, and .*hmac files
