@@ -383,4 +383,4 @@ remove /etc/pki/ca-trust/extracted/java/cacerts
 
 ## sort groups
 runcmd chroot ${root} /bin/sh -c "LC_ALL=C sort /etc/group > /etc/group- && mv /etc/group- /etc/group"
-runcmd chroot ${root} /bin/sh -c "LC_ALL=C sort /etc/gshadow > /etc/gshadow- && mv /etc/gshadow- /etc/gschadow"
+runcmd chroot ${root} /bin/sh -c "LC_ALL=C sort /etc/gshadow > /etc/gshadow- && mv /etc/gshadow- /etc/gshadow"
