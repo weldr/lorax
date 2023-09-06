@@ -112,6 +112,8 @@ remove etc/lvm/cache/*
 remove etc/lvm/cache
 remove etc/lvm/lvm.conf
 append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
+# dmeventd and event libraries are not installed
+append etc/lvm/lvm.conf "activation {\n\tmonitoring = 0\n}\n"
 
 ## Remove machine specific nvme-cli files
 remove etc/nvme/hostid
