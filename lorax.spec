@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        39.4
+Version:        39.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Sep 07 2023 Brian C. Lane <bcl@redhat.com> 39.5-1
+- Explicitly pull in more filesystem packages (awilliam@redhat.com)
+- runtime-postinstall: Turn off lvm monitoring (bcl@redhat.com)
+- runtime-cleanup.tmpl: fix typo 'gschadow' (chris.riches@nutanix.com)
+- runtime-cleanup: Change how logo pixmaps is cleaned up (bcl@redhat.com)
+- runtime-install: only pull in qcom-firmware on aarch64 (awilliam@redhat.com)
+
 * Wed Aug 09 2023 Brian C. Lane <bcl@redhat.com> 39.4-1
 - Exclude more obsoleted libertas firmware packages (awilliam@redhat.com)
 - Revert "test_minimizer: dnf5 wants --use-host-config" (bcl@redhat.com)
