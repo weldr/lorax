@@ -16,17 +16,42 @@
 import logging
 log = logging.getLogger("pylorax")
 
-import dnf
 import os
 import shutil
+
+import libdnf5 as dnf5
+from libdnf5.common import QueryCmp_GLOB as GLOB
+from libdnf5.common import QueryCmp_EQ as EQ
 
 from pylorax import DEFAULT_PLATFORM_ID, DEFAULT_RELEASEVER
 from pylorax.sysutils import flatconfig
 
+
+def _repo_onoff(dbo, repo_id, enabled):
+    """Helper function for enabling/disabling repos"""
+    rq = dnf5.repo.RepoQuery(dbo)
+    if any(g for g in ['*', '?', '[', ']'] if g in repo_id):
+        rq.filter_id(repo_id, GLOB)
+    else:
+        rq.filter_id(repo_id, EQ)
+    if len(rq) == 0:
+        log.warning("%s is an unknown repo, not %s it", repo_id, "enabling" if enabled else "disabling")
+        return
+
+    for r in rq:
+        if enabled:
+            r.enable()
+            log.info("Enabled repo %s", r.get_id())
+        else:
+            r.disable()
+            log.info("Disabled repo %s", r.get_id())
+
+
 def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
                         enablerepos=None, disablerepos=None,
                         tempdir="/var/tmp", proxy=None, releasever=DEFAULT_RELEASEVER,
-                        cachedir=None, logdir=None, sslverify=True, dnfplugins=None):
+                        cachedir=None, logdir=None, sslverify=True, dnfplugins=None,
+                        basearch=None):
     """ Create a dnf Base object and setup the repositories and installroot
 
         :param string installroot: Full path to the installroot
@@ -39,9 +64,12 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         :param string releasever: Release version to pass to dnf
         :param string cachedir: Directory to use for caching packages
         :param bool noverifyssl: Set to True to ignore the CA of ssl certs. eg. use self-signed ssl for https repos.
+        :param string basearch: Architecture to use for $basearch substitution in repo urls
 
         If tempdir is not set /var/tmp is used.
         If cachedir is None a dnf.cache directory is created inside tmpdir
+
+        If basearch is not set it uses the host system's machine type.
     """
     def sanitize_repo(repo):
         """Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum"""
@@ -74,28 +102,39 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         if not os.path.isdir(logdir):
             os.mkdir(logdir)
 
-    dnfbase = dnf.Base()
+    # Used for url substitutions for $basearch
+    if not basearch:
+        basearch = os.uname().machine
+
+    dnfbase = dnf5.base.Base()
+    # TODO Add dnf5 plugin support
+    # Currently the documentation is not complete enough to use plugins with dnf5
+    # So print a warning and carry on if any have been selected
+    if dnfplugins:
+        log.warning("plugins are not yet supported with libdnf5, skipping: %s", dnfplugins)
+
     # Enable DNF pluings
     # NOTE: These come from the HOST system's environment
-    if dnfplugins:
-        if dnfplugins[0] == "*":
-            # Enable them all
-            dnfbase.init_plugins()
-        else:
-            # Only enable the listed plugins
-            dnfbase.init_plugins(disabled_glob=["*"], enable_plugins=dnfplugins)
-    conf = dnfbase.conf
+    # XXX - dnfbase has add_plugin and load_plugins but neither seem to provide the ability to
+    #       enable/disable based on glob. dnfbase.setup() already calls load_plugins()
+#    if dnfplugins:
+#        if dnfplugins[0] == "*":
+#            # Enable them all
+#            dnfbase.init_plugins()
+#        else:
+#            # Only enable the listed plugins
+#            dnfbase.init_plugins(disabled_glob=["*"], enable_plugins=dnfplugins)
+
+    conf = dnfbase.get_config()
     conf.logdir = logdir
     conf.cachedir = cachedir
-
     conf.install_weak_deps = False
-    conf.releasever = releasever
     conf.installroot = installroot
-    conf.prepend_installroot('persistdir')
-    # this is a weird 'AppendOption' thing that, when you set it,
-    # actually appends. Doing this adds 'nodocs' to the existing list
-    # of values, over in libdnf, it does not replace the existing values.
-    conf.tsflags = ['nodocs']
+
+    # Load the file lists too
+    conf.optional_metadata_types = ['filelists']
+    conf.tsflags += ("nodocs",)
+
     # Log details about the solver
     conf.debug_solver = True
 
@@ -105,7 +144,6 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
     if sslverify == False:
         conf.sslverify = False
 
-    # DNF 3.2 needs to have module_platform_id set, otherwise depsolve won't work correctly
     if not os.path.exists("/etc/os-release"):
         log.warning("/etc/os-release is missing, cannot determine platform id, falling back to %s", DEFAULT_PLATFORM_ID)
         platform_id = DEFAULT_PLATFORM_ID
@@ -122,8 +160,10 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             os.mkdir(reposdir)
         for r in repos:
             shutil.copy2(r, reposdir)
-        conf.reposdir = [reposdir]
-        dnfbase.read_all_repos()
+        conf.reposdir = reposdir
+
+    dnfbase.setup()
+    sack = dnfbase.get_repo_sack()
 
     # add the sources
     for i, r in enumerate(sources):
@@ -131,19 +171,12 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-repo-%d" % i
-        repo = dnf.repo.Repo(repo_name, conf)
-        repo.baseurl = [r]
+        repo = sack.create_repo(repo_name)
+        rc = repo.get_config()
+        rc.baseurl = r
         if proxy:
-            repo.proxy = proxy
-        repo.enable()
-        dnfbase.repos.add(repo)
+            rc.proxy = proxy
         log.info("Added '%s': %s", repo_name, r)
-        log.info("Fetching metadata...")
-        try:
-            repo.load()
-        except dnf.exceptions.RepoError as e:
-            log.error("Error fetching metadata for %s: %s", repo_name, e)
-            return None
 
     # add the mirrorlists
     for i, r in enumerate(mirrorlists):
@@ -151,39 +184,45 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-mirrorlist-%d" % i
-        repo = dnf.repo.Repo(repo_name, conf)
-        repo.mirrorlist = r
+        repo = sack.create_repo(repo_name)
+        rc = repo.get_config()
+        rc.mirrorlist = r
         if proxy:
-            repo.proxy = proxy
-        repo.enable()
-        dnfbase.repos.add(repo)
+            rc.proxy = proxy
         log.info("Added '%s': %s", repo_name, r)
-        log.info("Fetching metadata...")
-        try:
-            repo.load()
-        except dnf.exceptions.RepoError as e:
-            log.error("Error fetching metadata for %s: %s", repo_name, e)
-            return None
+
+    if repos:
+        sack.create_repos_from_reposdir()
 
     # Enable repos listed on the cmdline
     for r in enablerepos:
-        repolist = dnfbase.repos.get_matching(r)
-        if not repolist:
-            log.warning("%s is an unknown repo, not enabling it", r)
-        else:
-            repolist.enable()
-            log.info("Enabled repo %s", r)
+        _repo_onoff(dnfbase, r, True)
 
     # Disable repos listed on the cmdline
     for r in disablerepos:
-        repolist = dnfbase.repos.get_matching(r)
-        if not repolist:
-            log.warning("%s is an unknown repo, not disabling it", r)
-        else:
-            repolist.disable()
-            log.info("Disabled repo %s", r)
+        _repo_onoff(dnfbase, r, False)
 
-    dnfbase.fill_sack(load_system_repo=False)
-    dnfbase.read_comps()
+    # Make sure there are enabled repos
+    rq = dnf5.repo.RepoQuery(dnfbase)
+    rq.filter_enabled(True)
+    if len(rq) == 0:
+        log.error("No enabled repos")
+        return None
+    log.info("Using repos: %s", ", ".join(r.get_id() for r in rq))
+
+    # Add substitutions to all enabled repos
+    for r in rq:
+        # Substitutions used with the repo url
+        r.set_substitutions({
+                "releasever": releasever,
+                "basearch": basearch,
+        })
+
+    log.info("Fetching metadata...")
+    try:
+        sack.update_and_load_enabled_repos(False)
+    except RuntimeError as e:
+        log.error("Problem fetching metadata: %s", e)
+        return None
 
     return dnfbase

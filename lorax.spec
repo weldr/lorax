@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        39.5
+Version:        40.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -50,7 +50,7 @@ Requires:       psmisc
 Requires:       libselinux-python3
 Requires:       python3-mako
 Requires:       python3-kickstart >= 3.19
-Requires:       python3-dnf >= 3.2.0
+Requires:       python3-libdnf5
 Requires:       python3-librepo
 Requires:       python3-pycdio
 
@@ -168,6 +168,43 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Feb 01 2024 Brian C. Lane <bcl@redhat.com> 40.4-1
+- mkksiso: Add support for adding an anaconda updates.img (jkonecny@redhat.com)
+- runtime-install: drop kdump-anaconda-addon (awilliam@redhat.com)
+- ltmpl: Handle installing provides with resolve_pkg_spec (bcl@redhat.com)
+- s390: Escape volid before using it (bcl@redhat.com)
+- aarch64: Escape volid before using it (bcl@redhat.com)
+- runtime-install: drop retired pcmciautils (awilliam@redhat.com)
+- runtime-install: wget2-wget has replaced wget (awilliam@redhat.com)
+- runtime-cleanup: anaconda's new interface needs stdbuf (kkoukiou@redhat.com)
+- ltmpl: Pass packages to add_rpm_install as strings (bcl@redhat.com)
+
+* Wed Dec 20 2023 Brian C. Lane <bcl@redhat.com> 40.3-1
+- runtime-install: Work around problem with conflicting packages (bcl@redhat.com)
+- ltmpl: Check for errors after running the transaction (bcl@redhat.com)
+
+* Tue Dec 12 2023 Brian C. Lane <bcl@redhat.com> 40.2-1
+- ltmpl: Remove duplicate package objects from dnf5 results (bcl@redhat.com)
+- test-in-podman: Fix problem running in github actions (bcl@redhat.com)
+
+* Mon Dec 11 2023 Brian C. Lane <bcl@redhat.com> 40.1-1
+- ltmpl: Filter out other arches, clean up naming (bcl@redhat.com)
+- test: Add pigz to test-packages (bcl@redhat.com)
+- dnfbase: Fix url substitution support (bcl@redhat.com)
+- ltmpl: Add transaction error handling (bcl@redhat.com)
+- test-packages: Make sure python3-libdnf5 is installed (bcl@redhat.com)
+- Updates for latest libdnf5 changes (bcl@redhat.com)
+- spec: Switch to using python3-libdnf5 (bcl@redhat.com)
+- Fix writing out debug info for package files and sizes (bcl@redhat.com)
+- libdnf5: Switch lorax to use libdnf5 (bcl@redhat.com)
+- Add python3-libdnf5 to the list of test packages (bcl@redhat.com)
+- Adjust runtime-postinstall.tmpl for systemd config files move (zbyszek@in.waw.pl)
+
+* Mon Oct 02 2023 Brian C. Lane <bcl@redhat.com> 40.0-1
+- Remove some unneccessary storage packages from runtime-install (vtrefny@redhat.com)
+- Do not install polkit-gnome for blivet-gui (vtrefny@redhat.com)
+- docs: Update the quickstart example command (vtrefny@redhat.com)
+
 * Thu Sep 07 2023 Brian C. Lane <bcl@redhat.com> 39.5-1
 - Explicitly pull in more filesystem packages (awilliam@redhat.com)
 - runtime-postinstall: Turn off lvm monitoring (bcl@redhat.com)

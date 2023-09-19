@@ -116,7 +116,7 @@ local-srpm: local $(PKGNAME).spec
 	  lorax.spec
 
 test-in-copy:
-	rsync -a --exclude=.git /lorax-ro/ /lorax/
+	rsync -a --no-perms --exclude=.git /lorax-ro/ /lorax/
 	make -C /lorax/ $(RUN_TESTS)
 	cp /lorax/.coverage /test-results/
 

@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, runtime_base, basearch, inroot, outroot"/>
+<%page args="kernels, runtime_img, runtime_base, basearch, inroot, outroot, isolabel"/>
 <%
 configdir="tmp/config_files/s390"
 BOOTDIR="images"
@@ -8,6 +8,12 @@ LORAXDIR="usr/share/lorax/"
 MKS390IMAGE="/usr/bin/mk-s390image"
 # The assumption seems to be that there is only one s390 kernel, ever
 kernel = kernels[0]
+
+## Don't allow spaces or escape characters in the iso label
+def valid_label(ch):
+    return ch.isalnum() or ch == '_'
+
+isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 
 import os
 from os.path import basename

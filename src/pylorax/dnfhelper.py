@@ -22,11 +22,11 @@
 
 import logging
 logger = logging.getLogger("pylorax.dnfhelper")
-import dnf
-import dnf.transaction
-import collections
 import time
 import pylorax.output as output
+
+import libdnf5 as dnf5
+SUCCESSFUL = dnf5.repo.DownloadCallbacks.TransferStatus_SUCCESSFUL
 
 __all__ = ['LoraxDownloadCallback', 'LoraxRpmCallback']
 
@@ -41,70 +41,76 @@ def _paced(fn):
     return paced_fn
 
 
-class LoraxDownloadCallback(dnf.callback.DownloadProgress):
-    def __init__(self):
-        self.downloads = collections.defaultdict(int)
+class LoraxDownloadCallback(dnf5.repo.DownloadCallbacks):
+    def __init__(self, total_files):
+        super(LoraxDownloadCallback, self).__init__()
         self.last_time = time.time()
-        self.total_files = 0
-        self.total_size = 0
-
+        self.total_files = total_files
         self.pkgno = 0
-        self.total = 0
 
         self.output = output.LoraxOutput()
+        self.nevra = "unknown"
+
+    def add_new_download(self, user_data, description, total_to_download):
+        self.nevra = description or "unknown"
+
+        # Returning anything here makes it crash
+        return None
 
     @_paced
     def _update(self):
-        msg = "Downloading %(pkgno)s / %(total_files)s RPMs, " \
-              "%(downloaded)s / %(total_size)s (%(percent)d%%) done.\n"
-        downloaded = sum(self.downloads.values())
+        msg = "Downloading %(pkgno)s / %(total_files)s RPMs\n"
         vals = {
-            'downloaded'  : downloaded,
-            'percent'     : int(100 * downloaded/self.total_size),
             'pkgno'       : self.pkgno,
             'total_files' : self.total_files,
-            'total_size'  : self.total_size
         }
         self.output.write(msg % vals)
 
-    def end(self, payload, status, msg):
-        nevra = str(payload)
-        if status is dnf.callback.STATUS_OK:
-            self.downloads[nevra] = payload.download_size
+    def end(self, user_cb_data, status, msg):
+        if status == SUCCESSFUL:
             self.pkgno += 1
             self._update()
-            return
-        logger.critical("Failed to download '%s': %d - %s", nevra, status, msg)
+        else:
+            logger.critical("Failed to download '%s': %d - %s", self.nevra, status, msg)
+        return 0
 
-    def progress(self, payload, done):
-        nevra = str(payload)
-        self.downloads[nevra] = done
+    def progress(self, user_cb_data, total_to_download, downloaded):
         self._update()
+        return 0
 
-    # dnf 2.5.0 adds a new argument, accept it if it is passed
-    # pylint: disable=arguments-differ
-    def start(self, total_files, total_size, total_drpms=0):
-        self.total_files = total_files
-        self.total_size = total_size
+    def mirror_failure(self, user_cb_data, msg, url, metadata):
+        message = f"{url} - {msg}"
+        logger.critical("Mirror failure on '%s': %s (%s)", self.nevra, message, metadata)
+        return 0
 
 
-class LoraxRpmCallback(dnf.callback.TransactionProgress):
-    def __init__(self):
-        super(LoraxRpmCallback, self).__init__()
-        self._last_ts = None
+class LoraxRpmCallback(dnf5.rpm.TransactionCallbacks):
+    def install_start(self, item, total):
+        action = dnf5.base.transaction.transaction_item_action_to_string(item.get_action())
+        package = item.get_package().get_nevra()
+        logger.info("%s %s", action, package)
 
-    def progress(self, package, action, ti_done, ti_total, ts_done, ts_total):
-        if action == dnf.transaction.PKG_INSTALL:
-            # do not report same package twice
-            if self._last_ts == ts_done:
-                return
-            self._last_ts = ts_done
+    # pylint: disable=redefined-builtin
+    def script_start(self, item, nevra, type):
+        if not item or not type:
+            return
 
-            msg = '(%d/%d) %s' % (ts_done, ts_total, package)
-            logger.info(msg)
-        elif action == dnf.transaction.TRANS_POST:
-            msg = "Performing post-installation setup tasks"
-            logger.info(msg)
+        package = item.get_package().get_nevra()
+        script_type = self.script_type_to_string(type)
+        logger.info("Running %s for %s", script_type, package)
 
-    def error(self, message):
-        logger.warning(message)
+    ## NOTE: These likely will not work right, SWIG seems to crash when raising errors
+    ##       from callbacks.
+    def unpack_error(self, item):
+        package = item.get_package().get_nevra()
+        raise RuntimeError(f"unpack_error on {package}")
+
+    def cpio_error(self, item):
+        package = item.get_package().get_nevra()
+        raise RuntimeError(f"cpio_error on {package}")
+
+    # pylint: disable=redefined-builtin
+    def script_error(self, item, nevra, type, return_code):
+        package = item.get_package().get_nevra()
+        script_type = self.script_type_to_string(type)
+        raise RuntimeError(f"script_error on {package}: {script_type} rc={return_code}")

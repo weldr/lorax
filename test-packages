@@ -6,10 +6,12 @@ isomd5sum
 libselinux-python3
 make
 pbzip2
+pigz
 pykickstart
 python3-coverage
 python3-coveralls
 python3-librepo
+python3-libdnf5
 python3-magic
 python3-mako
 python3-pocketlint
