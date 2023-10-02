@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        39.5
+Version:        40.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Oct 02 2023 Brian C. Lane <bcl@redhat.com> 40.0-1
+- Remove some unneccessary storage packages from runtime-install (vtrefny@redhat.com)
+- Do not install polkit-gnome for blivet-gui (vtrefny@redhat.com)
+- docs: Update the quickstart example command (vtrefny@redhat.com)
+
 * Thu Sep 07 2023 Brian C. Lane <bcl@redhat.com> 39.5-1
 - Explicitly pull in more filesystem packages (awilliam@redhat.com)
 - runtime-postinstall: Turn off lvm monitoring (bcl@redhat.com)
