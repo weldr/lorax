@@ -116,7 +116,13 @@ def mksquashfs(rootdir, outfile, compression="default", compressargs=None):
     compressargs = compressargs or []
     if compression != "default":
         compressargs = ["-comp", compression] + compressargs
-    return execWithRedirect("mksquashfs", [rootdir, outfile] + compressargs)
+    if execWithRedirect("mksquashfs", [rootdir, outfile] + compressargs):
+        msg = (
+            'External program "mksquashfs" is failed. '
+            'See program.log for details'
+        )
+        logger.error(msg)
+        raise RuntimeError(msg)
 
 def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
     """
