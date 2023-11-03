@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.23
+Version:        34.9.24
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Nov 03 2023 Brian C. Lane <bcl@redhat.com> 34.9.24-1
+- Add setpriv as ostree containers dependency (jkonecny) (jkonecny)
+  Resolves: RHEL-15123
 * Wed Jan 11 2023 Brian C. Lane <bcl@redhat.com> 34.9.23-1
 - rsyslog.conf: Set WorkDirectory to /var/lib/rsyslog (bcl)
   Resolves: rhbz#2158731
