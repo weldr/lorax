@@ -6,6 +6,7 @@ isomd5sum
 libselinux-python3
 make
 pbzip2
+pigz
 pykickstart
 python3-coverage
 python3-coveralls
