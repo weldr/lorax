@@ -52,7 +52,8 @@ remove usr/lib/tmpfiles.d/etc.conf
 
 ## Make logind activate anaconda-shell@.service on switch to empty VT
 symlink anaconda-shell@.service lib/systemd/system/autovt@.service
-replace "#ReserveVT=6" "ReserveVT=2" etc/systemd/logind.conf
+mkdir usr/lib/systemd/logind.conf.d
+append usr/lib/systemd/logind.conf.d/anaconda-shell.conf "[Login]\nReserveVT=2"
 
 ## Don't write the journal to the overlay, just keep it in RAM
 remove var/log/journal
