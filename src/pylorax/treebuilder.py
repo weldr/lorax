@@ -84,7 +84,8 @@ class RuntimeBuilder(object):
             raise RuntimeError("No root directory passed to RuntimeBuilder")
 
         self._runner = LoraxTemplateRunner(inroot=root, outroot=root,
-                                           dbo=dbo, templatedir=templatedir)
+                                           dbo=dbo, templatedir=templatedir,
+                                           basearch=arch.basearch)
         self.add_templates = add_templates or []
         self.add_template_vars = add_template_vars or {}
         self._installpkgs = installpkgs or []
@@ -280,7 +281,8 @@ class TreeBuilder(object):
                                isolabel=isolabel, udev=udev_escape, domacboot=domacboot, doupgrade=doupgrade,
                                workdir=workdir, lower=string_lower,
                                extra_boot_args=extra_boot_args)
-        self._runner = LoraxTemplateRunner(inroot, outroot, templatedir=templatedir)
+        self._runner = LoraxTemplateRunner(inroot, outroot, templatedir=templatedir,
+                                           basearch=arch.basearch)
         self._runner.defaults = self.vars
         self.add_templates = add_templates or []
         self.add_template_vars = add_template_vars or {}

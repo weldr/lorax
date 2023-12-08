@@ -124,7 +124,7 @@ class TemplateRunner(object):
     This class parses and executes Lorax templates. Sample usage:
 
       # install a bunch of packages
-      runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
+      runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj, basearch="x86_64")
       runner.run("install-packages.ltmpl")
 
     NOTES:
@@ -250,6 +250,9 @@ class InstallpkgMixin:
             else:
                 raise RuntimeError(f"Unknown comparison '{pcv[1]}' operator")
 
+        # Filter out other arches, list should include basearch and noarch
+        query.filter_arch(self._filter_arches)
+
         # MUST be added last. Otherwise it will only return the latest, not the latest of the
         # filtered results.
         query.filter_latest_evr()
@@ -320,27 +323,23 @@ class InstallpkgMixin:
                 # the filtering is done the hard way.
 
                 # Get the latest package, or package matching the selected version
-                ## TODO -- rename this, it is no longer names, it is package objects
-                pkgnames = self._pkgver(pkg)
-                if not pkgnames:
-## XXX How does it translate exceptions?
-#                    raise dnf.exceptions.PackageNotFoundError("no package matched", pkg)
+                pkgobjs = self._pkgver(pkg)
+                if not pkgobjs:
                     raise RuntimeError(f"no package matched {pkg}")
 
-                # XXX DEBUG - I am seeing 2 entries for the same package name when the sack
-                # isn't setup correctly, might just leave this here...
-                if len(pkgnames) == 2 and pkgnames[0].get_nevra() == pkgnames[1].get_nevra():
+                # Catch problems with sack setup, there should not be duplicate packages
+                if len(pkgobjs) == 2 and pkgobjs[0].get_nevra() == pkgobjs[1].get_nevra():
                     raise RuntimeError("Duplicate packages found in _pkgver request")
 
                 # Apply excludes to the name only
                 for exclude in excludes:
-                    pkgnames = [p for p in pkgnames if not fnmatch.fnmatch(p.get_name(), exclude)]
+                    pkgobjs = [p for p in pkgobjs if not fnmatch.fnmatch(p.get_name(), exclude)]
 
                 # If the request is a glob, expand it in the log
                 if any(g for g in ['*','?','.'] if g in pkg):
-                    logger.info("installpkg: %s expands to %s", pkg, ",".join(p.get_nevra() for p in pkgnames))
+                    logger.info("installpkg: %s expands to %s", pkg, ",".join(p.get_nevra() for p in pkgobjs))
 
-                for p in pkgnames:
+                for p in pkgobjs:
                     try:
                         self.goal.add_rpm_install(p)
                     except Exception as e: # pylint: disable=broad-except
@@ -363,7 +362,7 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
     This class parses and executes Lorax templates. Sample usage:
 
       # install a bunch of packages
-      runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
+      runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj, basearch="x86_64")
       runner.run("install-packages.ltmpl")
 
       # modify a runtime dir
@@ -390,7 +389,7 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
     * Commands should raise exceptions for errors - don't use sys.exit()
     '''
     def __init__(self, inroot, outroot, dbo=None, fatalerrors=True,
-                                        templatedir=None, defaults=None):
+                                        templatedir=None, defaults=None, basearch=None):
         self.inroot = inroot
         self.outroot = outroot
         self.dbo = dbo
@@ -402,6 +401,11 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
         builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
                               glob=lambda g: list(rglob(g, root=inroot)))
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
+
+        # Setup arch filter for package query
+        self._filter_arches = ["noarch"]
+        if basearch:
+            self._filter_arches.append(basearch)
 
         super(LoraxTemplateRunner, self).__init__(fatalerrors, templatedir, defaults, builtins)
         # TODO: set up custom logger with a filter to add line info
@@ -980,5 +984,4 @@ class LiveTemplateRunner(TemplateRunner, InstallpkgMixin):
         self.goal = dnf5.base.Goal(self.dbo)
         self.pkgs = []
         self.pkgnames = []
-
         super(LiveTemplateRunner, self).__init__(fatalerrors, templatedir, defaults)

@@ -154,7 +154,8 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         self.runner = LoraxTemplateRunner(inroot=self.root_dir,
                                           outroot=self.root_dir,
                                           dbo=self.dnfbase,
-                                          templatedir="./tests/pylorax/templates")
+                                          templatedir="./tests/pylorax/templates",
+                                          basearch="x86_64")
 
     @classmethod
     def tearDownClass(self):
