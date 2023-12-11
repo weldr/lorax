@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.0
+Version:        40.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,19 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Dec 11 2023 Brian C. Lane <bcl@redhat.com> 40.1-1
+- ltmpl: Filter out other arches, clean up naming (bcl@redhat.com)
+- test: Add pigz to test-packages (bcl@redhat.com)
+- dnfbase: Fix url substitution support (bcl@redhat.com)
+- ltmpl: Add transaction error handling (bcl@redhat.com)
+- test-packages: Make sure python3-libdnf5 is installed (bcl@redhat.com)
+- Updates for latest libdnf5 changes (bcl@redhat.com)
+- spec: Switch to using python3-libdnf5 (bcl@redhat.com)
+- Fix writing out debug info for package files and sizes (bcl@redhat.com)
+- libdnf5: Switch lorax to use libdnf5 (bcl@redhat.com)
+- Add python3-libdnf5 to the list of test packages (bcl@redhat.com)
+- Adjust runtime-postinstall.tmpl for systemd config files move (zbyszek@in.waw.pl)
+
 * Mon Oct 02 2023 Brian C. Lane <bcl@redhat.com> 40.0-1
 - Remove some unneccessary storage packages from runtime-install (vtrefny@redhat.com)
 - Do not install polkit-gnome for blivet-gui (vtrefny@redhat.com)
