@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.1
+Version:        40.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Dec 12 2023 Brian C. Lane <bcl@redhat.com> 40.2-1
+- ltmpl: Remove duplicate package objects from dnf5 results (bcl@redhat.com)
+- test-in-podman: Fix problem running in github actions (bcl@redhat.com)
+
 * Mon Dec 11 2023 Brian C. Lane <bcl@redhat.com> 40.1-1
 - ltmpl: Filter out other arches, clean up naming (bcl@redhat.com)
 - test: Add pigz to test-packages (bcl@redhat.com)
