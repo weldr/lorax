@@ -253,9 +253,13 @@ class InstallpkgMixin:
         # Filter out other arches, list should include basearch and noarch
         query.filter_arch(self._filter_arches)
 
-        # MUST be added last. Otherwise it will only return the latest, not the latest of the
-        # filtered results.
+        # MUST be after the comparison filters. Otherwise it will only return
+        # the latest, not the latest of the filtered results.
         query.filter_latest_evr()
+
+        # Filter based on repo priority. Except that if they are the same priority it returns
+        # all of them :/
+        query.filter_priority()
         return list(query)
 
     def installpkg(self, *pkgs):
@@ -327,9 +331,15 @@ class InstallpkgMixin:
                 if not pkgobjs:
                     raise RuntimeError(f"no package matched {pkg}")
 
-                # Catch problems with sack setup, there should not be duplicate packages
-                if len(pkgobjs) == 2 and pkgobjs[0].get_nevra() == pkgobjs[1].get_nevra():
-                    raise RuntimeError("Duplicate packages found in _pkgver request")
+                ## REMOVE DUPLICATES
+                ## If there are duplicate packages from different repositories with the same
+                ## priority they will be listed more than once. This is especially bad with
+                ## globs like *-firmware
+                ##
+                ## ASSUME the same nevra is the same package, no matter what repo it comes
+                ## from.
+                nodupes = dict(zip([p.get_nevra() for p in pkgobjs], pkgobjs))
+                pkgobjs = nodupes.values()
 
                 # Apply excludes to the name only
                 for exclude in excludes:
