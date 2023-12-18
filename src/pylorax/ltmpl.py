@@ -832,7 +832,10 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
         self.transaction.set_callbacks(dnf5.rpm.TransactionCallbacksUniquePtr(display))
         with ProcMount(self.outroot):
             try:
-                self.transaction.run()
+                result = self.transaction.run()
+                if result != dnf5.base.Transaction.TransactionRunResult_SUCCESS:
+                    err = "\n".join(self.transaction.get_transaction_problems())
+                    raise RuntimeError(err)
             except Exception as e:
                 logger.error("The transaction process has ended abruptly: %s", e)
                 raise
