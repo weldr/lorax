@@ -338,7 +338,7 @@ class InstallpkgMixin:
                 ##
                 ## ASSUME the same nevra is the same package, no matter what repo it comes
                 ## from.
-                nodupes = dict(zip([p.get_nevra() for p in pkgobjs], pkgobjs))
+                nodupes = dict(zip([p.get_full_nevra() for p in pkgobjs], pkgobjs))
                 pkgobjs = nodupes.values()
 
                 # Apply excludes to the name only
@@ -351,7 +351,13 @@ class InstallpkgMixin:
 
                 for p in pkgobjs:
                     try:
-                        self.goal.add_rpm_install(p)
+                        # Pass them to dnf as NEVRA strings, duplicates are handled differntly
+                        # than when they are passed as objects. See:
+                        # https://github.com/rpm-software-management/dnf5/issues/1090#issuecomment-1873837189
+                        # With the dupe removal code above this isn't strictly needed, but it should
+                        # prevent problems if two separate install commands try to add the same
+                        # package.
+                        self.goal.add_rpm_install(p.get_full_nevra())
                     except Exception as e: # pylint: disable=broad-except
                         if required:
                             raise
