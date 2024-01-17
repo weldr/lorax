@@ -325,6 +325,13 @@ removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
 removefrom xorg-x11-drv-wacom /usr/bin/*
 removefrom yelp /usr/share/yelp/mathjax*
 
+## Get rid of new binaries added from Weston pulling in new dependencies
+## We cannot use them anyway
+removefrom libbs2b /usr/bin/*
+removefrom ladspa /usr/bin/*
+removefrom rubberband /usr/bin/*
+removefrom flite /usr/bin/*
+
 %if branding.release:
     removefrom ${branding.logos} /usr/share/plymouth/*
     removefrom ${branding.logos} /etc/*
