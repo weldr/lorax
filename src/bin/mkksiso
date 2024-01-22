@@ -434,7 +434,7 @@ def CheckDiscinfo(path):
             raise RuntimeError("iso arch does not match the host arch.")
 
 
-def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
+def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=None,
                     cmdline="", rm_args="", new_volid="", implantmd5=True,
                     skip_efi=False):
     """
@@ -511,7 +511,12 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
         for p in add_paths:
             cmd.extend(["-map", p, os.path.basename(p)])
 
-        if CheckBigFiles(add_paths):
+        # include updates image which will be automatically loaded when on correct place
+        if updates_image:
+            cmd.extend(["-map", updates_image, "updates/updates.img"])
+
+        check_paths = add_paths if not updates_image else add_paths + [updates_image]
+        if CheckBigFiles(check_paths):
             if "-as" not in cmd:
                 cmd.extend(["-as", "mkisofs"])
             cmd.extend(["-iso-level", "3"])
@@ -555,6 +560,8 @@ def setup_arg_parser():
                         help="Do not run implantisomd5 on the ouput iso")
     parser.add_argument("--ks", type=os.path.abspath, metavar="KICKSTART",
                         help="Optional kickstart to add to the ISO")
+    parser.add_argument("-u", "--updates", type=os.path.abspath, metavar="IMAGE",
+                        help="Optional updates image to add to the ISO")
     parser.add_argument("-V", "--volid", dest="volid", help="Set the ISO volume id, defaults to input's", default=None)
     parser.add_argument("--skip-mkefiboot", action="store_true", dest="skip_efi",
                         help="Skip running mkefiboot")
@@ -599,14 +606,14 @@ def main():
             log.error("Use either --ks KICKSTART or positional KICKSTART but not both")
             errors = True
 
-        if not any([args.ks or args.ks_pos, args.add_paths, args.cmdline, args.rm_args, args.volid]):
-            log.error("Nothing to do - pass one or more of --ks, --add, --cmdline, --rm-args, --volid")
+        if not any([args.ks or args.ks_pos, args.updates, args.add_paths, args.cmdline, args.rm_args, args.volid]):
+            log.error("Nothing to do - pass one or more of --ks, --updates, --add, --cmdline, --rm-args, --volid")
             errors = True
 
         if errors:
             raise RuntimeError("Problems running %s" % sys.argv[0])
 
-        MakeKickstartISO(args.input_iso, args.output_iso, args.ks or args.ks_pos,
+        MakeKickstartISO(args.input_iso, args.output_iso, args.ks or args.ks_pos, args.updates,
                          args.add_paths, args.cmdline, args.rm_args,
                          args.volid, args.no_md5sum, args.skip_efi)
     except RuntimeError as e:
