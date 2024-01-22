@@ -249,3 +249,20 @@ class ISOTestCase(unittest.TestCase):
 
             # Read the modified config file(s) and compare to result file
             check_cfg_results(self, tmpdir, self.configs)
+
+    def test_MakeKickstartISO_updates(self):
+        """
+        Test if updates image is stored in the ISO correctly.
+        """
+
+        self.out_iso = tempfile.mktemp(prefix="mkksiso-")
+
+        with tempfile.NamedTemporaryFile() as mocked_updates:
+            open(mocked_updates.name, "wb").close()
+
+            MakeKickstartISO(self.test_iso, self.out_iso, updates_image=mocked_updates.name, skip_efi=True)
+
+            with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpdir:
+                ExtractISOFiles(self.out_iso, ["updates/updates.img"], tmpdir)
+
+                self.assertTrue(os.path.exists(os.path.join(tmpdir, "updates/updates.img")))
