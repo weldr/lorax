@@ -6,6 +6,12 @@ KERNELDIR=PXEBOOTDIR
 STAGE2IMG="images/install.img"
 LORAXDIR="usr/share/lorax/"
 
+## Don't allow spaces or escape characters in the iso label
+def valid_label(ch):
+    return ch.isalnum() or ch == '_'
+
+isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
+
 import os
 from os.path import basename
 from pylorax.sysutils import joinpaths
