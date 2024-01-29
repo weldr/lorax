@@ -43,11 +43,6 @@ import struct
 import libdnf5 as dnf5
 from libdnf5.base import GoalProblem_NO_PROBLEM as NO_PROBLEM
 from libdnf5.common import QueryCmp_EQ as EQ
-from libdnf5.common import QueryCmp_GT as GT
-from libdnf5.common import QueryCmp_LT as LT
-from libdnf5.common import QueryCmp_GTE as GTE
-from libdnf5.common import QueryCmp_LTE as LTE
-from libdnf5.common import QueryCmp_GLOB as GLOB
 action_is_inbound = dnf5.base.transaction.transaction_item_action_is_inbound
 
 
@@ -210,14 +205,11 @@ class InstallpkgMixin:
         """
         query = dnf5.rpm.PackageQuery(self.dbo)
 
-        # Always return the highest of the filtered results
-        if not any(g for g in ['=', '<', '>', '!'] if g in pkg_spec):
-            # glob?
-            if any(g for g in ['*', '?', '[', ']'] if g in pkg_spec):
-                query.filter_name([pkg_spec], GLOB)
-            else:
-                query.filter_name([pkg_spec], EQ)
-        else:
+        # Use default settings - https://dnf5.readthedocs.io/en/latest/api/c%2B%2B/libdnf5_goal_elements.html#goal-structures-and-enums
+        settings = dnf5.base.ResolveSpecSettings()
+
+        # Does it contain comparison operators?
+        if any(g for g in ['=', '<', '>', '!'] if g in pkg_spec):
             pcv = re.split(r'([!<>=]+)', pkg_spec)
             if not pcv[0]:
                 raise RuntimeError("Missing package name")
@@ -226,29 +218,21 @@ class InstallpkgMixin:
             if len(pcv) != 3:
                 raise RuntimeError("Too many comparisons")
 
-            query.filter_name([pcv[0]], EQ)
-
-            # Parse the comparison operators
-            cmp_map = {
-                    "=":    EQ,
-                    "==":   EQ,
-                    ">":    GT,
-                    ">=":   GTE,
-                    "=>":   GTE,
-                    "<":    LT,
-                    "<=":   LTE,
-                    "=<":   LTE,
-            }
-            if pcv[1] in cmp_map:
-                if ":" not in pcv[2]:
-                    # Filter wants an epoch, assume 0 for unversioned compares
-                    query.filter_evr(["0:"+pcv[2]], cmp_map[pcv[1]])
-                else:
-                    query.filter_evr([pcv[2]], cmp_map[pcv[1]])
-            elif pcv[1] in ["<>", "!="]:
+            # These are not supported, but dnf5 doesn't raise any errors, just returns no results
+            if pcv[1] in ("!=", "<>"):
                 raise RuntimeError(f"libdnf5 does not support using '{pcv[1]}' to compare versions")
-            else:
+            if pcv[1] in ("<<", ">>"):
                 raise RuntimeError(f"Unknown comparison '{pcv[1]}' operator")
+
+            # It wants a single '=' not double...
+            if pcv[1] == "==":
+                pcv[1] = "="
+
+            # DNF wants spaces which we can't support in the template, rebuild the spec
+            # with them.
+            pkg_spec = " ".join(pcv)
+
+        query.resolve_pkg_spec(pkg_spec, settings, False)
 
         # Filter out other arches, list should include basearch and noarch
         query.filter_arch(self._filter_arches)
@@ -261,6 +245,7 @@ class InstallpkgMixin:
         # all of them :/
         query.filter_priority()
         return list(query)
+
 
     def installpkg(self, *pkgs):
         '''
@@ -345,8 +330,8 @@ class InstallpkgMixin:
                 for exclude in excludes:
                     pkgobjs = [p for p in pkgobjs if not fnmatch.fnmatch(p.get_name(), exclude)]
 
-                # If the request is a glob, expand it in the log
-                if any(g for g in ['*','?','.'] if g in pkg):
+                # If the request is a glob or returns more than one package, expand it in the log
+                if len(pkgobjs) > 1 or any(g for g in ['*','?','.'] if g in pkg):
                     logger.info("installpkg: %s expands to %s", pkg, ",".join(p.get_nevra() for p in pkgobjs))
 
                 for p in pkgobjs:
