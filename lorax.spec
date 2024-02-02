@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.3
+Version:        40.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Feb 01 2024 Brian C. Lane <bcl@redhat.com> 40.4-1
+- mkksiso: Add support for adding an anaconda updates.img (jkonecny@redhat.com)
+- runtime-install: drop kdump-anaconda-addon (awilliam@redhat.com)
+- ltmpl: Handle installing provides with resolve_pkg_spec (bcl@redhat.com)
+- s390: Escape volid before using it (bcl@redhat.com)
+- aarch64: Escape volid before using it (bcl@redhat.com)
+- runtime-install: drop retired pcmciautils (awilliam@redhat.com)
+- runtime-install: wget2-wget has replaced wget (awilliam@redhat.com)
+- runtime-cleanup: anaconda's new interface needs stdbuf (kkoukiou@redhat.com)
+- ltmpl: Pass packages to add_rpm_install as strings (bcl@redhat.com)
+
 * Wed Dec 20 2023 Brian C. Lane <bcl@redhat.com> 40.3-1
 - runtime-install: Work around problem with conflicting packages (bcl@redhat.com)
 - ltmpl: Check for errors after running the transaction (bcl@redhat.com)
