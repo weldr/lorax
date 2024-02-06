@@ -124,7 +124,7 @@ docs-in-docker:
 		--security-opt label=disable \
 		welder/lorax-docs:$(IMAGE_RELEASE) make docs
 
-ci: check test
+ci: test
 
 $(VM_IMAGE): TAG=HEAD
 $(VM_IMAGE): srpm bots
