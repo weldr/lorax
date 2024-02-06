@@ -175,7 +175,8 @@ removefrom glibc-common /usr/bin/tzselect
 removefrom glibc-common /usr/sbin/*
 removefrom gnutls /usr/share/locale/*
 removefrom google-noto-sans-cjk-fonts /usr/share/fonts/google-noto-sans-cjk-fonts/NotoSansCJK-{Black,Bold,*Light,Medium,Thin}.ttc
-removefrom google-noto-sans-vf-fonts /usr/share/fonts/google-noto-vf/NotoSans-Italic-VF.ttf
+removefrom google-noto-sans-vf-fonts /usr/share/fonts/google-noto-vf/NotoSans-Italic*
+removefrom google-noto-serif-vf-fonts /usr/share/fonts/google-noto-vf/NotoSerif*
 removefrom grep /etc/* /usr/share/locale/*
 removefrom gtk3 /usr/${libdir}/gtk-3.0/*
 removefrom gtk4 /usr/${libdir}/gtk-4.0/*
@@ -190,6 +191,9 @@ removefrom libcanberra /usr/${libdir}/libcanberra-*
 removefrom libcanberra-gtk3 /usr/bin/*
 removefrom libcap /usr/sbin/*
 removefrom libconfig /usr/${libdir}/libconfig++*
+removefrom liberation-sans-fonts /usr/share/fonts/liberation-sans/LiberationSans-{Bold*,Italic}.ttf
+removefrom liberation-serif-fonts /usr/share/fonts/liberation-serif/*
+removefrom liberation-mono-fonts /usr/share/fonts/liberation-mono/LiberationMono-{Bold*,Italic}.ttf
 removefrom libgpg-error /usr/bin/* /usr/share/locale/*
 removefrom libibverbs /usr/${libdir}/libmlx4*
 removefrom libidn2 /usr/share/locale/*
@@ -305,6 +309,7 @@ removefrom rdma-core /etc/rdma/mlx4.conf
 removefrom rpm /usr/bin/* /usr/share/locale/*
 removefrom rsync /etc/*
 removefrom sed /usr/share/locale/*
+removefrom sil-padauk-fonts /usr/share/fonts/sil-padauk-fonts/Padauk-Bold.ttf
 removefrom smartmontools /etc/* /usr/sbin/smartd
 removefrom smartmontools /usr/sbin/update-smart-drivedb
 removefrom smartmontools /usr/share/smartmontools/*
