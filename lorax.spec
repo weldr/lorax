@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.70
+Version:        28.14.71
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -261,6 +261,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Feb 06 2024 Brian C. Lane <bcl@redhat.com> 28.14.71-1
+- Makefile: skip running pylint for 'make ci' (bcl)
+  Related: RHEL-24416
+- templates: Remove libreport bugzilla plugins (bcl)
+  Resolves: RHEL-24416
+
 * Fri Jul 29 2022 Brian C. Lane <bcl@redhat.com> 28.14.70-1
 - templates: Update runtime-* templates (bcl)
   Resolves: rhbz#2042101
