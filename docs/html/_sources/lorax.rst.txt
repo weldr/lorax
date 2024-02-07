@@ -41,9 +41,9 @@ Run this as root to create a boot.iso in ``./results/``::
 
     dnf install lorax
     setenforce 0
-    lorax -p Fedora -v 23 -r 23 \
-    -s http://dl.fedoraproject.org/pub/fedora/linux/releases/23/Everything/x86_64/os/ \
-    -s http://dl.fedoraproject.org/pub/fedora/linux/updates/23/x86_64/ \
+    lorax -p Fedora -v 38 -r 38 \
+    -s http://dl.fedoraproject.org/pub/fedora/linux/releases/38/Everything/x86_64/os/ \
+    -s http://dl.fedoraproject.org/pub/fedora/linux/updates/38/Everything/x86_64/ \
     ./results/
     setenforce 1
 

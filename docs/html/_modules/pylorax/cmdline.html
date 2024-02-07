@@ -3,15 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.cmdline &mdash; Lorax 38.0 documentation</title>
+  <title>pylorax.cmdline &mdash; Lorax 40.5 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/documentation_options.js?v=879906eb"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -22,14 +20,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Lorax
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Lorax
           </a>
               <div class="version">
-                38.0
+                40.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -59,10 +61,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      <li>pylorax.cmdline</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../pylorax.html">pylorax</a></li>
+      <li class="breadcrumb-item active">pylorax.cmdline</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -100,8 +102,10 @@
 
 <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">-</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">vernum</span><span class="p">)</span>
 
-<div class="viewcode-block" id="lorax_parser"><a class="viewcode-back" href="../../pylorax.html#pylorax.cmdline.lorax_parser">[docs]</a><span class="k">def</span> <span class="nf">lorax_parser</span><span class="p">(</span><span class="n">dracut_default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Return the ArgumentParser for lorax&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="lorax_parser">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.cmdline.lorax_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">lorax_parser</span><span class="p">(</span><span class="n">dracut_default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the ArgumentParser for lorax&quot;&quot;&quot;</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create the Anaconda boot.iso&quot;</span><span class="p">)</span>
 
@@ -208,8 +212,11 @@
     <span class="k">return</span> <span class="n">parser</span></div>
 
 
-<div class="viewcode-block" id="lmc_parser"><a class="viewcode-back" href="../../pylorax.html#pylorax.cmdline.lmc_parser">[docs]</a><span class="k">def</span> <span class="nf">lmc_parser</span><span class="p">(</span><span class="n">dracut_default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Return a ArgumentParser object for live-media-creator.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="lmc_parser">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.cmdline.lmc_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">lmc_parser</span><span class="p">(</span><span class="n">dracut_default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return a ArgumentParser object for live-media-creator.&quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create Live Install Media&quot;</span><span class="p">,</span>
                                      <span class="n">fromfile_prefix_chars</span><span class="o">=</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
 
@@ -337,8 +344,10 @@
     <span class="n">virt_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;qemu arguments&quot;</span><span class="p">)</span>
     <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--ram&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;MEMORY&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Memory to allocate for installer in megabytes.&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cpu&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CPU&quot;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Passed to qemu -cpu command. Default is to use -cpu host.&quot;</span><span class="p">)</span>
     <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--vcpus&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Passed to qemu -smp command&quot;</span><span class="p">)</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Passed to qemu -smp command. Number of virtual cpus.&quot;</span><span class="p">)</span>
     <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--vnc&quot;</span><span class="p">,</span>
                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Passed to qemu -display command. eg. vnc=127.0.0.1:5, default is to &quot;</span>
                                  <span class="s2">&quot;choose the first unused vnc port.&quot;</span><span class="p">)</span>
@@ -347,10 +356,11 @@
                                  <span class="s2">&quot;Defaults to qemu-system-&lt;arch&gt;&quot;</span><span class="p">)</span>
     <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--kernel-args&quot;</span><span class="p">,</span>
                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Additional argument to pass to the installation kernel&quot;</span><span class="p">)</span>
-    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--ovmf-path&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/usr/share/edk2/ovmf/&quot;</span><span class="p">,</span>
-                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to OVMF firmware&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--firmware&quot;</span><span class="p">,</span> <span class="s2">&quot;--ovmf-path&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;fw_path&quot;</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/usr/share/edk2/&quot;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to top of the EDK2 UEFI firmware directory tree&quot;</span><span class="p">)</span>
     <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--virt-uefi&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use OVMF firmware to boot the VM in UEFI mode&quot;</span><span class="p">)</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use UEFI firmware to boot the VM in UEFI mode&quot;</span><span class="p">)</span>
     <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no-kvm&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Skip using kvm with qemu even if it is available.&quot;</span><span class="p">)</span>
     <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--with-rng&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/dev/random&quot;</span><span class="p">,</span>
@@ -405,6 +415,7 @@
                       <span class="n">action</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span></div>
+
 </pre></div>
 
            </div>
