@@ -173,6 +173,13 @@ changes. Here are the steps I used to convert the Fedora XFCE spin.
     grub2-efi
     syslinux
 
+.. note::
+   The kickstart must contain `part / --size=1024` in order to set the size of the
+   root filesystem's disk image. Other partitions may be included, depending on the
+   image type being created. `autopart` cannot be supported due to lmc needing to
+   create the disk image file before running the installer on it.
+
+
 User created repositories
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 

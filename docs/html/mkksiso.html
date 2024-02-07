@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mkksiso &mdash; Lorax 39.0 documentation</title>
+  <title>mkksiso &mdash; Lorax 40.5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/documentation_options.js?v=879906eb"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -26,14 +23,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Lorax
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Lorax
           </a>
               <div class="version">
-                39.0
+                40.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -79,7 +80,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">mkksiso</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/mkksiso.rst.txt" rel="nofollow"> View page source</a>
@@ -91,7 +92,7 @@
            <div itemprop="articleBody">
              
   <section id="mkksiso">
-<h1>mkksiso<a class="headerlink" href="#mkksiso" title="Permalink to this heading">¶</a></h1>
+<h1>mkksiso<a class="headerlink" href="#mkksiso" title="Link to this heading">¶</a></h1>
 <dl class="field-list simple">
 <dt class="field-odd">Authors<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
@@ -110,14 +111,16 @@ requires updating the config files in the embedded efiboot image in the iso. If
 you do not need this functionality you can still run it as a user by passing
 <cite>--skip-mkefiboot</cite>.</p>
 <section id="mkksiso-cmdline-arguments">
-<h2>mkksiso cmdline arguments<a class="headerlink" href="#mkksiso-cmdline-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>mkksiso cmdline arguments<a class="headerlink" href="#mkksiso-cmdline-arguments" title="Link to this heading">¶</a></h2>
 <p><p>Add a kickstart and files to an iso</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mkksiso</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ADD_PATHS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CMDLINE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">md5sum</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KICKSTART</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">mkefiboot</span><span class="p">]</span> <span class="p">[</span><span class="n">KICKSTART</span><span class="p">]</span> <span class="n">input_iso</span> <span class="n">output_iso</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mkksiso</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ADD_PATHS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CMDLINE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">md5sum</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KICKSTART</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">-</span><span class="n">u</span> <span class="n">IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">mkefiboot</span><span class="p">]</span>
+               <span class="p">[</span><span class="n">KICKSTART</span><span class="p">]</span> <span class="n">input_iso</span> <span class="n">output_iso</span>
 </pre></div>
 </div>
 <section id="positional-arguments">
-<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this heading">¶</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>KICKSTART</kbd></dt>
 <dd><p>Optional kickstart to add to the ISO</p>
@@ -131,7 +134,7 @@ you do not need this functionality you can still run it as a user by passing
 </dl>
 </section>
 <section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Permalink to this heading">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-a, --add</kbd></dt>
 <dd><p>File or directory to add to ISO (may be used multiple times)</p>
@@ -156,6 +159,9 @@ you do not need this functionality you can still run it as a user by passing
 <dt><kbd>--ks</kbd></dt>
 <dd><p>Optional kickstart to add to the ISO</p>
 </dd>
+<dt><kbd>-u, --updates</kbd></dt>
+<dd><p>Optional updates image to add to the ISO</p>
+</dd>
 <dt><kbd>-V, --volid</kbd></dt>
 <dd><p>Set the ISO volume id, defaults to input's</p>
 </dd>
@@ -167,7 +173,7 @@ you do not need this functionality you can still run it as a user by passing
 </section>
 </section>
 <section id="create-a-kickstart-boot-iso-or-dvd">
-<h2>Create a kickstart boot.iso or DVD<a class="headerlink" href="#create-a-kickstart-boot-iso-or-dvd" title="Permalink to this heading">¶</a></h2>
+<h2>Create a kickstart boot.iso or DVD<a class="headerlink" href="#create-a-kickstart-boot-iso-or-dvd" title="Link to this heading">¶</a></h2>
 <p>Create a kickstart like you normally would, kickstart documentation can be
 <a class="reference external" href="https://pykickstart.readthedocs.io/en/latest/">found here</a>, including the
 <code class="docutils literal notranslate"><span class="pre">url</span></code> and <code class="docutils literal notranslate"><span class="pre">repo</span></code> commands.  If you are creating a DVD and only need the
@@ -189,7 +195,7 @@ the iso will have th custom volume id.</p>
 </div>
 </section>
 <section id="adding-package-repos-to-a-boot-iso">
-<h2>Adding package repos to a boot.iso<a class="headerlink" href="#adding-package-repos-to-a-boot-iso" title="Permalink to this heading">¶</a></h2>
+<h2>Adding package repos to a boot.iso<a class="headerlink" href="#adding-package-repos-to-a-boot-iso" title="Link to this heading">¶</a></h2>
 <p>You can add repo directories to the iso using <code class="docutils literal notranslate"><span class="pre">--add</span> <span class="pre">/PATH/TO/REPO/</span></code>, make
 sure it contains the <code class="docutils literal notranslate"><span class="pre">repodata</span></code> directory by running <code class="docutils literal notranslate"><span class="pre">createrepo_c</span></code> on it
 first. In the kickstart you can refer to the directories (and files) on the iso
@@ -204,7 +210,7 @@ the kickstart like this:</p>
 </div>
 </section>
 <section id="create-a-liveimg-boot-iso">
-<h2>Create a liveimg boot.iso<a class="headerlink" href="#create-a-liveimg-boot-iso" title="Permalink to this heading">¶</a></h2>
+<h2>Create a liveimg boot.iso<a class="headerlink" href="#create-a-liveimg-boot-iso" title="Link to this heading">¶</a></h2>
 <p>You can use the kickstart <a class="reference external" href="https://pykickstart.readthedocs.io/en/latest/kickstart-docs.html#liveimg">liveimg command</a>,
 to install a pre-generated disk image or tar to the system the iso is booting
 on.</p>
@@ -228,14 +234,14 @@ sure the file hasn't been corrupted:</p>
 contents to the system without any prompting.</p>
 </section>
 <section id="modifying-kernel-cmdline-arguments">
-<h2>Modifying kernel cmdline arguments<a class="headerlink" href="#modifying-kernel-cmdline-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Modifying kernel cmdline arguments<a class="headerlink" href="#modifying-kernel-cmdline-arguments" title="Link to this heading">¶</a></h2>
 <p>You can add arguments to the kernel cmdline in the ISO config files by using
 <code class="docutils literal notranslate"><span class="pre">--cmdline</span></code>, like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">cmdline</span> <span class="s2">&quot;console=ttyS0,115200n8&quot;</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
 </pre></div>
 </div>
 <section id="removing-arguments">
-<h3>Removing arguments<a class="headerlink" href="#removing-arguments" title="Permalink to this heading">¶</a></h3>
+<h3>Removing arguments<a class="headerlink" href="#removing-arguments" title="Link to this heading">¶</a></h3>
 <p>mkksiso version 37.3 and later support removing arguments from the cmdline. This can be done
 with or without adding a kickstart to the iso:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">rm</span> <span class="s2">&quot;quiet console&quot;</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
@@ -244,7 +250,7 @@ with or without adding a kickstart to the iso:</p>
 <p>will remove the quiet and console arguments from all the the kernel cmdlines on the ISO.</p>
 </section>
 <section id="changing-existing-arguments">
-<h3>Changing existing arguments<a class="headerlink" href="#changing-existing-arguments" title="Permalink to this heading">¶</a></h3>
+<h3>Changing existing arguments<a class="headerlink" href="#changing-existing-arguments" title="Link to this heading">¶</a></h3>
 <p>With the combination of <code class="docutils literal notranslate"><span class="pre">--rm</span></code> and <code class="docutils literal notranslate"><span class="pre">--command</span></code> it is now possible to change
 existing arguments. For example let's say the ISO has a console=tty3 set on the
 cmdline. You want to change that to ttyS0 so you run this:</p>
@@ -256,7 +262,7 @@ then add the new console argument.</p>
 </section>
 </section>
 <section id="how-it-works">
-<h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this heading">¶</a></h2>
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> only depends on <code class="docutils literal notranslate"><span class="pre">xorriso</span></code> and <code class="docutils literal notranslate"><span class="pre">isomd5sum</span></code>. It takes advantage of
 <code class="docutils literal notranslate"><span class="pre">xorriso</span></code>'s ability to extract files, replace files, and add files to the iso
 without need to mount it.</p>
