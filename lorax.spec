@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.4
+Version:        40.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Feb 06 2024 Brian C. Lane <bcl@redhat.com> 40.5-1
+- New lorax documentation - 40.5 (bcl@redhat.com)
+- maint: Switch default platform to F40 (bcl@redhat.com)
+- runtime-cleanup: Update to cleanup more (akira@tagoh.org)
+- runtime-install: Update font packages (akira@tagoh.org)
+
 * Thu Feb 01 2024 Brian C. Lane <bcl@redhat.com> 40.4-1
 - mkksiso: Add support for adding an anaconda updates.img (jkonecny@redhat.com)
 - runtime-install: drop kdump-anaconda-addon (awilliam@redhat.com)
