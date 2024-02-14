@@ -153,6 +153,10 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
     log.info("Using %s for module_platform_id", platform_id)
     conf.module_platform_id = platform_id
 
+    # Set variables used for substitutions
+    dnfbase.get_vars().set("releasever", releasever)
+    dnfbase.get_vars().set("basearch", basearch)
+
     # Add .repo files
     if repos:
         reposdir = os.path.join(tempdir, "dnf.repos")
@@ -209,14 +213,6 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         log.error("No enabled repos")
         return None
     log.info("Using repos: %s", ", ".join(r.get_id() for r in rq))
-
-    # Add substitutions to all enabled repos
-    for r in rq:
-        # Substitutions used with the repo url
-        r.set_substitutions({
-                "releasever": releasever,
-                "basearch": basearch,
-        })
 
     log.info("Fetching metadata...")
     try:
