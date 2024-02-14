@@ -153,6 +153,9 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
     log.info("Using %s for module_platform_id", platform_id)
     conf.module_platform_id = platform_id
 
+    # set releasever
+    dnfbase.get_vars().set("releasever", releasever)
+
     # Add .repo files
     if repos:
         reposdir = os.path.join(tempdir, "dnf.repos")
