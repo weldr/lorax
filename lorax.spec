@@ -21,6 +21,9 @@ BuildRequires:  make
 BuildRequires:  systemd-rpm-macros
 
 Requires:       lorax-templates
+%if 0%{?rhel} >= 9
+Requires:       lorax-templates-rhel
+%endif
 
 Requires:       cpio
 Requires:       device-mapper
