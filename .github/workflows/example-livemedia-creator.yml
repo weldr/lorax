@@ -1,0 +1,79 @@
+name: Build Fedora ISO
+# An example of how to use livemedia-creator in GitHub Actions
+# to build a custom Fedora ISO.
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      # Force host version to match OS it's building.
+      # Recommended since we use '--no-virt' in livemedia-creator
+      # https://weldr.io/lorax/livemedia-creator.html#anaconda-image-install-no-virt
+      fedora_release:
+        description: 'Fedora release to build'
+        required: true
+        default: 39
+        type: number
+
+      kickstart_path:
+        description: 'Path to the kickstart file'
+        required: true
+        default: './docs/fedora-livemedia.ks'
+        type: string
+
+jobs:
+
+  fedora-build:
+    runs-on: ubuntu-latest
+    container:
+      image: "fedora:${{ inputs.fedora_release }}"
+        # --privileged needed for livemedia-creator
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+          # zstd: Lets you use github caching actions inside fedora too
+          # pykickstart: To lint the kickstart file
+          # lorax lorax-lmc-novirt anaconda: To actually build the ISO
+        run: dnf install -y zstd lorax lorax-lmc-novirt anaconda pykickstart
+
+      - name: Lint Kickstart file
+        run: ksvalidator "${{ inputs.kickstart_path }}"
+
+      ## Create the ISO
+      - name: Create the custom ISO
+          # --no-virt: Needed since we're in a container, no host CPU
+          # --squashfs-only: Just to speed things up, not required
+        run: |
+          livemedia-creator \
+            --ks "${{ inputs.kickstart_path }}" \
+            --no-virt \
+            --make-iso \
+            --iso-only \
+            --squashfs-only \
+            --iso-name Fedora-custom-example.iso \
+            --project Fedora \
+            --volid "Fedora-${{ inputs.fedora_release }}" \
+            --releasever "${{ inputs.fedora_release }}" \
+            --resultdir ./Results
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: "Fedora-custom-example-${{ inputs.fedora_release }}.iso"
+          path: ./Results/Fedora-custom-example.iso
+          overwrite: True
+
+      ## Capture debug info if run fails, AND logs exist:
+      - name: "DEBUG: Print program.log"
+        if: failure() && hashFiles('./program.log') != ''
+        run: |
+          ls -hl ./program.log
+          cat ./program.log
+
+      - name: "DEBUG: Print livemedia.log"
+        if: failure() && hashFiles('./livemedia.log') != ''
+        run: |
+          ls -hl ./program.log
+          cat ./livemedia.log
