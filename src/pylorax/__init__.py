@@ -61,8 +61,8 @@ else:
 DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "--add", "fips"]
 
 # Used for DNF conf.module_platform_id
-DEFAULT_PLATFORM_ID = "platform:f40"
-DEFAULT_RELEASEVER = "40"
+DEFAULT_PLATFORM_ID = "platform:f41"
+DEFAULT_RELEASEVER = "41"
 
 # XXX - Temporarily lifted from dnf.rpm module
 def _invert(dct):
