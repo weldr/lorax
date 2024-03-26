@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.6
+Version:        40.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -171,6 +171,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Mar 26 2024 Brian C. Lane <bcl@redhat.com> 40.7-1
+- runtime-cleanup: wget2-wget has replaced wget (yselkowi@redhat.com)
+
 * Mon Feb 19 2024 Brian C. Lane <bcl@redhat.com>
 - Add example use of lmc in github actions. (cjshowalter@alaska.edu)
 - Require lorax-templates-rhel when building for ELN, CentOS Stream and RHEL (sgallagh@redhat.com)
