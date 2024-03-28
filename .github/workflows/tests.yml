@@ -8,8 +8,12 @@ on:
   push:
     branches:
       - master
+      - rhel10-branch
+      - rhel9-branch
       - rhel8-branch
       - rhel7-branch
+      - f40-branch
+      - f39-branch
       - f38-branch
       - f37-branch
       - f36-branch
