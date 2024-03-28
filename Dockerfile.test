@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:rawhide
+FROM registry.fedoraproject.org/fedora:40
 COPY test-packages .
 RUN dnf -y install $(cat test-packages) && touch /.in-container
 RUN useradd weldr
