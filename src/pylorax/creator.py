@@ -148,7 +148,8 @@ def dracut_args(opts):
         return DRACUT_DEFAULT
 
 def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
-                   vcpus=1, arch=None, title="Linux", project="Linux",
+                   vcpus=1, arch=None, title="Red Hat Enterprise Linux",
+                   project="Red Hat Enterprise Linux",
                    releasever=DEFAULT_RELEASEVER):
     """
     Generate an appliance description file
@@ -161,8 +162,8 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
     :param int ram: Ram, in MiB, passed to template. Default is 1024
     :param int vcpus: CPUs, passed to template. Default is 1
     :param str arch: CPU architecture. Default is 'x86_64'
-    :param str title: Title, passed to template. Default is 'Linux'
-    :param str project: Project, passed to template. Default is 'Linux'
+    :param str title: Title, passed to template. Default is 'Red Hat Enterprise Linux'
+    :param str project: Project, passed to template. Default is 'Red Hat Enterprise Linux'
     :param str releasever: Release version, passed to template.
     """
     if not (disk_img and template and outfile):

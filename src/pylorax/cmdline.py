@@ -317,7 +317,7 @@ def lmc_parser(dracut_default=""):
     vagrant_group.add_argument("--vagrantfile",
                                help="optional vagrantfile")
 
-    parser.add_argument("--project", default="Linux", metavar="PRODUCT",
+    parser.add_argument("--project", default="Red Hat Enterprise Linux", metavar="PRODUCT",
                         help="substituted for @PRODUCT@ in bootloader config files")
     parser.add_argument("-p", "--product", default="", help="Alias for --project",
                         metavar="PRODUCT")
