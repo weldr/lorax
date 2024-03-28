@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax &mdash; Lorax 40.5 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>pylorax &mdash; Lorax 40.5.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=330c1f8c" />
+
   
-        <script src="../_static/documentation_options.js?v=879906eb"></script>
+  
+        <script src="../_static/documentation_options.js?v=750ba5b0"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -27,7 +29,7 @@
             Lorax
           </a>
               <div class="version">
-                40.5
+                40.5.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -114,7 +116,7 @@
 <span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">BaseLoraxClass</span><span class="p">,</span> <span class="n">DataHolder</span>
 <span class="kn">import</span> <span class="nn">pylorax.output</span> <span class="k">as</span> <span class="nn">output</span>
 
-<span class="kn">import</span> <span class="nn">libdnf5</span> <span class="k">as</span> <span class="nn">dnf5</span>
+<span class="kn">import</span> <span class="nn">dnf</span>
 
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span><span class="p">,</span> <span class="n">linktree</span>
 
@@ -136,56 +138,18 @@
 <span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--install&quot;</span><span class="p">,</span> <span class="s2">&quot;/.buildstamp&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;fips&quot;</span><span class="p">]</span>
 
 <span class="c1"># Used for DNF conf.module_platform_id</span>
-<span class="n">DEFAULT_PLATFORM_ID</span> <span class="o">=</span> <span class="s2">&quot;platform:f40&quot;</span>
-<span class="n">DEFAULT_RELEASEVER</span> <span class="o">=</span> <span class="s2">&quot;40&quot;</span>
-
-<span class="c1"># XXX - Temporarily lifted from dnf.rpm module</span>
-<span class="k">def</span> <span class="nf">_invert</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dct</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">[</span><span class="n">k</span><span class="p">]}</span>
-
-<span class="n">_BASEARCH_MAP</span> <span class="o">=</span> <span class="n">_invert</span><span class="p">({</span>
-    <span class="s1">&#39;aarch64&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;aarch64&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;alphaev4&#39;</span><span class="p">,</span> <span class="s1">&#39;alphaev45&#39;</span><span class="p">,</span> <span class="s1">&#39;alphaev5&#39;</span><span class="p">,</span> <span class="s1">&#39;alphaev56&#39;</span><span class="p">,</span>
-              <span class="s1">&#39;alphaev6&#39;</span><span class="p">,</span> <span class="s1">&#39;alphaev67&#39;</span><span class="p">,</span> <span class="s1">&#39;alphaev68&#39;</span><span class="p">,</span> <span class="s1">&#39;alphaev7&#39;</span><span class="p">,</span> <span class="s1">&#39;alphapca56&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;arm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;armv5tejl&#39;</span><span class="p">,</span> <span class="s1">&#39;armv5tel&#39;</span><span class="p">,</span> <span class="s1">&#39;armv5tl&#39;</span><span class="p">,</span> <span class="s1">&#39;armv6l&#39;</span><span class="p">,</span> <span class="s1">&#39;armv7l&#39;</span><span class="p">,</span> <span class="s1">&#39;armv8l&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;armhfp&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;armv6hl&#39;</span><span class="p">,</span> <span class="s1">&#39;armv7hl&#39;</span><span class="p">,</span> <span class="s1">&#39;armv7hnl&#39;</span><span class="p">,</span> <span class="s1">&#39;armv8hl&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;i386&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;i386&#39;</span><span class="p">,</span> <span class="s1">&#39;athlon&#39;</span><span class="p">,</span> <span class="s1">&#39;geode&#39;</span><span class="p">,</span> <span class="s1">&#39;i386&#39;</span><span class="p">,</span> <span class="s1">&#39;i486&#39;</span><span class="p">,</span> <span class="s1">&#39;i586&#39;</span><span class="p">,</span> <span class="s1">&#39;i686&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;ia64&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ia64&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;mips&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;mips&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;mipsel&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;mipsel&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;mips64&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;mips64&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;mips64el&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;mips64el&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;loongarch64&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;loongarch64&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;noarch&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;noarch&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;ppc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ppc&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;ppc64&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ppc64&#39;</span><span class="p">,</span> <span class="s1">&#39;ppc64iseries&#39;</span><span class="p">,</span> <span class="s1">&#39;ppc64p7&#39;</span><span class="p">,</span> <span class="s1">&#39;ppc64pseries&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;ppc64le&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ppc64le&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;riscv32&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="s1">&#39;riscv32&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;riscv64&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="s1">&#39;riscv64&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;riscv128&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="s1">&#39;riscv128&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;s390&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;s390&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;s390x&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;s390x&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;sh3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;sh3&#39;</span><span class="p">,),</span>
-    <span class="s1">&#39;sh4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;sh4&#39;</span><span class="p">,</span> <span class="s1">&#39;sh4a&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;sparc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;sparc&#39;</span><span class="p">,</span> <span class="s1">&#39;sparc64&#39;</span><span class="p">,</span> <span class="s1">&#39;sparc64v&#39;</span><span class="p">,</span> <span class="s1">&#39;sparcv8&#39;</span><span class="p">,</span> <span class="s1">&#39;sparcv9&#39;</span><span class="p">,</span>
-              <span class="s1">&#39;sparcv9v&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;x86_64&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;x86_64&#39;</span><span class="p">,</span> <span class="s1">&#39;amd64&#39;</span><span class="p">,</span> <span class="s1">&#39;ia32e&#39;</span><span class="p">),</span>
-<span class="p">})</span>
-
+<span class="n">DEFAULT_PLATFORM_ID</span> <span class="o">=</span> <span class="s2">&quot;platform:el10&quot;</span>
+<span class="n">DEFAULT_RELEASEVER</span> <span class="o">=</span> <span class="s2">&quot;10&quot;</span>
 
 <div class="viewcode-block" id="ArchData">
 <a class="viewcode-back" href="../pylorax.html#pylorax.ArchData">[docs]</a>
 <span class="k">class</span> <span class="nc">ArchData</span><span class="p">(</span><span class="n">DataHolder</span><span class="p">):</span>
     <span class="n">bcj_arch</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x86_64</span><span class="o">=</span><span class="s2">&quot;x86&quot;</span><span class="p">,</span> <span class="n">ppc64le</span><span class="o">=</span><span class="s2">&quot;powerpc&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_basearch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arch</span><span class="p">):</span>
-        <span class="c1"># :api</span>
-        <span class="k">return</span> <span class="n">_BASEARCH_MAP</span><span class="p">[</span><span class="n">arch</span><span class="p">]</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buildarch</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ArchData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buildarch</span> <span class="o">=</span> <span class="n">buildarch</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">basearch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basearch</span><span class="p">(</span><span class="n">buildarch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basearch</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">rpm</span><span class="o">.</span><span class="n">basearch</span><span class="p">(</span><span class="n">buildarch</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">libdir</span> <span class="o">=</span> <span class="s2">&quot;lib64&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bcj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcj_arch</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basearch</span><span class="p">)</span></div>
 
@@ -357,10 +321,10 @@
 
         <span class="c1"># do we have a proper dnf base object?</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;checking dnf base object&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">dnf5</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Base</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">dnf</span><span class="o">.</span><span class="n">Base</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;no dnf base object&quot;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inroot</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span><span class="o">.</span><span class="n">installroot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inroot</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">installroot</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;using install root: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inroot</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">buildarch</span><span class="p">:</span>
@@ -384,7 +348,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s2">&quot;the volume id cannot be longer than 32 characters&quot;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="c1"># NOTE: rb.root = dbo.get_config().installroot (== self.inroot)</span>
+        <span class="c1"># NOTE: rb.root = dbo.conf.installroot (== self.inroot)</span>
         <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
                             <span class="n">dbo</span><span class="o">=</span><span class="n">dbo</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span><span class="p">,</span>
                             <span class="n">installpkgs</span><span class="o">=</span><span class="n">installpkgs</span><span class="p">,</span>
@@ -404,7 +368,6 @@
         <span class="n">buildstamp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span> <span class="s2">&quot;.buildstamp&quot;</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;writing debug data to pkglists and original-pkgsizes.txt&quot;</span><span class="p">)</span>
             <span class="n">rb</span><span class="o">.</span><span class="n">writepkglists</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="s2">&quot;pkglists&quot;</span><span class="p">))</span>
             <span class="n">rb</span><span class="o">.</span><span class="n">writepkgsizes</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="s2">&quot;original-pkgsizes.txt&quot;</span><span class="p">))</span>
 
@@ -506,12 +469,11 @@
 <span class="k">def</span> <span class="nf">get_buildarch</span><span class="p">(</span><span class="n">dbo</span><span class="p">):</span>
     <span class="c1"># get architecture of the available anaconda package</span>
     <span class="n">buildarch</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">q</span> <span class="o">=</span> <span class="n">dnf5</span><span class="o">.</span><span class="n">rpm</span><span class="o">.</span><span class="n">PackageQuery</span><span class="p">(</span><span class="n">dbo</span><span class="p">)</span>
-    <span class="n">q</span><span class="o">.</span><span class="n">filter_available</span><span class="p">()</span>
-    <span class="n">q</span><span class="o">.</span><span class="n">filter_name</span><span class="p">([</span><span class="s2">&quot;anaconda-core&quot;</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">anaconda</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">anaconda</span><span class="o">.</span><span class="n">get_arch</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;src&quot;</span><span class="p">:</span>
-            <span class="n">buildarch</span> <span class="o">=</span> <span class="n">anaconda</span><span class="o">.</span><span class="n">get_arch</span><span class="p">()</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">anaconda</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;anaconda-core&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">anaconda</span><span class="o">.</span><span class="n">arch</span> <span class="o">!=</span> <span class="s2">&quot;src&quot;</span><span class="p">:</span>
+            <span class="n">buildarch</span> <span class="o">=</span> <span class="n">anaconda</span><span class="o">.</span><span class="n">arch</span>
             <span class="k">break</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">buildarch</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;no anaconda-core package in the repository&quot;</span><span class="p">)</span>

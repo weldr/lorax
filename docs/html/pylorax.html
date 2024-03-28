@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax package &mdash; Lorax 40.5 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>pylorax package &mdash; Lorax 40.5.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=330c1f8c" />
+
   
-        <script src="_static/documentation_options.js?v=879906eb"></script>
+  
+        <script src="_static/documentation_options.js?v=750ba5b0"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -29,7 +31,7 @@
             Lorax
           </a>
               <div class="version">
-                40.5
+                40.5.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -339,11 +341,6 @@
 templates, so the the installroot config value is the important part of
 this. Everything else should be a nop.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="pylorax.creator.FakeDNF.get_config">
-<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#FakeDNF.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.creator.FakeDNF.get_config" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="pylorax.creator.FakeDNF.reset">
 <span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#FakeDNF.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.creator.FakeDNF.reset" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -464,7 +461,7 @@ has been used.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pylorax.creator.make_appliance">
-<span class="sig-prename descclassname"><span class="pre">pylorax.creator.</span></span><span class="sig-name descname"><span class="pre">make_appliance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disk_img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">networks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ram</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vcpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Linux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Linux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releasever</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'40'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_appliance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.creator.make_appliance" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pylorax.creator.</span></span><span class="sig-name descname"><span class="pre">make_appliance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disk_img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">networks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ram</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vcpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Red</span> <span class="pre">Hat</span> <span class="pre">Enterprise</span> <span class="pre">Linux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Red</span> <span class="pre">Hat</span> <span class="pre">Enterprise</span> <span class="pre">Linux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releasever</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'10'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_appliance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.creator.make_appliance" title="Link to this definition">¶</a></dt>
 <dd><p>Generate an appliance description file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -477,8 +474,8 @@ has been used.</p>
 <li><p><strong>ram</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) -- Ram, in MiB, passed to template. Default is 1024</p></li>
 <li><p><strong>vcpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) -- CPUs, passed to template. Default is 1</p></li>
 <li><p><strong>arch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) -- CPU architecture. Default is 'x86_64'</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) -- Title, passed to template. Default is 'Linux'</p></li>
-<li><p><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) -- Project, passed to template. Default is 'Linux'</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) -- Title, passed to template. Default is 'Red Hat Enterprise Linux'</p></li>
+<li><p><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) -- Project, passed to template. Default is 'Red Hat Enterprise Linux'</p></li>
 <li><p><strong>releasever</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) -- Release version, passed to template.</p></li>
 </ul>
 </dd>
@@ -668,7 +665,7 @@ See the cmdline --help for livemedia-creator for the possible options</p>
 <span id="pylorax-dnfbase-module"></span><h2>pylorax.dnfbase module<a class="headerlink" href="#module-pylorax.dnfbase" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="pylorax.dnfbase.get_dnf_base_object">
-<span class="sig-prename descclassname"><span class="pre">pylorax.dnfbase.</span></span><span class="sig-name descname"><span class="pre">get_dnf_base_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">installroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mirrorlists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enablerepos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disablerepos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/var/tmp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releasever</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'40'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sslverify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dnfplugins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basearch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfbase.html#get_dnf_base_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfbase.get_dnf_base_object" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pylorax.dnfbase.</span></span><span class="sig-name descname"><span class="pre">get_dnf_base_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">installroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mirrorlists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enablerepos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disablerepos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/var/tmp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releasever</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'10'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sslverify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dnfplugins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfbase.html#get_dnf_base_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfbase.get_dnf_base_object" title="Link to this definition">¶</a></dt>
 <dd><p>Create a dnf Base object and setup the repositories and installroot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -683,13 +680,11 @@ See the cmdline --help for livemedia-creator for the possible options</p>
 <li><p><strong>releasever</strong> (<em>string</em>) -- Release version to pass to dnf</p></li>
 <li><p><strong>cachedir</strong> (<em>string</em>) -- Directory to use for caching packages</p></li>
 <li><p><strong>noverifyssl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) -- Set to True to ignore the CA of ssl certs. eg. use self-signed ssl for https repos.</p></li>
-<li><p><strong>basearch</strong> (<em>string</em>) -- Architecture to use for $basearch substitution in repo urls</p></li>
 </ul>
 </dd>
 </dl>
 <p>If tempdir is not set /var/tmp is used.
 If cachedir is None a dnf.cache directory is created inside tmpdir</p>
-<p>If basearch is not set it uses the host system's machine type.</p>
 </dd></dl>
 
 </section>
@@ -697,95 +692,37 @@ If cachedir is None a dnf.cache directory is created inside tmpdir</p>
 <span id="pylorax-dnfhelper-module"></span><h2>pylorax.dnfhelper module<a class="headerlink" href="#module-pylorax.dnfhelper" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxDownloadCallback">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pylorax.dnfhelper.</span></span><span class="sig-name descname"><span class="pre">LoraxDownloadCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadCallbacks</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxDownloadCallback.add_new_download">
-<span class="sig-name descname"><span class="pre">add_new_download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_to_download</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.add_new_download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.add_new_download" title="Link to this definition">¶</a></dt>
-<dd><p>Notify the client that a new download has been created.
-:type user_data: void
-:param user_data: User data entered together with url/package to download.
-:type description: string
-:param description: The message describing new download (url/packagename).
-:type total_to_download: float
-:param total_to_download: Total number of bytes to download.
-:rtype: void
-:return: Associated user data for new download.</p>
-</dd></dl>
-
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pylorax.dnfhelper.</span></span><span class="sig-name descname"><span class="pre">LoraxDownloadCallback</span></span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadProgress</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxDownloadCallback.end">
-<span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_cb_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.end" title="Link to this definition">¶</a></dt>
-<dd><p>End of download callback.
-:type user_cb_data: void
-:param user_cb_data: Associated user data obtained from add_new_download.
-:type status: int
-:param status: The transfer status.
-:type msg: string
-:param msg: The error message in case of error.
-:rtype: int
-:return: TODO(lukash) uses the LrCbReturnCode enum from librepo, we should translate that.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxDownloadCallback.mirror_failure">
-<span class="sig-name descname"><span class="pre">mirror_failure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_cb_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.mirror_failure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.mirror_failure" title="Link to this definition">¶</a></dt>
-<dd><p>Mirror failure callback.
-:type user_cb_data: void
-:param user_cb_data: Associated user data obtained from add_new_download.
-:type msg: string
-:param msg: Error message.
-:type url: string
-:param url: Failed mirror URL.
-:type metadata: string
-:param metadata: the type of metadata that is being downloaded TODO(lukash) should this point to LoadFlags in some way?
-:rtype: int
-:return: TODO(lukash) uses the LrCbReturnCode enum from librepo, we should translate that.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.end" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxDownloadCallback.progress">
-<span class="sig-name descname"><span class="pre">progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_cb_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_to_download</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downloaded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.progress" title="Link to this definition">¶</a></dt>
-<dd><p>Download progress callback.
-:type user_cb_data: void
-:param user_cb_data: Associated user data obtained from add_new_download.
-:type total_to_download: float
-:param total_to_download: Total number of bytes to download.
-:type downloaded: float
-:param downloaded: Number of bytes downloaded.
-:rtype: int
-:return: TODO(lukash) uses the LrCbReturnCode enum from librepo, we should translate that.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">done</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.progress" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxDownloadCallback.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_drpms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.start" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxRpmCallback">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pylorax.dnfhelper.</span></span><span class="sig-name descname"><span class="pre">LoraxRpmCallback</span></span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionCallbacks</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionProgress</span></code></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxRpmCallback.cpio_error">
-<span class="sig-name descname"><span class="pre">cpio_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback.cpio_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback.cpio_error" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxRpmCallback.error">
+<span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback.error" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxRpmCallback.install_start">
-<span class="sig-name descname"><span class="pre">install_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback.install_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback.install_start" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxRpmCallback.script_error">
-<span class="sig-name descname"><span class="pre">script_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nevra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback.script_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback.script_error" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxRpmCallback.script_start">
-<span class="sig-name descname"><span class="pre">script_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nevra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback.script_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback.script_start" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxRpmCallback.unpack_error">
-<span class="sig-name descname"><span class="pre">unpack_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback.unpack_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback.unpack_error" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pylorax.dnfhelper.LoraxRpmCallback.progress">
+<span class="sig-name descname"><span class="pre">progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ti_done</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ti_total</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_done</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_total</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback.progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback.progress" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1474,12 +1411,12 @@ pacages needed to build the live-iso output.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pylorax.ltmpl.LoraxTemplateRunner">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pylorax.ltmpl.</span></span><span class="sig-name descname"><span class="pre">LoraxTemplateRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fatalerrors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">templatedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basearch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pylorax.ltmpl.</span></span><span class="sig-name descname"><span class="pre">LoraxTemplateRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fatalerrors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">templatedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pylorax.ltmpl.TemplateRunner" title="pylorax.ltmpl.TemplateRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateRunner</span></code></a>, <a class="reference internal" href="#pylorax.ltmpl.InstallpkgMixin" title="pylorax.ltmpl.InstallpkgMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">InstallpkgMixin</span></code></a></p>
 <p>This class parses and executes Lorax templates. Sample usage:</p>
 <blockquote>
 <div><p># install a bunch of packages
-runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj, basearch=&quot;x86_64&quot;)
+runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
 runner.run(&quot;install-packages.ltmpl&quot;)</p>
 <p># modify a runtime dir
 runner = LoraxTemplateRunner(inroot=rundir, outroot=newrun)
@@ -1818,7 +1755,7 @@ KEY = ARG ARG ...</p>
 <p>This class parses and executes Lorax templates. Sample usage:</p>
 <blockquote>
 <div><p># install a bunch of packages
-runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj, basearch=&quot;x86_64&quot;)
+runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
 runner.run(&quot;install-packages.ltmpl&quot;)</p>
 </div></blockquote>
 <p>NOTES:</p>
@@ -2033,10 +1970,9 @@ iso's label.</p>
 <span id="pylorax-treebuilder-module"></span><h2>pylorax.treebuilder module<a class="headerlink" href="#module-pylorax.treebuilder" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pylorax.treebuilder.RuntimeBuilder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pylorax.treebuilder.</span></span><span class="sig-name descname"><span class="pre">RuntimeBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">templatedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">installpkgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludepkgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_templates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_template_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_branding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pylorax.treebuilder.</span></span><span class="sig-name descname"><span class="pre">RuntimeBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">templatedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">installpkgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludepkgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_templates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_template_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_branding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Builds the anaconda runtime image.</p>
-<p>NOTE: dbo is optional, but if it is not included root must be set.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pylorax.treebuilder.RuntimeBuilder.cleanup">
 <span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.cleanup" title="Link to this definition">¶</a></dt>
@@ -2058,7 +1994,9 @@ iso's label.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pylorax.treebuilder.RuntimeBuilder.finished">
 <span class="sig-name descname"><span class="pre">finished</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.finished"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.finished" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Done using RuntimeBuilder</p>
+<p>Close the dnf base object</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pylorax.treebuilder.RuntimeBuilder.generate_module_data">
