@@ -1,19 +1,20 @@
 # NOTE: This specfile is generated from upstream at https://github.com/rhinstaller/lorax
 # NOTE: Please submit changes as a pull request
 %define debug_package %{nil}
+%global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
 Version:        41.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
-
 License:        GPL-2.0-or-later
-URL:            https://github.com/weldr/lorax
-# To generate Source0 do:
-# git clone https://github.com/weldr/lorax
-# git checkout -b archive-branch lorax-%%{version}-%%{release}
-# tito build --tgz
-Source0:        %{name}-%{version}.tar.gz
+
+# Get the release without the dist
+%define nodist %{lua:r = string.gsub(rpm.expand("%{release}"), rpm.expand("%{?dist}"), ""); print(r)}
+%global tag %{name}-%{version}-%{nodist}
+%forgemeta
+Url:            %{forgeurl}
+Source0:        %{forgesource}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -129,7 +130,7 @@ Lorax templates for creating the boot.iso and live isos are placed in
 /usr/share/lorax/templates.d/99-generic
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%forgeautosetup
 
 %build
 
