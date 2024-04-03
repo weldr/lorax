@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.0
+Version:        40.5.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -171,6 +171,33 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Apr 03 2024 Brian C. Lane <bcl@redhat.com> 40.5.1-1
+- New lorax documentation - 40.5.1 (bcl@redhat.com)
+  Resolves: RHEL-30615
+- Dockerfile.test: Use Fedora 40 for test image (bcl@redhat.com)
+- Change macboot default to false (bcl@redhat.com)
+- Change defaults to Red Hat Enterprise Linux 10 (bcl@redhat.com)
+- runtime-cleanup: wget2-wget has replaced wget (yselkowi@redhat.com)
+- Added example of how to use livemedia-creator in github actions, and still
+  build in fedora. (cjshowalter@alaska.edu)
+- Require lorax-templates-rhel when building for ELN, CentOS Stream and RHEL (sgallagh@redhat.com)
+- workflows: Switch to actions/checkout@v4 (bcl@redhat.com)
+- New lorax documentation - 40.5 (bcl@redhat.com)
+- maint: Switch default platform to F40 (bcl@redhat.com)
+- runtime-cleanup: Update to cleanup more (akira@tagoh.org)
+- runtime-install: Update font packages (akira@tagoh.org)
+- mkksiso: Add support for adding an anaconda updates.img (jkonecny@redhat.com)
+- runtime-install: drop kdump-anaconda-addon (awilliam@redhat.com)
+- s390: Escape volid before using it (bcl@redhat.com)
+- aarch64: Escape volid before using it (bcl@redhat.com)
+- runtime-install: drop retired pcmciautils (awilliam@redhat.com)
+- runtime-install: Drop unneeded packages libmlx4, systemd-sysv, and systemd-units (bcl@redhat.com)
+- runtime-install: wget2-wget has replaced wget (awilliam@redhat.com)
+- runtime-cleanup: anaconda's new interface needs stdbuf (kkoukiou@redhat.com)
+- test-in-podman: Fix problem running in github actions (bcl@redhat.com)
+- test: Add pigz to test-packages (bcl@redhat.com)
+- Adjust runtime-postinstall.tmpl for systemd config files move (zbyszek@in.waw.pl)
+
 * Mon Oct 02 2023 Brian C. Lane <bcl@redhat.com> 40.0-1
 - Remove some unneccessary storage packages from runtime-install (vtrefny@redhat.com)
 - Do not install polkit-gnome for blivet-gui (vtrefny@redhat.com)
