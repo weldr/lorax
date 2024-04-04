@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.1
+Version:        40.5.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -174,6 +174,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Apr 04 2024 Brian C. Lane <bcl@redhat.com> 40.5.2-1
+- spec: Use qemu-kvm instead of qemu (bcl@redhat.com)
+  Resolves: RHEL-31830
+
 * Wed Apr 03 2024 Brian C. Lane <bcl@redhat.com> 40.5.1-1
 - New lorax documentation - 40.5.1 (bcl@redhat.com)
   Resolves: RHEL-30615
