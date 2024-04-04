@@ -165,7 +165,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files docs
 %doc docs/html/*
 
+%ifnarch ppc64le
 %files lmc-virt
+%endif
 
 %files lmc-novirt
 
