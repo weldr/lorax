@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax &mdash; Lorax 40.5 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>pylorax &mdash; Lorax 41.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=330c1f8c" />
+
   
-        <script src="../_static/documentation_options.js?v=879906eb"></script>
+  
+        <script src="../_static/documentation_options.js?v=0a3d5615"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -27,7 +29,7 @@
             Lorax
           </a>
               <div class="version">
-                40.5
+                41.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -136,8 +138,8 @@
 <span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--install&quot;</span><span class="p">,</span> <span class="s2">&quot;/.buildstamp&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;fips&quot;</span><span class="p">]</span>
 
 <span class="c1"># Used for DNF conf.module_platform_id</span>
-<span class="n">DEFAULT_PLATFORM_ID</span> <span class="o">=</span> <span class="s2">&quot;platform:f40&quot;</span>
-<span class="n">DEFAULT_RELEASEVER</span> <span class="o">=</span> <span class="s2">&quot;40&quot;</span>
+<span class="n">DEFAULT_PLATFORM_ID</span> <span class="o">=</span> <span class="s2">&quot;platform:f41&quot;</span>
+<span class="n">DEFAULT_RELEASEVER</span> <span class="o">=</span> <span class="s2">&quot;41&quot;</span>
 
 <span class="c1"># XXX - Temporarily lifted from dnf.rpm module</span>
 <span class="k">def</span> <span class="nf">_invert</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
@@ -478,7 +480,7 @@
             <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">user_dracut_args</span><span class="p">:</span>
                 <span class="n">dracut_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-        <span class="n">anaconda_args</span> <span class="o">=</span> <span class="n">dracut_args</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;anaconda pollcdrom qemu qemu-net&quot;</span><span class="p">]</span>
+        <span class="n">anaconda_args</span> <span class="o">=</span> <span class="n">dracut_args</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;anaconda pollcdrom qemu qemu-net prefixdevname-tools&quot;</span><span class="p">]</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut args = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dracut_args</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;anaconda args = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">anaconda_args</span><span class="p">)</span>

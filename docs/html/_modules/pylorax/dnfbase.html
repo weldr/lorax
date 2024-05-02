@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.dnfbase &mdash; Lorax 40.5 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>pylorax.dnfbase &mdash; Lorax 41.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=330c1f8c" />
+
   
-        <script src="../../_static/documentation_options.js?v=879906eb"></script>
+  
+        <script src="../../_static/documentation_options.js?v=0a3d5615"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -27,7 +29,7 @@
             Lorax
           </a>
               <div class="version">
-                40.5
+                41.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -231,6 +233,10 @@
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">%s</span><span class="s2"> for module_platform_id&quot;</span><span class="p">,</span> <span class="n">platform_id</span><span class="p">)</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">module_platform_id</span> <span class="o">=</span> <span class="n">platform_id</span>
 
+    <span class="c1"># Set variables used for substitutions</span>
+    <span class="n">dnfbase</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;releasever&quot;</span><span class="p">,</span> <span class="n">releasever</span><span class="p">)</span>
+    <span class="n">dnfbase</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;basearch&quot;</span><span class="p">,</span> <span class="n">basearch</span><span class="p">)</span>
+
     <span class="c1"># Add .repo files</span>
     <span class="k">if</span> <span class="n">repos</span><span class="p">:</span>
         <span class="n">reposdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;dnf.repos&quot;</span><span class="p">)</span>
@@ -287,14 +293,6 @@
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No enabled repos&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using repos: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rq</span><span class="p">))</span>
-
-    <span class="c1"># Add substitutions to all enabled repos</span>
-    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rq</span><span class="p">:</span>
-        <span class="c1"># Substitutions used with the repo url</span>
-        <span class="n">r</span><span class="o">.</span><span class="n">set_substitutions</span><span class="p">({</span>
-                <span class="s2">&quot;releasever&quot;</span><span class="p">:</span> <span class="n">releasever</span><span class="p">,</span>
-                <span class="s2">&quot;basearch&quot;</span><span class="p">:</span> <span class="n">basearch</span><span class="p">,</span>
-        <span class="p">})</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching metadata...&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
