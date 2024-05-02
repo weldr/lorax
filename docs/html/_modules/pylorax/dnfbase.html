@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.dnfbase &mdash; Lorax 38.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>pylorax.dnfbase &mdash; Lorax 39.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=330c1f8c" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+  
+        <script src="../../_static/documentation_options.js?v=85ae2cd4"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -22,14 +22,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Lorax
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Lorax
           </a>
               <div class="version">
-                38.0
+                39.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -59,10 +63,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      <li>pylorax.dnfbase</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../pylorax.html">pylorax</a></li>
+      <li class="breadcrumb-item active">pylorax.dnfbase</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -97,11 +101,13 @@
 <span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">DEFAULT_PLATFORM_ID</span><span class="p">,</span> <span class="n">DEFAULT_RELEASEVER</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">flatconfig</span>
 
-<div class="viewcode-block" id="get_dnf_base_object"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfbase.get_dnf_base_object">[docs]</a><span class="k">def</span> <span class="nf">get_dnf_base_object</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">mirrorlists</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="get_dnf_base_object">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfbase.get_dnf_base_object">[docs]</a>
+<span class="k">def</span> <span class="nf">get_dnf_base_object</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">mirrorlists</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">enablerepos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disablerepos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">tempdir</span><span class="o">=</span><span class="s2">&quot;/var/tmp&quot;</span><span class="p">,</span> <span class="n">proxy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">releasever</span><span class="o">=</span><span class="n">DEFAULT_RELEASEVER</span><span class="p">,</span>
                         <span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sslverify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dnfplugins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Create a dnf Base object and setup the repositories and installroot</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create a dnf Base object and setup the repositories and installroot</span>
 
 <span class="sd">        :param string installroot: Full path to the installroot</span>
 <span class="sd">        :param list sources: List of source repo urls to use for the installation</span>
@@ -118,7 +124,7 @@
 <span class="sd">        If cachedir is None a dnf.cache directory is created inside tmpdir</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">sanitize_repo</span><span class="p">(</span><span class="n">repo</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="s2">&quot;file://</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;http://&#39;</span><span class="p">,</span> <span class="s1">&#39;https://&#39;</span><span class="p">,</span> <span class="s1">&#39;ftp://&#39;</span><span class="p">,</span> <span class="s1">&#39;file://&#39;</span><span class="p">)):</span>
@@ -261,6 +267,7 @@
     <span class="n">dnfbase</span><span class="o">.</span><span class="n">read_comps</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">dnfbase</span></div>
+
 </pre></div>
 
            </div>

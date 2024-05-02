@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax &mdash; Lorax 39.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>pylorax &mdash; Lorax 39.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=330c1f8c" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+  
+        <script src="../_static/documentation_options.js?v=85ae2cd4"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -23,14 +22,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> Lorax
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Lorax
           </a>
               <div class="version">
-                39.0
+                39.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -60,7 +63,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
       <li class="breadcrumb-item active">pylorax</li>
       <li class="wy-breadcrumbs-aside">
@@ -138,7 +141,9 @@
 <span class="n">DEFAULT_PLATFORM_ID</span> <span class="o">=</span> <span class="s2">&quot;platform:f39&quot;</span>
 <span class="n">DEFAULT_RELEASEVER</span> <span class="o">=</span> <span class="s2">&quot;39&quot;</span>
 
-<div class="viewcode-block" id="ArchData"><a class="viewcode-back" href="../pylorax.html#pylorax.ArchData">[docs]</a><span class="k">class</span> <span class="nc">ArchData</span><span class="p">(</span><span class="n">DataHolder</span><span class="p">):</span>
+<div class="viewcode-block" id="ArchData">
+<a class="viewcode-back" href="../pylorax.html#pylorax.ArchData">[docs]</a>
+<span class="k">class</span> <span class="nc">ArchData</span><span class="p">(</span><span class="n">DataHolder</span><span class="p">):</span>
     <span class="n">bcj_arch</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x86_64</span><span class="o">=</span><span class="s2">&quot;x86&quot;</span><span class="p">,</span> <span class="n">ppc64le</span><span class="o">=</span><span class="s2">&quot;powerpc&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buildarch</span><span class="p">):</span>
@@ -148,7 +153,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">libdir</span> <span class="o">=</span> <span class="s2">&quot;lib64&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bcj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcj_arch</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basearch</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Lorax"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax">[docs]</a><span class="k">class</span> <span class="nc">Lorax</span><span class="p">(</span><span class="n">BaseLoraxClass</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Lorax">
+<a class="viewcode-back" href="../pylorax.html#pylorax.Lorax">[docs]</a>
+<span class="k">class</span> <span class="nc">Lorax</span><span class="p">(</span><span class="n">BaseLoraxClass</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">BaseLoraxClass</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -165,7 +173,9 @@
         <span class="c1"># set locale to C</span>
         <span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Lorax.configure"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_file</span><span class="o">=</span><span class="s2">&quot;/etc/lorax/lorax.conf&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Lorax.configure">
+<a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.configure">[docs]</a>
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_file</span><span class="o">=</span><span class="s2">&quot;/etc/lorax/lorax.conf&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
 
         <span class="c1"># set defaults</span>
@@ -222,9 +232,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span> <span class="o">=</span> <span class="kc">True</span></div>
 
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">templatedir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find the template directory.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the template directory.</span>
 
 <span class="sd">        Pick the first directory under sharedir/templates.d/ if it exists.</span>
 <span class="sd">        Otherwise use the sharedir</span>
@@ -234,17 +245,25 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using templatedir </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_templatedir</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_templatedir</span>
 
-<div class="viewcode-block" id="Lorax.init_stream_logging"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.init_stream_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_stream_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Lorax.init_stream_logging">
+<a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.init_stream_logging">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_stream_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Lorax.init_file_logging"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.init_file_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_file_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logdir</span><span class="p">,</span> <span class="n">logname</span><span class="o">=</span><span class="s2">&quot;pylorax.log&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Lorax.init_file_logging">
+<a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.init_file_logging">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_file_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logdir</span><span class="p">,</span> <span class="n">logname</span><span class="o">=</span><span class="s2">&quot;pylorax.log&quot;</span><span class="p">):</span>
         <span class="n">fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="n">logname</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Lorax.run"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbo</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+
+<div class="viewcode-block" id="Lorax.run">
+<a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbo</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="n">isfinal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buildarch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">volid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">domacboot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">remove_temp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">installpkgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludepkgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -280,7 +299,6 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">logdir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_stream_logging</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_file_logging</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;version is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">vernum</span><span class="p">)</span>
@@ -441,10 +459,14 @@
 
         <span class="c1"># cleanup</span>
         <span class="k">if</span> <span class="n">remove_temp</span><span class="p">:</span>
-            <span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span></div></div>
+            <span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="get_buildarch"><a class="viewcode-back" href="../pylorax.html#pylorax.get_buildarch">[docs]</a><span class="k">def</span> <span class="nf">get_buildarch</span><span class="p">(</span><span class="n">dbo</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_buildarch">
+<a class="viewcode-back" href="../pylorax.html#pylorax.get_buildarch">[docs]</a>
+<span class="k">def</span> <span class="nf">get_buildarch</span><span class="p">(</span><span class="n">dbo</span><span class="p">):</span>
     <span class="c1"># get architecture of the available anaconda package</span>
     <span class="n">buildarch</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
@@ -460,8 +482,11 @@
     <span class="k">return</span> <span class="n">buildarch</span></div>
 
 
-<div class="viewcode-block" id="setup_logging"><a class="viewcode-back" href="../pylorax.html#pylorax.setup_logging">[docs]</a><span class="k">def</span> <span class="nf">setup_logging</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">theLogger</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="setup_logging">
+<a class="viewcode-back" href="../pylorax.html#pylorax.setup_logging">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_logging</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">theLogger</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup the various logs</span>
 
 <span class="sd">    :param logfile: filename to write the log to</span>
@@ -500,8 +525,11 @@
     <span class="n">program_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="find_templates"><a class="viewcode-back" href="../pylorax.html#pylorax.find_templates">[docs]</a><span class="k">def</span> <span class="nf">find_templates</span><span class="p">(</span><span class="n">templatedir</span><span class="o">=</span><span class="s2">&quot;/usr/share/lorax&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Find the templates to use.</span>
+
+<div class="viewcode-block" id="find_templates">
+<a class="viewcode-back" href="../pylorax.html#pylorax.find_templates">[docs]</a>
+<span class="k">def</span> <span class="nf">find_templates</span><span class="p">(</span><span class="n">templatedir</span><span class="o">=</span><span class="s2">&quot;/usr/share/lorax&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Find the templates to use.</span>
 
 <span class="sd">    :param str templatedir: Top directory to search for templates</span>
 <span class="sd">    :returns: Path to templates</span>
@@ -519,8 +547,11 @@
             <span class="k">pass</span>
     <span class="k">return</span> <span class="n">templatedir</span></div>
 
-<div class="viewcode-block" id="log_selinux_state"><a class="viewcode-back" href="../pylorax.html#pylorax.log_selinux_state">[docs]</a><span class="k">def</span> <span class="nf">log_selinux_state</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Log the current state of selinux&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="log_selinux_state">
+<a class="viewcode-back" href="../pylorax.html#pylorax.log_selinux_state">[docs]</a>
+<span class="k">def</span> <span class="nf">log_selinux_state</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log the current state of selinux&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">is_selinux_enabled</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">security_getenforce</span><span class="p">():</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;selinux is enabled and in Enforcing mode&quot;</span><span class="p">)</span>
@@ -528,6 +559,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;selinux is enabled and in Permissive mode&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;selinux is Disabled&quot;</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>
