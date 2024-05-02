@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.creator &mdash; Lorax 38.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>pylorax.creator &mdash; Lorax 41.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=330c1f8c" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+  
+        <script src="../../_static/documentation_options.js?v=0a3d5615"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -22,14 +22,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Lorax
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Lorax
           </a>
               <div class="version">
-                38.0
+                41.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -59,10 +63,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      <li>pylorax.creator</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../pylorax.html">pylorax</a></li>
+      <li class="breadcrumb-item active">pylorax.creator</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -123,12 +127,14 @@
 
 <span class="c1"># Default parameters for rebuilding initramfs, override with --dracut-arg or --dracut-conf</span>
 <span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;livenet dmsquash-live dmsquash-live-ntfs convertfs pollcdrom qemu qemu-net&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;--omit&quot;</span><span class="p">,</span> <span class="s2">&quot;plymouth&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-hostonly&quot;</span><span class="p">,</span> <span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">]</span>
+                  <span class="s2">&quot;--no-hostonly&quot;</span><span class="p">,</span> <span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">]</span>
 
 <span class="n">RUNTIME</span> <span class="o">=</span> <span class="s2">&quot;images/install.img&quot;</span>
 
-<div class="viewcode-block" id="FakeDNF"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.FakeDNF">[docs]</a><span class="k">class</span> <span class="nc">FakeDNF</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="FakeDNF">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.FakeDNF">[docs]</a>
+<span class="k">class</span> <span class="nc">FakeDNF</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A minimal DNF object suitable for passing to RuntimeBuilder</span>
 
 <span class="sd">    lmc uses RuntimeBuilder to run the arch specific iso creation</span>
@@ -138,11 +144,23 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">conf</span>
 
-<div class="viewcode-block" id="FakeDNF.reset"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.FakeDNF.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span></div></div>
+<div class="viewcode-block" id="FakeDNF.reset">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.FakeDNF.reset">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="is_image_mounted"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.is_image_mounted">[docs]</a><span class="k">def</span> <span class="nf">is_image_mounted</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FakeDNF.get_config">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.FakeDNF.get_config">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span></div>
+</div>
+
+
+<div class="viewcode-block" id="is_image_mounted">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.is_image_mounted">[docs]</a>
+<span class="k">def</span> <span class="nf">is_image_mounted</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check to see if the disk_img is mounted</span>
 
 <span class="sd">    :returns: True if disk_img is in /proc/mounts</span>
@@ -155,8 +173,11 @@
                 <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="find_ostree_root"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.find_ostree_root">[docs]</a><span class="k">def</span> <span class="nf">find_ostree_root</span><span class="p">(</span><span class="n">phys_root</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="find_ostree_root">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.find_ostree_root">[docs]</a>
+<span class="k">def</span> <span class="nf">find_ostree_root</span><span class="p">(</span><span class="n">phys_root</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find root of ostree deployment</span>
 
 <span class="sd">    :param str phys_root: Path to physical root</span>
@@ -169,12 +190,15 @@
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ostree_sysroots = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ostree_sysroots</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ostree_sysroots</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ostree_sysroots</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Too many deployment roots found: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ostree_sysroots</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Too many deployment roots found: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ostree_sysroots</span><span class="p">)</span>
         <span class="n">ostree_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">ostree_sysroots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">phys_root</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ostree_root</span></div>
 
-<div class="viewcode-block" id="get_arch"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.get_arch">[docs]</a><span class="k">def</span> <span class="nf">get_arch</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_arch">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.get_arch">[docs]</a>
+<span class="k">def</span> <span class="nf">get_arch</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the kernel arch</span>
 
 <span class="sd">    :returns: Arch of first kernel found at mount_dir/boot/ or i386</span>
@@ -185,8 +209,11 @@
         <span class="k">return</span> <span class="s2">&quot;i386&quot;</span>
     <span class="k">return</span> <span class="n">kernels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">arch</span></div>
 
-<div class="viewcode-block" id="squashfs_args"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.squashfs_args">[docs]</a><span class="k">def</span> <span class="nf">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Returns the compression type and args to use when making squashfs</span>
+
+<div class="viewcode-block" id="squashfs_args">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.squashfs_args">[docs]</a>
+<span class="k">def</span> <span class="nf">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the compression type and args to use when making squashfs</span>
 
 <span class="sd">    :param opts: ArgumentParser object with compression and compressopts</span>
 <span class="sd">    :returns: tuple of compression type and args</span>
@@ -205,8 +232,11 @@
         <span class="n">compressargs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="dracut_args"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.dracut_args">[docs]</a><span class="k">def</span> <span class="nf">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return a list of the args to pass to dracut</span>
+
+<div class="viewcode-block" id="dracut_args">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.dracut_args">[docs]</a>
+<span class="k">def</span> <span class="nf">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of the args to pass to dracut</span>
 
 <span class="sd">    Return the default argument list unless one of the dracut cmdline arguments</span>
 <span class="sd">    has been used.</span>
@@ -221,10 +251,13 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">DRACUT_DEFAULT</span></div>
 
-<div class="viewcode-block" id="make_appliance"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_appliance">[docs]</a><span class="k">def</span> <span class="nf">make_appliance</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">networks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ram</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+
+<div class="viewcode-block" id="make_appliance">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_appliance">[docs]</a>
+<span class="k">def</span> <span class="nf">make_appliance</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">networks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ram</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
                    <span class="n">vcpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span>
                    <span class="n">releasever</span><span class="o">=</span><span class="n">DEFAULT_RELEASEVER</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate an appliance description file</span>
 
 <span class="sd">    :param str disk_img: Full path of the disk image</span>
@@ -270,8 +303,11 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="make_runtime"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_runtime">[docs]</a><span class="k">def</span> <span class="nf">make_runtime</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="make_runtime">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_runtime">[docs]</a>
+<span class="k">def</span> <span class="nf">make_runtime</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make the squashfs image from a directory</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>
@@ -284,14 +320,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">kernel_arch</span> <span class="o">=</span> <span class="n">get_arch</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">)</span>
 
-    <span class="c1"># Fake dnf  object</span>
-    <span class="n">fake_dbo</span> <span class="o">=</span> <span class="n">FakeDNF</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="n">DataHolder</span><span class="p">(</span><span class="n">installroot</span><span class="o">=</span><span class="n">mount_dir</span><span class="p">))</span>
     <span class="c1"># Fake arch with only basearch set</span>
     <span class="n">arch</span> <span class="o">=</span> <span class="n">ArchData</span><span class="p">(</span><span class="n">kernel_arch</span><span class="p">)</span>
     <span class="n">product</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">release</span><span class="p">,</span>
                             <span class="n">variant</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">variant</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">bugurl</span><span class="p">,</span> <span class="n">isfinal</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">isfinal</span><span class="p">)</span>
 
-    <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">fake_dbo</span><span class="p">,</span> <span class="n">skip_branding</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">skip_branding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">mount_dir</span><span class="p">)</span>
     <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">squashfs_only</span><span class="p">:</span>
@@ -304,8 +338,11 @@
                   <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rebuild_initrds_for_live"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.rebuild_initrds_for_live">[docs]</a><span class="k">def</span> <span class="nf">rebuild_initrds_for_live</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">results_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="rebuild_initrds_for_live">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.rebuild_initrds_for_live">[docs]</a>
+<span class="k">def</span> <span class="nf">rebuild_initrds_for_live</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">results_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rebuild intrds for pxe live image (root=live:http://)</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>
@@ -326,7 +363,7 @@
 
     <span class="n">kernels</span> <span class="o">=</span> <span class="p">[</span><span class="n">kernel</span> <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">findkernels</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">kdir</span><span class="p">)]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">kernels</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No initrds found, cannot rebuild_initrds&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No initrds found, cannot rebuild_initrds&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">ostree</span><span class="p">:</span>
         <span class="c1"># Dracut assumes to have some dirs in disk image</span>
@@ -358,8 +395,11 @@
             <span class="n">dracut</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">args</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;/results/&quot;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kver</span><span class="p">])</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">results_dir</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="create_pxe_config"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.create_pxe_config">[docs]</a><span class="k">def</span> <span class="nf">create_pxe_config</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">images_dir</span><span class="p">,</span> <span class="n">live_image_name</span><span class="p">,</span> <span class="n">add_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="create_pxe_config">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.create_pxe_config">[docs]</a>
+<span class="k">def</span> <span class="nf">create_pxe_config</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">images_dir</span><span class="p">,</span> <span class="n">live_image_name</span><span class="p">,</span> <span class="n">add_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create template for pxe to live configuration</span>
 
 <span class="sd">    :param str images_dir: Path of directory with images to be used</span>
@@ -391,8 +431,11 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="make_livecd"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_livecd">[docs]</a><span class="k">def</span> <span class="nf">make_livecd</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="make_livecd">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_livecd">[docs]</a>
+<span class="k">def</span> <span class="nf">make_livecd</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take the content from the disk image and make a livecd out of it</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>
@@ -447,8 +490,11 @@
 
     <span class="k">return</span> <span class="n">work_dir</span></div>
 
-<div class="viewcode-block" id="mount_boot_part_over_root"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.mount_boot_part_over_root">[docs]</a><span class="k">def</span> <span class="nf">mount_boot_part_over_root</span><span class="p">(</span><span class="n">img_mount</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="mount_boot_part_over_root">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.mount_boot_part_over_root">[docs]</a>
+<span class="k">def</span> <span class="nf">mount_boot_part_over_root</span><span class="p">(</span><span class="n">img_mount</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mount boot partition to /boot of root fs mounted in img_mount</span>
 
 <span class="sd">    Used for OSTree so it finds deployment configurations on live rootfs</span>
@@ -477,8 +523,11 @@
     <span class="n">remove</span><span class="p">(</span><span class="n">tmp_mount_dir</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sysroot_boot_dir</span></div>
 
-<div class="viewcode-block" id="calculate_disk_size"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.calculate_disk_size">[docs]</a><span class="k">def</span> <span class="nf">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Calculate the disk size from the kickstart</span>
+
+<div class="viewcode-block" id="calculate_disk_size">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.calculate_disk_size">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the disk size from the kickstart</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>
 <span class="sd">    :type opts: argparse options</span>
@@ -491,10 +540,15 @@
     <span class="c1"># Disk size for a filesystem image should only be the size of /</span>
     <span class="c1"># to prevent surprises when using the same kickstart for different installations.</span>
     <span class="n">unique_partitions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">mountpoint</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">partitions</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span> <span class="ow">and</span> <span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">make_iso</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span><span class="p">):</span>
         <span class="n">disk_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">unique_partitions</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">mountpoint</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">disk_size</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No / partition in the kickstart. Unable to calculate required disk size.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">disk_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">unique_partitions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">disk_size</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No partitions in the kickstart. Unable to calculate required disk size.&quot;</span><span class="p">)</span>
 
         <span class="c1"># reqpart can add 1M, 2M, 200M based on platform. Add 500M to be sure</span>
         <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">reqpart</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
@@ -512,8 +566,11 @@
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using disk size of </span><span class="si">%s</span><span class="s2">MiB&quot;</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">disk_size</span></div>
 
-<div class="viewcode-block" id="make_image"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_image">[docs]</a><span class="k">def</span> <span class="nf">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="make_image">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_image">[docs]</a>
+<span class="k">def</span> <span class="nf">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Install to a disk image</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>
@@ -572,8 +629,11 @@
     <span class="k">return</span> <span class="n">disk_img</span></div>
 
 
-<div class="viewcode-block" id="make_live_images"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_live_images">[docs]</a><span class="k">def</span> <span class="nf">make_live_images</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="make_live_images">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_live_images">[docs]</a>
+<span class="k">def</span> <span class="nf">make_live_images</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create live images from direcory or rootfs image</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>
@@ -658,8 +718,11 @@
 
     <span class="k">return</span> <span class="n">work_dir</span></div>
 
-<div class="viewcode-block" id="check_kickstart"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.check_kickstart">[docs]</a><span class="k">def</span> <span class="nf">check_kickstart</span><span class="p">(</span><span class="n">ks</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check the parsed kickstart object for errors</span>
+
+<div class="viewcode-block" id="check_kickstart">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.check_kickstart">[docs]</a>
+<span class="k">def</span> <span class="nf">check_kickstart</span><span class="p">(</span><span class="n">ks</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the parsed kickstart object for errors</span>
 
 <span class="sd">    :param ks: Parsed Kickstart object</span>
 <span class="sd">    :type ks: pykickstart.parser.KickstartParser</span>
@@ -678,9 +741,13 @@
         <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;repo can only be used with the url install method. Add url to your &quot;</span>
                       <span class="s2">&quot;kickstart file.&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;nfs&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
-        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must activate networking if &quot;</span>
-                      <span class="s2">&quot;the url or nfs install method is used.&quot;</span><span class="p">)</span>
+    <span class="c1"># file: url does not need networking</span>
+    <span class="c1"># other url and nfs sources do need networking</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;nfs&quot;</span> <span class="ow">or</span> \
+           <span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;url&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;file:&quot;</span><span class="p">)):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must activate networking if &quot;</span>
+                          <span class="s2">&quot;the url or nfs install method is used.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">displaymode</span><span class="o">.</span><span class="n">displayMode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must not set a display mode (text, cmdline, &quot;</span>
@@ -699,8 +766,11 @@
 
     <span class="k">return</span> <span class="n">errors</span></div>
 
-<div class="viewcode-block" id="run_creator"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.run_creator">[docs]</a><span class="k">def</span> <span class="nf">run_creator</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Run the image creator process</span>
+
+<div class="viewcode-block" id="run_creator">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.creator.run_creator">[docs]</a>
+<span class="k">def</span> <span class="nf">run_creator</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the image creator process</span>
 
 <span class="sd">    :param opts: Commandline options to control the process</span>
 <span class="sd">    :type opts: Either a DataHolder or ArgumentParser</span>
@@ -819,6 +889,7 @@
         <span class="n">result_dir</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">result_dir</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

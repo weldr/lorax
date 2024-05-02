@@ -13,9 +13,12 @@ kickstart boot.iso will include this support as well.
 ``mkksiso`` will raise an error if it finds a .discinfo on the iso with a
 mismatched arch.
 
-As of version 37.1 ``mkksiso`` can be run by normal users. It no longer needs
-to mount the iso to add the kickstart or edit the configuration files so you
-do not need to be root.
+As of version 38.4 ``mkksiso`` needs to be run as root to create a fully
+bootable iso. Booting on a UEFI system with the iso written to a flash drive
+requires updating the config files in the embedded efiboot image in the iso. If
+you do not need this functionality you can still run it as a user by passing
+`--skip-mkefiboot`.
+
 
 mkksiso cmdline arguments
 -------------------------

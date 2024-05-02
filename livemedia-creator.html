@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>livemedia-creator &mdash; Lorax 38.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>livemedia-creator &mdash; Lorax 41.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=330c1f8c" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
+  
+        <script src="_static/documentation_options.js?v=0a3d5615"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -25,14 +25,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Lorax
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Lorax
           </a>
               <div class="version">
-                38.0
+                41.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -44,14 +48,14 @@
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">livemedia-creator</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#livemedia-creator-cmdline-arguments">livemedia-creator cmdline arguments</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#options">options</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#disk/fs image arguments">disk/fs image arguments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#appliance arguments">appliance arguments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#qemu arguments">qemu arguments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#dracut arguments: (default: )">dracut arguments: (default: )</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pxe to live arguments">pxe to live arguments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#OCI arguments">OCI arguments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Vagrant arguments">Vagrant arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#named-arguments">Named Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disk/fs-image-arguments">disk/fs image arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#appliance-arguments">appliance arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qemu-arguments">qemu arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dracut-arguments:-(default:-)">dracut arguments: (default: )</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pxe-to-live-arguments">pxe to live arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oci-arguments">OCI arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vagrant-arguments">Vagrant arguments</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
@@ -98,8 +102,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>livemedia-creator</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">livemedia-creator</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/livemedia-creator.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -110,7 +114,7 @@
            <div itemprop="articleBody">
              
   <section id="livemedia-creator">
-<h1>livemedia-creator<a class="headerlink" href="#livemedia-creator" title="Permalink to this heading">¶</a></h1>
+<h1>livemedia-creator<a class="headerlink" href="#livemedia-creator" title="Link to this heading">¶</a></h1>
 <dl class="field-list simple">
 <dt class="field-odd">Authors<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
@@ -138,7 +142,7 @@ you have the anaconda-tui package installed.</p>
 <p><code class="docutils literal notranslate"><span class="pre">builder</span></code> is the system where livemedia-creator is being run</p>
 <p><code class="docutils literal notranslate"><span class="pre">image</span></code> is the disk image being created by running livemedia-creator</p>
 <section id="livemedia-creator-cmdline-arguments">
-<h2>livemedia-creator cmdline arguments<a class="headerlink" href="#livemedia-creator-cmdline-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>livemedia-creator cmdline arguments<a class="headerlink" href="#livemedia-creator-cmdline-arguments" title="Link to this heading">¶</a></h2>
 <p><p>Create Live Install Media</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
@@ -149,15 +153,15 @@ you have the anaconda-tui package installed.</p>
                          <span class="p">[</span><span class="o">--</span><span class="n">lorax</span><span class="o">-</span><span class="n">templates</span> <span class="n">LORAX_TEMPLATES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">resultdir</span> <span class="n">RESULT_DIR</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">macboot</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">nomacboot</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="n">boot</span><span class="o">-</span><span class="n">args</span> <span class="n">EXTRA_BOOT_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">RELEASE</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">VARIANT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">URL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">isfinal</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="n">image</span> <span class="n">DISK_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">image</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">image</span> <span class="n">FS_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span> <span class="n">IMAGE_NAME</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">tar</span><span class="o">-</span><span class="n">disk</span><span class="o">-</span><span class="n">name</span> <span class="n">TAR_DISK_NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">label</span> <span class="n">FS_LABEL</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">align</span> <span class="n">IMAGE_SIZE_ALIGN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span> <span class="n">IMAGE_TYPE</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">qemu</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="n">COMPRESSION</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="n">arg</span> <span class="n">COMPRESS_ARGS</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">name</span> <span class="n">APP_NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">template</span> <span class="n">APP_TEMPLATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">file</span> <span class="n">APP_FILE</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">ram</span> <span class="n">MEMORY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vcpus</span> <span class="n">VCPUS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vnc</span> <span class="n">VNC</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">arch</span> <span class="n">ARCH</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">kernel</span><span class="o">-</span><span class="n">args</span> <span class="n">KERNEL_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ovmf</span><span class="o">-</span><span class="n">path</span> <span class="n">OVMF_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">virt</span><span class="o">-</span><span class="n">uefi</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">kvm</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="k">with</span><span class="o">-</span><span class="n">rng</span> <span class="n">WITH_RNG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">conf</span> <span class="n">DRACUT_CONF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">arg</span> <span class="n">DRACUT_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">image</span> <span class="n">FS_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span> <span class="n">IMAGE_NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tar</span><span class="o">-</span><span class="n">disk</span><span class="o">-</span><span class="n">name</span> <span class="n">TAR_DISK_NAME</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">label</span> <span class="n">FS_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">align</span> <span class="n">IMAGE_SIZE_ALIGN</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span> <span class="n">IMAGE_TYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qemu</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="n">COMPRESSION</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="n">arg</span> <span class="n">COMPRESS_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">name</span> <span class="n">APP_NAME</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">template</span> <span class="n">APP_TEMPLATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">file</span> <span class="n">APP_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ram</span> <span class="n">MEMORY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cpu</span> <span class="n">CPU</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">vcpus</span> <span class="n">VCPUS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vnc</span> <span class="n">VNC</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">arch</span> <span class="n">ARCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">kernel</span><span class="o">-</span><span class="n">args</span> <span class="n">KERNEL_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">firmware</span> <span class="n">FW_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">virt</span><span class="o">-</span><span class="n">uefi</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">kvm</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">with</span><span class="o">-</span><span class="n">rng</span> <span class="n">WITH_RNG</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">conf</span> <span class="n">DRACUT_CONF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">arg</span> <span class="n">DRACUT_ARGS</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">live</span><span class="o">-</span><span class="n">rootfs</span><span class="o">-</span><span class="n">size</span> <span class="n">LIVE_ROOTFS_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">live</span><span class="o">-</span><span class="n">rootfs</span><span class="o">-</span><span class="n">keep</span><span class="o">-</span><span class="n">size</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">config</span> <span class="n">OCI_CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">runtime</span> <span class="n">OCI_RUNTIME</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">vagrant</span><span class="o">-</span><span class="n">metadata</span> <span class="n">VAGRANT_METADATA</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vagrantfile</span> <span class="n">VAGRANTFILE</span><span class="p">]</span>
@@ -165,8 +169,8 @@ you have the anaconda-tui package installed.</p>
                          <span class="p">[</span><span class="o">--</span><span class="n">squashfs</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span> <span class="n">TIMEOUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="options">
-<h3>options<a class="headerlink" href="#options" title="Permalink to this heading">¶</a></h3>
+<section id="named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--make-iso</kbd></dt>
 <dd><p>Build a live iso</p>
@@ -296,7 +300,7 @@ you have the anaconda-tui package installed.</p>
 </dd>
 <dt><kbd>--releasever</kbd></dt>
 <dd><p>substituted for &#64;VERSION&#64; in bootloader config files</p>
-<p>Default: &quot;36&quot;</p>
+<p>Default: &quot;41&quot;</p>
 </dd>
 <dt><kbd>--volid</kbd></dt>
 <dd><p>volume id</p>
@@ -313,8 +317,8 @@ you have the anaconda-tui package installed.</p>
 </dd>
 </dl>
 </section>
-<section id="disk/fs image arguments">
-<h3>disk/fs image arguments<a class="headerlink" href="#disk/fs image arguments" title="Permalink to this heading">¶</a></h3>
+<section id="disk/fs-image-arguments">
+<h3>disk/fs image arguments<a class="headerlink" href="#disk/fs-image-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--disk-image</kbd></dt>
 <dd><p>Path to existing disk image to use for creating final image.</p>
@@ -365,8 +369,8 @@ you have the anaconda-tui package installed.</p>
 </dd>
 </dl>
 </section>
-<section id="appliance arguments">
-<h3>appliance arguments<a class="headerlink" href="#appliance arguments" title="Permalink to this heading">¶</a></h3>
+<section id="appliance-arguments">
+<h3>appliance arguments<a class="headerlink" href="#appliance-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--app-name</kbd></dt>
 <dd><p>Name of appliance to pass to template</p>
@@ -380,15 +384,18 @@ you have the anaconda-tui package installed.</p>
 </dd>
 </dl>
 </section>
-<section id="qemu arguments">
-<h3>qemu arguments<a class="headerlink" href="#qemu arguments" title="Permalink to this heading">¶</a></h3>
+<section id="qemu-arguments">
+<h3>qemu arguments<a class="headerlink" href="#qemu-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--ram</kbd></dt>
 <dd><p>Memory to allocate for installer in megabytes.</p>
 <p>Default: 2048</p>
 </dd>
+<dt><kbd>--cpu</kbd></dt>
+<dd><p>Passed to qemu -cpu command. Default is to use -cpu host.</p>
+</dd>
 <dt><kbd>--vcpus</kbd></dt>
-<dd><p>Passed to qemu -smp command</p>
+<dd><p>Passed to qemu -smp command. Number of virtual cpus.</p>
 </dd>
 <dt><kbd>--vnc</kbd></dt>
 <dd><p>Passed to qemu -display command. eg. vnc=127.0.0.1:5, default is to choose the first unused vnc port.</p>
@@ -399,12 +406,12 @@ you have the anaconda-tui package installed.</p>
 <dt><kbd>--kernel-args</kbd></dt>
 <dd><p>Additional argument to pass to the installation kernel</p>
 </dd>
-<dt><kbd>--ovmf-path</kbd></dt>
-<dd><p>Path to OVMF firmware</p>
-<p>Default: &quot;/usr/share/edk2/ovmf/&quot;</p>
+<dt><kbd>--firmware, --ovmf-path</kbd></dt>
+<dd><p>Path to top of the EDK2 UEFI firmware directory tree</p>
+<p>Default: &quot;/usr/share/edk2/&quot;</p>
 </dd>
 <dt><kbd>--virt-uefi</kbd></dt>
-<dd><p>Use OVMF firmware to boot the VM in UEFI mode</p>
+<dd><p>Use UEFI firmware to boot the VM in UEFI mode</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--no-kvm</kbd></dt>
@@ -417,8 +424,8 @@ you have the anaconda-tui package installed.</p>
 </dd>
 </dl>
 </section>
-<section id="dracut arguments: (default: )">
-<h3>dracut arguments: (default: )<a class="headerlink" href="#dracut arguments: (default: )" title="Permalink to this heading">¶</a></h3>
+<section id="dracut-arguments:-(default:-)">
+<h3>dracut arguments: (default: )<a class="headerlink" href="#dracut-arguments:-(default:-)" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--dracut-conf</kbd></dt>
 <dd><p>Path to a dracut.conf file to use instead of the default arguments. See the dracut.conf(5) manpage.</p>
@@ -428,8 +435,8 @@ you have the anaconda-tui package installed.</p>
 </dd>
 </dl>
 </section>
-<section id="pxe to live arguments">
-<h3>pxe to live arguments<a class="headerlink" href="#pxe to live arguments" title="Permalink to this heading">¶</a></h3>
+<section id="pxe-to-live-arguments">
+<h3>pxe to live arguments<a class="headerlink" href="#pxe-to-live-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--live-rootfs-size</kbd></dt>
 <dd><p>Size of root filesystem of live image in GiB</p>
@@ -441,8 +448,8 @@ you have the anaconda-tui package installed.</p>
 </dd>
 </dl>
 </section>
-<section id="OCI arguments">
-<h3>OCI arguments<a class="headerlink" href="#OCI arguments" title="Permalink to this heading">¶</a></h3>
+<section id="oci-arguments">
+<h3>OCI arguments<a class="headerlink" href="#oci-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--oci-config</kbd></dt>
 <dd><p>config.json OCI configuration file</p>
@@ -452,8 +459,8 @@ you have the anaconda-tui package installed.</p>
 </dd>
 </dl>
 </section>
-<section id="Vagrant arguments">
-<h3>Vagrant arguments<a class="headerlink" href="#Vagrant arguments" title="Permalink to this heading">¶</a></h3>
+<section id="vagrant-arguments">
+<h3>Vagrant arguments<a class="headerlink" href="#vagrant-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>--vagrant-metadata</kbd></dt>
 <dd><p>optional metadata.json file</p>
@@ -465,7 +472,7 @@ you have the anaconda-tui package installed.</p>
 </section>
 </section>
 <section id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">¶</a></h2>
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">¶</a></h2>
 <p>Run this to create a bootable live iso:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> \
 <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">extra</span><span class="o">/</span><span class="n">iso</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">livemedia</span><span class="o">.</span><span class="n">ks</span>
@@ -483,7 +490,7 @@ chosen, or you can use a specific port by passing it. eg. <code class="docutils 
 to monitor the logs for fatal errors, but may not catch everything.</p>
 </section>
 <section id="how-iso-creation-works">
-<h2>How ISO creation works<a class="headerlink" href="#how-iso-creation-works" title="Permalink to this heading">¶</a></h2>
+<h2>How ISO creation works<a class="headerlink" href="#how-iso-creation-works" title="Link to this heading">¶</a></h2>
 <p>There are 2 stages, the install stage which produces a disk or filesystem image
 as its output, and the boot media creation which uses the image as its input.
 Normally you would run both stages, but it is possible to stop after the
@@ -518,7 +525,7 @@ can also name the iso by using <code class="docutils literal notranslate"><span 
 </div>
 </section>
 <section id="kickstarts">
-<h2>Kickstarts<a class="headerlink" href="#kickstarts" title="Permalink to this heading">¶</a></h2>
+<h2>Kickstarts<a class="headerlink" href="#kickstarts" title="Link to this heading">¶</a></h2>
 <p>The docs/ directory includes several example kickstarts, one to create a live
 desktop iso using GNOME, and another to create a minimal disk image. When
 creating your own kickstarts you should start with the minimal example, it
@@ -570,14 +577,21 @@ dracut-live
 grub2-efi
 syslinux</p></li>
 </ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The kickstart must contain <cite>part / --size=1024</cite> in order to set the size of the
+root filesystem's disk image. Other partitions may be included, depending on the
+image type being created. <cite>autopart</cite> cannot be supported due to lmc needing to
+create the disk image file before running the installer on it.</p>
+</div>
 <section id="user-created-repositories">
-<h3>User created repositories<a class="headerlink" href="#user-created-repositories" title="Permalink to this heading">¶</a></h3>
+<h3>User created repositories<a class="headerlink" href="#user-created-repositories" title="Link to this heading">¶</a></h3>
 <p>If you are using your own repositories and installing groups (eg. &#64;core) make
 sure you create the repodata with groups like this <code class="docutils literal notranslate"><span class="pre">createrepo</span> <span class="pre">-g</span>
 <span class="pre">/path/to/groups.xml</span> <span class="pre">/path/to/rpms</span></code></p>
 </section>
 <section id="using-a-proxy-with-repos">
-<h3>Using a Proxy with repos<a class="headerlink" href="#using-a-proxy-with-repos" title="Permalink to this heading">¶</a></h3>
+<h3>Using a Proxy with repos<a class="headerlink" href="#using-a-proxy-with-repos" title="Link to this heading">¶</a></h3>
 <p>One drawback to using qemu is that it pulls the packages from the repo each
 time you run it. To speed things up you either need a local mirror of the
 packages, or you can use a caching proxy. When using a proxy you pass it to
@@ -602,7 +616,7 @@ named <code class="docutils literal notranslate"><span class="pre">updates</span
 </section>
 </section>
 <section id="anaconda-image-install-no-virt">
-<h2>Anaconda image install (no-virt)<a class="headerlink" href="#anaconda-image-install-no-virt" title="Permalink to this heading">¶</a></h2>
+<h2>Anaconda image install (no-virt)<a class="headerlink" href="#anaconda-image-install-no-virt" title="Link to this heading">¶</a></h2>
 <p>You can create images without using qemu by passing <code class="docutils literal notranslate"><span class="pre">--no-virt</span></code> on the
 cmdline. This will use Anaconda's directory install feature to handle the
 install.  There are a couple of things to keep in mind when doing this:</p>
@@ -635,7 +649,7 @@ be reported as a bug.</p>
 </div>
 </section>
 <section id="ami-images">
-<h2>AMI Images<a class="headerlink" href="#ami-images" title="Permalink to this heading">¶</a></h2>
+<h2>AMI Images<a class="headerlink" href="#ami-images" title="Link to this heading">¶</a></h2>
 <p>Amazon EC2 images can be created by using the --make-ami switch and an appropriate
 kickstart file. All of the work to customize the image is handled by the kickstart.
 The example currently included was modified from the cloud-kickstarts version so
@@ -646,7 +660,7 @@ that it would work with livemedia-creator.</p>
 <p>At this time I have not tested the image with EC2. Feedback would be welcome.</p>
 </section>
 <section id="appliance-creation">
-<h2>Appliance Creation<a class="headerlink" href="#appliance-creation" title="Permalink to this heading">¶</a></h2>
+<h2>Appliance Creation<a class="headerlink" href="#appliance-creation" title="Link to this heading">¶</a></h2>
 <p>livemedia-creator can now replace appliance-tools by using the --make-appliance
 switch. This will create the partitioned disk image and an XML file that can be
 used with virt-image to setup a virtual system.</p>
@@ -699,7 +713,7 @@ from <code class="docutils literal notranslate"><span class="pre">--releasever</
 </div>
 </section>
 <section id="filesystem-image-creation">
-<h2>Filesystem Image Creation<a class="headerlink" href="#filesystem-image-creation" title="Permalink to this heading">¶</a></h2>
+<h2>Filesystem Image Creation<a class="headerlink" href="#filesystem-image-creation" title="Link to this heading">¶</a></h2>
 <p>livemedia-creator can be used to create un-partitined filesystem images using
 the <code class="docutils literal notranslate"><span class="pre">--make-fsimage</span></code> option. As of version 21.8 this works with both qemu and
 no-virt modes of operation. Previously it was only available with no-virt.</p>
@@ -710,7 +724,7 @@ no-virt modes of operation. Previously it was only available with no-virt.</p>
 <p>You can name the output image with <code class="docutils literal notranslate"><span class="pre">--image-name</span></code> and set a label on the filesystem with <code class="docutils literal notranslate"><span class="pre">--fs-label</span></code></p>
 </section>
 <section id="tar-file-creation">
-<h2>TAR File Creation<a class="headerlink" href="#tar-file-creation" title="Permalink to this heading">¶</a></h2>
+<h2>TAR File Creation<a class="headerlink" href="#tar-file-creation" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">--make-tar</span></code> command can be used to create a tar of the root filesystem. By
 default it is compressed using xz, but this can be changed using the
 <code class="docutils literal notranslate"><span class="pre">--compression</span></code> and <code class="docutils literal notranslate"><span class="pre">--compress-arg</span></code> options. This option works with both virt and
@@ -723,14 +737,14 @@ no-virt install methods.</p>
 </div>
 </section>
 <section id="live-image-for-pxe-boot">
-<h2>Live Image for PXE Boot<a class="headerlink" href="#live-image-for-pxe-boot" title="Permalink to this heading">¶</a></h2>
+<h2>Live Image for PXE Boot<a class="headerlink" href="#live-image-for-pxe-boot" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">--make-pxe-live</span></code> command will produce squashfs image containing live root
 filesystem that can be used for pxe boot. Directory with results will contain
 the live image, kernel image, initrd image and template of pxe configuration
 for the images.</p>
 </section>
 <section id="atomic-live-image-for-pxe-boot">
-<h2>Atomic Live Image for PXE Boot<a class="headerlink" href="#atomic-live-image-for-pxe-boot" title="Permalink to this heading">¶</a></h2>
+<h2>Atomic Live Image for PXE Boot<a class="headerlink" href="#atomic-live-image-for-pxe-boot" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">--make-ostree-live</span></code> command will produce the same result as <code class="docutils literal notranslate"><span class="pre">--make-pxe-live</span></code>
 for installations of Atomic Host.  Example kickstart for such an installation
 using Atomic installer iso with local repo included in the image can be found
@@ -740,7 +754,7 @@ kickstart in docs/fedora-atomic-pxe-live-novirt.ks. This also works inside the
 mock environment.</p>
 </section>
 <section id="using-mock-and-no-virt-to-create-images">
-<h2>Using Mock and --no-virt to Create Images<a class="headerlink" href="#using-mock-and-no-virt-to-create-images" title="Permalink to this heading">¶</a></h2>
+<h2>Using Mock and --no-virt to Create Images<a class="headerlink" href="#using-mock-and-no-virt-to-create-images" title="Link to this heading">¶</a></h2>
 <p>As of lorax version 22.2 you can use livemedia-creator and anaconda version
 22.15 inside of a mock chroot with --make-iso and --make-fsimage.</p>
 <div class="admonition note">
@@ -753,6 +767,9 @@ packages.</p>
 systemd-nspawn which cannot create the needed loop device nodes. Passing
 <code class="docutils literal notranslate"><span class="pre">--old-chroot</span></code> will use the old system where <code class="docutils literal notranslate"><span class="pre">/dev/loop*</span></code> is setup for
 you.</p>
+<p>SELinux and mock do not work well together. Inside mock SELinux is reported as
+disabled so the images produced will not have the correct SELinux labels. If
+this is important you should run livemedia-creator on the host, or in a VM.</p>
 </div>
 <p>On the host system:</p>
 <ol class="arabic">
@@ -797,7 +814,7 @@ located at ~/results/try-1/images/boot.iso, and the ~/results/try-1/
 directory tree will also contain the vmlinuz, initrd, etc.</p>
 </section>
 <section id="using-mock-and-qemu-to-create-images">
-<h2>Using Mock and qemu to Create Images<a class="headerlink" href="#using-mock-and-qemu-to-create-images" title="Permalink to this heading">¶</a></h2>
+<h2>Using Mock and qemu to Create Images<a class="headerlink" href="#using-mock-and-qemu-to-create-images" title="Link to this heading">¶</a></h2>
 <p>Version 25.0 of livemedia-creator switches to using qemu for virtualization.
 This allows creation of all image types, and use of the KVM on the host if
 /dev/kvm is present in the mock environment.</p>
@@ -848,7 +865,7 @@ directory tree will also contain the vmlinuz, initrd, etc.</p>
 add <code class="docutils literal notranslate"><span class="pre">mknod</span> <span class="pre">/dev/kvm</span> <span class="pre">c</span> <span class="pre">10</span> <span class="pre">232;</span></code> to create the device node before running lmc.</p>
 </section>
 <section id="openstack-image-creation">
-<h2>OpenStack Image Creation<a class="headerlink" href="#openstack-image-creation" title="Permalink to this heading">¶</a></h2>
+<h2>OpenStack Image Creation<a class="headerlink" href="#openstack-image-creation" title="Link to this heading">¶</a></h2>
 <p>OpenStack supports partitioned disk images so <code class="docutils literal notranslate"><span class="pre">--make-disk</span></code> can be used to
 create images for importing into glance, OpenStack's image storage component.
 You need to have access to an OpenStack provider that allows image uploads, or
@@ -873,7 +890,7 @@ cloud-utils-growpart will grow the image to fit the instance's disk size.</p>
 <p>If qcow2 wasn't used then <code class="docutils literal notranslate"><span class="pre">--disk-format</span></code> should be set to raw.</p>
 </section>
 <section id="docker-image-creation">
-<h2>Docker Image Creation<a class="headerlink" href="#docker-image-creation" title="Permalink to this heading">¶</a></h2>
+<h2>Docker Image Creation<a class="headerlink" href="#docker-image-creation" title="Link to this heading">¶</a></h2>
 <p>Use lmc to create a tarfile as described in the <a class="reference internal" href="#tar-file-creation">TAR File Creation</a> section, but substitute the
 fedora-docker.ks example kickstart which removes the requirement for core files and the kernel.</p>
 <p>You can then import the tarfile into docker like this (as root):</p>
@@ -886,7 +903,7 @@ fedora-docker.ks example kickstart which removes the requirement for core files 
 </div></blockquote>
 </section>
 <section id="open-container-initiative-image-creation">
-<h2>Open Container Initiative Image Creation<a class="headerlink" href="#open-container-initiative-image-creation" title="Permalink to this heading">¶</a></h2>
+<h2>Open Container Initiative Image Creation<a class="headerlink" href="#open-container-initiative-image-creation" title="Link to this heading">¶</a></h2>
 <p>The OCI is a new specification that is still being worked on. You can read more about it at
 <a class="reference external" href="https://www.opencontainers.org/">the Open Container Initiative website</a>. You can create
 OCI images using the following command:</p>
@@ -901,7 +918,7 @@ output will be in the results directory with a default name of bundle.tar.xz</p>
 partitioned disk images.</p>
 </section>
 <section id="vagrant-image-creation">
-<h2>Vagrant Image Creation<a class="headerlink" href="#vagrant-image-creation" title="Permalink to this heading">¶</a></h2>
+<h2>Vagrant Image Creation<a class="headerlink" href="#vagrant-image-creation" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.vagrantup.com/">Vagrant</a> images can be created using the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span> <span class="o">--</span><span class="n">vagrant</span><span class="o">-</span><span class="n">metadata</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">metadata</span><span class="o">.</span><span class="n">json</span> \
 <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">vagrant</span><span class="o">.</span><span class="n">ks</span>
@@ -920,7 +937,7 @@ utilities.</p>
 use of partitioned disk images and qcow2.</p>
 </section>
 <section id="creating-uefi-disk-images-with-virt">
-<h2>Creating UEFI disk images with virt<a class="headerlink" href="#creating-uefi-disk-images-with-virt" title="Permalink to this heading">¶</a></h2>
+<h2>Creating UEFI disk images with virt<a class="headerlink" href="#creating-uefi-disk-images-with-virt" title="Link to this heading">¶</a></h2>
 <p>Partitioned disk images can only be created for the same platform as the host system (BIOS or
 UEFI). You can use virt to create BIOS images on UEFI systems, and it is also possible
 to create UEFI images on BIOS systems using OVMF firmware and qemu.</p>
@@ -942,7 +959,7 @@ firmware files.</p>
 </div>
 </section>
 <section id="debugging-problems">
-<h2>Debugging problems<a class="headerlink" href="#debugging-problems" title="Permalink to this heading">¶</a></h2>
+<h2>Debugging problems<a class="headerlink" href="#debugging-problems" title="Link to this heading">¶</a></h2>
 <p>Sometimes an installation will get stuck. When using qemu the logs will
 be written to ./virt-install.log and most of the time any problems that happen
 will be near the end of the file. lmc tries to detect common errors and will
@@ -980,7 +997,7 @@ happens you can usually clean up by first killing the anaconda process then
 running <code class="docutils literal notranslate"><span class="pre">anaconda-cleanup</span></code>.</p>
 </section>
 <section id="hacking">
-<h2>Hacking<a class="headerlink" href="#hacking" title="Permalink to this heading">¶</a></h2>
+<h2>Hacking<a class="headerlink" href="#hacking" title="Link to this heading">¶</a></h2>
 <p>Development on this will take place as part of the lorax project, and on the
 anaconda-devel-list mailing list, and <a class="reference external" href="https://github.com/rhinstaller/lorax">on github</a></p>
 <p>Feedback, enhancements and bugs are welcome.  You can use <a class="reference external" href="https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&amp;component=lorax">bugzilla</a> to

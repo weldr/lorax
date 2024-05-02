@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.mount &mdash; Lorax 38.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>pylorax.mount &mdash; Lorax 41.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=330c1f8c" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+  
+        <script src="../../_static/documentation_options.js?v=0a3d5615"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -22,14 +22,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Lorax
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Lorax
           </a>
               <div class="version">
-                38.0
+                41.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -59,10 +63,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      <li>pylorax.mount</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../pylorax.html">pylorax</a></li>
+      <li class="breadcrumb-item active">pylorax.mount</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -99,8 +103,10 @@
 
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
 
-<div class="viewcode-block" id="IsoMountpoint"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint">[docs]</a><span class="k">class</span> <span class="nc">IsoMountpoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="IsoMountpoint">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint">[docs]</a>
+<span class="k">class</span> <span class="nc">IsoMountpoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mount the iso and check to make sure the vmlinuz and initrd.img files exist</span>
 
 <span class="sd">    Also check the iso for a a stage2 image and set a flag and extract the</span>
@@ -109,7 +115,7 @@
 <span class="sd">    stage2 can be either LiveOS/squashfs.img or images/install.img</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iso_path</span><span class="p">,</span> <span class="n">initrd_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mount the iso</span>
 
 <span class="sd">        :param str iso_path: Path to the iso to mount</span>
@@ -151,21 +157,26 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">initrd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">initrd</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Missing kernel and initrd file in iso, failed&quot;</span>
-                                <span class="s2">&quot; to search under: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_list</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Missing kernel and initrd file in iso, failed&quot;</span>
+                                   <span class="s2">&quot; to search under: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_list</span><span class="p">))</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
             <span class="k">raise</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">get_iso_label</span><span class="p">()</span>
 
-<div class="viewcode-block" id="IsoMountpoint.umount"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint.umount">[docs]</a>    <span class="k">def</span> <span class="nf">umount</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Unmount the iso&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="IsoMountpoint.umount">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint.umount">[docs]</a>
+    <span class="k">def</span> <span class="nf">umount</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unmount the iso&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span><span class="p">:</span>
             <span class="n">umount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IsoMountpoint.get_iso_label"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint.get_iso_label">[docs]</a>    <span class="k">def</span> <span class="nf">get_iso_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IsoMountpoint.get_iso_label">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint.get_iso_label">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_iso_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the iso&#39;s label using pycdio</span>
 
 <span class="sd">        Sets self.label if one is found</span>
@@ -180,7 +191,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;error reading volume id&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Problem reading label from </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div></div>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Problem reading label from </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

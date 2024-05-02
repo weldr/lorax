@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.dnfbase &mdash; Lorax 38.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>pylorax.dnfbase &mdash; Lorax 41.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=330c1f8c" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+  
+        <script src="../../_static/documentation_options.js?v=0a3d5615"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -22,14 +22,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Lorax
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Lorax
           </a>
               <div class="version">
-                38.0
+                41.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -59,10 +63,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      <li>pylorax.dnfbase</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../pylorax.html">pylorax</a></li>
+      <li class="breadcrumb-item active">pylorax.dnfbase</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -90,18 +94,45 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax&quot;</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">dnf</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="kn">import</span> <span class="nn">libdnf5</span> <span class="k">as</span> <span class="nn">dnf5</span>
+<span class="kn">from</span> <span class="nn">libdnf5.common</span> <span class="kn">import</span> <span class="n">QueryCmp_GLOB</span> <span class="k">as</span> <span class="n">GLOB</span>
+<span class="kn">from</span> <span class="nn">libdnf5.common</span> <span class="kn">import</span> <span class="n">QueryCmp_EQ</span> <span class="k">as</span> <span class="n">EQ</span>
 
 <span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">DEFAULT_PLATFORM_ID</span><span class="p">,</span> <span class="n">DEFAULT_RELEASEVER</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">flatconfig</span>
 
-<div class="viewcode-block" id="get_dnf_base_object"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfbase.get_dnf_base_object">[docs]</a><span class="k">def</span> <span class="nf">get_dnf_base_object</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">mirrorlists</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+
+<span class="k">def</span> <span class="nf">_repo_onoff</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">repo_id</span><span class="p">,</span> <span class="n">enabled</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function for enabling/disabling repos&quot;&quot;&quot;</span>
+    <span class="n">rq</span> <span class="o">=</span> <span class="n">dnf5</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">RepoQuery</span><span class="p">(</span><span class="n">dbo</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;[&#39;</span><span class="p">,</span> <span class="s1">&#39;]&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">repo_id</span><span class="p">):</span>
+        <span class="n">rq</span><span class="o">.</span><span class="n">filter_id</span><span class="p">(</span><span class="n">repo_id</span><span class="p">,</span> <span class="n">GLOB</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rq</span><span class="o">.</span><span class="n">filter_id</span><span class="p">(</span><span class="n">repo_id</span><span class="p">,</span> <span class="n">EQ</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rq</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is an unknown repo, not </span><span class="si">%s</span><span class="s2"> it&quot;</span><span class="p">,</span> <span class="n">repo_id</span><span class="p">,</span> <span class="s2">&quot;enabling&quot;</span> <span class="k">if</span> <span class="n">enabled</span> <span class="k">else</span> <span class="s2">&quot;disabling&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rq</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">enabled</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Enabled repo </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">get_id</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">disable</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Disabled repo </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">get_id</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="get_dnf_base_object">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfbase.get_dnf_base_object">[docs]</a>
+<span class="k">def</span> <span class="nf">get_dnf_base_object</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">mirrorlists</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">enablerepos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disablerepos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">tempdir</span><span class="o">=</span><span class="s2">&quot;/var/tmp&quot;</span><span class="p">,</span> <span class="n">proxy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">releasever</span><span class="o">=</span><span class="n">DEFAULT_RELEASEVER</span><span class="p">,</span>
-                        <span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sslverify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dnfplugins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Create a dnf Base object and setup the repositories and installroot</span>
+                        <span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sslverify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dnfplugins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">basearch</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create a dnf Base object and setup the repositories and installroot</span>
 
 <span class="sd">        :param string installroot: Full path to the installroot</span>
 <span class="sd">        :param list sources: List of source repo urls to use for the installation</span>
@@ -113,12 +144,15 @@
 <span class="sd">        :param string releasever: Release version to pass to dnf</span>
 <span class="sd">        :param string cachedir: Directory to use for caching packages</span>
 <span class="sd">        :param bool noverifyssl: Set to True to ignore the CA of ssl certs. eg. use self-signed ssl for https repos.</span>
+<span class="sd">        :param string basearch: Architecture to use for $basearch substitution in repo urls</span>
 
 <span class="sd">        If tempdir is not set /var/tmp is used.</span>
 <span class="sd">        If cachedir is None a dnf.cache directory is created inside tmpdir</span>
+
+<span class="sd">        If basearch is not set it uses the host system&#39;s machine type.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">sanitize_repo</span><span class="p">(</span><span class="n">repo</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="s2">&quot;file://</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;http://&#39;</span><span class="p">,</span> <span class="s1">&#39;https://&#39;</span><span class="p">,</span> <span class="s1">&#39;ftp://&#39;</span><span class="p">,</span> <span class="s1">&#39;file://&#39;</span><span class="p">)):</span>
@@ -148,28 +182,39 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">logdir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span>
 
-    <span class="n">dnfbase</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">Base</span><span class="p">()</span>
+    <span class="c1"># Used for url substitutions for $basearch</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">basearch</span><span class="p">:</span>
+        <span class="n">basearch</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">machine</span>
+
+    <span class="n">dnfbase</span> <span class="o">=</span> <span class="n">dnf5</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Base</span><span class="p">()</span>
+    <span class="c1"># TODO Add dnf5 plugin support</span>
+    <span class="c1"># Currently the documentation is not complete enough to use plugins with dnf5</span>
+    <span class="c1"># So print a warning and carry on if any have been selected</span>
+    <span class="k">if</span> <span class="n">dnfplugins</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;plugins are not yet supported with libdnf5, skipping: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dnfplugins</span><span class="p">)</span>
+
     <span class="c1"># Enable DNF pluings</span>
     <span class="c1"># NOTE: These come from the HOST system&#39;s environment</span>
-    <span class="k">if</span> <span class="n">dnfplugins</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dnfplugins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
-            <span class="c1"># Enable them all</span>
-            <span class="n">dnfbase</span><span class="o">.</span><span class="n">init_plugins</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Only enable the listed plugins</span>
-            <span class="n">dnfbase</span><span class="o">.</span><span class="n">init_plugins</span><span class="p">(</span><span class="n">disabled_glob</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">],</span> <span class="n">enable_plugins</span><span class="o">=</span><span class="n">dnfplugins</span><span class="p">)</span>
-    <span class="n">conf</span> <span class="o">=</span> <span class="n">dnfbase</span><span class="o">.</span><span class="n">conf</span>
+    <span class="c1"># XXX - dnfbase has add_plugin and load_plugins but neither seem to provide the ability to</span>
+    <span class="c1">#       enable/disable based on glob. dnfbase.setup() already calls load_plugins()</span>
+<span class="c1">#    if dnfplugins:</span>
+<span class="c1">#        if dnfplugins[0] == &quot;*&quot;:</span>
+<span class="c1">#            # Enable them all</span>
+<span class="c1">#            dnfbase.init_plugins()</span>
+<span class="c1">#        else:</span>
+<span class="c1">#            # Only enable the listed plugins</span>
+<span class="c1">#            dnfbase.init_plugins(disabled_glob=[&quot;*&quot;], enable_plugins=dnfplugins)</span>
+
+    <span class="n">conf</span> <span class="o">=</span> <span class="n">dnfbase</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">logdir</span> <span class="o">=</span> <span class="n">logdir</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">cachedir</span> <span class="o">=</span> <span class="n">cachedir</span>
-
     <span class="n">conf</span><span class="o">.</span><span class="n">install_weak_deps</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">conf</span><span class="o">.</span><span class="n">releasever</span> <span class="o">=</span> <span class="n">releasever</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">installroot</span> <span class="o">=</span> <span class="n">installroot</span>
-    <span class="n">conf</span><span class="o">.</span><span class="n">prepend_installroot</span><span class="p">(</span><span class="s1">&#39;persistdir&#39;</span><span class="p">)</span>
-    <span class="c1"># this is a weird &#39;AppendOption&#39; thing that, when you set it,</span>
-    <span class="c1"># actually appends. Doing this adds &#39;nodocs&#39; to the existing list</span>
-    <span class="c1"># of values, over in libdnf, it does not replace the existing values.</span>
-    <span class="n">conf</span><span class="o">.</span><span class="n">tsflags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;nodocs&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Load the file lists too</span>
+    <span class="n">conf</span><span class="o">.</span><span class="n">optional_metadata_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;filelists&#39;</span><span class="p">]</span>
+    <span class="n">conf</span><span class="o">.</span><span class="n">tsflags</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;nodocs&quot;</span><span class="p">,)</span>
+
     <span class="c1"># Log details about the solver</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">debug_solver</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -179,7 +224,6 @@
     <span class="k">if</span> <span class="n">sslverify</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
         <span class="n">conf</span><span class="o">.</span><span class="n">sslverify</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="c1"># DNF 3.2 needs to have module_platform_id set, otherwise depsolve won&#39;t work correctly</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/etc/os-release&quot;</span><span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;/etc/os-release is missing, cannot determine platform id, falling back to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">DEFAULT_PLATFORM_ID</span><span class="p">)</span>
         <span class="n">platform_id</span> <span class="o">=</span> <span class="n">DEFAULT_PLATFORM_ID</span>
@@ -189,6 +233,10 @@
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">%s</span><span class="s2"> for module_platform_id&quot;</span><span class="p">,</span> <span class="n">platform_id</span><span class="p">)</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">module_platform_id</span> <span class="o">=</span> <span class="n">platform_id</span>
 
+    <span class="c1"># Set variables used for substitutions</span>
+    <span class="n">dnfbase</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;releasever&quot;</span><span class="p">,</span> <span class="n">releasever</span><span class="p">)</span>
+    <span class="n">dnfbase</span><span class="o">.</span><span class="n">get_vars</span><span class="p">()</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;basearch&quot;</span><span class="p">,</span> <span class="n">basearch</span><span class="p">)</span>
+
     <span class="c1"># Add .repo files</span>
     <span class="k">if</span> <span class="n">repos</span><span class="p">:</span>
         <span class="n">reposdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;dnf.repos&quot;</span><span class="p">)</span>
@@ -196,8 +244,10 @@
             <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">reposdir</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">repos</span><span class="p">:</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">reposdir</span><span class="p">)</span>
-        <span class="n">conf</span><span class="o">.</span><span class="n">reposdir</span> <span class="o">=</span> <span class="p">[</span><span class="n">reposdir</span><span class="p">]</span>
-        <span class="n">dnfbase</span><span class="o">.</span><span class="n">read_all_repos</span><span class="p">()</span>
+        <span class="n">conf</span><span class="o">.</span><span class="n">reposdir</span> <span class="o">=</span> <span class="n">reposdir</span>
+
+    <span class="n">dnfbase</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="n">sack</span> <span class="o">=</span> <span class="n">dnfbase</span><span class="o">.</span><span class="n">get_repo_sack</span><span class="p">()</span>
 
     <span class="c1"># add the sources</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sources</span><span class="p">):</span>
@@ -205,19 +255,12 @@
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Skipping source repo: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="n">repo_name</span> <span class="o">=</span> <span class="s2">&quot;lorax-repo-</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span>
-        <span class="n">repo</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">repo_name</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
-        <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">]</span>
+        <span class="n">repo</span> <span class="o">=</span> <span class="n">sack</span><span class="o">.</span><span class="n">create_repo</span><span class="p">(</span><span class="n">repo_name</span><span class="p">)</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+        <span class="n">rc</span><span class="o">.</span><span class="n">baseurl</span> <span class="o">=</span> <span class="n">r</span>
         <span class="k">if</span> <span class="n">proxy</span><span class="p">:</span>
-            <span class="n">repo</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span>
-        <span class="n">repo</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
-        <span class="n">dnfbase</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
+            <span class="n">rc</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching metadata...&quot;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">repo</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RepoError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error fetching metadata for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># add the mirrorlists</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mirrorlists</span><span class="p">):</span>
@@ -225,42 +268,41 @@
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Skipping source repo: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="n">repo_name</span> <span class="o">=</span> <span class="s2">&quot;lorax-mirrorlist-</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span>
-        <span class="n">repo</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">repo_name</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
-        <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="n">repo</span> <span class="o">=</span> <span class="n">sack</span><span class="o">.</span><span class="n">create_repo</span><span class="p">(</span><span class="n">repo_name</span><span class="p">)</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+        <span class="n">rc</span><span class="o">.</span><span class="n">mirrorlist</span> <span class="o">=</span> <span class="n">r</span>
         <span class="k">if</span> <span class="n">proxy</span><span class="p">:</span>
-            <span class="n">repo</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span>
-        <span class="n">repo</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
-        <span class="n">dnfbase</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
+            <span class="n">rc</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Added &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching metadata...&quot;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">repo</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RepoError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error fetching metadata for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">repos</span><span class="p">:</span>
+        <span class="n">sack</span><span class="o">.</span><span class="n">create_repos_from_reposdir</span><span class="p">()</span>
 
     <span class="c1"># Enable repos listed on the cmdline</span>
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">enablerepos</span><span class="p">:</span>
-        <span class="n">repolist</span> <span class="o">=</span> <span class="n">dnfbase</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">get_matching</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">repolist</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is an unknown repo, not enabling it&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">repolist</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Enabled repo </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+        <span class="n">_repo_onoff</span><span class="p">(</span><span class="n">dnfbase</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Disable repos listed on the cmdline</span>
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">disablerepos</span><span class="p">:</span>
-        <span class="n">repolist</span> <span class="o">=</span> <span class="n">dnfbase</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">get_matching</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">repolist</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is an unknown repo, not disabling it&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">repolist</span><span class="o">.</span><span class="n">disable</span><span class="p">()</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Disabled repo </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+        <span class="n">_repo_onoff</span><span class="p">(</span><span class="n">dnfbase</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">dnfbase</span><span class="o">.</span><span class="n">fill_sack</span><span class="p">(</span><span class="n">load_system_repo</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">dnfbase</span><span class="o">.</span><span class="n">read_comps</span><span class="p">()</span>
+    <span class="c1"># Make sure there are enabled repos</span>
+    <span class="n">rq</span> <span class="o">=</span> <span class="n">dnf5</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">RepoQuery</span><span class="p">(</span><span class="n">dnfbase</span><span class="p">)</span>
+    <span class="n">rq</span><span class="o">.</span><span class="n">filter_enabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rq</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No enabled repos&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using repos: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rq</span><span class="p">))</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching metadata...&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sack</span><span class="o">.</span><span class="n">update_and_load_enabled_repos</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Problem fetching metadata: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">dnfbase</span></div>
+
 </pre></div>
 
            </div>
