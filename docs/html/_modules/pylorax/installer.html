@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.installer &mdash; Lorax 38.0 documentation</title>
+  <title>pylorax.installer &mdash; Lorax 38.13 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   
@@ -12,6 +12,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -25,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Lorax
           </a>
               <div class="version">
-                38.0
+                38.13
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -59,10 +60,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      <li>pylorax.installer</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../pylorax.html">pylorax</a></li>
+      <li class="breadcrumb-item active">pylorax.installer</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -118,7 +119,7 @@
 
 
 <div class="viewcode-block" id="create_vagrant_metadata"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.create_vagrant_metadata">[docs]</a><span class="k">def</span> <span class="nf">create_vagrant_metadata</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Create a default Vagrant metadata.json file</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create a default Vagrant metadata.json file</span>
 
 <span class="sd">    :param str path: Path to metadata.json file</span>
 <span class="sd">    :param int size: Disk size in MiB</span>
@@ -129,7 +130,7 @@
 
 
 <div class="viewcode-block" id="update_vagrant_metadata"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.update_vagrant_metadata">[docs]</a><span class="k">def</span> <span class="nf">update_vagrant_metadata</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Update the Vagrant metadata.json file</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Update the Vagrant metadata.json file</span>
 
 <span class="sd">    :param str path: Path to metadata.json file</span>
 <span class="sd">    :param int size: Disk size in MiB</span>
@@ -152,7 +153,7 @@
 
 
 <div class="viewcode-block" id="find_free_port"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.find_free_port">[docs]</a><span class="k">def</span> <span class="nf">find_free_port</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">5900</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">5999</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Return first free port in range.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return first free port in range.</span>
 
 <span class="sd">    :param int start: Starting port number</span>
 <span class="sd">    :param int end: Ending port number</span>
@@ -172,7 +173,7 @@
     <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
 <div class="viewcode-block" id="append_initrd"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.append_initrd">[docs]</a><span class="k">def</span> <span class="nf">append_initrd</span><span class="p">(</span><span class="n">initrd</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Append files to an initrd.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Append files to an initrd.</span>
 
 <span class="sd">    :param str initrd: Path to initrd</span>
 <span class="sd">    :param list files: list of file paths to add</span>
@@ -206,7 +207,7 @@
     <span class="k">return</span> <span class="n">qemu_initrd</span></div>
 
 <div class="viewcode-block" id="QEMUInstall"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.QEMUInstall">[docs]</a><span class="k">class</span> <span class="nc">QEMUInstall</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run qemu using an iso and a kickstart</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Mapping of arch to qemu command</span>
@@ -219,7 +220,7 @@
                  <span class="n">kernel_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">vcpus</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vnc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
                  <span class="n">image_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ovmf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the installation</span>
 
 <span class="sd">        :param iso: Information about the iso to use for the installation</span>
@@ -349,7 +350,7 @@
 
 
 <div class="viewcode-block" id="novirt_cancel_check"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_cancel_check">[docs]</a><span class="k">def</span> <span class="nf">novirt_cancel_check</span><span class="p">(</span><span class="n">cancel_funcs</span><span class="p">,</span> <span class="n">proc</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check to see if there has been an error in the logs</span>
 
 <span class="sd">    :param cancel_funcs: list of functions to call, True from any one cancels the build</span>
@@ -374,7 +375,7 @@
 
 
 <div class="viewcode-block" id="anaconda_cleanup"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.anaconda_cleanup">[docs]</a><span class="k">def</span> <span class="nf">anaconda_cleanup</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cleanup any leftover mounts from anaconda</span>
 
 <span class="sd">    :param str dirinstall_path: Path where anaconda mounts things</span>
@@ -411,7 +412,7 @@
 
 
 <div class="viewcode-block" id="novirt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_install">[docs]</a><span class="k">def</span> <span class="nf">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tar_img</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use Anaconda to install to a disk image</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>
@@ -623,7 +624,7 @@
         <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">disk_img</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="virt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.virt_install">[docs]</a><span class="k">def</span> <span class="nf">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tar_img</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use qemu to install to a disk image</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>

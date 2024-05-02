@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "LORAX" "1" "Feb 20, 2023" "38.8" "Lorax"
+.TH "LORAX" "1" "May 02, 2024" "38.13" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .INDENT 0.0
@@ -55,10 +55,15 @@ Create the Anaconda boot.iso
 .sp
 .nf
 .ft C
-usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-repo REPOSITORY] [\-m REPOSITORY] [\-t VARIANT] [\-b URL] [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE] [\-e PACKAGE]
-             [\-\-buildarch ARCH] [\-\-volid VOLID] [\-\-macboot] [\-\-nomacboot] [\-\-noupgrade] [\-\-logfile LOGFILE] [\-\-tmp TMP] [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force] [\-\-add\-template ADD_TEMPLATES]
-             [\-\-add\-template\-var ADD_TEMPLATE_VARS] [\-\-add\-arch\-template ADD_ARCH_TEMPLATES] [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify] [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
-             [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only] [\-\-skip\-branding] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
+usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-repo REPOSITORY] [\-m REPOSITORY]
+             [\-t VARIANT] [\-b URL] [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE] [\-e PACKAGE]
+             [\-\-buildarch ARCH] [\-\-volid VOLID] [\-\-macboot] [\-\-nomacboot] [\-\-noupgrade]
+             [\-\-logfile LOGFILE] [\-\-tmp TMP] [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force]
+             [\-\-add\-template ADD_TEMPLATES] [\-\-add\-template\-var ADD_TEMPLATE_VARS]
+             [\-\-add\-arch\-template ADD_ARCH_TEMPLATES] [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS]
+             [\-\-noverify] [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]] [\-\-disablerepo [repo]]
+             [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only]
+             [\-\-skip\-branding] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
