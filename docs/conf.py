@@ -34,7 +34,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinxarg.ext'
+    'sphinxarg.ext',
+    'sphinx_reredirects'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -51,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Lorax'
-copyright = u'2018, Red Hat, Inc.'      # pylint: disable=redefined-builtin
+copyright = u'2024, Red Hat, Inc.'      # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -127,6 +128,12 @@ pygments_style = 'sphinx'
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
 
+# redirects - create html pages with meta refresh redirects for moved pages
+# requires sphinx-redirects extension
+# https://documatt.com/sphinx-reredirects/usage.html
+redirects = {
+    "composer-cli": "https://osbuild.org/docs/developer-guide/projects/composer-cli/"
+}
 
 # -- Options for HTML output ----------------------------------------------
 

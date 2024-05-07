@@ -23,6 +23,7 @@ python3-pytest-cov
 python3-rpmfluff
 python3-sphinx
 python3-sphinx-argparse
+python3-sphinx-reredirects
 python3-sphinx_rtd_theme
 qemu-img
 rsync
