@@ -137,35 +137,20 @@ class QEMUInstall(object):
     """
     # Mapping of arch to qemu command and options
     QEMU = {"x86_64": {
-                "cmd": "qemu-system-x86_64",
-                "arches": ["x86_64", "i386"],
+                "cmd": "/usr/libexec/qemu-kvm",
+                "arches": ["x86_64"],
                 "machine": "q35",
                 "uefi": ["ovmf/OVMF_CODE.secboot.fd", "ovmf/OVMF_VARS.secboot.fd"],
                 "uefi_machine": "q35,smm=on",
                 "uefi_args": ["-global", "driver=cfi.pflash01,property=secure,value=on"],
                 },
-            "i386": {
-                "cmd": "qemu-system-i386",
-                "arches": ["i386"],
-                "machine": "q35",
-                },
-            "arm": {
-                "cmd": "qemu-system-arm",
-                "arches": ["arm"],
-                "machine": "virt",
-                },
             "aarch64": {
-                "cmd": "qemu-system-aarch64",
-                "arches": ["aarch64", "arm"],
+                "cmd": "/usr/libexec/qemu-kvm",
+                "arches": ["aarch64"],
                 "machine": "virt",
                 "uefi": ["aarch64/QEMU_EFI-pflash.raw", "aarch64/vars-template-pflash.raw"],
                 "uefi_machine": "virt",
                 "uefi_args": ["-global", "driver=cfi.pflash01,property=secure,value=off"],
-                },
-            "ppc64le": {
-                "cmd": "qemu-system-ppc64",
-                "arches": ["ppc64le"],
-                "machine": "pseries",
                 },
         }
 
@@ -186,7 +171,7 @@ class QEMUInstall(object):
         :param int memory: Amount of RAM to assign to the virt, in MiB
         :param int vcpus: Number of virtual cpus
         :param str vnc: Arguments to pass to qemu -display
-        :param str arch: Optional architecture to use in the virt
+        :param str arch: Unsupported on RHEL10
         :param cancel_func: Function that returns True if the installation fails
         :type cancel_func: function
         :param str virtio_host: Hostname to connect virtio log to
@@ -197,12 +182,10 @@ class QEMUInstall(object):
         """
         target_arch = arch or os.uname().machine
         # Lookup qemu-system- for arch if passed, or try to guess using host arch
-        if target_arch in self.QEMU:
+        if target_arch in self.QEMU and os.path.exists(self.QEMU[target_arch]["cmd"]):
             qemu_cmd = [self.QEMU[target_arch]["cmd"]]
-        elif os.path.exists("/usr/bin/"+"qemu-system-"+os.uname().machine):
-            qemu_cmd = ["/usr/bin/qemu-system-"+os.uname().machine]
         else:
-            raise InstallError("/usr/bin/qemu-system-%s does not exist, cannot run qemu" % os.uname().machine)
+            raise InstallError("RHEL10 does not support running qemu on %s" % os.uname().machine)
 
         # Default to using the host cpu capabilities
         qemu_cmd += ["-cpu", opts.cpu or "host"]
@@ -268,6 +251,9 @@ class QEMUInstall(object):
             display_args = opts.vnc
         log.info("qemu %s", display_args)
         qemu_cmd += ["-nographic", "-monitor", "none", "-serial", "null", "-display", display_args ]
+
+        # Setup virtio networking
+        qemu_cmd += ["-netdev", "user,id=n1", "-device", "virtio-net-pci,netdev=n1"]
 
         # Setup the virtio log port
         qemu_cmd += ["-device", "virtio-serial-pci,id=virtio-serial0"]

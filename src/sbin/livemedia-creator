@@ -20,7 +20,6 @@
 import logging
 log = logging.getLogger("livemedia-creator")
 
-import glob
 import os
 import sys
 import tempfile
@@ -87,8 +86,8 @@ def main():
         errors.append("the volume id cannot be longer than 32 characters")
 
     if is_install and not opts.no_virt \
-       and not any(glob.glob("/usr/bin/qemu-system-*")):
-        errors.append("qemu needs to be installed.")
+       and not os.path.exists("/usr/libexec/qemu-kvm"):
+        errors.append("qemu-kvm needs to be installed.")
 
     if is_install and opts.no_virt \
        and not os.path.exists("/usr/sbin/anaconda"):
@@ -146,6 +145,9 @@ def main():
 
     if opts.domacboot and not os.path.exists("/usr/sbin/mkfs.hfsplus"):
         errors.append("mkfs.hfsplus is missing. Install hfsplus-tools, or pass --nomacboot")
+
+    if opts.arch != None:
+        errors.append("RHEL10 only supports virt for the host arch.")
 
     if os.getuid() != 0:
         errors.append("You need to run this as root")
