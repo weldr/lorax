@@ -100,9 +100,12 @@ Requires: lorax = %{version}-%{release}
 # RHEL doesn't have qemu, just qemu-kvm
 Requires: qemu-kvm
 
-# Fedora edk2 builds currently only support these arches
-%ifarch x86_64 aarch64
+# edk2 builds currently only support these arches
+%ifarch x86_64
 Requires: edk2-ovmf
+%endif
+%ifarch aarch64
+Requires: edk2-aarch64
 %endif
 
 %description lmc-virt
