@@ -651,6 +651,7 @@ def run_creator(opts, cancel_func=None):
     (Yes, this is not ideal, but we can fix that later)
     """
     result_dir = None
+    disk_img = None
 
     # Parse the kickstart
     if opts.ks:
