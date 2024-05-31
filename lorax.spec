@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.2
+Version:        40.5.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -179,6 +179,18 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri May 31 2024 Brian C. Lane <bcl@redhat.com> 40.5.3-1
+- tito: Add RHEL tagger with support for rhbz and RHEL (bcl)
+  Related: RHEL-31830
+- livemedia-creator: Use /usr/libexec/qemu-kvm on supported arches (bcl)
+  Related: RHEL-31830
+- spec: edk2-aarch64 has the UEFI firmware on aarch64 (bcl)
+  Related: RHEL-31830
+- Add prefixdevname to Anaconda image (msekleta)
+  Related: RHEL-30010
+- spec: exclude the files section for lmc-virt on ppc64le (bcl)
+  Resolves: RHEL-31830
+
 * Thu Apr 04 2024 Brian C. Lane <bcl@redhat.com> 40.5.2-1
 - spec: Use qemu-kvm instead of qemu (bcl@redhat.com)
   Resolves: RHEL-31830
