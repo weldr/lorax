@@ -22,7 +22,7 @@ BuildRequires:  systemd-rpm-macros
 
 Requires:       lorax-templates
 %if 0%{?rhel} >= 9
-Requires:       lorax-templates-rhel
+Requires:       lorax-templates-rhel >= 10.0-45
 %endif
 
 Requires:       cpio
