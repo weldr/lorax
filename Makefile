@@ -127,6 +127,7 @@ test-in-podman:
 	@mkdir -p `pwd`/.test-results
 	$(DOCKER) run --rm -v `pwd`/.test-results/:/test-results \
 		-v `pwd`:/lorax-ro:ro --security-opt label=disable \
+		--security-opt seccomp=unconfined \
 		--env RUN_TESTS="$(RUN_TESTS)" \
 		welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
 	# rootless podman leaves them owned by the container UID
