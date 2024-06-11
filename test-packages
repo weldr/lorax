@@ -27,6 +27,7 @@ qemu-img
 rsync
 squashfs-tools
 sudo
+tito
 which
 xorriso
 xz-lzma-compat
