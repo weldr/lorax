@@ -136,6 +136,8 @@ class QEMUInstall(object):
     Run qemu using an iso and a kickstart
     """
     # Mapping of arch to qemu command and options
+    # Leave out 'machine' for systems that only have UEFI support
+    # and leave out 'uefi_machine' for systems with no UEFI support
     QEMU = {"x86_64": {
                 "cmd": "qemu-system-x86_64",
                 "arches": ["x86_64", "i386"],
@@ -224,10 +226,13 @@ class QEMUInstall(object):
 
         if boot_uefi:
             if "uefi_machine" not in self.QEMU[target_arch]:
-                raise InstallError("UEFI support not available for %s (yet?)" % target_arch)
+                raise InstallError("UEFI support not available for %s" % target_arch)
 
             qemu_cmd += ["-machine", self.QEMU[target_arch]["uefi_machine"]]
             qemu_cmd += self.QEMU[target_arch]["uefi_args"]
+        else:
+            if "machine" not in self.QEMU[target_arch]:
+                raise InstallError("BIOS support not available for %s" % target_arch)
 
         if "-machine" not in qemu_cmd:
             qemu_cmd += ["-machine", self.QEMU[target_arch]["machine"]]
