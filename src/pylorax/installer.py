@@ -152,6 +152,11 @@ class QEMUInstall(object):
                 "uefi_machine": "virt",
                 "uefi_args": ["-global", "driver=cfi.pflash01,property=secure,value=off"],
                 },
+            "s390x": {
+                "cmd": "/usr/libexec/qemu-kvm",
+                "arches": ["s390x"],
+                "machine": "s390-ccw-virtio"
+                },
         }
 
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
