@@ -269,8 +269,11 @@ class QEMUInstall(object):
         log.info("qemu %s", display_args)
         qemu_cmd += ["-nographic", "-monitor", "none", "-serial", "null", "-display", display_args ]
 
+        # Setup virtio networking
+        qemu_cmd += ["-netdev", "user,id=n1", "-device", "virtio-net,netdev=n1"]
+
         # Setup the virtio log port
-        qemu_cmd += ["-device", "virtio-serial-pci,id=virtio-serial0"]
+        qemu_cmd += ["-device", "virtio-serial,id=virtio-serial0"]
         qemu_cmd += ["-device", "virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0"
                                 ",id=channel0,name=org.fedoraproject.anaconda.log.0"]
         qemu_cmd += ["-chardev", "socket,id=charchannel0,host=%s,port=%s" % (virtio_host, virtio_port)]
@@ -278,10 +281,7 @@ class QEMUInstall(object):
         # Pass through rng from host
         if opts.with_rng != "none":
             qemu_cmd += ["-object", "rng-random,id=virtio-rng0,filename=%s" % opts.with_rng]
-            if boot_uefi:
-                qemu_cmd += ["-device", "virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pcie.0,addr=0x9"]
-            else:
-                qemu_cmd += ["-device", "virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9"]
+            qemu_cmd += ["-device", "virtio-rng,rng=virtio-rng0"]
 
         if boot_uefi and fw_path:
             if "uefi" not in self.QEMU[target_arch]:
