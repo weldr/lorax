@@ -167,6 +167,11 @@ class QEMUInstall(object):
                 "arches": ["ppc64le"],
                 "machine": "pseries",
                 },
+            "s390x": {
+                "cmd": "qemu-system-s390x",
+                "arches": ["s390x"],
+                "machine": "s390-ccw-virtio"
+                },
         }
 
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
