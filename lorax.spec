@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.3
+Version:        40.5.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -179,6 +179,20 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Jun 12 2024 Brian C. Lane <bcl@redhat.com> 40.5.4-1
+- tito: Add tito to container's test-packages (bcl)
+  Related: RHEL-31830
+- creator: Fix pylint error in run_creator (bcl)
+  Related: RHEL-31830
+- livemedia-creator: Check for BIOS vs. UEFI qemu support (bcl)
+  Related: RHEL-31830
+- livemedia-creator: Enable s390x virt support (bcl)
+  Related: RHEL-31830
+- livemedia-creator: Make use of virtio devices more generic (bcl)
+  Related: RHEL-31830
+- Set requirement on lorax-templates-rhel for prefixdevname change (bcl)
+  Related: RHEL-30010
+
 * Fri May 31 2024 Brian C. Lane <bcl@redhat.com> 40.5.3-1
 - tito: Add RHEL tagger with support for rhbz and RHEL (bcl)
   Related: RHEL-31830
