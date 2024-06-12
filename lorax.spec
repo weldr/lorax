@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        41.0
+Version:        41.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -172,6 +172,21 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Jun 12 2024 Brian C. Lane <bcl@redhat.com> 41.1-1
+- livemedia-creator: Check for BIOS vs. UEFI qemu support (bcl@redhat.com)
+- livemedia-creator: Enable s390x virt support (bcl@redhat.com)
+- livemedia-creator: Make use of virtio devices more generic (bcl@redhat.com)
+- Makefile: Turn off seccomp for test-in-podman (bcl@redhat.com)
+- tests: Fix image_minimizer test dnf usage (bcl@redhat.com)
+- creator: Fix pylint error in run_creator (bcl@redhat.com)
+- New lorax documentation - 41.1 (bcl@redhat.com)
+- docs: Add sphinx-reredirects and composer-cli redirect (bcl@redhat.com)
+- New lorax documentation - 41.1 (bcl@redhat.com)
+- spec: Switch to using the source from the github tag (bcl@redhat.com)
+- workflows: Add missing branch names (bcl@redhat.com)
+- runtime-cleanup: wget2-wget has replaced wget (yselkowi@redhat.com)
+- Add a simple PR template reminder (bcl@redhat.com)
+
 * Fri Mar 15 2024 Brian C. Lane <bcl@redhat.com>
 - maint: Switch default platform to F41 (bcl@redhat.com)
 - Add prefixdevname support to the boot.iso (rvykydal@redhat.com)
