@@ -9,9 +9,7 @@ Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
 
-# Get the release without the dist
-%define nodist %{lua:r = string.gsub(rpm.expand("%{release}"), rpm.expand("%{?dist}"), ""); print(r)}
-%global tag %{name}-%{version}-%{nodist}
+%global tag %{version}
 %forgemeta
 Url:            %{forgeurl}
 Source0:        %{forgesource}
