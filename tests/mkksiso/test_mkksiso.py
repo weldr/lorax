@@ -118,6 +118,8 @@ class EditConfigsTestCase(unittest.TestCase):
             })
         self.new_volid = "Fedora-mkksiso-rawhide-test"
         self.old_volid = "Fedora-rawhide-test"
+        self.replace_list = [(self.old_volid, self.new_volid)]
+
 
     def run_test(self, configs, tmpdir, test_fn):
         """
@@ -142,7 +144,7 @@ class EditConfigsTestCase(unittest.TestCase):
                 os.makedirs(os.path.dirname(tmpdir + "/" + path), exist_ok=True)
                 shutil.copy(test_data + "/" + cfg, tmpdir + "/" + path)
 
-        test_fn(self.rm_args, self.add_args, self.new_volid, self.old_volid, tmpdir)
+        test_fn(self.rm_args, self.add_args, self.replace_list, tmpdir)
 
         # Read the modified config file(s) and compare to result file
         check_cfg_results(self, tmpdir, configs)
