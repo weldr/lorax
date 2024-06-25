@@ -377,7 +377,7 @@ def EditGrub2(rm_args, add_args, replace_list, tmpdir):
         os.replace(orig_cfg + ".new", orig_cfg)
 
 
-def EditS390(rm_args, add_args, new_volid, old_volid, tmpdir):
+def EditS390(rm_args, add_args, replace_list, tmpdir):
     """
     Modify the cmdline for s390 config files
     Add the new arguments and change existing volid if requested
@@ -387,8 +387,6 @@ def EditS390(rm_args, add_args, new_volid, old_volid, tmpdir):
     if not any(os.path.exists(tmpdir + "/" + c) for c in s390_cfgs):
         log.warning("No s390 config files found")
         return
-
-    change_volid = old_volid != new_volid
 
     for cfg in s390_cfgs:
         orig_cfg = tmpdir + "/" + cfg
@@ -402,8 +400,9 @@ def EditS390(rm_args, add_args, new_volid, old_volid, tmpdir):
 
         cmdline = " ".join(l.strip() for l in lines)
         # Replace the volid
-        if change_volid and old_volid in cmdline:
-            cmdline = cmdline.replace(old_volid, new_volid)
+        for from_item, to_item in replace_list:
+            if from_item in cmdline:
+                cmdline = cmdline.replace(from_item, to_item)
         args = SplitCmdline(cmdline)
         new_args = AlterKernelArgs(args, rm_args, add_args)
 
@@ -481,7 +480,7 @@ def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=N
         # Add kickstart command and optionally change the volid of the available config files
         EditIsolinux(remove_args, add_args, replace_list, tmpdir)
         EditGrub2(remove_args, add_args, replace_list, tmpdir)
-        EditS390(remove_args, add_args, new_volid, old_volid, tmpdir)
+        EditS390(remove_args, add_args, replace_list, tmpdir)
 
         if os.uname().machine.startswith("s390"):
             RebuildS390CDBoot(tmpdir)
