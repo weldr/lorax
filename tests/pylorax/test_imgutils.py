@@ -24,7 +24,8 @@ import unittest
 
 from ..lib import get_file_magic
 from pylorax.executils import runcmd
-from pylorax.imgutils import mkcpio, mktar, mksquashfs, mksparse, mkqcow2, loop_attach, loop_detach
+from pylorax.imgutils import mkcpio, mktar, mksquashfs, mksparse, mkqcow2, mkerofs
+from pylorax.imgutils import loop_attach, loop_detach
 from pylorax.imgutils import get_loop_name, LoopDev, dm_attach, dm_detach, DMDev, Mount
 from pylorax.imgutils import mkdosimg, mkext4img, mkbtrfsimg, mkhfsimg, default_image_name
 from pylorax.imgutils import mount, umount, kpartx_disk_img, PartitionMount, mkfsimage_from_disk
@@ -182,6 +183,18 @@ class ImgUtilsTest(unittest.TestCase):
                 self.assertTrue(os.path.exists(disk_img.name))
                 file_details = get_file_magic(disk_img.name)
                 self.assertTrue("Squashfs" in file_details, file_details)
+
+    def test_mkerofs(self):
+        """Test mkerofs function"""
+        with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
+            with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
+                mkfakerootdir(work_dir)
+                disk_img.close()
+                mkerofs(work_dir, disk_img.name)
+
+                self.assertTrue(os.path.exists(disk_img.name))
+                file_details = get_file_magic(disk_img.name)
+                self.assertTrue("EROFS filesystem" in file_details, file_details)
 
     def test_mksparse(self):
         """Test mksparse function"""
