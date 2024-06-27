@@ -40,6 +40,7 @@ Requires:       isomd5sum
 Requires:       module-init-tools
 Requires:       parted
 Requires:       squashfs-tools >= 4.2
+Requires:       erofs-utils
 Requires:       util-linux
 Requires:       xz-lzma-compat
 Requires:       xz

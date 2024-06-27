@@ -26,6 +26,7 @@ python3-sphinx_rtd_theme
 qemu-img
 rsync
 squashfs-tools
+erofs-utils
 sudo
 tito
 which
