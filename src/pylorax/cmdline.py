@@ -22,7 +22,7 @@ import os
 import sys
 import argparse
 
-from pylorax import DEFAULT_RELEASEVER, vernum
+from pylorax import DEFAULT_RELEASEVER, ROOTFSTYPES, vernum
 
 version = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
@@ -109,10 +109,14 @@ def lorax_parser(dracut_default=""):
                           help="Do not verify SSL certificates")
     optional.add_argument("--dnfplugin", action="append", default=[], dest="dnfplugins",
                           help="Enable a DNF plugin by name/glob, or * to enable all of them.")
-    optional.add_argument("--squashfs-only", action="store_true", default=False,
+    optional.add_argument("--squashfs-only", action="store_const", const="squashfs",
+                          default="squashfs", dest="rootfs_type",
                           help="Use a plain squashfs filesystem for the runtime.")
     optional.add_argument("--skip-branding", action="store_true", default=False,
                           help="Disable automatic branding package selection. Use --installpkgs to add custom branding.")
+    optional.add_argument("--rootfs-type", metavar="ROOTFSTYPE", default="squashfs",
+                          dest="rootfs_type",
+                          help="Type of rootfs: %s" % ",".join(ROOTFSTYPES))
 
     # dracut arguments
     dracut_group = parser.add_argument_group("dracut arguments: (default: %s)" % dracut_default)
@@ -324,8 +328,11 @@ def lmc_parser(dracut_default=""):
     parser.add_argument("--releasever", default=DEFAULT_RELEASEVER,
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
-    parser.add_argument("--squashfs-only", action="store_true", default=False,
+    parser.add_argument("--squashfs-only", action="store_const", const="squashfs",
+                        dest="rootfs_type",
                         help="Use a plain squashfs filesystem for the runtime.")
+    parser.add_argument("--rootfs-type", metavar="ROOTFSTYPE", default="squashfs",
+                        help="Type of rootfs: %s" % ",".join(ROOTFSTYPES))
     parser.add_argument("--timeout", default=None, type=int,
                         help="Cancel installer after X minutes")
 

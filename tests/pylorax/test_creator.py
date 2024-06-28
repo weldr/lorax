@@ -153,7 +153,7 @@ class CreatorTest(unittest.TestCase):
                 mkFakeBoot(mount_dir)
                 opts = DataHolder(project="Fedora", releasever="devel", compression="xz", compress_args=[],
                                   release="", variant="", bugurl="", isfinal=False,
-                                  arch="x86_64", squashfs_only=True)
+                                  arch="x86_64", rootfs_type="squashfs")
                 make_runtime(opts, mount_dir, work_dir)
 
                 # Make sure it made an install.img
@@ -178,7 +178,7 @@ class CreatorTest(unittest.TestCase):
                 mkFakeBoot(mount_dir)
                 opts = DataHolder(project="Fedora", releasever="devel", compression="xz", compress_args=[],
                                   release="", variant="", bugurl="", isfinal=False,
-                                  arch="x86_64", squashfs_only=False)
+                                  arch="x86_64", rootfs_type="squashfs-ext4")
                 make_runtime(opts, mount_dir, work_dir)
 
                 # Make sure it made an install.img
