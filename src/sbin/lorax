@@ -37,7 +37,7 @@ import shutil
 #import librepo
 
 import pylorax
-from pylorax import DRACUT_DEFAULT, log_selinux_state
+from pylorax import DRACUT_DEFAULT, ROOTFSTYPES, log_selinux_state
 from pylorax.cmdline import lorax_parser
 from pylorax.dnfbase import get_dnf_base_object
 
@@ -103,6 +103,9 @@ def main():
         parser.error("argument --dracut-arg: not allowed with argument --dracut-conf")
     if opts.dracut_conf and not os.path.exists(opts.dracut_conf):
         parser.error("dracut config file %s doesn't exist." % opts.dracut_conf)
+
+    if opts.rootfs_type not in ROOTFSTYPES:
+        parser.error("--rootfs-type must be one of %s" % ",".join(ROOTFSTYPES))
 
     setup_logging(opts)
     log.debug(opts)
@@ -201,7 +204,7 @@ def main():
               add_arch_template_vars=parsed_add_arch_template_vars,
               remove_temp=True, verify=opts.verify,
               user_dracut_args=user_dracut_args,
-              squashfs_only=opts.squashfs_only,
+              rootfs_type=opts.rootfs_type,
               skip_branding=opts.skip_branding)
 
     # Release the lock on the tempdir
