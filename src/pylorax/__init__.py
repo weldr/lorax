@@ -64,6 +64,8 @@ DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "
 DEFAULT_PLATFORM_ID = "platform:f41"
 DEFAULT_RELEASEVER = "41"
 
+ROOTFSTYPES = ["squashfs", "squashfs-ext4", "erofs"]
+
 # XXX - Temporarily lifted from dnf.rpm module
 def _invert(dct):
     return {v: k for k in dct for v in dct[k]}
@@ -219,7 +221,7 @@ class Lorax(BaseLoraxClass):
             add_arch_template_vars=None,
             verify=True,
             user_dracut_args=None,
-            squashfs_only=False,
+            rootfs_type="squashfs",
             skip_branding=False):
 
         assert self._configured
@@ -353,16 +355,24 @@ class Lorax(BaseLoraxClass):
                 compressargs += ["-Xbcj", self.arch.bcj]
             else:
                 logger.info("no BCJ filter for arch %s", self.arch.basearch)
-        if squashfs_only:
-            # Create an ext4 rootfs.img and compress it with squashfs
+        if rootfs_type == "squashfs":
+            # Create a squashfs compressed rootfs.img
             rc = rb.create_squashfs_runtime(joinpaths(installroot,runtime),
                     compression=compression, compressargs=compressargs,
                     size=size)
-        else:
+        elif rootfs_type == "squashfs-ext4":
             # Create an ext4 rootfs.img and compress it with squashfs
             rc = rb.create_ext4_runtime(joinpaths(installroot,runtime),
                     compression=compression, compressargs=compressargs,
                     size=size)
+        elif rootfs_type == "erofs":
+            raise RuntimeError("erofs not yet implemented")
+            # Create a erofs compressed rootfs.img
+##            rc = rb.create_erofs_runtime(joinpaths(installroot,runtime),
+##                    compression=compression, compressargs=compressargs,
+##                    size=size)
+        else:
+            raise RuntimeError(f"{rootfs_type} is not a supported type for the root filesystem")
         if rc != 0:
             logger.error("rootfs.img creation failed. See program.log")
             sys.exit(1)
