@@ -168,6 +168,28 @@ class CreatorTest(unittest.TestCase):
                 results = runcmd_output(cmd)
                 self.assertTrue("vmlinuz-" in results)
 
+    def test_make_runtime_erofs(self):
+        """Test making a runtime erofs only image"""
+        with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
+            with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as mount_dir:
+                # Make a fake kernel and initrd
+                mkFakeBoot(mount_dir)
+                opts = DataHolder(project="Fedora", releasever="devel", compression="lzma", compress_args=[],
+                                  release="", variant="", bugurl="", isfinal=False,
+                                  arch="x86_64", rootfs_type="erofs")
+                make_runtime(opts, mount_dir, work_dir)
+
+                # Make sure it made an install.img
+                self.assertTrue(os.path.exists(joinpaths(work_dir, "images/install.img")))
+
+                # Make sure it looks like a squashfs filesystem
+                file_details = get_file_magic(joinpaths(work_dir, "images/install.img"))
+                self.assertTrue("EROFS filesystem" in file_details, file_details)
+
+                # Make sure the fake kernel is in there
+                cmd = ["dump.erofs", "--ls", "--path", "/boot", joinpaths(work_dir, "images/install.img")]
+                results = runcmd_output(cmd)
+                self.assertTrue("vmlinuz-" in results)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
     def test_make_runtime_squashfs_ext4(self):
@@ -190,6 +212,30 @@ class CreatorTest(unittest.TestCase):
 
                 # Make sure there is a rootfs.img inside the squashfs
                 cmd = ["unsquashfs", "-n", "-l", joinpaths(work_dir, "images/install.img")]
+                results = runcmd_output(cmd)
+                self.assertTrue("rootfs.img" in results)
+
+    @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
+    def test_make_runtime_erofs_ext4(self):
+        """Test making a runtime erofs+ext4 only image"""
+        with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
+            with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as mount_dir:
+                # Make a fake kernel and initrd
+                mkFakeBoot(mount_dir)
+                opts = DataHolder(project="Fedora", releasever="devel", compression="lzma", compress_args=[],
+                                  release="", variant="", bugurl="", isfinal=False,
+                                  arch="x86_64", rootfs_type="erofs-ext4")
+                make_runtime(opts, mount_dir, work_dir)
+
+                # Make sure it made an install.img
+                self.assertTrue(os.path.exists(joinpaths(work_dir, "images/install.img")))
+
+                # Make sure it looks like a squashfs filesystem
+                file_details = get_file_magic(joinpaths(work_dir, "images/install.img"))
+                self.assertTrue("EROFS filesystem" in file_details, file_details)
+
+                # Make sure there is a rootfs.img inside the squashfs
+                cmd = ["dump.erofs", "--ls", "--path", "/LiveOS", joinpaths(work_dir, "images/install.img")]
                 results = runcmd_output(cmd)
                 self.assertTrue("rootfs.img" in results)
 

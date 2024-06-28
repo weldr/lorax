@@ -219,18 +219,25 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
                             variant=opts.variant, bugurl=opts.bugurl, isfinal=opts.isfinal)
 
     rb = RuntimeBuilder(product, arch, fake_dbo, skip_branding=True)
-    compression, compressargs = squashfs_args(opts)
 
     if opts.rootfs_type == "squashfs":
+        compression, compressargs = squashfs_args(opts)
         log.info("Creating a squashfs only runtime")
         return rb.create_squashfs_runtime(joinpaths(work_dir, RUNTIME), size=size,
                   compression=compression, compressargs=compressargs)
     elif opts.rootfs_type == "squashfs-ext4":
-        log.info("Creating a squashfs+ext4 runtime")
+        compression, compressargs = squashfs_args(opts)
+        log.info("Creating a squashfs-ext4 runtime")
         return rb.create_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
                   compression=compression, compressargs=compressargs)
     elif opts.rootfs_type == "erofs":
-        raise RuntimeError("erofs not supported yet")
+        log.info("Creating a erofs only runtime")
+        return rb.create_erofs_runtime(joinpaths(work_dir, RUNTIME), size=size,
+                  compression="lzma")
+    elif opts.rootfs_type == "erofs-ext4":
+        log.info("Creating a erofs-ext4 runtime")
+        return rb.create_erofs_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
+                  compression="lzma")
     else:
         raise RuntimeError(f"{opts.rootfs_type} is not a supported type for the root filesystem")
 
