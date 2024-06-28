@@ -115,6 +115,10 @@ class Lorax(BaseLoraxClass):
         self.conf.set("compression", "args", "")
         self.conf.set("compression", "bcj", "on")
 
+        self.conf.add_section("compression.erofs")
+        self.conf.set("compression.erofs", "type", "lzma")
+        self.conf.set("compression.erofs", "args", "")
+
         # read the config file
         if os.path.isfile(conf_file):
             self.conf.read(conf_file)
@@ -171,6 +175,24 @@ class Lorax(BaseLoraxClass):
         fh = logging.FileHandler(filename=joinpaths(logdir, logname), mode="w")
         fh.setLevel(logging.DEBUG)
         logger.addHandler(fh)
+
+    def squashfs_args(self):
+        """Return compression type and args for squashfs compression"""
+        compression = self.conf.get("compression", "type")
+        compressargs = self.conf.get("compression", "args").split()     # pylint: disable=no-member
+        if self.conf.getboolean("compression", "bcj"):
+            if self.arch.bcj:
+                compressargs += ["-Xbcj", self.arch.bcj]
+            else:
+                logger.info("no BCJ filter for arch %s", self.arch.basearch)
+
+        return (compression, compressargs)
+
+    def erofs_args(self):
+        """Return compression type and args for erofs compression"""
+        compression = self.conf.get("compression.erofs", "type")
+        compressargs = self.conf.get("compression.erofs", "args").split()     # pylint: disable=no-member
+        return (compression, compressargs)
 
     def run(self, dbo, product, version, release, variant="", bugurl="",
             isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
@@ -309,34 +331,29 @@ class Lorax(BaseLoraxClass):
 
         logger.info("creating the runtime image")
         runtime = "images/install.img"
-        compression = self.conf.get("compression", "type")
-        compressargs = self.conf.get("compression", "args").split()     # pylint: disable=no-member
-        if self.conf.getboolean("compression", "bcj"):
-            if self.arch.bcj:
-                compressargs += ["-Xbcj", self.arch.bcj]
-            else:
-                logger.info("no BCJ filter for arch %s", self.arch.basearch)
         if rootfs_type == "squashfs":
             # Create a squashfs compressed rootfs.img
+            compression, compressargs = self.squashfs_args()
             rc = rb.create_squashfs_runtime(joinpaths(installroot,runtime),
                     compression=compression, compressargs=compressargs,
                     size=size)
         elif rootfs_type == "squashfs-ext4":
             # Create an ext4 rootfs.img and compress it with squashfs
+            compression, compressargs = self.squashfs_args()
             rc = rb.create_ext4_runtime(joinpaths(installroot,runtime),
                     compression=compression, compressargs=compressargs,
                     size=size)
         elif rootfs_type == "erofs":
             # Create a erofs compressed rootfs.img
-            # NOTE it does not support the same compression args as the other options
-            # so they are not passed to it.
+            compression, compressargs = self.erofs_args()
             rc = rb.create_erofs_runtime(joinpaths(installroot,runtime),
+                    compression=compression, compressargs=compressargs,
                     size=size)
         elif rootfs_type == "erofs-ext4":
             # Create an ext4 rootfs.img and compress it with erofs
-            # NOTE it does not support the same compression args as the other options
-            # so they are not passed to it.
+            compression, compressargs = self.erofs_args()
             rc = rb.create_erofs_ext4_runtime(joinpaths(installroot,runtime),
+                    compression=compression, compressargs=compressargs,
                     size=size)
         else:
             raise RuntimeError(f"{rootfs_type} is not a supported type for the root filesystem")
