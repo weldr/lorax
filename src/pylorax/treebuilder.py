@@ -263,6 +263,35 @@ class RuntimeBuilder(object):
         remove(workdir)
         return rc
 
+    def create_erofs_runtime(self, outfile="/var/tmp/erofs.img", compression="lzma", compressargs=None, size=2):
+        """Create a plain erofs runtime"""
+        compressargs = compressargs or []
+        os.makedirs(os.path.dirname(outfile))
+
+        # erofs the rootfs
+        return imgutils.mkerofs(self.vars.root, outfile, compression, compressargs)
+
+    def create_erofs_ext4_runtime(self, outfile="/var/tmp/erofs.img", compression="lzma", compressargs=None, size=2):
+        """Create a erofs compressed ext4 runtime"""
+        # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
+        compressargs = compressargs or []
+        workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")
+        os.makedirs(joinpaths(workdir, "LiveOS"))
+
+        # Catch problems with the rootfs being too small and clearly log them
+        try:
+            imgutils.mkrootfsimg(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
+                                 "Anaconda", size=size)
+        except CalledProcessError as e:
+            if e.stdout and "No space left on device" in e.stdout:
+                logger.error("The rootfs ran out of space with size=%d", size)
+            raise
+
+        # compress the live rootfs and clean up workdir
+        rc = imgutils.mkerofs(workdir, outfile, compression, compressargs)
+        remove(workdir)
+        return rc
+
     def finished(self):
         pass
 

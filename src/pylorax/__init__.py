@@ -64,7 +64,7 @@ DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "
 DEFAULT_PLATFORM_ID = "platform:f41"
 DEFAULT_RELEASEVER = "41"
 
-ROOTFSTYPES = ["squashfs", "squashfs-ext4", "erofs"]
+ROOTFSTYPES = ["squashfs", "squashfs-ext4", "erofs", "erofs-ext4"]
 
 # XXX - Temporarily lifted from dnf.rpm module
 def _invert(dct):
@@ -366,11 +366,17 @@ class Lorax(BaseLoraxClass):
                     compression=compression, compressargs=compressargs,
                     size=size)
         elif rootfs_type == "erofs":
-            raise RuntimeError("erofs not yet implemented")
             # Create a erofs compressed rootfs.img
-##            rc = rb.create_erofs_runtime(joinpaths(installroot,runtime),
-##                    compression=compression, compressargs=compressargs,
-##                    size=size)
+            # NOTE it does not support the same compression args as the other options
+            # so they are not passed to it.
+            rc = rb.create_erofs_runtime(joinpaths(installroot,runtime),
+                    size=size)
+        elif rootfs_type == "erofs-ext4":
+            # Create an ext4 rootfs.img and compress it with erofs
+            # NOTE it does not support the same compression args as the other options
+            # so they are not passed to it.
+            rc = rb.create_erofs_ext4_runtime(joinpaths(installroot,runtime),
+                    size=size)
         else:
             raise RuntimeError(f"{rootfs_type} is not a supported type for the root filesystem")
         if rc != 0:
