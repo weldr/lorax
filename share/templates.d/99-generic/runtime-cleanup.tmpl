@@ -28,8 +28,8 @@ removepkg selinux-policy libselinux-utils
 append etc/selinux/config ""
 
 ## keep enough of shadow-utils to create accounts
-removefrom shadow-utils --allbut /usr/bin/chage /usr/sbin/chpasswd \
-                        /usr/sbin/groupadd /usr/sbin/useradd
+removefrom shadow-utils --allbut /usr/bin/chage /usr/*bin/chpasswd \
+                        /usr/*bin/groupadd /usr/*bin/useradd
 
 ## no services to turn on/off (keep the /etc/init.d link though)
 removefrom initscripts /usr/sbin/* /usr/share/locale/* /usr/share/doc/* /usr/share/man/*
@@ -108,7 +108,7 @@ removefrom gtk3 /usr/share/themes/*
 ## filesystem tools
 removefrom e2fsprogs /usr/share/locale/*
 removefrom xfsprogs /usr/share/locale/* /usr/share/doc/* /usr/share/man/*
-removefrom xfsdump --allbut /usr/sbin/*
+removefrom xfsdump --allbut /usr/*bin/*
 
 ## other package specific removals
 removefrom gsettings-desktop-schemas /usr/share/locale/*
@@ -138,11 +138,11 @@ removefrom coreutils /usr/bin/unexpand /usr/bin/users /usr/bin/vdir
 removefrom coreutils /usr/bin/who /usr/bin/whoami /usr/bin/yes
 removefrom coreutils-common /etc/* /usr/share/*
 removefrom cpio /usr/share/*
-removefrom cracklib /usr/sbin/*
-removefrom cracklib-dicts /usr/${libdir}/* /usr/sbin/*
+removefrom cracklib /usr/*bin/*
+removefrom cracklib-dicts /usr/${libdir}/* /usr/*bin/*
 removefrom cryptsetup /usr/share/*
 removefrom cryptsetup-libs /usr/share/locale/*
-removefrom cyrus-sasl-lib /usr/sbin/* /usr/bin/*
+removefrom cyrus-sasl-lib /usr/*bin/*
 removefrom dbus-x11 /etc/X11/*
 removefrom dnf /usr/share/locale/*
 removefrom dump /etc/*
@@ -150,8 +150,8 @@ removefrom elfutils-libelf /usr/share/locale/*
 removefrom expat /usr/bin/*
 removefrom fcoe-utils /usr/libexec/fcoe/dcbcheck.sh
 removefrom fcoe-utils /usr/libexec/fcoe/fcc.sh /usr/libexec/fcoe/fcoe-setup.sh
-removefrom fcoe-utils /usr/libexec/fcoe/fcoedump.sh /usr/sbin/fcnsq
-removefrom fcoe-utils /usr/sbin/fcoeadm /usr/sbin/fcping /usr/sbin/fcrls
+removefrom fcoe-utils /usr/libexec/fcoe/fcoedump.sh /usr/*bin/fcnsq
+removefrom fcoe-utils /usr/*bin/fcoeadm /usr/*bin/fcping /usr/*bin/fcrls
 removefrom file-libs /usr/share/*
 removefrom findutils /usr/share/*
 removefrom fontconfig /usr/bin/*
@@ -166,13 +166,13 @@ removefrom glibc /${libdir}/libBrokenLocale*
 removefrom glibc /${libdir}/libanl*
 removefrom glibc /${libdir}/libnss_compat*
 # python-pyudev uses ctypes.util.find_library, which uses /sbin/ldconfig
-removefrom glibc /usr/libexec/* /usr/sbin/*
+removefrom glibc /usr/libexec/* /usr/*bin/iconvconfig
 removefrom glibc-common /usr/bin/gencat
 removefrom glibc-common /usr/bin/getent
 removefrom glibc-common /usr/bin/locale /usr/bin/sprof
 # NB: we keep /usr/bin/localedef so anaconda can inspect payload locale info
 removefrom glibc-common /usr/bin/tzselect
-removefrom glibc-common /usr/sbin/*
+removefrom glibc-common /usr/*bin/zic
 removefrom gnutls /usr/share/locale/*
 removefrom google-noto-sans-cjk-fonts /usr/share/fonts/google-noto-sans-cjk-fonts/NotoSansCJK-{Black,Bold,*Light,Medium,Thin}.ttc
 removefrom google-noto-sans-vf-fonts /usr/share/fonts/google-noto-vf/NotoSans-Italic*
@@ -183,13 +183,13 @@ removefrom gtk4 /usr/${libdir}/gtk-4.0/*
 removefrom guile22 /usr/${libdir}/guile/2.2/ccache*
 removefrom gzip /usr/bin/{gzexe,zcmp,zdiff,zegrep,zfgrep,zforce,zgrep,zless,zmore,znew}
 removefrom hwdata /usr/share/hwdata/oui.txt /usr/share/hwdata/pnp.ids
-removefrom iproute --allbut /usr/sbin/{ip,routef,routel,rtpr}
+removefrom iproute --allbut /usr/*bin/{ip,routef,routel,rtpr}
 removefrom kbd --allbut */bin/{dumpkeys,kbd_mode,loadkeys,setfont,unicode_*,chvt}
 removefrom less /etc/*
 removefrom libX11-common /usr/share/X11/XErrorDB
 removefrom libcanberra /usr/${libdir}/libcanberra-*
 removefrom libcanberra-gtk3 /usr/bin/*
-removefrom libcap /usr/sbin/*
+removefrom libcap /usr/*bin/*
 removefrom libconfig /usr/${libdir}/libconfig++*
 removefrom liberation-sans-fonts /usr/share/fonts/liberation-sans/LiberationSans-{Bold*,Italic}.ttf
 removefrom liberation-serif-fonts /usr/share/fonts/liberation-serif/*
@@ -265,7 +265,7 @@ removefrom lldpad /etc/*
 removefrom mdadm /etc/* /usr/lib/systemd/system/mdmonitor*
 ## gallium-pipe stuff is for compute (opencl), not needed for video
 removefrom mesa-dri-drivers /usr/${libdir}/dri/*_video.so /usr/lib64/gallium-pipe/*
-removefrom mt-st /usr/sbin/*
+removefrom mt-st /usr/*bin/stinit
 removefrom mtools /etc/*
 removefrom ncurses-libs /usr/${libdir}/libform*
 ## libmenu.so is needed by lp_diag binary from ppc64-diag which is a PowerPC specific package
@@ -273,19 +273,19 @@ removefrom ncurses-libs /usr/${libdir}/libform*
     removefrom ncurses-libs /usr/${libdir}/libmenu*
 %endif
 removefrom ncurses-libs /usr/${libdir}/libpanel.* /usr/${libdir}/libtic*
-removefrom net-tools */bin/netstat */sbin/ether-wake */sbin/ipmaddr
-removefrom net-tools */sbin/iptunnel */sbin/mii-diag */sbin/mii-tool
-removefrom net-tools */sbin/nameif */sbin/plipconfig */sbin/slattach
+removefrom net-tools */bin/netstat */*bin/ether-wake */*bin/ipmaddr
+removefrom net-tools */*bin/iptunnel */*bin/mii-diag */*bin/mii-tool
+removefrom net-tools */*bin/nameif */*bin/plipconfig */*bin/slattach
 removefrom net-tools /usr/share/locale/*
 removefrom nfs-utils /etc/nfsmount.conf
 removefrom nfs-utils /usr/lib/systemd/system/*
-removefrom nfs-utils /sbin/rpc.statd /usr/sbin/exportfs
-removefrom nfs-utils /usr/sbin/mountstats /usr/sbin/nfsiostat
-removefrom nfs-utils /usr/sbin/nfsstat /usr/sbin/rpc.gssd /usr/sbin/rpc.idmapd
-removefrom nfs-utils /usr/sbin/rpc.mountd /usr/sbin/rpc.nfsd
-removefrom nfs-utils /usr/sbin/rpcdebug
-removefrom nfs-utils /usr/sbin/showmount /usr/sbin/sm-notify
-removefrom nfs-utils /usr/sbin/start-statd /var/lib/nfs/etab
+removefrom nfs-utils /*bin/rpc.statd /usr/*bin/exportfs
+removefrom nfs-utils /usr/*bin/mountstats /usr/*bin/nfsiostat
+removefrom nfs-utils /usr/*bin/nfsstat /usr/*bin/rpc.gssd /usr/*bin/rpc.idmapd
+removefrom nfs-utils /usr/*bin/rpc.mountd /usr/*bin/rpc.nfsd
+removefrom nfs-utils /usr/*bin/rpcdebug
+removefrom nfs-utils /usr/*bin/showmount /usr/*bin/sm-notify
+removefrom nfs-utils /usr/*bin/start-statd /var/lib/nfs/etab
 removefrom nfs-utils /var/lib/nfs/rmtab /var/lib/nfs/statd/state
 removefrom nss-softokn /usr/${libdir}/nss/*
 removefrom openldap /etc/openldap/*
@@ -293,7 +293,7 @@ removefrom openssh /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/ssh-*
 removefrom openssh-clients /usr/libexec/*
 removefrom openssh-server /etc/ssh/* /usr/libexec/openssh/sftp-server
-removefrom pam /usr/sbin/* /usr/share/locale/*
+removefrom pam /usr/*bin/* /usr/share/locale/*
 removefrom policycoreutils /etc/* /usr/bin/* /usr/share/locale/*
 removefrom polkit /usr/bin/*
 removefrom popt /usr/share/locale/*
@@ -310,22 +310,22 @@ removefrom rpm /usr/bin/* /usr/share/locale/*
 removefrom rsync /etc/*
 removefrom sed /usr/share/locale/*
 removefrom sil-padauk-fonts /usr/share/fonts/sil-padauk-fonts/Padauk-Bold.ttf
-removefrom smartmontools /etc/* /usr/sbin/smartd
-removefrom smartmontools /usr/sbin/update-smart-drivedb
+removefrom smartmontools /etc/* /usr/*bin/smartd
+removefrom smartmontools /usr/*bin/update-smart-drivedb
 removefrom smartmontools /usr/share/smartmontools/*
 removefrom tar /usr/share/locale/*
 removefrom usbutils /usr/bin/*
 removefrom util-linux --allbut \
     /usr/bin/{chmem,eject,getopt,hexdump,login,lscpu,lsmem,lsblk,setpriv} \
     /etc/pam.d/login /etc/pam.d/remote \
-    /usr/sbin/{clock,fdisk,fsfreeze,fstrim,hwclock,nologin,sfdisk,swaplabel,wipefs,zramctl}
+    /usr/*bin/{clock,fdisk,fsfreeze,fstrim,hwclock,nologin,sfdisk,swaplabel,wipefs,zramctl}
 removefrom util-linux-core --allbut \
     /usr/bin/{dmesg,findmnt,flock,kill,logger,more,mount,mountpoint,umount,unshare} \
     /etc/mtab \
-    /usr/sbin/{agetty,blkid,blockdev,fsck,losetup,mkswap,partx,swapoff,swapon}
+    /usr/*bin/{agetty,blkid,blockdev,fsck,losetup,mkswap,partx,swapoff,swapon}
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget2 /usr/share/locale/*
-removefrom wpa_supplicant /usr/sbin/eapol_test
+removefrom wpa_supplicant /usr/*bin/eapol_test
 removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
 removefrom xorg-x11-drv-wacom /usr/bin/*
 removefrom yelp /usr/share/yelp/mathjax*
