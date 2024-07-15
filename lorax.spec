@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        41.1
+Version:        41.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -171,6 +171,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Jul 15 2024 Brian C. Lane <bcl@redhat.com> 41.2-1
+- Prepare for the sbin merge (zbyszek@in.waw.pl)
+- Add compression.erofs section to lorax.conf (bcl@redhat.com)
+- Add erofs and erofs-ext4 support to --rootfs-type (bcl@redhat.com)
+- Replace squashfs_only with rootfs_type (bcl@redhat.com)
+- imgutils: Add mkerofs function and test (bcl@redhat.com)
+- Implement --replace also for S390 (sebastian.stark@advantest.com)
+- mkksiso: option --replace to replace arbitrary text in boot config.  (sebastian.stark@advantest.com)
+- spec: Drop forge tag lua tweak (bcl@redhat.com)
+
 * Wed Jun 12 2024 Brian C. Lane <bcl@redhat.com> 41.1-1
 - livemedia-creator: Check for BIOS vs. UEFI qemu support (bcl@redhat.com)
 - livemedia-creator: Enable s390x virt support (bcl@redhat.com)
