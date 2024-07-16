@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        41.2
+Version:        41.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -171,6 +171,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Jul 16 2024 Brian C. Lane <bcl@redhat.com> 41.3-1
+- Accept but ignore the old --squashfs-only argument (awilliam@redhat.com)
+
 * Mon Jul 15 2024 Brian C. Lane <bcl@redhat.com> 41.2-1
 - Prepare for the sbin merge (zbyszek@in.waw.pl)
 - Add compression.erofs section to lorax.conf (bcl@redhat.com)
