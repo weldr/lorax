@@ -109,9 +109,8 @@ def lorax_parser(dracut_default=""):
                           help="Do not verify SSL certificates")
     optional.add_argument("--dnfplugin", action="append", default=[], dest="dnfplugins",
                           help="Enable a DNF plugin by name/glob, or * to enable all of them.")
-    optional.add_argument("--squashfs-only", action="store_const", const="squashfs",
-                          default="squashfs", dest="rootfs_type",
-                          help="Use a plain squashfs filesystem for the runtime.")
+    optional.add_argument("--squashfs-only", action="store_true",
+                          help="Ignored, provided for backward compatibility.")
     optional.add_argument("--skip-branding", action="store_true", default=False,
                           help="Disable automatic branding package selection. Use --installpkgs to add custom branding.")
     optional.add_argument("--rootfs-type", metavar="ROOTFSTYPE", default="squashfs",
@@ -328,9 +327,8 @@ def lmc_parser(dracut_default=""):
     parser.add_argument("--releasever", default=DEFAULT_RELEASEVER,
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
-    parser.add_argument("--squashfs-only", action="store_const", const="squashfs",
-                        dest="rootfs_type",
-                        help="Use a plain squashfs filesystem for the runtime.")
+    parser.add_argument("--squashfs-only", action="store_true",
+                          help="Ignored, provided for backward compatibility.")
     parser.add_argument("--rootfs-type", metavar="ROOTFSTYPE", default="squashfs",
                         help="Type of rootfs: %s" % ",".join(ROOTFSTYPES))
     parser.add_argument("--timeout", default=None, type=int,
