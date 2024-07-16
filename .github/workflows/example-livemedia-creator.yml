@@ -44,14 +44,12 @@ jobs:
       ## Create the ISO
       - name: Create the custom ISO
           # --no-virt: Needed since we're in a container, no host CPU
-          # --squashfs-only: Just to speed things up, not required
         run: |
           livemedia-creator \
             --ks "${{ inputs.kickstart_path }}" \
             --no-virt \
             --make-iso \
             --iso-only \
-            --squashfs-only \
             --iso-name Fedora-custom-example.iso \
             --project Fedora \
             --volid "Fedora-${{ inputs.fedora_release }}" \
