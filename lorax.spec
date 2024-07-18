@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.25
+Version:        34.9.26
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Jul 18 2024 Brian C. Lane <bcl@redhat.com> 34.9.26-1
+- monitor: Skip repo errors involving CDROM/file source (bcl) (bcl)
+  Resolves: RHEL-4658
+- rsyslog.conf: Update to use current config syntax (bcl) (bcl)
+  Resolves: RHEL-46857
+
 * Tue Feb 06 2024 Brian C. Lane <bcl@redhat.com> 34.9.25-1
 - templates: Remove libreport bugzilla plugins (bcl)
   Resolves: RHEL-24420
