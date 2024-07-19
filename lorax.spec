@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.4
+Version:        40.5.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -181,6 +181,18 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Jul 19 2024 Brian C. Lane <bcl@redhat.com> 40.5.5-1
+- templates: Synchronize generic templates with lorax-templates-rhel (bcl)
+  Related: RHEL-35396
+- docs: Update livemedia-creator documentation for RHEL 10 (bcl)
+  Related: RHEL-31853
+- livemedia-creator: The --make-tar option requires tar (bcl)
+  Related: RHEL-31853
+- docs: Update example kickstarts for RHEL/CentOS (bcl)
+  Resolves: RHEL-31853
+- lorax: Change default rootfs size to 3GiB (bcl)
+  Resolves: RHEL-32504
+
 * Wed Jun 12 2024 Brian C. Lane <bcl@redhat.com> 40.5.4-1
 - tito: Add tito to container's test-packages (bcl)
   Related: RHEL-31830
