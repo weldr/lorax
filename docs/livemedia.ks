@@ -1,4 +1,11 @@
-#version=DEVEL
+# Live ISO
+# NOTE: Anaconda does not support live on RHEL so it is not installed
+#       this creates a minimal desktop environment without a web browser.
+
+# Use network installation
+url --url="http://URL-TO-BASEOS"
+repo --name=appstream --baseurl="http://URL-TO-APPSTREAM/"
+
 # X Window System configuration information
 xconfig  --startxonboot
 # Keyboard layouts
@@ -10,7 +17,6 @@ timezone US/Eastern
 lang en_US.UTF-8
 # Firewall configuration
 firewall --enabled --service=mdns
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
 # Network information
 network  --bootproto=dhcp --device=link --activate
 
@@ -18,7 +24,7 @@ network  --bootproto=dhcp --device=link --activate
 selinux --enforcing
 
 # System services
-services --disabled="sshd" --enabled="NetworkManager,ModemManager,livesys,livesys-late"
+services --disabled="sshd" --enabled="NetworkManager,ModemManager"
 
 # livemedia-creator modifications.
 shutdown
@@ -46,7 +52,7 @@ EOF
 rm -f /var/lib/rpm/__db*
 releasever=$(rpm -q --qf '%{version}\n' --whatprovides system-release)
 basearch=$(uname -i)
-rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 echo "Packages within this LiveCD"
 rpm -qa --qf '%{size}\t%{name}-%{version}-%{release}.%{arch}\n' |sort -rn
 # Note that running rpm recreates the rpm db files which aren't needed or wanted
@@ -89,10 +95,8 @@ case $ARCH in
         echo "%packages" >> $PKGS
         echo "@^workstation-product-environment" >> $PKGS
         echo "shim" >> $PKGS
-        echo "shim-ia32" >> $PKGS
         echo "grub2" >> $PKGS
         echo "grub2-efi" >> $PKGS
-        echo "grub2-efi-ia32" >> $PKGS
         echo "grub2-efi-*-cdboot" >> $PKGS
         echo "efibootmgr" >> $PKGS
         echo "%end" >> $PKGS
@@ -124,14 +128,10 @@ esac
 %include /tmp/arch-packages.ks
 
 %packages
-# Use https://pagure.io/livesys-scripts to configure the system
-livesys-scripts
+## This is a minimal desktop live system without Anaconda which doesn't support live on RHEL
+@workstation-product
+system-logos
 
-@anaconda-tools
-aajohan-comfortaa-fonts
-anaconda
-anaconda-install-env-deps
-anaconda-live
 dracut-config-generic
 dracut-live
 glibc-all-langpacks

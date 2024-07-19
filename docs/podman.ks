@@ -1,9 +1,8 @@
-# Minimal Disk Image
-#
-# Firewall configuration
-firewall --enabled
+# Minimal tar Image
+
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+url --url="http://URL-TO-BASEOS"
+repo --name=appstream --baseurl="http://URL-TO-APPSTREAM/"
 
 # Root password
 rootpw --plaintext replace-this-pw
@@ -20,11 +19,9 @@ shutdown
 # System timezone
 timezone  US/Eastern
 # System bootloader configuration
-bootloader --location=mbr
-# Clear the Master Boot Record
-zerombr
+bootloader --disabled
 # Partition clearing information
-clearpart --all
+clearpart --all --initlabel
 # Disk partitioning information
 part / --fstype="ext4" --size=3000
 
@@ -33,24 +30,10 @@ part / --fstype="ext4" --size=3000
 rm /var/lib/systemd/random-seed
 %end
 
-%packages
-@core
-kernel
-# Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
-kernel-modules
-kernel-modules-extra
+%packages --nocore --inst-langs en
+httpd
+-kernel
 
-grub2-efi
-grub2
-shim
--dracut-config-rescue
-
-# dracut needs these included
-dracut-network
-tar
-
-# Openstack support
-cloud-utils-growpart
-cloud-init
-
+# Needed for selinux --enforcing and setfiles
+selinux-policy-targeted
 %end
