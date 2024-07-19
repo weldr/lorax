@@ -9,8 +9,6 @@ remove usr/share/i18n
 ## perl needed for powerpc-utils
 ## perl is needed by /usr/bin/rxe_cfg from libibverbs
 
-## no sound support, thanks
-removepkg flac-libs libsndfile pipewire pulseaudio* rtkit sound-theme-freedesktop wireplumber*
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
@@ -52,13 +50,11 @@ removepkg mtools glibc-gconv-extra
 
 ## various other things we remove to save space
 removepkg diffutils file
-removepkg libasyncns
 removepkg lvm2-libs
 removepkg mobile-broadband-provider-info
 removepkg rmt rpcbind squashfs-tools
-removepkg tigervnc-license xml-common
+removepkg xml-common
 removepkg mkfontscale fonttosfnt
-removepkg xorg-x11-server-common
 # do not remove this, required for ppc64le and s390x !!!
 removepkg ncurses
 
@@ -93,8 +89,8 @@ removekmod sound drivers/media drivers/hwmon drivers/iio \
 ## LUKS setup. As of 2020-09 this is not built as a module, but keep it in here
 ## in case that changes again
 removekmod drivers/char --allbut virtio_console hw_random \
-                                  virtio-rng ipmi hmcdrv
-removekmod drivers/hid --allbut hid-logitech-dj hid-logitech-hidpp
+                                  virtio-rng ipmi hmcdrv nvram
+removekmod drivers/hid --allbut hid-logitech-dj hid-logitech-hidpp hid-multitouch
 
 ## As of 2020-09 most of this are built-in too, but again, keep them listed
 removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt fb_sys_fops
@@ -132,7 +128,7 @@ removefrom coreutils /usr/bin/pinky /usr/bin/pr /usr/bin/printenv
 removefrom coreutils /usr/bin/printf /usr/bin/ptx /usr/bin/runcon
 removefrom coreutils /usr/bin/sha224sum /usr/bin/sha384sum
 removefrom coreutils /usr/bin/sha512sum /usr/bin/shuf /usr/bin/stat
-removefrom coreutils /usr/bin/sum /usr/bin/test
+removefrom coreutils /usr/bin/stdbuf /usr/bin/sum /usr/bin/test
 removefrom coreutils /usr/bin/timeout /usr/bin/truncate /usr/bin/tsort
 removefrom coreutils /usr/bin/unexpand /usr/bin/users /usr/bin/vdir
 removefrom coreutils /usr/bin/who /usr/bin/whoami /usr/bin/yes
@@ -158,7 +154,6 @@ removefrom fontconfig /usr/bin/*
 removefrom gawk /usr/libexec/* /usr/share/*
 removefrom gdb /usr/share/* /usr/include/*
 removefrom gdb-headless /usr/share/* /etc/gdbinit*
-removefrom gdisk /usr/share/*
 removefrom gdk-pixbuf2 /usr/share/locale*
 removefrom glib2 /usr/bin/* /usr/share/locale/*
 removefrom glibc /etc/gai.conf /etc/rpc
@@ -175,7 +170,7 @@ removefrom glibc-common /usr/bin/tzselect
 removefrom glibc-common /usr/sbin/*
 removefrom gnutls /usr/share/locale/*
 removefrom google-noto-sans-cjk-fonts /usr/share/fonts/google-noto-sans-cjk-fonts/NotoSansCJK-{Black,Bold,*Light,Medium,Thin}.ttc
-removefrom google-noto-sans-vf-fonts /usr/share/fonts/google-noto-vf/NotoSans-Italic*
+removefrom google-noto-sans-vf-fonts /usr/share/fonts/google-noto-vf/NotoSans-Italic-VF.ttf
 removefrom google-noto-serif-vf-fonts /usr/share/fonts/google-noto-vf/NotoSerif*
 removefrom grep /etc/* /usr/share/locale/*
 removefrom gtk3 /usr/${libdir}/gtk-3.0/*
@@ -200,12 +195,8 @@ removefrom libidn2 /usr/share/locale/*
 removefrom libnotify /usr/bin/*
 removefrom libsemanage /etc/selinux/*
 removefrom libstdc++ /usr/share/*
-removefrom libvorbis /usr/${libdir}/libvorbisenc.*
 removefrom libxml2 /usr/bin/*
-removefrom linux-firmware /usr/lib/firmware/dvb*
-removefrom linux-firmware /usr/lib/firmware/*_12mhz*
-removefrom linux-firmware /usr/lib/firmware/v4l*
-removefrom linux-firmware /usr/lib/firmware/brcm/BCM-*
+removefrom brcmfmac-firmware /usr/lib/firmware/brcm/BCM-*
 removefrom linux-firmware /usr/lib/firmware/ttusb-budget/dspbootcode.bin*
 removefrom linux-firmware /usr/lib/firmware/emi26/*
 removefrom linux-firmware /usr/lib/firmware/emi62/*
@@ -214,23 +205,18 @@ removefrom linux-firmware /usr/lib/firmware/dabusb/*
 removefrom linux-firmware /usr/lib/firmware/vicam/*
 removefrom linux-firmware /usr/lib/firmware/dsp56k/*
 removefrom linux-firmware /usr/lib/firmware/sun/*
-removefrom linux-firmware /usr/lib/firmware/av7110/*
 removefrom linux-firmware /usr/lib/firmware/usbdux*
 removefrom linux-firmware /usr/lib/firmware/f2255usb.bin*
-removefrom linux-firmware /usr/lib/firmware/lgs8g75.fw*
 removefrom linux-firmware /usr/lib/firmware/TDA7706*
 removefrom linux-firmware /usr/lib/firmware/tlg2300_firmware.bin*
 removefrom linux-firmware /usr/lib/firmware/s5p-mfc*
 removefrom linux-firmware /usr/lib/firmware/go7007/*
 removefrom linux-firmware /usr/lib/firmware/intel/IntcSST2.bin*
-removefrom linux-firmware /usr/lib/firmware/intel/fw_sst*
-removefrom linux-firmware /usr/lib/firmware/intel/dsp*
-removefrom linux-firmware /usr/lib/firmware/as102*
-removefrom linux-firmware /usr/lib/firmware/qcom/apq8096/*
-removefrom linux-firmware /usr/lib/firmware/qcom/sdm845/*
-removefrom linux-firmware /usr/lib/firmware/qcom/sm8250/*
-removefrom linux-firmware /usr/lib/firmware/qcom/venus*/*
-removefrom linux-firmware /usr/lib/firmware/qcom/vpu*/*
+removefrom qcom-firmware /usr/lib/firmware/qcom/apq8096/*
+removefrom qcom-firmware /usr/lib/firmware/qcom/sdm845/*
+removefrom qcom-firmware /usr/lib/firmware/qcom/sm8250/*
+removefrom qcom-firmware /usr/lib/firmware/qcom/venus*/*
+removefrom qcom-firmware /usr/lib/firmware/qcom/vpu*/*
 removefrom linux-firmware /usr/lib/firmware/meson/vdec/*
 removefrom linux-firmware /usr/lib/firmware/phanfw.bin*
 ## these are for SoCs used in Chromebooks, our kernel does not build the drivers
@@ -293,7 +279,7 @@ removefrom openssh /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/ssh-*
 removefrom openssh-clients /usr/libexec/*
 removefrom openssh-server /etc/ssh/* /usr/libexec/openssh/sftp-server
-removefrom pam /usr/sbin/* /usr/share/locale/*
+removefrom pam /usr/share/locale/*
 removefrom policycoreutils /etc/* /usr/bin/* /usr/share/locale/*
 removefrom polkit /usr/bin/*
 removefrom popt /usr/share/locale/*
@@ -304,7 +290,6 @@ removefrom procps-ng /usr/bin/vmstat /usr/bin/w /usr/bin/watch
 removefrom psmisc /usr/share/locale/*
 removefrom python3-kickstart /usr/lib/python*/site-packages/pykickstart/locale/*
 removefrom readline /usr/${libdir}/libhistory*
-removefrom libreport /usr/share/locale/*
 removefrom rdma-core /etc/rdma/mlx4.conf
 removefrom rpm /usr/bin/* /usr/share/locale/*
 removefrom rsync /etc/*
@@ -326,20 +311,13 @@ removefrom util-linux-core --allbut \
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget2 /usr/share/locale/*
 removefrom wpa_supplicant /usr/sbin/eapol_test
-removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
-removefrom xorg-x11-drv-wacom /usr/bin/*
 removefrom yelp /usr/share/yelp/mathjax*
 
 %if branding.release:
     removefrom ${branding.logos} /usr/share/plymouth/*
     removefrom ${branding.logos} /etc/*
     removefrom ${branding.logos} /usr/share/icons/{Bluecurve,oxygen}/*
-
-    # Keep /usr/share/pixmaps/fedora-logo-sprite.svg if it exists
-    # See https://github.com/weldr/lorax/issues/1340
-    removefrom ${branding.logos} /usr/share/kde4/*
-    removefrom ${branding.logos} /usr/share/pixmaps/bootloader/*
-    removefrom ${branding.logos} /usr/share/pixmaps/*.png
+    removefrom ${branding.logos} /usr/share/{kde4,pixmaps}/*
 %endif
 
 ## cleanup /boot/ leaving vmlinuz, and .*hmac files
@@ -370,11 +348,7 @@ removefrom gstreamer1-plugins-base --allbut \
 removepkg geoclue2
 
 ## And remove the packages that those extra libraries pulled in
-removepkg cdparanoia-libs opus libtheora libvisual flac-libs gsm avahi-glib avahi-libs \
-          ModemManager-glib
-
-## metacity requires libvorbis and libvorbisfile, but enc/dec are no longer needed
-removefrom libvorbis --allbut /usr/${libdir}/libvorbisfile.* /usr/${libdir}/libvorbis.*
+removepkg cdparanoia-libs avahi-glib avahi-libs ModemManager-glib
 
 ## Remove build-id links, they are used with debuginfo
 remove /usr/lib/.build-id

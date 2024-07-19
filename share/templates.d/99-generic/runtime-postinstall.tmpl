@@ -103,6 +103,7 @@ append etc/depmod.d/dd.conf "search updates built-in"
 
 ## create multipath.conf so multipath gets auto-started
 append etc/multipath.conf "defaults {\n\tfind_multipaths smart\n\tuser_friendly_names yes\n}\n"
+append etc/multipath.conf "blacklist_exceptions {\n\tproperty \"(SCSI_IDENT_|ID_WWN)\"\n}\n"
 
 ## make lvm auto-activate
 remove etc/lvm/archive/*
@@ -113,8 +114,6 @@ remove etc/lvm/cache/*
 remove etc/lvm/cache
 remove etc/lvm/lvm.conf
 append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
-# dmeventd and event libraries are not installed
-append etc/lvm/lvm.conf "activation {\n\tmonitoring = 0\n}\n"
 
 ## Remove machine specific nvme-cli files
 remove etc/nvme/hostid
