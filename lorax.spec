@@ -99,6 +99,7 @@ Summary:  livemedia-creator libvirt dependencies
 Requires: lorax = %{version}-%{release}
 # RHEL doesn't have qemu, just qemu-kvm
 Requires: qemu-kvm
+Requires: tar
 
 # edk2 builds currently only support these arches
 %ifarch x86_64
@@ -120,6 +121,7 @@ Requires: anaconda-tui
 Requires: anaconda-install-env-deps
 Requires: system-logos
 Requires: python3-psutil
+Requires: tar
 
 %description lmc-novirt
 Additional dependencies required by livemedia-creator when using it with --no-virt
