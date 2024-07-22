@@ -227,7 +227,7 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
                   compression=compression, compressargs=compressargs)
     elif opts.rootfs_type == "squashfs-ext4":
         compression, compressargs = squashfs_args(opts)
-        log.info("Creating a squashfs+ext4 runtime")
+        log.info("Creating a squashfs-ext4 runtime")
         return rb.create_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
                   compression=compression, compressargs=compressargs)
     elif opts.rootfs_type == "erofs":
@@ -235,7 +235,7 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
         return rb.create_erofs_runtime(joinpaths(work_dir, RUNTIME), size=size,
                   compression="lzma")
     elif opts.rootfs_type == "erofs-ext4":
-        log.info("Creating a erofs+ext4 runtime")
+        log.info("Creating a erofs-ext4 runtime")
         return rb.create_erofs_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
                   compression="lzma")
     else:
