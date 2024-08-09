@@ -122,7 +122,7 @@ def mkerofs(rootdir, outfile, compression="lzma", compressargs=None):
     '''Make an erofs image containing the given rootdir.'''
     compressargs = compressargs or []
     compressargs = ["-z", compression] + compressargs
-    return execWithRedirect("mkfs.erofs", [outfile, rootdir] + compressargs)
+    return execWithRedirect("mkfs.erofs", compressargs + [outfile, rootdir])
 
 def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
     """
