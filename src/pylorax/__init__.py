@@ -117,7 +117,7 @@ class Lorax(BaseLoraxClass):
 
         self.conf.add_section("compression.erofs")
         self.conf.set("compression.erofs", "type", "lzma")
-        self.conf.set("compression.erofs", "args", "")
+        self.conf.set("compression.erofs", "args", "-E dedupe,all-fragments")
 
         # read the config file
         if os.path.isfile(conf_file):
