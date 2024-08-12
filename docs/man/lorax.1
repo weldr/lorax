@@ -27,19 +27,19 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "LORAX" "1" "May 07, 2024" "41.1" "Lorax"
+.TH "LORAX" "1" "Aug 12, 2024" "41.3" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .INDENT 0.0
 .TP
 .B Authors
-Brian C. Lane <\fI\%bcl@redhat.com\fP>
+Brian C. Lane <\X'tty: link mailto:bcl@redhat.com'\fI\%bcl@redhat.com\fP\X'tty: link'>
 .UNINDENT
 .sp
 \(dqI am the Lorax.  I speak for the trees [and images].\(dq
 .sp
-The \fI\%lorax\fP tool is used to create the
-\fI\%Anaconda\fP installer boot.iso as
+The \X'tty: link https://github.com/rhinstaller/lorax'\fI\%lorax\fP\X'tty: link' tool is used to create the
+\X'tty: link https://github.com/rhinstaller/anaconda'\fI\%Anaconda\fP\X'tty: link' installer boot.iso as
 well as the basic release tree, and .treeinfo metadata file. Its dependencies
 are fairly light\-weight because it needs to be able to run in a mock chroot
 environment. It is best to run lorax from the same release as is being targeted
@@ -55,10 +55,16 @@ Create the Anaconda boot.iso
 .sp
 .nf
 .ft C
-usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-repo REPOSITORY] [\-m REPOSITORY] [\-t VARIANT] [\-b URL] [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE] [\-e PACKAGE]
-             [\-\-buildarch ARCH] [\-\-volid VOLID] [\-\-macboot] [\-\-nomacboot] [\-\-noupgrade] [\-\-logfile LOGFILE] [\-\-tmp TMP] [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force] [\-\-add\-template ADD_TEMPLATES]
-             [\-\-add\-template\-var ADD_TEMPLATE_VARS] [\-\-add\-arch\-template ADD_ARCH_TEMPLATES] [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify] [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
-             [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only] [\-\-skip\-branding] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
+usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-repo REPOSITORY] [\-m REPOSITORY]
+             [\-t VARIANT] [\-b URL] [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE] [\-e PACKAGE]
+             [\-\-buildarch ARCH] [\-\-volid VOLID] [\-\-macboot] [\-\-nomacboot] [\-\-noupgrade]
+             [\-\-logfile LOGFILE] [\-\-tmp TMP] [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force]
+             [\-\-add\-template ADD_TEMPLATES] [\-\-add\-template\-var ADD_TEMPLATE_VARS]
+             [\-\-add\-arch\-template ADD_ARCH_TEMPLATES] [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS]
+             [\-\-noverify] [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]] [\-\-disablerepo [repo]]
+             [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only]
+             [\-\-skip\-branding] [\-\-rootfs\-type ROOTFSTYPE] [\-\-dracut\-conf DRACUT_CONF]
+             [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -231,7 +237,7 @@ Enable a DNF plugin by name/glob, or * to enable all of them.
 Default: []
 .TP
 .B \-\-squashfs\-only
-Use a plain squashfs filesystem for the runtime.
+Ignored, provided for backward compatibility.
 .sp
 Default: False
 .TP
@@ -239,6 +245,11 @@ Default: False
 Disable automatic branding package selection. Use \-\-installpkgs to add custom branding.
 .sp
 Default: False
+.TP
+.B \-\-rootfs\-type
+Type of rootfs: squashfs,squashfs\-ext4,erofs,erofs\-ext4
+.sp
+Default: \(dqsquashfs\(dq
 .UNINDENT
 .SS dracut arguments: (default: )
 .INDENT 0.0
@@ -313,15 +324,15 @@ create the needed loop device nodes. Passing \fB\-\-old\-chroot\fP will use the 
 system where \fB/dev/loop*\fP is setup for you.
 .SH HOW IT WORKS
 .sp
-Lorax uses \fI\%dnf\fP to install
+Lorax uses \X'tty: link https://github.com/rpm-software-management/dnf'\fI\%dnf\fP\X'tty: link' to install
 packages into a temporary directory, sets up configuration files, it then
 removes unneeded files to save space, and creates a squashfs filesystem of the
 files.  The iso is then built using a generic initramfs and the kernel from the
 selected repositories.
 .sp
-To drive these processes Lorax uses a custom template system, based on \fI\%Mako
-templates\fP with the addition of custom
-commands (documented in \fI\%pylorax.ltmpl.LoraxTemplateRunner\fP). Mako
+To drive these processes Lorax uses a custom template system, based on \X'tty: link http://www.makotemplates.org/'\fI\%Mako
+templates\fP\X'tty: link' with the addition of custom
+commands (documented in \X'tty: link #pylorax.ltmpl.LoraxTemplateRunner'\fI\%pylorax.ltmpl.LoraxTemplateRunner\fP\X'tty: link'). Mako
 supports \fB%if/%endif\fP blocks as well as free\-form python code inside \fB<%
 %>\fP tags and variable substitution with \fB${}\fP\&. The default templates are
 shipped with lorax in \fB/usr/share/lorax/templates.d/99\-generic/\fP and use the
@@ -342,25 +353,25 @@ unneeded services are disabled, some of which can interfere with the
 installation. A number of template commands are used here:
 .INDENT 0.0
 .IP \(bu 2
-\fI\%append\fP to add text to a file.
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.append'\fI\%append\fP\X'tty: link' to add text to a file.
 .IP \(bu 2
-\fI\%chmod\fP changes the file\(aqs mode.
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.chmod'\fI\%chmod\fP\X'tty: link' changes the file\(aqs mode.
 .IP \(bu 2
-\fI\%install\fP to install a file into the installroot.
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.install'\fI\%install\fP\X'tty: link' to install a file into the installroot.
 .IP \(bu 2
-\fI\%mkdir\fP makes a new directory.
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.mkdir'\fI\%mkdir\fP\X'tty: link' makes a new directory.
 .IP \(bu 2
-\fI\%move\fP to move a file into the installroot
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.move'\fI\%move\fP\X'tty: link' to move a file into the installroot
 .IP \(bu 2
-\fI\%replace\fP does text substitution in a file
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.replace'\fI\%replace\fP\X'tty: link' does text substitution in a file
 .IP \(bu 2
-\fI\%remove\fP deletes a file
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.remove'\fI\%remove\fP\X'tty: link' deletes a file
 .IP \(bu 2
-\fI\%runcmd\fP run arbitrary commands.
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.runcmd'\fI\%runcmd\fP\X'tty: link' run arbitrary commands.
 .IP \(bu 2
-\fI\%symlink\fP creates a symlink
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.symlink'\fI\%symlink\fP\X'tty: link' creates a symlink
 .IP \(bu 2
-\fI\%systemctl\fP runs systemctl in the installroot
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.systemctl'\fI\%systemctl\fP\X'tty: link' runs systemctl in the installroot
 .UNINDENT
 .SS runtime\-cleanup.tmpl
 .sp
@@ -368,23 +379,83 @@ The \fBruntime\-cleanup.tmpl\fP template is used to remove files that aren\(aqt 
 by the installation environment. In addition to the \fBremove\fP template command it uses:
 .INDENT 0.0
 .IP \(bu 2
-\fI\%removepkg\fP
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.removepkg'\fI\%removepkg\fP\X'tty: link'
 remove all of a specific package\(aqs contents. A package may be pulled in as a dependency, but
 not really used. eg. sound support.
 .IP \(bu 2
-\fI\%removefrom\fP
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.removefrom'\fI\%removefrom\fP\X'tty: link'
 Removes some files from a package. A file glob can be used, or the \-\-allbut option to
 remove everything except a select few.
 .IP \(bu 2
-\fI\%removekmod\fP
+\X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.removekmod'\fI\%removekmod\fP\X'tty: link'
 Removes kernel modules
 .UNINDENT
-.SS The squashfs filesystem
+.SS The install.img root filesystem
 .sp
-After \fBruntime\-*.tmpl\fP templates have finished their work lorax creates an
-empty ext4 filesystem, copies the remaining files to it, and makes a squashfs
-filesystem of it. This file is the / of the boot.iso\(aqs installer environment
-and is what is in the LiveOS/squashfs.img file on the iso.
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+The erofs options are still experimental.  They require dracut\-103 or later
+in order for the iso to boot, and the kernel erofs driver must support the
+compression type selected.
+For more information see the \X'tty: link https://erofs.docs.kernel.org/en/latest/'\fI\%erofs website\fP\X'tty: link'\&.
+.UNINDENT
+.UNINDENT
+.sp
+After \fBruntime\-*.tmpl\fP templates have finished their work lorax creates the
+root filesystem in the \fBinstall.img\fP file.  The \fBanaconda\-dracut\fP and
+\fBdracut\-live\fP dracut modules detect the type of rootfs and mounts it for booting.
+There are currently four possible formats for this file:
+.INDENT 0.0
+.IP \(bu 2
+Plain squashfs filesystem (DEFAULT)
+This can be mounted directly and is simply a squashfs compressed root filesystem.
+It is created by default, when \fB\-\-squashfs\-only\fP, or \fB\-\-rootfs\-type squashfs\fP
+are passed to lorax.
+.IP \(bu 2
+squashfs compressed ext4 filesystem
+This creates a \fBLiveOS/rootfs.img\fP ext4 filesystem of the root filesystem and
+then compresses that with squashfs.  This is selected when passing
+\fB\-\-rootfs\-type squashfs\-ext4\fP to lorax.
+.IP \(bu 2
+Plain erofs filesystem
+This can be mounted directly and is an erofs filesystem compressed using the
+lzma compression algorithm.  This is created when passing \fB\-\-rootfs\-type erofs\fP
+to lorax.
+.IP \(bu 2
+erofs compressed ext4 filesystem
+This is like the \fBsquashfs\-ext4\fP option except that it uses erofs. It is
+selected when passing \fB\-\-rootfs\-type erofs\-ext4\fP to lorax.
+.UNINDENT
+.sp
+When using erofs the current default is to use lzma compression. You can use
+the \fB[compression.erofs]\fP section of the lorax configuration file to pass a
+different compression type and arguments to the \fBmkfs.erofs\fP program. For
+example to use lz4 with extra options create a lorax.conf file with:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[compression.erofs]
+type = lz4
+args = \-E dedupe,all\-fragments \-C 65536
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+And run the build with:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+lorax \-c ./lorax.conf \-\-rootfs\-type erofs ...
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SS iso creation
 .sp
 The iso creation is handled by another set of templates. The one used depends
@@ -392,7 +463,7 @@ on the architecture that the iso is being created for. They are also stored in
 \fB/usr/share/lorax/templates.d/99\-generic\fP and are named after the arch, like
 \fBx86.tmpl\fP and \fBaarch64.tmpl\fP\&. They handle creation of the tree, copying
 configuration template files, configuration variable substitution, treeinfo
-metadata (via the \fI\%treeinfo\fP
+metadata (via the \X'tty: link #pylorax.ltmpl.LoraxTemplateRunner.treeinfo'\fI\%treeinfo\fP\X'tty: link'
 template command). Kernel and initrd are copied from the installroot to their
 final locations and then xorrisofs is run to create the boot.iso
 .SH CUSTOM TEMPLATES
