@@ -186,7 +186,7 @@ class TemplateRunner(object):
 
 
 class InstallpkgMixin:
-    """Helper class used with *Runner classes"""
+    """Helper class used with Runner classes"""
     def _pkgver(self, pkg_spec):
         """
         Helper to parse package version compare operators
