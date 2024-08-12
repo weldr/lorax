@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.5
+Version:        40.5.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,32 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Aug 12 2024 Brian C. Lane <bcl@redhat.com> 40.5.6-1
+- New lorax documentation - 40.5.6 (bcl)
+  Related: RHEL-48606
+- ltmpl: Remove * from docstring (bcl)
+  Related: RHEL-48606
+- docs: Update intersphinx and add _static dir (bcl)
+  Related: RHEL-48606
+- docs: Document --rootfs-type options (bcl)
+  Related: RHEL-48606
+- erofs: Use dedupe and all-fragments options (bcl)
+  Related: RHEL-48606
+- imgutils: mkfs.erofs options should come first (bcl)
+  Related: RHEL-48606
+- Accept but ignore the old --squashfs-only argument (awilliam)
+  Related: RHEL-48606
+- Add compression.erofs section to lorax.conf (bcl)
+  Resolves: RHEL-48606
+- Add erofs and erofs-ext4 support to --rootfs-type (bcl)
+  Related: RHEL-48606
+- Replace squashfs_only with rootfs_type (bcl)
+  Related: RHEL-48606
+- imgutils: Add mkerofs function and test (bcl)
+  Related: RHEL-48606
+- runtime-postinstall: Make sure blacklist_exceptions has been removed (jstodola)
+  Resolves: RHEL-53721
+
 * Fri Jul 19 2024 Brian C. Lane <bcl@redhat.com> 40.5.5-1
 - templates: Synchronize generic templates with lorax-templates-rhel (bcl)
   Related: RHEL-35396
