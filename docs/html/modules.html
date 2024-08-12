@@ -4,13 +4,13 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src &mdash; Lorax 40.5.1 documentation</title>
+  <title>src &mdash; Lorax 40.5.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=330c1f8c" />
 
   
   
-        <script src="_static/documentation_options.js?v=750ba5b0"></script>
+        <script src="_static/documentation_options.js?v=be82357d"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
             Lorax
           </a>
               <div class="version">
-                40.5.1
+                40.5.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -202,6 +202,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#pylorax.imgutils.mkbtrfsimg"><code class="docutils literal notranslate"><span class="pre">mkbtrfsimg()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#pylorax.imgutils.mkcpio"><code class="docutils literal notranslate"><span class="pre">mkcpio()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#pylorax.imgutils.mkdosimg"><code class="docutils literal notranslate"><span class="pre">mkdosimg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylorax.html#pylorax.imgutils.mkerofs"><code class="docutils literal notranslate"><span class="pre">mkerofs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#pylorax.imgutils.mkext4img"><code class="docutils literal notranslate"><span class="pre">mkext4img()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#pylorax.imgutils.mkfsimage"><code class="docutils literal notranslate"><span class="pre">mkfsimage()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#pylorax.imgutils.mkfsimage_from_disk"><code class="docutils literal notranslate"><span class="pre">mkfsimage_from_disk()</span></code></a></li>
@@ -322,6 +323,8 @@
 <li class="toctree-l2"><a class="reference internal" href="pylorax.html#module-pylorax.treebuilder">pylorax.treebuilder module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#pylorax.treebuilder.RuntimeBuilder"><code class="docutils literal notranslate"><span class="pre">RuntimeBuilder</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.treebuilder.RuntimeBuilder.cleanup"><code class="docutils literal notranslate"><span class="pre">RuntimeBuilder.cleanup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_erofs_ext4_runtime"><code class="docutils literal notranslate"><span class="pre">RuntimeBuilder.create_erofs_ext4_runtime()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_erofs_runtime"><code class="docutils literal notranslate"><span class="pre">RuntimeBuilder.create_erofs_runtime()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_ext4_runtime"><code class="docutils literal notranslate"><span class="pre">RuntimeBuilder.create_ext4_runtime()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_squashfs_runtime"><code class="docutils literal notranslate"><span class="pre">RuntimeBuilder.create_squashfs_runtime()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.treebuilder.RuntimeBuilder.finished"><code class="docutils literal notranslate"><span class="pre">RuntimeBuilder.finished()</span></code></a></li>
@@ -364,9 +367,11 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#pylorax.Lorax"><code class="docutils literal notranslate"><span class="pre">Lorax</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.Lorax.configure"><code class="docutils literal notranslate"><span class="pre">Lorax.configure()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.Lorax.erofs_args"><code class="docutils literal notranslate"><span class="pre">Lorax.erofs_args()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.Lorax.init_file_logging"><code class="docutils literal notranslate"><span class="pre">Lorax.init_file_logging()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.Lorax.init_stream_logging"><code class="docutils literal notranslate"><span class="pre">Lorax.init_stream_logging()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.Lorax.run"><code class="docutils literal notranslate"><span class="pre">Lorax.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.Lorax.squashfs_args"><code class="docutils literal notranslate"><span class="pre">Lorax.squashfs_args()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.html#pylorax.Lorax.templatedir"><code class="docutils literal notranslate"><span class="pre">Lorax.templatedir</span></code></a></li>
 </ul>
 </li>

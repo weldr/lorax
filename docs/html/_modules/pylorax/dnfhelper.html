@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.dnfhelper &mdash; Lorax 40.5 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>pylorax.dnfhelper &mdash; Lorax 40.5.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=330c1f8c" />
+
   
-        <script src="../../_static/documentation_options.js?v=879906eb"></script>
+  
+        <script src="../../_static/documentation_options.js?v=be82357d"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -27,7 +29,7 @@
             Lorax
           </a>
               <div class="version">
-                40.5
+                40.5.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -98,11 +100,11 @@
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax.dnfhelper&quot;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">dnf</span>
+<span class="kn">import</span> <span class="nn">dnf.transaction</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pylorax.output</span> <span class="k">as</span> <span class="nn">output</span>
-
-<span class="kn">import</span> <span class="nn">libdnf5</span> <span class="k">as</span> <span class="nn">dnf5</span>
-<span class="n">SUCCESSFUL</span> <span class="o">=</span> <span class="n">dnf5</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">DownloadCallbacks</span><span class="o">.</span><span class="n">TransferStatus_SUCCESSFUL</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;LoraxDownloadCallback&#39;</span><span class="p">,</span> <span class="s1">&#39;LoraxRpmCallback&#39;</span><span class="p">]</span>
 
@@ -119,108 +121,90 @@
 
 <div class="viewcode-block" id="LoraxDownloadCallback">
 <a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxDownloadCallback">[docs]</a>
-<span class="k">class</span> <span class="nc">LoraxDownloadCallback</span><span class="p">(</span><span class="n">dnf5</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">DownloadCallbacks</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_files</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">LoraxDownloadCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">LoraxDownloadCallback</span><span class="p">(</span><span class="n">dnf</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">DownloadProgress</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">downloads</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">total_files</span> <span class="o">=</span> <span class="n">total_files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_files</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_size</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">pkgno</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">LoraxOutput</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nevra</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
-
-<div class="viewcode-block" id="LoraxDownloadCallback.add_new_download">
-<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxDownloadCallback.add_new_download">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_new_download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_data</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">total_to_download</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nevra</span> <span class="o">=</span> <span class="n">description</span> <span class="ow">or</span> <span class="s2">&quot;unknown&quot;</span>
-
-        <span class="c1"># Returning anything here makes it crash</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
 
     <span class="nd">@_paced</span>
     <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Downloading </span><span class="si">%(pkgno)s</span><span class="s2"> / </span><span class="si">%(total_files)s</span><span class="s2"> RPMs</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Downloading </span><span class="si">%(pkgno)s</span><span class="s2"> / </span><span class="si">%(total_files)s</span><span class="s2"> RPMs, &quot;</span> \
+              <span class="s2">&quot;</span><span class="si">%(downloaded)s</span><span class="s2"> / </span><span class="si">%(total_size)s</span><span class="s2"> (</span><span class="si">%(percent)d%%</span><span class="s2">) done.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">downloaded</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">downloads</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;downloaded&#39;</span>  <span class="p">:</span> <span class="n">downloaded</span><span class="p">,</span>
+            <span class="s1">&#39;percent&#39;</span>     <span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">downloaded</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">total_size</span><span class="p">),</span>
             <span class="s1">&#39;pkgno&#39;</span>       <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkgno</span><span class="p">,</span>
             <span class="s1">&#39;total_files&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_files</span><span class="p">,</span>
+            <span class="s1">&#39;total_size&#39;</span>  <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_size</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">vals</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LoraxDownloadCallback.end">
 <a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxDownloadCallback.end">[docs]</a>
-    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_cb_data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">SUCCESSFUL</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="n">nevra</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="n">dnf</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">STATUS_OK</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">downloads</span><span class="p">[</span><span class="n">nevra</span><span class="p">]</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">download_size</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pkgno</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Failed to download &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%d</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nevra</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mi">0</span></div>
+            <span class="k">return</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Failed to download &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%d</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nevra</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LoraxDownloadCallback.progress">
 <a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxDownloadCallback.progress">[docs]</a>
-    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_cb_data</span><span class="p">,</span> <span class="n">total_to_download</span><span class="p">,</span> <span class="n">downloaded</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">()</span>
-        <span class="k">return</span> <span class="mi">0</span></div>
+    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">done</span><span class="p">):</span>
+        <span class="n">nevra</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">downloads</span><span class="p">[</span><span class="n">nevra</span><span class="p">]</span> <span class="o">=</span> <span class="n">done</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="LoraxDownloadCallback.mirror_failure">
-<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxDownloadCallback.mirror_failure">[docs]</a>
-    <span class="k">def</span> <span class="nf">mirror_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_cb_data</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Mirror failure on &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nevra</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mi">0</span></div>
+    <span class="c1"># dnf 2.5.0 adds a new argument, accept it if it is passed</span>
+    <span class="c1"># pylint: disable=arguments-differ</span>
+<div class="viewcode-block" id="LoraxDownloadCallback.start">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxDownloadCallback.start">[docs]</a>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_files</span><span class="p">,</span> <span class="n">total_size</span><span class="p">,</span> <span class="n">total_drpms</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_files</span> <span class="o">=</span> <span class="n">total_files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_size</span> <span class="o">=</span> <span class="n">total_size</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="LoraxRpmCallback">
 <a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback">[docs]</a>
-<span class="k">class</span> <span class="nc">LoraxRpmCallback</span><span class="p">(</span><span class="n">dnf5</span><span class="o">.</span><span class="n">rpm</span><span class="o">.</span><span class="n">TransactionCallbacks</span><span class="p">):</span>
-<div class="viewcode-block" id="LoraxRpmCallback.install_start">
-<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.install_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">install_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
-        <span class="n">action</span> <span class="o">=</span> <span class="n">dnf5</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">transaction_item_action_to_string</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get_action</span><span class="p">())</span>
-        <span class="n">package</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_package</span><span class="p">()</span><span class="o">.</span><span class="n">get_nevra</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span></div>
+<span class="k">class</span> <span class="nc">LoraxRpmCallback</span><span class="p">(</span><span class="n">dnf</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">TransactionProgress</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LoraxRpmCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="LoraxRpmCallback.progress">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.progress">[docs]</a>
+    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">ti_done</span><span class="p">,</span> <span class="n">ti_total</span><span class="p">,</span> <span class="n">ts_done</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">dnf</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">PKG_INSTALL</span><span class="p">:</span>
+            <span class="c1"># do not report same package twice</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">==</span> <span class="n">ts_done</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">=</span> <span class="n">ts_done</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1">) </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ts_done</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">dnf</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">TRANS_POST</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Performing post-installation setup tasks&quot;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 
-    <span class="c1"># pylint: disable=redefined-builtin</span>
-<div class="viewcode-block" id="LoraxRpmCallback.script_start">
-<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.script_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">script_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">nevra</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="n">package</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_package</span><span class="p">()</span><span class="o">.</span><span class="n">get_nevra</span><span class="p">()</span>
-        <span class="n">script_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_type_to_string</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running </span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">script_type</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span></div>
-
-
-    <span class="c1">## NOTE: These likely will not work right, SWIG seems to crash when raising errors</span>
-    <span class="c1">##       from callbacks.</span>
-<div class="viewcode-block" id="LoraxRpmCallback.unpack_error">
-<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.unpack_error">[docs]</a>
-    <span class="k">def</span> <span class="nf">unpack_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="n">package</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_package</span><span class="p">()</span><span class="o">.</span><span class="n">get_nevra</span><span class="p">()</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unpack_error on </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="LoraxRpmCallback.cpio_error">
-<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.cpio_error">[docs]</a>
-    <span class="k">def</span> <span class="nf">cpio_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="n">package</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_package</span><span class="p">()</span><span class="o">.</span><span class="n">get_nevra</span><span class="p">()</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cpio_error on </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
-
-    <span class="c1"># pylint: disable=redefined-builtin</span>
-<div class="viewcode-block" id="LoraxRpmCallback.script_error">
-<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.script_error">[docs]</a>
-    <span class="k">def</span> <span class="nf">script_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">nevra</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">return_code</span><span class="p">):</span>
-        <span class="n">package</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_package</span><span class="p">()</span><span class="o">.</span><span class="n">get_nevra</span><span class="p">()</span>
-        <span class="n">script_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_type_to_string</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;script_error on </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">script_type</span><span class="si">}</span><span class="s2"> rc=</span><span class="si">{</span><span class="n">return_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="LoraxRpmCallback.error">
+<a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.error">[docs]</a>
+    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

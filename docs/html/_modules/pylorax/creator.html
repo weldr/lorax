@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pylorax.creator &mdash; Lorax 40.5.1 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 40.5.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=330c1f8c" />
 
   
   
-        <script src="../../_static/documentation_options.js?v=750ba5b0"></script>
+        <script src="../../_static/documentation_options.js?v=be82357d"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
             Lorax
           </a>
               <div class="version">
-                40.5.1
+                40.5.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -126,7 +126,7 @@
 
 
 <span class="c1"># Default parameters for rebuilding initramfs, override with --dracut-arg or --dracut-conf</span>
-<span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;livenet dmsquash-live dmsquash-live-ntfs convertfs pollcdrom qemu qemu-net&quot;</span><span class="p">,</span>
+<span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;livenet dmsquash-live convertfs pollcdrom qemu qemu-net&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;--no-hostonly&quot;</span><span class="p">,</span> <span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">]</span>
 
 <span class="n">RUNTIME</span> <span class="o">=</span> <span class="s2">&quot;images/install.img&quot;</span>
@@ -323,16 +323,27 @@
                             <span class="n">variant</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">variant</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">bugurl</span><span class="p">,</span> <span class="n">isfinal</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">isfinal</span><span class="p">)</span>
 
     <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">fake_dbo</span><span class="p">,</span> <span class="n">skip_branding</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">squashfs_only</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">rootfs_type</span> <span class="o">==</span> <span class="s2">&quot;squashfs&quot;</span><span class="p">:</span>
+        <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a squashfs only runtime&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rb</span><span class="o">.</span><span class="n">create_squashfs_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
                   <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a squashfs+ext4 runtime&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">rootfs_type</span> <span class="o">==</span> <span class="s2">&quot;squashfs-ext4&quot;</span><span class="p">:</span>
+        <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a squashfs-ext4 runtime&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rb</span><span class="o">.</span><span class="n">create_ext4_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                  <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span></div>
+                  <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">rootfs_type</span> <span class="o">==</span> <span class="s2">&quot;erofs&quot;</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a erofs only runtime&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rb</span><span class="o">.</span><span class="n">create_erofs_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                  <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;lzma&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">rootfs_type</span> <span class="o">==</span> <span class="s2">&quot;erofs-ext4&quot;</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a erofs-ext4 runtime&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rb</span><span class="o">.</span><span class="n">create_erofs_ext4_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                  <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;lzma&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">opts</span><span class="o">.</span><span class="n">rootfs_type</span><span class="si">}</span><span class="s2"> is not a supported type for the root filesystem&quot;</span><span class="p">)</span></div>
 
 
 
@@ -782,6 +793,7 @@
 <span class="sd">    (Yes, this is not ideal, but we can fix that later)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result_dir</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">disk_img</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># Parse the kickstart</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">:</span>

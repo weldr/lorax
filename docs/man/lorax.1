@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "LORAX" "1" "Mar 28, 2024" "40.5.1" "Lorax"
+.TH "LORAX" "1" "Aug 12, 2024" "40.5.6" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .INDENT 0.0
@@ -63,7 +63,8 @@ usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY] [\-\-rep
              [\-\-add\-arch\-template ADD_ARCH_TEMPLATES] [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS]
              [\-\-noverify] [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]] [\-\-disablerepo [repo]]
              [\-\-rootfs\-size ROOTFS_SIZE] [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only]
-             [\-\-skip\-branding] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
+             [\-\-skip\-branding] [\-\-rootfs\-type ROOTFSTYPE] [\-\-dracut\-conf DRACUT_CONF]
+             [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -221,9 +222,9 @@ Names of repos to disable
 Default: []
 .TP
 .B \-\-rootfs\-size
-Size of root filesystem in GiB. Defaults to 2.
+Size of root filesystem in GiB. Defaults to 3.
 .sp
-Default: 2
+Default: 3
 .TP
 .B \-\-noverifyssl
 Do not verify SSL certificates
@@ -236,7 +237,7 @@ Enable a DNF plugin by name/glob, or * to enable all of them.
 Default: []
 .TP
 .B \-\-squashfs\-only
-Use a plain squashfs filesystem for the runtime.
+Ignored, provided for backward compatibility.
 .sp
 Default: False
 .TP
@@ -244,6 +245,11 @@ Default: False
 Disable automatic branding package selection. Use \-\-installpkgs to add custom branding.
 .sp
 Default: False
+.TP
+.B \-\-rootfs\-type
+Type of rootfs: squashfs,squashfs\-ext4,erofs,erofs\-ext4
+.sp
+Default: \(dqsquashfs\(dq
 .UNINDENT
 .SS dracut arguments: (default: )
 .INDENT 0.0
@@ -384,12 +390,73 @@ remove everything except a select few.
 \fI\%removekmod\fP
 Removes kernel modules
 .UNINDENT
-.SS The squashfs filesystem
+.SS The install.img root filesystem
 .sp
-After \fBruntime\-*.tmpl\fP templates have finished their work lorax creates an
-empty ext4 filesystem, copies the remaining files to it, and makes a squashfs
-filesystem of it. This file is the / of the boot.iso\(aqs installer environment
-and is what is in the LiveOS/squashfs.img file on the iso.
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+The erofs options are still experimental.  They require dracut\-103 or later
+in order for the iso to boot, and the kernel erofs driver must support the
+compression type selected.
+For more information see the \fI\%erofs website\fP\&.
+.UNINDENT
+.UNINDENT
+.sp
+After \fBruntime\-*.tmpl\fP templates have finished their work lorax creates the
+root filesystem in the \fBinstall.img\fP file.  The \fBanaconda\-dracut\fP and
+\fBdracut\-live\fP dracut modules detect the type of rootfs and mounts it for booting.
+There are currently four possible formats for this file:
+.INDENT 0.0
+.IP \(bu 2
+Plain squashfs filesystem (DEFAULT)
+This can be mounted directly and is simply a squashfs compressed root filesystem.
+It is created by default, when \fB\-\-squashfs\-only\fP, or \fB\-\-rootfs\-type squashfs\fP
+are passed to lorax.
+.IP \(bu 2
+squashfs compressed ext4 filesystem
+This creates a \fBLiveOS/rootfs.img\fP ext4 filesystem of the root filesystem and
+then compresses that with squashfs.  This is selected when passing
+\fB\-\-rootfs\-type squashfs\-ext4\fP to lorax.
+.IP \(bu 2
+Plain erofs filesystem
+This can be mounted directly and is an erofs filesystem compressed using the
+lzma compression algorithm with the dedupe and all\-fragments options.  This is
+created when passing \fB\-\-rootfs\-type erofs\fP
+to lorax.
+.IP \(bu 2
+erofs compressed ext4 filesystem
+This is like the \fBsquashfs\-ext4\fP option except that it uses erofs. It is
+selected when passing \fB\-\-rootfs\-type erofs\-ext4\fP to lorax.
+.UNINDENT
+.sp
+When using erofs the current default is to use lzma compression. You can use
+the \fB[compression.erofs]\fP section of the lorax configuration file to pass a
+different compression type and arguments to the \fBmkfs.erofs\fP program. For
+example to use lz4 with extra options create a lorax.conf file with:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[compression.erofs]
+type = lz4
+args = \-E dedupe,all\-fragments \-C 65536
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+And run the build with:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+lorax \-c ./lorax.conf \-\-rootfs\-type erofs ...
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SS iso creation
 .sp
 The iso creation is handled by another set of templates. The one used depends
