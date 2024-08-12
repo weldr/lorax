@@ -27,17 +27,17 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "LIVEMEDIA-CREATOR" "1" "May 07, 2024" "41.1" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Aug 12, 2024" "41.3" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .INDENT 0.0
 .TP
 .B Authors
-Brian C. Lane <\fI\%bcl@redhat.com\fP>
+Brian C. Lane <\X'tty: link mailto:bcl@redhat.com'\fI\%bcl@redhat.com\fP\X'tty: link'>
 .UNINDENT
 .sp
-livemedia\-creator uses \fI\%Anaconda\fP,
-\fI\%kickstart\fP and \fI\%Lorax\fP to create bootable media that use the
+livemedia\-creator uses \X'tty: link https://github.com/rhinstaller/anaconda'\fI\%Anaconda\fP\X'tty: link',
+\X'tty: link https://github.com/rhinstaller/pykickstart'\fI\%kickstart\fP\X'tty: link' and \X'tty: link https://github.com/rhinstaller/lorax'\fI\%Lorax\fP\X'tty: link' to create bootable media that use the
 same install path as a normal system installation. It can be used to make live
 isos, bootable (partitioned) disk images, tarfiles, and filesystem images for
 use with virtualization and container solutions like libvirt, docker, and
@@ -77,15 +77,28 @@ Create Live Install Media
 .sp
 .nf
 .ft C
-usage: livemedia\-creator [\-h] (\-\-make\-iso | \-\-make\-disk | \-\-make\-fsimage | \-\-make\-appliance | \-\-make\-ami | \-\-make\-tar | \-\-make\-tar\-disk | \-\-make\-pxe\-live | \-\-make\-ostree\-live | \-\-make\-oci | \-\-make\-vagrant)
-                         [\-\-iso ISO] [\-\-iso\-only] [\-\-iso\-name ISO_NAME] [\-\-ks KS] [\-\-image\-only] [\-\-no\-virt] [\-\-proxy PROXY] [\-\-anaconda\-arg ANACONDA_ARGS] [\-\-armplatform ARMPLATFORM] [\-\-location LOCATION]
-                         [\-\-logfile LOGFILE] [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP] [\-\-resultdir RESULT_DIR] [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS] [\-r RELEASE] [\-t VARIANT]
-                         [\-b URL] [\-\-isfinal] [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image] [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME] [\-\-tar\-disk\-name TAR_DISK_NAME] [\-\-fs\-label FS_LABEL]
-                         [\-\-image\-size\-align IMAGE_SIZE_ALIGN] [\-\-image\-type IMAGE_TYPE] [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2] [\-\-qcow2\-arg QEMU_ARGS] [\-\-compression COMPRESSION] [\-\-compress\-arg COMPRESS_ARGS]
-                         [\-\-app\-name APP_NAME] [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE] [\-\-ram MEMORY] [\-\-cpu CPU] [\-\-vcpus VCPUS] [\-\-vnc VNC] [\-\-arch ARCH] [\-\-kernel\-args KERNEL_ARGS]
-                         [\-\-firmware FW_PATH] [\-\-virt\-uefi] [\-\-no\-kvm] [\-\-with\-rng WITH_RNG] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS] [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE]
-                         [\-\-live\-rootfs\-keep\-size] [\-\-oci\-config OCI_CONFIG] [\-\-oci\-runtime OCI_RUNTIME] [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE] [\-\-project PRODUCT] [\-p PRODUCT]
-                         [\-\-releasever RELEASEVER] [\-\-volid VOLID] [\-\-squashfs\-only] [\-\-timeout TIMEOUT] [\-V]
+usage: livemedia\-creator [\-h]
+                         (\-\-make\-iso | \-\-make\-disk | \-\-make\-fsimage | \-\-make\-appliance | \-\-make\-ami | \-\-make\-tar | \-\-make\-tar\-disk | \-\-make\-pxe\-live | \-\-make\-ostree\-live | \-\-make\-oci | \-\-make\-vagrant)
+                         [\-\-iso ISO] [\-\-iso\-only] [\-\-iso\-name ISO_NAME] [\-\-ks KS] [\-\-image\-only]
+                         [\-\-no\-virt] [\-\-proxy PROXY] [\-\-anaconda\-arg ANACONDA_ARGS]
+                         [\-\-armplatform ARMPLATFORM] [\-\-location LOCATION] [\-\-logfile LOGFILE]
+                         [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP] [\-\-resultdir RESULT_DIR]
+                         [\-\-macboot] [\-\-nomacboot] [\-\-extra\-boot\-args EXTRA_BOOT_ARGS] [\-r RELEASE]
+                         [\-t VARIANT] [\-b URL] [\-\-isfinal] [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image]
+                         [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME]
+                         [\-\-tar\-disk\-name TAR_DISK_NAME] [\-\-fs\-label FS_LABEL]
+                         [\-\-image\-size\-align IMAGE_SIZE_ALIGN] [\-\-image\-type IMAGE_TYPE]
+                         [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2] [\-\-qcow2\-arg QEMU_ARGS]
+                         [\-\-compression COMPRESSION] [\-\-compress\-arg COMPRESS_ARGS]
+                         [\-\-app\-name APP_NAME] [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE]
+                         [\-\-ram MEMORY] [\-\-cpu CPU] [\-\-vcpus VCPUS] [\-\-vnc VNC] [\-\-arch ARCH]
+                         [\-\-kernel\-args KERNEL_ARGS] [\-\-firmware FW_PATH] [\-\-virt\-uefi] [\-\-no\-kvm]
+                         [\-\-with\-rng WITH_RNG] [\-\-dracut\-conf DRACUT_CONF] [\-\-dracut\-arg DRACUT_ARGS]
+                         [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE] [\-\-live\-rootfs\-keep\-size]
+                         [\-\-oci\-config OCI_CONFIG] [\-\-oci\-runtime OCI_RUNTIME]
+                         [\-\-vagrant\-metadata VAGRANT_METADATA] [\-\-vagrantfile VAGRANTFILE]
+                         [\-\-project PRODUCT] [\-p PRODUCT] [\-\-releasever RELEASEVER] [\-\-volid VOLID]
+                         [\-\-squashfs\-only] [\-\-rootfs\-type ROOTFSTYPE] [\-\-timeout TIMEOUT] [\-V]
 .ft P
 .fi
 .UNINDENT
@@ -252,9 +265,14 @@ Default: \(dq41\(dq
 volume id
 .TP
 .B \-\-squashfs\-only
-Use a plain squashfs filesystem for the runtime.
+Ignored, provided for backward compatibility.
 .sp
 Default: False
+.TP
+.B \-\-rootfs\-type
+Type of rootfs: squashfs,squashfs\-ext4,erofs,erofs\-ext4
+.sp
+Default: \(dqsquashfs\(dq
 .TP
 .B \-\-timeout
 Cancel installer after X minutes
@@ -604,7 +622,7 @@ packages will get cached, so your kickstart url would look like:
 .UNINDENT
 .sp
 You can also add an update repo, but don\(aqt name it updates. Add \-\-proxy to it
-as well. You can use all of the \fI\%kickstart commands\fP in your kickstart. Make sure there
+as well. You can use all of the \X'tty: link https://pykickstart.readthedocs.io/en/latest/kickstart-docs.html#chapter-2-kickstart-commands-in-fedora'\fI\%kickstart commands\fP\X'tty: link' in your kickstart. Make sure there
 is only one \fBurl\fP command, other repos have to use the \fBrepo\fP command and cannot be
 named \fBupdates\fP which is reserved for Anaconda\(aqs use. eg.:
 .INDENT 0.0
@@ -686,7 +704,7 @@ The XML is generated using the Mako template from
 /usr/share/lorax/appliance/libvirt.xml You can use a different template by
 passing \fB\-\-app\-template <template path>\fP
 .sp
-Documentation on the Mako template system can be found at the \fI\%Mako site\fP
+Documentation on the Mako template system can be found at the \X'tty: link http://docs.makotemplates.org/en/latest/index.html'\fI\%Mako site\fP\X'tty: link'
 .sp
 The name of the final output XML is appliance.xml, this can be changed with
 \fB\-\-app\-file <file path>\fP
@@ -980,7 +998,7 @@ add \fBmknod /dev/kvm c 10 232;\fP to create the device node before running lmc.
 OpenStack supports partitioned disk images so \fB\-\-make\-disk\fP can be used to
 create images for importing into glance, OpenStack\(aqs image storage component.
 You need to have access to an OpenStack provider that allows image uploads, or
-setup your own using the instructions from the \fI\%RDO Project\fP\&.
+setup your own using the instructions from the \X'tty: link https://www.rdoproject.org/Quickstart'\fI\%RDO Project\fP\X'tty: link'\&.
 .sp
 The example kickstart, fedora\-openstack.ks, is only slightly different than the
 fedora\-minimal.ks one.  It adds the cloud\-init and cloud\-utils\-growpart
@@ -1036,7 +1054,7 @@ And then run bash inside of it:
 .SH OPEN CONTAINER INITIATIVE IMAGE CREATION
 .sp
 The OCI is a new specification that is still being worked on. You can read more about it at
-\fI\%the Open Container Initiative website\fP\&. You can create
+\X'tty: link https://www.opencontainers.org/'\fI\%the Open Container Initiative website\fP\X'tty: link'\&. You can create
 OCI images using the following command:
 .INDENT 0.0
 .INDENT 3.5
@@ -1051,14 +1069,14 @@ sudo livemedia\-creator \-\-make\-oci \-\-oci\-config /path/to/config.json \-\-o
 .UNINDENT
 .sp
 You must provide the config.json and runtime.json files to be included in the bundle,
-their specifications can be found \fI\%on the OCI github project\fP
+their specifications can be found \X'tty: link https://github.com/opencontainers/specs'\fI\%on the OCI github project\fP\X'tty: link'
 output will be in the results directory with a default name of bundle.tar.xz
 .sp
 This will work with \fB\-\-no\-virt\fP and inside a mock since it doesn\(aqt use any
 partitioned disk images.
 .SH VAGRANT IMAGE CREATION
 .sp
-\fI\%Vagrant\fP images can be created using the following command:
+\X'tty: link https://www.vagrantup.com/'\fI\%Vagrant\fP\X'tty: link' images can be created using the following command:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -1071,7 +1089,7 @@ sudo livemedia\-creator \-\-make\-vagrant \-\-vagrant\-metadata /path/to/metadat
 .UNINDENT
 .UNINDENT
 .sp
-The image created is a \fI\%vagrant\-libvirt\fP provider image and needs to have
+The image created is a \X'tty: link https://github.com/pradels/vagrant-libvirt'\fI\%vagrant\-libvirt\fP\X'tty: link' provider image and needs to have
 vagrant setup with libvirt before you can use it.
 .sp
 The \fB\-\-vagrant\-metadata\fP file is optional, it will create a minimal one by
@@ -1181,9 +1199,9 @@ running \fBanaconda\-cleanup\fP\&.
 .SH HACKING
 .sp
 Development on this will take place as part of the lorax project, and on the
-anaconda\-devel\-list mailing list, and \fI\%on github\fP
+anaconda\-devel\-list mailing list, and \X'tty: link https://github.com/rhinstaller/lorax'\fI\%on github\fP\X'tty: link'
 .sp
-Feedback, enhancements and bugs are welcome.  You can use \fI\%bugzilla\fP to
+Feedback, enhancements and bugs are welcome.  You can use \X'tty: link https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=lorax'\fI\%bugzilla\fP\X'tty: link' to
 report bugs against the lorax component.
 .SH AUTHOR
 Weldr Team
