@@ -9,8 +9,6 @@ remove usr/share/i18n
 ## perl needed for powerpc-utils
 ## perl is needed by /usr/bin/rxe_cfg from libibverbs
 
-## no sound support, thanks
-removepkg flac-libs libsndfile pipewire pulseaudio* rtkit sound-theme-freedesktop wireplumber*
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
@@ -52,7 +50,6 @@ removepkg mtools glibc-gconv-extra
 
 ## various other things we remove to save space
 removepkg diffutils file
-removepkg libasyncns
 removepkg lvm2-libs
 removepkg mobile-broadband-provider-info
 removepkg rmt rpcbind squashfs-tools
@@ -200,7 +197,6 @@ removefrom libidn2 /usr/share/locale/*
 removefrom libnotify /usr/bin/*
 removefrom libsemanage /etc/selinux/*
 removefrom libstdc++ /usr/share/*
-removefrom libvorbis /usr/${libdir}/libvorbisenc.*
 removefrom libxml2 /usr/bin/*
 removefrom linux-firmware /usr/lib/firmware/dvb*
 removefrom linux-firmware /usr/lib/firmware/*_12mhz*
@@ -293,7 +289,7 @@ removefrom openssh /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/ssh-*
 removefrom openssh-clients /usr/libexec/*
 removefrom openssh-server /etc/ssh/* /usr/libexec/openssh/sftp-server
-removefrom pam /usr/*bin/* /usr/share/locale/*
+removefrom pam /usr/share/locale/*
 removefrom policycoreutils /etc/* /usr/bin/* /usr/share/locale/*
 removefrom polkit /usr/bin/*
 removefrom popt /usr/share/locale/*
@@ -370,11 +366,7 @@ removefrom gstreamer1-plugins-base --allbut \
 removepkg geoclue2
 
 ## And remove the packages that those extra libraries pulled in
-removepkg cdparanoia-libs opus libtheora libvisual flac-libs gsm avahi-glib avahi-libs \
-          ModemManager-glib
-
-## metacity requires libvorbis and libvorbisfile, but enc/dec are no longer needed
-removefrom libvorbis --allbut /usr/${libdir}/libvorbisfile.* /usr/${libdir}/libvorbis.*
+removepkg cdparanoia-libs libvisual avahi-glib avahi-libs ModemManager-glib
 
 ## Remove build-id links, they are used with debuginfo
 remove /usr/lib/.build-id
