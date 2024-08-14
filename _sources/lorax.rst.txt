@@ -166,13 +166,48 @@ by the installation environment. In addition to the ``remove`` template command 
   Removes kernel modules
 
 
-The squashfs filesystem
-~~~~~~~~~~~~~~~~~~~~~~~
+The install.img root filesystem
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-After ``runtime-*.tmpl`` templates have finished their work lorax creates an
-empty ext4 filesystem, copies the remaining files to it, and makes a squashfs
-filesystem of it. This file is the / of the boot.iso's installer environment
-and is what is in the LiveOS/squashfs.img file on the iso.
+.. note::
+    The erofs options are still experimental.  They require dracut-103 or later
+    in order for the iso to boot, and the kernel erofs driver must support the
+    compression type selected.
+    For more information see the `erofs website <https://erofs.docs.kernel.org/en/latest/>`_.
+
+After ``runtime-*.tmpl`` templates have finished their work lorax creates the
+root filesystem in the ``install.img`` file.  The ``anaconda-dracut`` and 
+``dracut-live`` dracut modules detect the type of rootfs and mounts it for booting.
+There are currently four possible formats for this file:
+
+* Plain squashfs filesystem (DEFAULT)
+  This can be mounted directly and is simply a squashfs compressed root filesystem.
+  It is created by default, when ``--squashfs-only``, or ``--rootfs-type squashfs``
+  are passed to lorax.
+* squashfs compressed ext4 filesystem
+  This creates a ``LiveOS/rootfs.img`` ext4 filesystem of the root filesystem and
+  then compresses that with squashfs.  This is selected when passing
+  ``--rootfs-type squashfs-ext4`` to lorax.
+* Plain erofs filesystem
+  This can be mounted directly and is an erofs filesystem compressed using the
+  lzma compression algorithm.  This is created when passing ``--rootfs-type erofs``
+  to lorax.
+* erofs compressed ext4 filesystem
+  This is like the ``squashfs-ext4`` option except that it uses erofs. It is
+  selected when passing ``--rootfs-type erofs-ext4`` to lorax.
+
+When using erofs the current default is to use lzma compression. You can use
+the ``[compression.erofs]`` section of the lorax configuration file to pass a
+different compression type and arguments to the ``mkfs.erofs`` program. For
+example to use lz4 with extra options create a lorax.conf file with::
+
+    [compression.erofs]
+    type = lz4
+    args = -E dedupe,all-fragments -C 65536
+
+And run the build with::
+
+    lorax -c ./lorax.conf --rootfs-type erofs ...
 
 
 iso creation
