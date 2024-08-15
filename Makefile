@@ -50,6 +50,7 @@ test:
 					--cov=pylorax \
 					--cov=mkksiso \
 					--cov=minimizer \
+					./tests/no-eula/ \
 					./tests/pylorax/ \
 					./tests/image-minimizer/ \
 					./tests/mkksiso/
