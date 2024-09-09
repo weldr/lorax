@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        41.3
+Version:        42.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -171,6 +171,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Sep 09 2024 Brian C. Lane <bcl@redhat.com> 42.0-1
+- New lorax documentation - 41.3 (bcl@redhat.com)
+- ltmpl: Remove * from docstring (bcl@redhat.com)
+- docs: Update intersphinx and add _static dir (bcl@redhat.com)
+- docs: Document --rootfs-type options (bcl@redhat.com)
+- Adjust Lorax templates for Xorg to Wayland switch (jkonecny@redhat.com)
+- creator: Change rootfs description to match cmdline argument (bcl@redhat.com)
+
 * Tue Jul 16 2024 Brian C. Lane <bcl@redhat.com> 41.3-1
 - Accept but ignore the old --squashfs-only argument (awilliam@redhat.com)
 
