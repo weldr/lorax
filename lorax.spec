@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.6
+Version:        40.5.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Sep 10 2024 Brian C. Lane <bcl@redhat.com> 40.5.7-1
+- templates: Sync template changes from lorax-templates-rhel (bcl)
+  Resolves: RHEL-54713
+- tests: Add a test to make sure redhat-release-eula isn't included (bcl)
+  Related: RHEL-54381
+
 * Mon Aug 12 2024 Brian C. Lane <bcl@redhat.com> 40.5.6-1
 - New lorax documentation - 40.5.6 (bcl)
   Related: RHEL-48606
