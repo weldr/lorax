@@ -131,6 +131,8 @@ esac
 ## This is a minimal desktop live system without Anaconda which doesn't support live on RHEL
 @workstation-product
 system-logos
+## Since Anaconda isn't included we need to make sure isomd5sum is included
+isomd5sum
 
 dracut-config-generic
 dracut-live
