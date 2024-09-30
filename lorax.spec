@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        42.0
+Version:        42.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -171,6 +171,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Sep 30 2024 Brian C. Lane <bcl@redhat.com> 42.1-1
+- templates: Drop dnf install (bcl@redhat.com)
+
 * Mon Sep 09 2024 Brian C. Lane <bcl@redhat.com> 42.0-1
 - New lorax documentation - 41.3 (bcl@redhat.com)
 - ltmpl: Remove * from docstring (bcl@redhat.com)
