@@ -85,6 +85,9 @@ symlink /etc/systemd/system/inst.rngd.service etc/systemd/system/basic.target.wa
 ## set up "install" user account
 append etc/passwd "install:x:0:0:root:/root:/usr/libexec/anaconda/run-anaconda"
 append etc/shadow "install::14438:0:99999:7:::"
+## set up "install-user" who is needed to start webui without root permission in boot iso.
+append etc/passwd "install-user:x:1001:1001::/tmp/install-user:/usr/bin/bash"
+append etc/shadow "install-user::14438:0:99999:7:::"
 ## remove root password
 replace "root:\*:" "root::" etc/shadow
 
