@@ -265,6 +265,6 @@ class ISOTestCase(unittest.TestCase):
             MakeKickstartISO(self.test_iso, self.out_iso, updates_image=mocked_updates.name, skip_efi=True)
 
             with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpdir:
-                ExtractISOFiles(self.out_iso, ["updates/updates.img"], tmpdir)
+                ExtractISOFiles(self.out_iso, [os.path.basename(mocked_updates.name)], tmpdir)
 
-                self.assertTrue(os.path.exists(os.path.join(tmpdir, "updates/updates.img")))
+                self.assertTrue(os.path.exists(os.path.join(tmpdir, os.path.basename(mocked_updates.name))))
