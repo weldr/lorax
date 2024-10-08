@@ -560,9 +560,9 @@ def setup_arg_parser():
     parser.add_argument("--no-md5sum", action="store_false", default=True,
                         help="Do not run implantisomd5 on the ouput iso")
     parser.add_argument("--ks", type=os.path.abspath, metavar="KICKSTART",
-                        help="Optional kickstart to add to the ISO")
+                        help="Optional kickstart to add to the ISO (adding inst.ks automatically)")
     parser.add_argument("-u", "--updates", type=os.path.abspath, metavar="IMAGE",
-                        help="Optional updates image to add to the ISO")
+                        help="Optional updates image to add to the ISO (adding inst.updates automatically)")
     parser.add_argument("-V", "--volid", dest="volid", help="Set the ISO volume id, defaults to input's", default=None)
     parser.add_argument("-R", "--replace", nargs=2, action="append", metavar=("FROM", "TO"),
                         help="Replace string in grub.cfg. Can be used multiple times")
