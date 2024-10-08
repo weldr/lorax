@@ -2,6 +2,7 @@
 
 import sys
 
+import astroid
 from pocketlint import FalsePositive, PocketLintConfig, PocketLinter
 import pylint
 
@@ -51,7 +52,7 @@ class LoraxLintConfig(PocketLintConfig):
         return retval
 
 if __name__ == "__main__":
-    print("INFO: Using pylint v%s" % pylint.__version__)
+    print("INFO: Using pylint v%s, astroid v%s" % (pylint.version, astroid.version))
     conf = LoraxLintConfig()
     linter = PocketLinter(conf)
     rc = linter.run()
