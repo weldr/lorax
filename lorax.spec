@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.7
+Version:        40.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -171,6 +171,18 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Oct 08 2024 Brian C. Lane <bcl@redhat.com> 40.8-1
+- creator: Fix pylint error in run_creator (bcl@redhat.com)
+- tests: Fix mkksiso unit test (bcl@redhat.com)
+- test: Use fedora:40 for test-in-podman (bcl@redhat.com)
+- pylint: Print astroid version (bcl@redhat.com)
+- Extend help for --updates and --ks parameters (jkonecny@redhat.com)
+- Fix --updates the updates image wasn't loaded (jkonecny@redhat.com)
+- Implement --replace also for S390 (sebastian.stark@advantest.com)
+- mkksiso: option --replace to replace arbitrary text in boot config.  (sebastian.stark@advantest.com)
+- New lorax documentation 40.8 (bcl@redhat.com)
+- docs: Remove links to older branches (bcl@redhat.com)
+
 * Tue Mar 26 2024 Brian C. Lane <bcl@redhat.com> 40.7-1
 - runtime-cleanup: wget2-wget has replaced wget (yselkowi@redhat.com)
 
