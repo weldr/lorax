@@ -475,6 +475,10 @@ def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=N
             add_args["inst.ks"] = ["hd:LABEL=%s:/%s" % (new_volid or old_volid, os.path.basename(ks))]
             add_paths.append(ks)
 
+        if updates_image:
+            add_args["inst.updates"] = ["hd:LABEL=%s:/%s" % (new_volid or old_volid, os.path.basename(updates_image))]
+            add_paths.append(updates_image)
+
         replace_list.append((old_volid, new_volid))
         log.debug(replace_list)
         # Add kickstart command and optionally change the volid of the available config files
@@ -512,11 +516,7 @@ def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=N
         for p in add_paths:
             cmd.extend(["-map", p, os.path.basename(p)])
 
-        # include updates image which will be automatically loaded when on correct place
-        if updates_image:
-            cmd.extend(["-map", updates_image, "updates/updates.img"])
-
-        check_paths = add_paths if not updates_image else add_paths + [updates_image]
+        check_paths = add_paths
         if CheckBigFiles(check_paths):
             if "-as" not in cmd:
                 cmd.extend(["-as", "mkisofs"])
