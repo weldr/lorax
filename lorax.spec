@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.7
+Version:        40.5.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,22 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Oct 08 2024 Brian C. Lane <bcl@redhat.com> 40.5.8-1
+- tests: Fix mkksiso unit test (bcl)
+  Related: RHEL-61778
+- pylint: Print astroid version (bcl)
+  Related: RHEL-61778
+- Extend help for --updates and --ks parameters (jkonecny)
+  Related: RHEL-61778
+- Fix --updates the updates image wasn't loaded (jkonecny)
+  Resolves: RHEL-61778
+- Implement --replace also for S390 (sebastian.stark)
+  Related: RHEL-61778
+- mkksiso: option --replace to replace arbitrary text in boot config.  (sebastian.stark)
+  Related: RHEL-61778
+- livemedia: Add isomd5sum (bcl)
+  Resolves: RHEL-58896
+
 * Tue Sep 10 2024 Brian C. Lane <bcl@redhat.com> 40.5.7-1
 - templates: Sync template changes from lorax-templates-rhel (bcl)
   Resolves: RHEL-54713
