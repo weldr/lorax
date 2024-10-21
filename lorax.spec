@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        42.2
+Version:        42.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -171,6 +171,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Oct 21 2024 Brian C. Lane <bcl@redhat.com> 42.3-1
+- Update template for anaconda webui to start as user (adamkankovsky@gmail.com)
+- tests: Fix mkksiso unit test (bcl@redhat.com)
+
 * Tue Oct 08 2024 Brian C. Lane <bcl@redhat.com> 42.2-1
 - pylint: Print astroid version (bcl@redhat.com)
 - Extend help for --updates and --ks parameters (jkonecny@redhat.com)
