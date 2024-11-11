@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.8
+Version:        40.5.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Nov 11 2024 Brian C. Lane <bcl@redhat.com> 40.5.9-1
+- tests: Swap nomodeset for inst.text in mkksiso test data (bcl)
+  Related: RHEL-66603
+- templates: Change nomodeset / basic graphics to use inst.text (bcl)
+  Resolves: RHEL-66603
+- templates: Drop nomodeset / basic graphics menu from live configs (bcl)
+  Related: RHEL-66603
+
 * Tue Oct 08 2024 Brian C. Lane <bcl@redhat.com> 40.5.8-1
 - tests: Fix mkksiso unit test (bcl)
   Related: RHEL-61778
