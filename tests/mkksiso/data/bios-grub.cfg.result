@@ -25,8 +25,8 @@ menuentry 'Test this media & install Fedora rawhide' --class fedora --class gnu-
 	initrd /images/pxeboot/initrd.img
 }
 submenu 'Troubleshooting -->' {
-	menuentry 'Install Fedora rawhide in text mode' --class fedora --class gnu-linux --class gnu --class os {
-		linux /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=Fedora-mkksiso-rawhide-test inst.text inst.ks=file:///installer.ks quoted="A longer string with spaces that is quoted should not be split" console=ttyS0,115200n8 console=tty1
+	menuentry 'Install Fedora rawhide in basic graphics mode' --class fedora --class gnu-linux --class gnu --class os {
+		linux /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=Fedora-mkksiso-rawhide-test nomodeset inst.ks=file:///installer.ks quoted="A longer string with spaces that is quoted should not be split" console=ttyS0,115200n8 console=tty1
 		initrd /images/pxeboot/initrd.img
 	}
 	menuentry 'Rescue a Fedora system' --class fedora --class gnu-linux --class gnu --class os {

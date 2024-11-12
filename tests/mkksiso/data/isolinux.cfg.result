@@ -75,15 +75,15 @@ menu separator # insert an empty line
 menu begin ^Troubleshooting
   menu title Troubleshooting Fedora rawhide
 
-label text
+label basic
   menu indent count 5
-  menu label Install using ^text mode
+  menu label Install using ^basic graphics mode
   text help
 	Try this option out if you're having trouble installing
 	Fedora rawhide.
   endtext
   kernel vmlinuz
-  append initrd=initrd.img inst.stage2=hd:LABEL=Fedora-mkksiso-rawhide-test inst.text inst.ks=file:///installer.ks quoted="A longer string with spaces that is quoted should not be split" console=ttyS0,115200n8 console=tty1
+  append initrd=initrd.img inst.stage2=hd:LABEL=Fedora-mkksiso-rawhide-test nomodeset inst.ks=file:///installer.ks quoted="A longer string with spaces that is quoted should not be split" console=ttyS0,115200n8 console=tty1
 
 label rescue
   menu indent count 5
