@@ -159,9 +159,9 @@ removefrom gdisk /usr/share/*
 removefrom gdk-pixbuf2 /usr/share/locale*
 removefrom glib2 /usr/bin/* /usr/share/locale/*
 removefrom glibc /etc/gai.conf /etc/rpc
-removefrom glibc /${libdir}/libBrokenLocale*
-removefrom glibc /${libdir}/libanl*
-removefrom glibc /${libdir}/libnss_compat*
+removefrom glibc */${libdir}/libBrokenLocale*
+removefrom glibc */${libdir}/libanl*
+removefrom glibc */${libdir}/libnss_compat*
 # python-pyudev uses ctypes.util.find_library, which uses /sbin/ldconfig
 removefrom glibc /usr/libexec/* /usr/*bin/iconvconfig
 removefrom glibc-common /usr/bin/gencat
