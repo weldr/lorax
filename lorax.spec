@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        41.6
+Version:        41.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -171,6 +171,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Nov 22 2024 Brian C. Lane <bcl@redhat.com> 41.7-1
+- runtime-cleanup: Newer glibc installs into /usr/lib64 (bcl@redhat.com)
+
 * Tue Oct 08 2024 Brian C. Lane <bcl@redhat.com> 41.6-1
 - tests: Fix mkksiso unit test (bcl@redhat.com)
 - test: Use fedora:41 for test-in-podman (bcl@redhat.com)
