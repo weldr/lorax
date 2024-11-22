@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.8
+Version:        40.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -171,6 +171,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Nov 22 2024 Brian C. Lane <bcl@redhat.com> 40.9-1
+- runtime-cleanup: Newer glibc installs into /usr/lib64 (bcl@redhat.com)
+- Prepare for the sbin merge (zbyszek@in.waw.pl)
+
 * Tue Oct 08 2024 Brian C. Lane <bcl@redhat.com> 40.8-1
 - creator: Fix pylint error in run_creator (bcl@redhat.com)
 - tests: Fix mkksiso unit test (bcl@redhat.com)
