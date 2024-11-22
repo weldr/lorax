@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.9
+Version:        40.5.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Nov 22 2024 Brian C. Lane <bcl@redhat.com> 40.5.10-1
+- erofs: Change the erofs compression default to zstd (bcl)
+  Related: RHEL-48606
+- Revert "tests: Swap nomodeset for inst.text in mkksiso test data" (bcl)
+  Related: RHEL-66603
+- Revert "templates: Change nomodeset / basic graphics to use inst.text" (bcl)
+  Related: RHEL-66603
+- Revert "templates: Drop nomodeset / basic graphics menu from live configs" (bcl)
+  Related: RHEL-66603
+
 * Mon Nov 11 2024 Brian C. Lane <bcl@redhat.com> 40.5.9-1
 - tests: Swap nomodeset for inst.text in mkksiso test data (bcl)
   Related: RHEL-66603
