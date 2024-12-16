@@ -55,7 +55,6 @@ removepkg mobile-broadband-provider-info
 removepkg rmt rpcbind squashfs-tools
 removepkg tigervnc-license xml-common
 removepkg mkfontscale fonttosfnt
-removepkg xorg-x11-server-common
 # do not remove this, required for ppc64le and s390x !!!
 removepkg ncurses
 
@@ -321,8 +320,6 @@ removefrom util-linux-core --allbut \
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget2 /usr/share/locale/*
 removefrom wpa_supplicant /usr/*bin/eapol_test
-removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
-removefrom xorg-x11-drv-wacom /usr/bin/*
 removefrom yelp /usr/share/yelp/mathjax*
 
 %if branding.release:
