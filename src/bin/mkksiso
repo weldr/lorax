@@ -242,8 +242,8 @@ def RebuildEFIBoot(input_iso, tmpdir):
 
     returns new efiboot.img file with a temporary name.
     """
-    if not os.path.exists(tmpdir+"/EFI/BOOT/BOOT.conf"):
-        raise RuntimeError("Missing mkefiboot requirement: EFI/BOOT/BOOT.conf")
+    if not os.path.exists(tmpdir+"/EFI/BOOT"):
+        raise RuntimeError("Missing mkefiboot requirement: EFI/BOOT")
 
     # Extract the EFI directory files from the iso
     with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpefi:
@@ -489,9 +489,9 @@ def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=N
         if os.uname().machine.startswith("s390"):
             RebuildS390CDBoot(tmpdir)
 
-        # If this is a UEFI iso rebuild the efiboot.img file and put it in /efiboot.img
+        # If this is a UEFI iso, rebuild the efiboot.img file and put it in /efiboot.img
         efibootimg = None
-        if not skip_efi and "EFI/BOOT/BOOT.conf" in files:
+        if not skip_efi and ("EFI/BOOT/grub.cfg" in files or "EFI/BOOT/BOOT.conf" in files):
             if os.getuid() != 0:
                 raise RuntimeError("mkefiboot requires root privileges")
 
