@@ -616,8 +616,13 @@ def main():
         if errors:
             raise RuntimeError("Problems running %s" % sys.argv[0])
 
+        remove_args = args.rm_args
+        if args.ks and "inst.ks" not in remove_args:
+            # Add inst.ks to the list of args to remove so that any previous use is overriden
+            remove_args = ("inst.ks " + remove_args).strip()
+
         MakeKickstartISO(args.input_iso, args.output_iso, args.ks or args.ks_pos, args.updates,
-                         args.add_paths, args.cmdline, args.rm_args,
+                         args.add_paths, args.cmdline, remove_args,
                          args.volid, args.replace, args.no_md5sum, args.skip_efi)
     except RuntimeError as e:
         log.error(str(e))
