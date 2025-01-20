@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.10
+Version:        40.5.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Jan 20 2025 Brian C. Lane <bcl@redhat.com> 40.5.11-1
+- erofs: Make smaller lzma erofs images by default (bcl)
+  Related: RHEL-48606
+- Revert "erofs: Change the erofs compression default to zstd" (bcl)
+  Related: RHEL-48606
+
 * Fri Nov 22 2024 Brian C. Lane <bcl@redhat.com> 40.5.10-1
 - erofs: Change the erofs compression default to zstd (bcl)
   Related: RHEL-48606
