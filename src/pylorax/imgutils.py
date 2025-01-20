@@ -118,7 +118,7 @@ def mksquashfs(rootdir, outfile, compression="default", compressargs=None):
         compressargs = ["-comp", compression] + compressargs
     return execWithRedirect("mksquashfs", [rootdir, outfile] + compressargs)
 
-def mkerofs(rootdir, outfile, compression="zstd", compressargs=None):
+def mkerofs(rootdir, outfile, compression="lzma", compressargs=None):
     '''Make an erofs image containing the given rootdir.'''
     compressargs = compressargs or []
     compressargs = ["-z", compression] + compressargs

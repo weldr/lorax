@@ -263,7 +263,7 @@ class RuntimeBuilder(object):
         remove(workdir)
         return rc
 
-    def create_erofs_runtime(self, outfile="/var/tmp/erofs.img", compression="zstd", compressargs=None, size=2):
+    def create_erofs_runtime(self, outfile="/var/tmp/erofs.img", compression="lzma", compressargs=None, size=2):
         """Create a plain erofs runtime"""
         compressargs = compressargs or []
         os.makedirs(os.path.dirname(outfile))
@@ -271,7 +271,7 @@ class RuntimeBuilder(object):
         # erofs the rootfs
         return imgutils.mkerofs(self.vars.root, outfile, compression, compressargs)
 
-    def create_erofs_ext4_runtime(self, outfile="/var/tmp/erofs.img", compression="zstd", compressargs=None, size=2):
+    def create_erofs_ext4_runtime(self, outfile="/var/tmp/erofs.img", compression="lzma", compressargs=None, size=2):
         """Create a erofs compressed ext4 runtime"""
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
         compressargs = compressargs or []
