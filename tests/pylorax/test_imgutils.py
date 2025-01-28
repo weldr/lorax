@@ -40,7 +40,7 @@ def mkfakerootdir(rootdir):
 
     Use this for testing the mk* functions that compress a directory tree
     """
-    dirs = ["/root", "/usr/sbin/", "/usr/local/", "/home/bart", "/etc/"]
+    dirs = ["/root", "/usr/bin/", "/usr/local/", "/home/bart", "/etc/"]
     files = ["/etc/passwd", "/home/bart/.bashrc", "/root/.bashrc"]
     for d in dirs:
         os.makedirs(joinpaths(rootdir, d))

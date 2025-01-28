@@ -67,7 +67,7 @@ Run this to create a bootable live iso::
 
 You can run it directly from the lorax git repo like this::
 
-    sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
+    sudo PATH=./src/bin/:$PATH PYTHONPATH=./src/ ./src/bin/livemedia-creator \
     --make-iso --iso=/extra/iso/boot.iso \
     --ks=./docs/fedora-livemedia.ks --lorax-templates=./share/
 

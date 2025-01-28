@@ -145,9 +145,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %doc docs/*ks
 %{python3_sitelib}/pylorax
 %{python3_sitelib}/*.egg-info
-%{_sbindir}/lorax
-%{_sbindir}/mkefiboot
-%{_sbindir}/livemedia-creator
+%{_bindir}/lorax
+%{_bindir}/mkefiboot
+%{_bindir}/livemedia-creator
 %{_bindir}/mkksiso
 %{_bindir}/image-minimizer
 %dir %{_sysconfdir}/lorax

@@ -845,7 +845,7 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
 
           Examples:
             removefrom usbutils /usr/bin/*
-            removefrom xfsprogs --allbut /sbin/*
+            removefrom xfsprogs --allbut /bin/*
         '''
         cmd = "%s %s" % (pkg, " ".join(globs)) # save for later logging
         keepmatches = False

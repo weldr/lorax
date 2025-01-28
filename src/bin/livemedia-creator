@@ -22,6 +22,7 @@ log = logging.getLogger("livemedia-creator")
 
 import glob
 import os
+import shutil
 import sys
 import tempfile
 
@@ -91,7 +92,7 @@ def main():
         errors.append("qemu needs to be installed.")
 
     if is_install and opts.no_virt \
-       and not os.path.exists("/usr/sbin/anaconda"):
+       and not shutil.which("anaconda"):
         errors.append("no-virt requires anaconda to be installed.")
 
     if opts.make_appliance and not opts.app_template:
@@ -144,7 +145,7 @@ def main():
     if opts.virt_uefi and not os.path.isdir(opts.fw_path):
         errors.append("The UEFI firmware directory is missing: %s" % opts.fw_path)
 
-    if opts.domacboot and not os.path.exists("/usr/sbin/mkfs.hfsplus"):
+    if opts.domacboot and not shutil.which("mkfs.hfsplus"):
         errors.append("mkfs.hfsplus is missing. Install hfsplus-tools, or pass --nomacboot")
 
     if os.getuid() != 0:

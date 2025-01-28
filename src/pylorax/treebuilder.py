@@ -25,7 +25,6 @@ from os.path import basename
 from shutil import copytree, copy2
 from subprocess import CalledProcessError
 from pathlib import Path
-import itertools
 import libdnf5 as dnf5
 from libdnf5.common import QueryCmp_EQ as EQ
 
@@ -183,13 +182,12 @@ class RuntimeBuilder(object):
 
         ELF_MAGIC = b'\x7fELF'
 
-        # Iterate over all files in /usr/bin and /usr/sbin
+        # Iterate over all files in /usr/bin
+        # NOTE: Fedora 42 has merged these into the same directory
         # For ELF files, gather them into a list and we'll check them all at
         # the end. For files with a #!, check them as we go
         elf_files = []
-        usr_bin = Path(self.vars.root + '/usr/bin')
-        usr_sbin = Path(self.vars.root + '/usr/sbin')
-        for path in (str(x) for x in itertools.chain(usr_bin.iterdir(), usr_sbin.iterdir()) \
+        for path in (str(x) for x in Path(self.vars.root + '/usr/bin').iterdir() \
                      if x.is_file()):
             with open(path, "rb") as f:
                 magic = f.read(4)

@@ -7,7 +7,7 @@ set -e
 [ "$(id -u)" -eq 0 ] || (echo "$0 must be run as root"; exit 1)
 
 . /usr/share/beakerlib/beakerlib.sh
-CLI="${CLI:-./src/sbin/mkksiso}"
+CLI="${CLI:-./src/bin/mkksiso}"
 
 rlJournalStart
     rlPhaseStartSetup "Setup a fake root image"

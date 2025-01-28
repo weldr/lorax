@@ -570,7 +570,10 @@ def make_live_images(opts, work_dir, disk_img):
     log.debug("sys_root = %s", sys_root)
 
     # Make sure free blocks are actually zeroed so it will compress
-    rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", rootfs_img])
+    ext4path = shutil.which("fsck.ext4")
+    if not ext4path:
+        raise RuntimeError("Cannot find fsck.ext4 executable in PATH")
+    rc = execWithRedirect(ext4path, ["-y", "-f", "-E", "discard", rootfs_img])
     if rc != 0:
         log.error("Problem zeroing free blocks of %s", disk_img)
         return None

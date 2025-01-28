@@ -12,9 +12,9 @@ for root, dnames, fnames in os.walk("share"):
                            [os.path.join(root, fname)]))
 
 # executable
-data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
-                                 "src/sbin/livemedia-creator"]))
-data_files.append(("/usr/bin",  ["src/bin/image-minimizer", "src/bin/mkksiso"]))
+data_files.append(("/usr/bin", ["src/bin/lorax", "src/bin/mkefiboot",
+                                "src/bin/livemedia-creator",
+                                "src/bin/image-minimizer", "src/bin/mkksiso"]))
 
 setup(name="lorax",
       version="42.4",

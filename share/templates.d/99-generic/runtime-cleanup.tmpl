@@ -30,7 +30,7 @@ removefrom shadow-utils --allbut /usr/bin/chage /usr/*bin/chpasswd \
                         /usr/*bin/groupadd /usr/*bin/useradd
 
 ## no services to turn on/off (keep the /etc/init.d link though)
-removefrom initscripts /usr/sbin/* /usr/share/locale/* /usr/share/doc/* /usr/share/man/*
+removefrom initscripts /usr/bin/* /usr/share/locale/* /usr/share/doc/* /usr/share/man/*
 
 ## no storage device monitoring
 removepkg device-mapper-event

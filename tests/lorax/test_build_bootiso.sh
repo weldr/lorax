@@ -12,7 +12,7 @@ set -e
 . /usr/share/beakerlib/beakerlib.sh
 . "$(dirname $0)/lib/lib.sh"
 
-CLI="${CLI:-./src/sbin/lorax}"
+CLI="${CLI:-./src/bin/lorax}"
 
 # Make up a name (slightly unsafe), should not exist before running lorax so use -u
 rlJournalStart

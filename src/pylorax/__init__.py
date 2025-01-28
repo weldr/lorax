@@ -182,10 +182,6 @@ class Lorax(BaseLoraxClass):
                     if line and not line.startswith("#"):
                         self.output.ignore(line)
 
-        # cron does not have sbin in PATH,
-        # so we have to add it ourselves
-        os.environ["PATH"] = "{0}:/sbin:/usr/sbin".format(os.environ["PATH"])
-
         # remove some environmental variables that can cause problems with package scripts
         env_remove = ('DISPLAY', 'DBUS_SESSION_BUS_ADDRESS')
         list(os.environ.pop(k) for k in env_remove if k in os.environ)

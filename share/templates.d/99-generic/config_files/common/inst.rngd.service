@@ -8,4 +8,4 @@ ConditionKernelCommandLine=!inst.rngd=0
 [Service]
 Type=simple
 EnvironmentFile=/etc/sysconfig/rngd
-ExecStart=/usr/sbin/rngd -f $RNGD_ARGS
+ExecStart=/usr/bin/rngd -f $RNGD_ARGS
