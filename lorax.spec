@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        42.4
+Version:        42.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -171,6 +171,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Feb 03 2025 Brian C. Lane <bcl@redhat.com> 42.5-1
+- Remove sbin usage (bcl@redhat.com)
+- mkksiso: Replace existing inst.ks on the iso (bcl@redhat.com)
+- Dockerfile.test: Use fedora:latest instead of rawhide (bcl@redhat.com)
+- mkksiso: Fix rebuilding the efiboot.img on some systems (bcl@redhat.com)
+- Remove leftovers from xorg drop (jkonecny@redhat.com)
+
 * Fri Nov 22 2024 Brian C. Lane <bcl@redhat.com> 42.4-1
 - runtime-cleanup: Newer glibc installs into /usr/lib64 (bcl@redhat.com)
 - erofs: Change the erofs compression default to zstd (bcl@redhat.com)
