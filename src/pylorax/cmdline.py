@@ -110,10 +110,10 @@ def lorax_parser(dracut_default=""):
     optional.add_argument("--dnfplugin", action="append", default=[], dest="dnfplugins",
                           help="Enable a DNF plugin by name/glob, or * to enable all of them.")
     optional.add_argument("--squashfs-only", action="store_true",
-                          help="Ignored, provided for backward compatibility.")
+                          help="Ignored. Use --rootfs-type instead")
     optional.add_argument("--skip-branding", action="store_true", default=False,
                           help="Disable automatic branding package selection. Use --installpkgs to add custom branding.")
-    optional.add_argument("--rootfs-type", metavar="ROOTFSTYPE", default="squashfs",
+    optional.add_argument("--rootfs-type", metavar="ROOTFSTYPE", default="erofs",
                           dest="rootfs_type",
                           help="Type of rootfs: %s" % ",".join(ROOTFSTYPES))
 
@@ -328,8 +328,8 @@ def lmc_parser(dracut_default=""):
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
     parser.add_argument("--squashfs-only", action="store_true",
-                          help="Ignored, provided for backward compatibility.")
-    parser.add_argument("--rootfs-type", metavar="ROOTFSTYPE", default="squashfs",
+                        help="Ignored. Use --rootfs-type instead")
+    parser.add_argument("--rootfs-type", metavar="ROOTFSTYPE", default="erofs",
                         help="Type of rootfs: %s" % ",".join(ROOTFSTYPES))
     parser.add_argument("--timeout", default=None, type=int,
                         help="Cancel installer after X minutes")

@@ -119,6 +119,18 @@ def main():
     if opts.rootfs_type not in ROOTFSTYPES:
         parser.error("--rootfs-type must be one of %s" % ",".join(ROOTFSTYPES))
 
+    if opts.squashfs_only and opts.rootfs_type != "squashfs":
+        parser.error("--squashfs-only conflicts with --rootfs-type")
+
+    # Check for required rootfs tools
+    if opts.rootfs_type.startswith("squashfs") \
+       and not os.path.exists("/usr/sbin/mksquashfs"):
+        parser.error(f"--rootfs-type={opts.rootfs_type} requires squashfs-tools to be installed.")
+
+    if opts.rootfs_type.startswith("erofs") \
+       and not os.path.exists("/usr/bin/mkfs.erofs"):
+        parser.error(f"--rootfs-type={opts.rootfs_type} requires erofs-utils to be installed.")
+
     setup_logging(opts)
     log.debug(opts)
 
