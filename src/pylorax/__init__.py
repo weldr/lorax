@@ -61,8 +61,8 @@ else:
 DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "--add", "fips"]
 
 # Used for DNF conf.module_platform_id
-DEFAULT_PLATFORM_ID = "platform:f41"
-DEFAULT_RELEASEVER = "41"
+DEFAULT_PLATFORM_ID = "platform:f43"
+DEFAULT_RELEASEVER = "43"
 
 ROOTFSTYPES = ["squashfs", "squashfs-ext4", "erofs", "erofs-ext4"]
 
