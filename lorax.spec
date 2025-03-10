@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        42.5
+Version:        42.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -171,6 +171,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Mar 10 2025 Brian C. Lane <bcl@redhat.com> 42.6-1
+- runtime-postinstall: Remove systemd-gpt-auto-generator (bcl@redhat.com)
+- maint: Switch default platform to F42 (bcl@redhat.com)
+
 * Mon Feb 03 2025 Brian C. Lane <bcl@redhat.com> 42.5-1
 - Remove sbin usage (bcl@redhat.com)
 - mkksiso: Replace existing inst.ks on the iso (bcl@redhat.com)
