@@ -115,6 +115,9 @@ def append_initrd(initrd, files):
     qemu_initrd = tempfile.mktemp(prefix="lmc-initrd-", suffix=".img")
     shutil.copy2(initrd, qemu_initrd)
     ks_dir = tempfile.mkdtemp(prefix="lmc-ksdir-")
+    # Make sure / of the cpio overlay has correct permissions. It is 0700 otherwise and
+    # will cause problems with non-root services running in dracut, like dbus.
+    os.chmod(ks_dir, 0o755)
     for ks in files:
         shutil.copy2(ks, ks_dir)
     ks_initrd = tempfile.mktemp(prefix="lmc-ks-", suffix=".img")
