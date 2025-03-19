@@ -236,6 +236,37 @@ def ImplantMD5(output_iso):
         raise RuntimeError("implantisomd5 failed")
 
 
+def RebuildEFIBoot(input_iso, tmpdir):
+    """
+    On x86 the efiboot.img needs to be rebuilt from the new /EFI/BOOT/ files
+
+    returns new efiboot.img file with a temporary name.
+    """
+    if not os.path.exists(tmpdir+"/EFI/BOOT"):
+        raise RuntimeError("Missing mkefiboot requirement: EFI/BOOT")
+
+    # Extract the EFI directory files from the iso
+    with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpefi:
+        ExtractISOFiles(input_iso, ["EFI"], tmpefi)
+
+        # Copy the modified config files over
+        shutil.copytree(tmpdir+"/EFI", tmpefi+"/EFI", dirs_exist_ok=True)
+
+        efibootimg = tempfile.NamedTemporaryFile(prefix="efibootimg-")
+        cmd = ["mkefiboot", "--label=ANACONDA"]
+        if log.root.level < log.INFO:
+            cmd.append("--debug")
+        cmd.extend([tmpefi + "/EFI/BOOT", efibootimg.name])
+        log.debug(" ".join(cmd))
+        try:
+            subprocess.check_output(cmd)
+        except subprocess.CalledProcessError as e:
+            log.error(str(e))
+            raise RuntimeError("Running mkefiboot")
+
+        return efibootimg
+
+
 def RebuildS390CDBoot(tmpdir):
     """
     On s390x the cdboot.img needs to be rebuilt with the new cmdline arguments
@@ -281,7 +312,7 @@ def GetCmdline(line, commands):
     return "", line
 
 
-def EditIsolinux(rm_args, add_args, new_volid, old_volid, tmpdir):
+def EditIsolinux(rm_args, add_args, replace_list, tmpdir):
     """
     Modify the cmdline for an isolinux.cfg
     Remove args, add new arguments and change existing volid if requested
@@ -291,14 +322,13 @@ def EditIsolinux(rm_args, add_args, new_volid, old_volid, tmpdir):
         log.warning("No isolinux/isolinux.cfg file found")
         return
 
-    change_volid = old_volid != new_volid
-
     # Edit the config file, save the new one as .new
     with open(orig_cfg, "r") as in_fp:
         with open(orig_cfg + ".new", "w") as out_fp:
             for line in in_fp:
-                if change_volid and old_volid in line:
-                    line = line.replace(old_volid, new_volid)
+                for from_item, to_item in replace_list:
+                    if from_item in line:
+                        line = line.replace(from_item, to_item)
                 prefix, cmdline = GetCmdline(line, ["append"])
                 if prefix:
                     args = SplitCmdline(cmdline)
@@ -311,7 +341,7 @@ def EditIsolinux(rm_args, add_args, new_volid, old_volid, tmpdir):
         os.replace(orig_cfg + ".new", orig_cfg)
 
 
-def EditGrub2(rm_args, add_args, new_volid, old_volid, tmpdir):
+def EditGrub2(rm_args, add_args, replace_list, tmpdir):
     """
     Modify the cmdline for GRUB2 UEFI and BIOS config files
     Add the new arguments and change existing volid if requested
@@ -323,8 +353,6 @@ def EditGrub2(rm_args, add_args, new_volid, old_volid, tmpdir):
         log.warning("No grub config files found")
         return
 
-    change_volid = old_volid != new_volid
-
     for cfg in grub_cfgs:
         orig_cfg = tmpdir + "/" + cfg
         if not os.path.exists(orig_cfg):
@@ -333,8 +361,9 @@ def EditGrub2(rm_args, add_args, new_volid, old_volid, tmpdir):
         with open(orig_cfg, "r") as in_fp:
             with open(orig_cfg + ".new", "w") as out_fp:
                 for line in in_fp:
-                    if change_volid and old_volid in line:
-                        line = line.replace(old_volid, new_volid)
+                    for from_item, to_item in replace_list:
+                        if from_item in line:
+                            line = line.replace(from_item, to_item)
                     # Some start with linux (BIOS/aarch64), others with linuxefi (x86_64)
                     prefix, cmdline = GetCmdline(line, ["linuxefi", "linux"])
                     if prefix:
@@ -348,7 +377,7 @@ def EditGrub2(rm_args, add_args, new_volid, old_volid, tmpdir):
         os.replace(orig_cfg + ".new", orig_cfg)
 
 
-def EditS390(rm_args, add_args, new_volid, old_volid, tmpdir):
+def EditS390(rm_args, add_args, replace_list, tmpdir):
     """
     Modify the cmdline for s390 config files
     Add the new arguments and change existing volid if requested
@@ -358,8 +387,6 @@ def EditS390(rm_args, add_args, new_volid, old_volid, tmpdir):
     if not any(os.path.exists(tmpdir + "/" + c) for c in s390_cfgs):
         log.warning("No s390 config files found")
         return
-
-    change_volid = old_volid != new_volid
 
     for cfg in s390_cfgs:
         orig_cfg = tmpdir + "/" + cfg
@@ -373,8 +400,9 @@ def EditS390(rm_args, add_args, new_volid, old_volid, tmpdir):
 
         cmdline = " ".join(l.strip() for l in lines)
         # Replace the volid
-        if change_volid and old_volid in cmdline:
-            cmdline = cmdline.replace(old_volid, new_volid)
+        for from_item, to_item in replace_list:
+            if from_item in cmdline:
+                cmdline = cmdline.replace(from_item, to_item)
         args = SplitCmdline(cmdline)
         new_args = AlterKernelArgs(args, rm_args, add_args)
 
@@ -403,23 +431,30 @@ def CheckDiscinfo(path):
             raise RuntimeError("iso arch does not match the host arch.")
 
 
-def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
-                    cmdline="", rm_args="", new_volid="", implantmd5=True):
+def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=None,
+                    cmdline="", rm_args="", new_volid="", replace_list=None, implantmd5=True,
+                    skip_efi=False):
     """
     Make a kickstart ISO from a boot.iso or dvd
     """
     if add_paths is None:
         add_paths = []
+    if replace_list is None:
+        replace_list = []
 
     # Gather information about the input iso
     old_volid, files = GetISODetails(input_iso)
     if not old_volid and not new_volid:
         raise RuntimeError("No volume id found, cannot create iso.")
 
+    log.debug("ISO files:")
+    for f in files:
+        log.debug("    %s", f)
+
     # Extract files that match the known config files.
     known_configs = set([".discinfo", "isolinux/isolinux.cfg",
                          "boot/grub2/grub.cfg", "boot/grub/grub.cfg",
-                         "EFI/BOOT/grub.cfg", "EFI/BOOT/BOOT.conf",
+                         "EFI/BOOT/BOOT.conf", "EFI/BOOT/grub.cfg",
                          "images/generic.prm", "images/cdboot.prm",
                          "images/kernel.img", "images/initrd.img"])
     extract_files = set(files) & known_configs
@@ -440,18 +475,36 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
             add_args["inst.ks"] = ["hd:LABEL=%s:/%s" % (new_volid or old_volid, os.path.basename(ks))]
             add_paths.append(ks)
 
+        if updates_image:
+            add_args["inst.updates"] = ["hd:LABEL=%s:/%s" % (new_volid or old_volid, os.path.basename(updates_image))]
+            add_paths.append(updates_image)
+
+        replace_list.append((old_volid, new_volid))
+        log.debug(replace_list)
         # Add kickstart command and optionally change the volid of the available config files
-        EditIsolinux(remove_args, add_args, new_volid, old_volid, tmpdir)
-        EditGrub2(remove_args, add_args, new_volid, old_volid, tmpdir)
-        EditS390(remove_args, add_args, new_volid, old_volid, tmpdir)
+        EditIsolinux(remove_args, add_args, replace_list, tmpdir)
+        EditGrub2(remove_args, add_args, replace_list, tmpdir)
+        EditS390(remove_args, add_args, replace_list, tmpdir)
 
         if os.uname().machine.startswith("s390"):
             RebuildS390CDBoot(tmpdir)
+
+        # If this is a UEFI iso, rebuild the efiboot.img file and put it in /efiboot.img
+        efibootimg = None
+        if not skip_efi and ("EFI/BOOT/grub.cfg" in files or "EFI/BOOT/BOOT.conf" in files):
+            if os.getuid() != 0:
+                raise RuntimeError("mkefiboot requires root privileges")
+
+            efibootimg = RebuildEFIBoot(input_iso, tmpdir)
 
         # Build the command to rebuild the iso with the changes and additions
         cmd = ["xorriso", "-indev", input_iso, "-outdev", output_iso, "-boot_image", "any", "replay"]
         if new_volid != old_volid:
             cmd.extend(["-volid", new_volid])
+
+        # Replace the embedded efiboot.img on partition 2
+        if efibootimg:
+            cmd.extend(["-append_partition", "2", "C12A7328-F81F-11D2-BA4B-00A0C93EC93B", efibootimg.name])
 
         # Update the config files that were extracted and modified
         for root, _, files in os.walk(tmpdir, topdown=False):
@@ -463,7 +516,8 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
         for p in add_paths:
             cmd.extend(["-map", p, os.path.basename(p)])
 
-        if CheckBigFiles(add_paths):
+        check_paths = add_paths
+        if CheckBigFiles(check_paths):
             if "-as" not in cmd:
                 cmd.extend(["-as", "mkisofs"])
             cmd.extend(["-iso-level", "3"])
@@ -473,11 +527,20 @@ def MakeKickstartISO(input_iso, output_iso, ks="", add_paths=None,
                 cmd.extend(["-as", "mkisofs"])
             cmd.extend(["-U"])
 
+        ## NOTE: If any xorriso commands need to be added after this they need
+        ##       to be preceeded by an '--' entry to exit the '-as mkisofs' mode
+
         log.debug("Running: %s", " ".join(cmd))
         subprocess.run(cmd, check=True, capture_output=False, env={"LANG": "C"})
 
     if implantmd5:
         ImplantMD5(output_iso)
+
+    # Generate a report of the layout of the new iso
+    if log.root.level < log.INFO:
+        cmd = ["xorriso", "-indev", output_iso, "-report_el_torito", "plain", "-report_system_area", "plain"]
+        log.debug("Running: %s", " ".join(cmd))
+        subprocess.run(cmd, check=False, capture_output=False, env={"LANG": "C"})
 
 
 def setup_arg_parser():
@@ -497,8 +560,14 @@ def setup_arg_parser():
     parser.add_argument("--no-md5sum", action="store_false", default=True,
                         help="Do not run implantisomd5 on the ouput iso")
     parser.add_argument("--ks", type=os.path.abspath, metavar="KICKSTART",
-                        help="Optional kickstart to add to the ISO")
+                        help="Optional kickstart to add to the ISO (adding inst.ks automatically)")
+    parser.add_argument("-u", "--updates", type=os.path.abspath, metavar="IMAGE",
+                        help="Optional updates image to add to the ISO (adding inst.updates automatically)")
     parser.add_argument("-V", "--volid", dest="volid", help="Set the ISO volume id, defaults to input's", default=None)
+    parser.add_argument("-R", "--replace", nargs=2, action="append", metavar=("FROM", "TO"),
+                        help="Replace string in grub.cfg. Can be used multiple times")
+    parser.add_argument("--skip-mkefiboot", action="store_true", dest="skip_efi",
+                        help="Skip running mkefiboot")
 
     parser.add_argument("ks_pos", nargs="?", type=os.path.abspath, metavar="KICKSTART",
                         help="Optional kickstart to add to the ISO")
@@ -540,16 +609,16 @@ def main():
             log.error("Use either --ks KICKSTART or positional KICKSTART but not both")
             errors = True
 
-        if not any([args.ks or args.ks_pos, args.add_paths, args.cmdline, args.rm_args, args.volid]):
-            log.error("Nothing to do - pass one or more of --ks, --add, --cmdline, --rm-args, --volid")
+        if not any([args.ks or args.ks_pos, args.updates, args.add_paths, args.cmdline, args.rm_args, args.volid, args.replace]):
+            log.error("Nothing to do - pass one or more of --ks, --updates, --add, --cmdline, --rm-args, --volid, --replace")
             errors = True
 
         if errors:
             raise RuntimeError("Problems running %s" % sys.argv[0])
 
-        MakeKickstartISO(args.input_iso, args.output_iso, args.ks or args.ks_pos,
+        MakeKickstartISO(args.input_iso, args.output_iso, args.ks or args.ks_pos, args.updates,
                          args.add_paths, args.cmdline, args.rm_args,
-                         args.volid, args.no_md5sum)
+                         args.volid, args.replace, args.no_md5sum, args.skip_efi)
     except RuntimeError as e:
         log.error(str(e))
         return 1
