@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>pylorax.treebuilder &mdash; Lorax 34.10 documentation</title>
+  <title>pylorax.treebuilder &mdash; Lorax 34.9.27 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.10
+                34.9.27
               </div>
             
           
@@ -192,6 +192,7 @@
 <span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
 <span class="kn">from</span> <span class="nn">pylorax.ltmpl</span> <span class="kn">import</span> <span class="n">LoraxTemplateRunner</span>
 <span class="kn">import</span> <span class="nn">pylorax.imgutils</span> <span class="k">as</span> <span class="nn">imgutils</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">DracutChroot</span>
 <span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span><span class="p">,</span> <span class="n">execWithCapture</span>
 
 <span class="n">templatemap</span> <span class="o">=</span> <span class="p">{</span>
@@ -235,11 +236,6 @@
                  <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">skip_branding</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">root</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">installroot</span>
-        <span class="c1"># use a copy of product so we can modify it locally</span>
-        <span class="n">product</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">product</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="n">arch</span><span class="p">,</span> <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span> <span class="n">dbo</span><span class="o">=</span><span class="n">dbo</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
-                               <span class="n">basearch</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">,</span> <span class="n">libdir</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">libdir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span> <span class="o">=</span> <span class="n">dbo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span> <span class="o">=</span> <span class="n">LoraxTemplateRunner</span><span class="p">(</span><span class="n">inroot</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">outroot</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
                                            <span class="n">dbo</span><span class="o">=</span><span class="n">dbo</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="n">templatedir</span><span class="p">)</span>
@@ -247,20 +243,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_template_vars</span> <span class="o">=</span> <span class="n">add_template_vars</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_installpkgs</span> <span class="o">=</span> <span class="n">installpkgs</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_excludepkgs</span> <span class="o">=</span> <span class="n">excludepkgs</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_branding</span> <span class="o">=</span> <span class="n">skip_branding</span>
 
-    <span class="k">def</span> <span class="nf">_install_branding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># use a copy of product so we can modify it locally</span>
+        <span class="n">product</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">product</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_branding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_branding</span><span class="p">(</span><span class="n">skip_branding</span><span class="p">,</span> <span class="n">product</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="n">arch</span><span class="p">,</span> <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span> <span class="n">dbo</span><span class="o">=</span><span class="n">dbo</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
+                               <span class="n">basearch</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">,</span> <span class="n">libdir</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">libdir</span><span class="p">,</span>
+                               <span class="n">branding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_branding</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span>
+
+<div class="viewcode-block" id="RuntimeBuilder.get_branding"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.get_branding">[docs]</a>    <span class="k">def</span> <span class="nf">get_branding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Select the branding from the available &#39;system-release&#39; packages</span>
 <span class="sd">        The *best* way to control this is to have a single package in the repo provide &#39;system-release&#39;</span>
 <span class="sd">        When there are more than 1 package it will:</span>
 <span class="sd">        - Make a list of the available packages</span>
 <span class="sd">        - If variant is set look for a package ending with lower(variant) and use that</span>
 <span class="sd">        - If there are one or more non-generic packages, use the first one after sorting</span>
+
+<span class="sd">        Returns the package names of the system-release and release logos package</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skip_branding</span><span class="p">:</span>
-            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">skip</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logos</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="n">release</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
@@ -269,11 +274,11 @@
                                     <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;generic&quot;</span><span class="p">)])</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgs</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No system-release packages found, could not get the release&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
+            <span class="k">return</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logos</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;system-release packages: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">variant</span><span class="p">:</span>
-            <span class="n">variant</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">variant</span><span class="o">.</span><span class="n">lower</span><span class="p">())]</span>
+        <span class="k">if</span> <span class="n">product</span><span class="o">.</span><span class="n">variant</span><span class="p">:</span>
+            <span class="n">variant</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">product</span><span class="o">.</span><span class="n">variant</span><span class="o">.</span><span class="n">lower</span><span class="p">())]</span>
             <span class="k">if</span> <span class="n">variant</span><span class="p">:</span>
                 <span class="n">release</span> <span class="o">=</span> <span class="n">variant</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">release</span><span class="p">:</span>
@@ -281,20 +286,25 @@
 
         <span class="c1"># release</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;got release: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">release</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="n">release</span><span class="p">)</span>
 
-        <span class="c1"># logos</span>
-        <span class="n">release</span><span class="p">,</span> <span class="n">_suffix</span> <span class="o">=</span> <span class="n">release</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">-logos&#39;</span> <span class="o">%</span> <span class="n">release</span><span class="p">)</span>
+        <span class="c1"># logos uses the basename from release (fedora, redhat, centos, ...)</span>
+        <span class="n">logos</span><span class="p">,</span> <span class="n">_suffix</span> <span class="o">=</span> <span class="n">release</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">release</span><span class="o">=</span><span class="n">release</span><span class="p">,</span> <span class="n">logos</span><span class="o">=</span><span class="n">logos</span><span class="o">+</span><span class="s2">&quot;-logos&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RuntimeBuilder.install"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.install">[docs]</a>    <span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Install packages and do initial setup with runtime-install.tmpl&#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_install_branding</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_branding</span><span class="o">.</span><span class="n">release</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_branding</span><span class="o">.</span><span class="n">release</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_branding</span><span class="o">.</span><span class="n">logos</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_branding</span><span class="o">.</span><span class="n">logos</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_installpkgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_installpkgs</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_excludepkgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">removepkg</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_excludepkgs</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;runtime-install.tmpl&quot;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">tmpl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_templates</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tmpl</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">add_template_vars</span><span class="p">)</span></div>
 
@@ -462,32 +472,31 @@
 <span class="sd">        name of the kernel.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">add_args</span> <span class="o">=</span> <span class="n">add_args</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="n">dracut</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dracut&quot;</span><span class="p">,</span> <span class="s2">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s2">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">add_args</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s2">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">add_args</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">backup</span><span class="p">:</span>
-            <span class="n">dracut</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--force&quot;</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--force&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernels</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No kernels found, cannot rebuild_initrds&quot;</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernels</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
-                <span class="n">idir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-                <span class="n">outfile</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">idir</span><span class="p">,</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="o">+</span><span class="s1">&#39;.img&#39;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s2">&quot;initrd&quot;</span><span class="p">):</span>
-                <span class="c1"># If there is an existing initrd, use that</span>
-                <span class="n">outfile</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">initrd</span><span class="o">.</span><span class="n">path</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Construct an initrd from the kernel name</span>
-                <span class="n">outfile</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;vmlinuz-&quot;</span><span class="p">,</span> <span class="s2">&quot;initrd-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.img&quot;</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;rebuilding </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut warnings about /proc are safe to ignore&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">DracutChroot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">)</span> <span class="k">as</span> <span class="n">dracut</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernels</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+                    <span class="n">idir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                    <span class="n">outfile</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">idir</span><span class="p">,</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="o">+</span><span class="s1">&#39;.img&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s2">&quot;initrd&quot;</span><span class="p">):</span>
+                    <span class="c1"># If there is an existing initrd, use that</span>
+                    <span class="n">outfile</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">initrd</span><span class="o">.</span><span class="n">path</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Construct an initrd from the kernel name</span>
+                    <span class="n">outfile</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;vmlinuz-&quot;</span><span class="p">,</span> <span class="s2">&quot;initrd-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.img&quot;</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;rebuilding </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">backup</span><span class="p">:</span>
-                <span class="n">initrd</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">initrd</span><span class="p">):</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">initrd</span><span class="p">,</span> <span class="n">initrd</span> <span class="o">+</span> <span class="n">backup</span><span class="p">)</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="n">dracut</span> <span class="o">+</span> <span class="p">[</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">]</span>
-            <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">)</span></div>
+                <span class="k">if</span> <span class="n">backup</span><span class="p">:</span>
+                    <span class="n">initrd</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">initrd</span><span class="p">):</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">initrd</span><span class="p">,</span> <span class="n">initrd</span> <span class="o">+</span> <span class="n">backup</span><span class="p">)</span>
+                <span class="n">dracut</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">args</span> <span class="o">+</span> <span class="p">[</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="TreeBuilder.build"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">templatefile</span> <span class="o">=</span> <span class="n">templatemap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">]</span>

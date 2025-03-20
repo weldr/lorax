@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>mkksiso &mdash; Lorax 34.9.0 documentation</title>
+  <title>mkksiso &mdash; Lorax 34.9.27 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                34.9.0
+                34.9.27
               </div>
             
           
@@ -92,13 +92,18 @@
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">mkksiso</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#mkksiso-cmdline-arguments">mkksiso cmdline arguments</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#optional-arguments">Optional arguments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#positional-arguments">Positional arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#create-a-kickstart-boot-iso-or-dvd">Create a kickstart boot.iso or DVD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#adding-package-repos-to-a-boot-iso">Adding package repos to a boot.iso</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-a-liveimg-boot-iso">Create a liveimg boot.iso</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#modifying-kernel-cmdline-arguments">Modifying kernel cmdline arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#removing-arguments">Removing arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#changing-existing-arguments">Changing existing arguments</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#how-it-works">How it works</a></li>
 </ul>
 </li>
@@ -182,52 +187,74 @@
 you can add a kickstart to a boot.iso and the kickstart will be executed when
 the iso is booted. If the original iso was created with EFI and Mac support the
 kickstart boot.iso will include this support as well.</p>
-<p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> needs to be run as root, it depends on mounting the original iso
-and you need to be root to be able to do that.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> The host system architecture needs to match that of the iso.
+<code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> will raise an error if it finds a .discinfo on the iso with a
+mismatched arch.</p>
+<p>As of version 37.1 <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> can be run by normal users. It no longer needs
+to mount the iso to add the kickstart or edit the configuration files.</p>
 <div class="section" id="mkksiso-cmdline-arguments">
 <h2>mkksiso cmdline arguments<a class="headerlink" href="#mkksiso-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
-<p>Add a kickstart and files to an iso</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">usage:</span> <span class="pre">mkksiso</span> <span class="pre">[-h]</span> <span class="pre">[-a</span> <span class="pre">ADD_PATHS]</span> <span class="pre">[-c</span> <span class="pre">CMDLINE]</span> <span class="pre">[--debug]</span> <span class="pre">ks</span> <span class="pre">input_iso</span> <span class="pre">output_iso</span></code></p>
-</div></blockquote>
-<div class="section" id="optional-arguments">
-<h3>Optional arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><dl class="option-list">
-<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
-<dd><p>show this help message and exit</p>
+<p><p>Add a kickstart and files to an iso</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mkksiso</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ADD_PATHS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CMDLINE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">md5sum</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KICKSTART</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">-</span><span class="n">u</span> <span class="n">IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">R</span> <span class="n">FROM</span> <span class="n">TO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">mkefiboot</span><span class="p">]</span>
+               <span class="p">[</span><span class="n">KICKSTART</span><span class="p">]</span> <span class="n">input_iso</span> <span class="n">output_iso</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>KICKSTART</kbd></dt>
+<dd><p>Optional kickstart to add to the ISO</p>
 </dd>
-<dt><kbd><span class="option">-a <var>ADD_PATHS</var></span>, <span class="option">--add <var>ADD_PATHS</var></span></kbd></dt>
-<dd><p>File or directory to add to ISO (may be used multiple
-times)</p>
+<dt><kbd>input_iso</kbd></dt>
+<dd><p>ISO to modify</p>
 </dd>
-<dt><kbd><span class="option">-c <var>CMDLINE</var></span>, <span class="option">--cmdline <var>CMDLINE</var></span></kbd></dt>
+<dt><kbd>output_iso</kbd></dt>
+<dd><p>Full pathname of iso to be created</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-a, --add</kbd></dt>
+<dd><p>File or directory to add to ISO (may be used multiple times)</p>
+<p>Default: []</p>
+</dd>
+<dt><kbd>-c, --cmdline</kbd></dt>
 <dd><p>Arguments to add to kernel cmdline</p>
+<p>Default: &quot;&quot;</p>
 </dd>
-<dt><kbd><span class="option">--debug</span></kbd></dt>
+<dt><kbd>-r, --rm-args</kbd></dt>
+<dd><p>Space separated list of arguments to remove from the kernel cmdline</p>
+<p>Default: &quot;&quot;</p>
+</dd>
+<dt><kbd>--debug</kbd></dt>
 <dd><p>print debugging info</p>
+<p>Default: 20</p>
 </dd>
-<dt><kbd><span class="option">-V <var>VOLID</var></span>, <span class="option">--volid <var>VOLID</var></span></kbd></dt>
+<dt><kbd>--no-md5sum</kbd></dt>
+<dd><p>Do not run implantisomd5 on the ouput iso</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--ks</kbd></dt>
+<dd><p>Optional kickstart to add to the ISO (adding inst.ks automatically)</p>
+</dd>
+<dt><kbd>-u, --updates</kbd></dt>
+<dd><p>Optional updates image to add to the ISO (adding inst.updates automatically)</p>
+</dd>
+<dt><kbd>-V, --volid</kbd></dt>
 <dd><p>Set the ISO volume id, defaults to input's</p>
 </dd>
-</dl>
-</div></blockquote>
-</div>
-<div class="section" id="positional-arguments">
-<h3>Positional arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">ks</dt>
-<dd class="field-odd"><p>Kickstart to add to the ISO</p>
+<dt><kbd>-R, --replace</kbd></dt>
+<dd><p>Replace string in grub.cfg. Can be used multiple times</p>
 </dd>
-<dt class="field-even">input_iso</dt>
-<dd class="field-even"><p>ISO to modify</p>
-</dd>
-<dt class="field-odd">output_iso</dt>
-<dd class="field-odd"><p>Full pathname of iso to be created</p>
+<dt><kbd>--skip-mkefiboot</kbd></dt>
+<dd><p>Skip running mkefiboot</p>
+<p>Default: False</p>
 </dd>
 </dl>
-</div></blockquote>
 </div>
 </div>
 <div class="section" id="create-a-kickstart-boot-iso-or-dvd">
@@ -237,7 +264,7 @@ times)</p>
 <code class="docutils literal notranslate"><span class="pre">url</span></code> and <code class="docutils literal notranslate"><span class="pre">repo</span></code> commands.  If you are creating a DVD and only need the
 content on the DVD you can use the <code class="docutils literal notranslate"><span class="pre">cdrom</span></code> command to install without a
 network connection. Then run <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
 </pre></div>
 </div>
 <p>This will create a new iso with the kickstart in the root directory, and the
@@ -247,7 +274,7 @@ want to wipe out! There will be no prompting).</p>
 <p>By default the volume id of the iso is preserved. You can set a custom volid
 by passing <code class="docutils literal notranslate"><span class="pre">-V</span></code> and the string to set. The kernel cmdline will be changes, and the iso will have th custom volume id.
 eg.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">-</span><span class="n">V</span> <span class="s2">&quot;Test Only&quot;</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">-</span><span class="n">V</span> <span class="s2">&quot;Test Only&quot;</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
 </pre></div>
 </div>
 </div>
@@ -262,7 +289,7 @@ the kickstart like this:</p>
 </pre></div>
 </div>
 <p>Run <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> like so:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">add</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">REPO</span><span class="o">/</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">add</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">REPO</span><span class="o">/</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
 </pre></div>
 </div>
 </div>
@@ -284,11 +311,39 @@ and in the kickstart reference it with the <code class="docutils literal notrans
 </div>
 <p>It is also a good idea to use the <code class="docutils literal notranslate"><span class="pre">--checksum</span></code> argument to <code class="docutils literal notranslate"><span class="pre">liveimg</span></code>  to be
 sure the file hasn't been corrupted:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">add</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">root</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">xz</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">add</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">root</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">xz</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">KICKSTART</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
 </pre></div>
 </div>
 <p>When this iso is booted it will execute the kickstart and install the liveimg
 contents to the system without any prompting.</p>
+</div>
+<div class="section" id="modifying-kernel-cmdline-arguments">
+<h2>Modifying kernel cmdline arguments<a class="headerlink" href="#modifying-kernel-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>You can add arguments to the kernel cmdline in the ISO config files by using
+<code class="docutils literal notranslate"><span class="pre">--cmdline</span></code>, like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">cmdline</span> <span class="s2">&quot;console=ttyS0,115200n8&quot;</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
+</pre></div>
+</div>
+<div class="section" id="removing-arguments">
+<h3>Removing arguments<a class="headerlink" href="#removing-arguments" title="Permalink to this headline">¶</a></h3>
+<p>mkksiso version 37.3 and later support removing arguments from the cmdline. This can be done
+with or without adding a kickstart to the iso:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">rm</span> <span class="s2">&quot;quiet console&quot;</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
+</pre></div>
+</div>
+<p>will remove the quiet and console arguments from all the the kernel cmdlines on the ISO.</p>
+</div>
+<div class="section" id="changing-existing-arguments">
+<h3>Changing existing arguments<a class="headerlink" href="#changing-existing-arguments" title="Permalink to this headline">¶</a></h3>
+<p>With the combination of <code class="docutils literal notranslate"><span class="pre">--rm</span></code> and <code class="docutils literal notranslate"><span class="pre">--command</span></code> it is now possible to change
+existing arguments. For example let's say the ISO has a console=tty3 set on the
+cmdline. You want to change that to ttyS0 so you run this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkksiso</span> <span class="o">--</span><span class="n">cmdline</span> <span class="s2">&quot;console=ttyS0,115200n8&quot;</span> <span class="o">--</span><span class="n">rm</span> <span class="s2">&quot;console&quot;</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">ISO</span> <span class="o">/</span><span class="n">PATH</span><span class="o">/</span><span class="n">TO</span><span class="o">/</span><span class="n">NEW</span><span class="o">-</span><span class="n">ISO</span>
+</pre></div>
+</div>
+<p>which will first remove all instances of console in the config files, and
+then add the new console argument.</p>
+</div>
 </div>
 <div class="section" id="how-it-works">
 <h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>pylorax.mount &mdash; Lorax 34.10 documentation</title>
+  <title>pylorax.mount &mdash; Lorax 34.9.27 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.10
+                34.9.27
               </div>
             
           
@@ -221,7 +221,8 @@
 
         <span class="n">kernel_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;/isolinux/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/isolinux/initrd.img&quot;</span><span class="p">),</span>
                        <span class="p">(</span><span class="s2">&quot;/ppc/ppc64/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/ppc/ppc64/initrd.img&quot;</span><span class="p">),</span>
-                       <span class="p">(</span><span class="s2">&quot;/images/pxeboot/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/images/pxeboot/initrd.img&quot;</span><span class="p">)]</span>
+                       <span class="p">(</span><span class="s2">&quot;/images/pxeboot/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/images/pxeboot/initrd.img&quot;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s2">&quot;/images/kernel.img&quot;</span><span class="p">,</span> <span class="s2">&quot;/images/initrd.img&quot;</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/repodata&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>pylorax.creator &mdash; Lorax 34.10 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 34.9.27 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.10
+                34.9.27
               </div>
             
           
@@ -197,8 +197,8 @@
 <span class="c1"># Use the Lorax treebuilder branch for iso creation</span>
 <span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">ArchData</span>
 <span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithRedirect</span><span class="p">,</span> <span class="n">runcmd</span>
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">PartitionMount</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithRedirect</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">DracutChroot</span><span class="p">,</span> <span class="n">PartitionMount</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span><span class="p">,</span> <span class="n">Mount</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mksquashfs</span><span class="p">,</span> <span class="n">mkrootfsimg</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">copytree</span>
@@ -209,7 +209,7 @@
 
 
 <span class="c1"># Default parameters for rebuilding initramfs, override with --dracut-arg or --dracut-conf</span>
-<span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;livenet dmsquash-live dmsquash-live-ntfs convertfs pollcdrom qemu qemu-net&quot;</span><span class="p">,</span>
+<span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;livenet dmsquash-live convertfs pollcdrom qemu qemu-net&quot;</span><span class="p">,</span>
                   <span class="s2">&quot;--omit&quot;</span><span class="p">,</span> <span class="s2">&quot;plymouth&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-hostonly&quot;</span><span class="p">,</span> <span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">]</span>
 
 <span class="n">RUNTIME</span> <span class="o">=</span> <span class="s2">&quot;images/install.img&quot;</span>
@@ -309,8 +309,8 @@
         <span class="k">return</span> <span class="n">DRACUT_DEFAULT</span></div>
 
 <div class="viewcode-block" id="make_appliance"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_appliance">[docs]</a><span class="k">def</span> <span class="nf">make_appliance</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">networks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ram</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
-                   <span class="n">vcpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span>
-                   <span class="n">releasever</span><span class="o">=</span><span class="s2">&quot;34&quot;</span><span class="p">):</span>
+                   <span class="n">vcpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Red Hat Enterprise Linux&quot;</span><span class="p">,</span>
+                   <span class="n">project</span><span class="o">=</span><span class="s2">&quot;Red Hat Enterprise Linux&quot;</span><span class="p">,</span> <span class="n">releasever</span><span class="o">=</span><span class="s2">&quot;9&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate an appliance description file</span>
 
@@ -322,9 +322,9 @@
 <span class="sd">    :param int ram: Ram, in MiB, passed to template. Default is 1024</span>
 <span class="sd">    :param int vcpus: CPUs, passed to template. Default is 1</span>
 <span class="sd">    :param str arch: CPU architecture. Default is &#39;x86_64&#39;</span>
-<span class="sd">    :param str title: Title, passed to template. Default is &#39;Linux&#39;</span>
-<span class="sd">    :param str project: Project, passed to template. Default is &#39;Linux&#39;</span>
-<span class="sd">    :param str releasever: Release version, passed to template. Default is 34</span>
+<span class="sd">    :param str title: Title, passed to template. Default is &#39;Red Hat Enterprise Linux&#39;</span>
+<span class="sd">    :param str project: Project, passed to template. Default is &#39;Red Hat Enterprise Linux&#39;</span>
+<span class="sd">    :param str releasever: Release version, passed to template. Default is 9</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">disk_img</span> <span class="ow">and</span> <span class="n">template</span> <span class="ow">and</span> <span class="n">outfile</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -379,7 +379,7 @@
     <span class="n">product</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
                             <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">isfinal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">fake_dbo</span><span class="p">)</span>
+    <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">fake_dbo</span><span class="p">,</span> <span class="n">skip_branding</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">squashfs_only</span><span class="p">:</span>
@@ -404,7 +404,7 @@
     <span class="c1"># cmdline dracut args override the defaults, but need to be parsed</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut args = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">))</span>
 
-    <span class="n">dracut</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dracut&quot;</span><span class="p">,</span> <span class="s2">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s2">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s2">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dracut_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
 
     <span class="n">kdir</span> <span class="o">=</span> <span class="s2">&quot;boot&quot;</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">ostree</span><span class="p">:</span>
@@ -433,25 +433,18 @@
 
     <span class="c1"># Write the new initramfs directly to the results directory</span>
     <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">))</span>
-    <span class="n">mount</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;bind&quot;</span><span class="p">,</span> <span class="n">mnt</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">))</span>
-    <span class="c1"># Dracut runs out of space inside the minimal rootfs image</span>
-    <span class="n">mount</span><span class="p">(</span><span class="s2">&quot;/var/tmp&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;bind&quot;</span><span class="p">,</span> <span class="n">mnt</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;var/tmp&quot;</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">kernels</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s2">&quot;initrd&quot;</span><span class="p">):</span>
-            <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">initrd</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Construct an initrd from the kernel name</span>
-            <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;vmlinuz-&quot;</span><span class="p">,</span> <span class="s2">&quot;initrd-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.img&quot;</span><span class="p">)</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;rebuilding </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;dracut warnings about /proc are safe to ignore&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">DracutChroot</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">bind</span><span class="o">=</span><span class="p">[(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;/results&quot;</span><span class="p">)])</span> <span class="k">as</span> <span class="n">dracut</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">kernels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s2">&quot;initrd&quot;</span><span class="p">):</span>
+                <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">initrd</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Construct an initrd from the kernel name</span>
+                <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;vmlinuz-&quot;</span><span class="p">,</span> <span class="s2">&quot;initrd-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.img&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;rebuilding </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
 
-        <span class="n">kver</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="n">dracut</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;/results/&quot;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kver</span><span class="p">]</span>
-        <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">sys_root_dir</span><span class="p">)</span>
-
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">results_dir</span><span class="p">)</span>
-    <span class="n">umount</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;var/tmp&quot;</span><span class="p">),</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">umount</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">),</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+            <span class="n">kver</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span>
+            <span class="n">dracut</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">args</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;/results/&quot;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kver</span><span class="p">])</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">results_dir</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="create_pxe_config"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.create_pxe_config">[docs]</a><span class="k">def</span> <span class="nf">create_pxe_config</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">images_dir</span><span class="p">,</span> <span class="n">live_image_name</span><span class="p">,</span> <span class="n">add_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -774,9 +767,13 @@
         <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;repo can only be used with the url install method. Add url to your &quot;</span>
                       <span class="s2">&quot;kickstart file.&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;nfs&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
-        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must activate networking if &quot;</span>
-                      <span class="s2">&quot;the url or nfs install method is used.&quot;</span><span class="p">)</span>
+    <span class="c1"># file: url does not need networking</span>
+    <span class="c1"># other url and nfs sources do need networking</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;nfs&quot;</span> <span class="ow">or</span> \
+           <span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;url&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;file:&quot;</span><span class="p">)):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must activate networking if &quot;</span>
+                          <span class="s2">&quot;the url or nfs install method is used.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">displaymode</span><span class="o">.</span><span class="n">displayMode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must not set a display mode (text, cmdline, &quot;</span>

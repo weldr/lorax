@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>pylorax.installer &mdash; Lorax 34.10 documentation</title>
+  <title>pylorax.installer &mdash; Lorax 34.9.27 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                34.10
+                34.9.27
               </div>
             
           
@@ -296,14 +296,6 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run qemu using an iso and a kickstart</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Mapping of arch to qemu command</span>
-    <span class="n">QEMU_CMDS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x86_64&quot;</span><span class="p">:</span>  <span class="s2">&quot;qemu-system-x86_64&quot;</span><span class="p">,</span>
-                 <span class="s2">&quot;i386&quot;</span><span class="p">:</span>    <span class="s2">&quot;qemu-system-i386&quot;</span><span class="p">,</span>
-                 <span class="s2">&quot;arm&quot;</span><span class="p">:</span>     <span class="s2">&quot;qemu-system-arm&quot;</span><span class="p">,</span>
-                 <span class="s2">&quot;aarch64&quot;</span><span class="p">:</span> <span class="s2">&quot;qemu-system-aarch64&quot;</span><span class="p">,</span>
-                 <span class="s2">&quot;ppc64le&quot;</span><span class="p">:</span> <span class="s2">&quot;qemu-system-ppc64&quot;</span>
-                <span class="p">}</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">iso</span><span class="p">,</span> <span class="n">ks_paths</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
                  <span class="n">kernel_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">vcpus</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vnc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
@@ -321,7 +313,7 @@
 <span class="sd">        :param int memory: Amount of RAM to assign to the virt, in MiB</span>
 <span class="sd">        :param int vcpus: Number of virtual cpus</span>
 <span class="sd">        :param str vnc: Arguments to pass to qemu -display</span>
-<span class="sd">        :param str arch: Optional architecture to use in the virt</span>
+<span class="sd">        :param str arch: Unsupported in RHEL9</span>
 <span class="sd">        :param cancel_func: Function that returns True if the installation fails</span>
 <span class="sd">        :type cancel_func: function</span>
 <span class="sd">        :param str virtio_host: Hostname to connect virtio log to</span>
@@ -330,9 +322,10 @@
 <span class="sd">        :param bool boot_uefi: Use OVMF to boot the VM in UEFI mode</span>
 <span class="sd">        :param str ovmf_path: Path to the OVMF firmware</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Lookup qemu-system- for arch if passed, or try to guess using host arch</span>
-        <span class="n">qemu_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">QEMU_CMDS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arch</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">machine</span><span class="p">,</span> <span class="s2">&quot;qemu-system-&quot;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">machine</span><span class="p">)]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/usr/bin/&quot;</span><span class="o">+</span><span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="c1"># RHEL9 only supports 1 path for the qemu-kvm binary</span>
+        <span class="n">qemu_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/usr/libexec/qemu-kvm&quot;</span><span class="p">,</span> <span class="s2">&quot;-cpu&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> does not exist, cannot run qemu&quot;</span> <span class="o">%</span> <span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-no-user-config&quot;</span><span class="p">]</span>
@@ -369,7 +362,7 @@
 
         <span class="c1"># Setup the cmdline args</span>
         <span class="c1"># ======================</span>
-        <span class="n">cmdline_args</span> <span class="o">=</span> <span class="s2">&quot;ks=file:/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ks_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">cmdline_args</span> <span class="o">=</span> <span class="s2">&quot;inst.ks=file:/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ks_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">cmdline_args</span> <span class="o">+=</span> <span class="s2">&quot; inst.stage2=hd:LABEL=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">udev_escape</span><span class="p">(</span><span class="n">iso</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
             <span class="n">cmdline_args</span> <span class="o">+=</span> <span class="s2">&quot; inst.proxy=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span>
@@ -388,6 +381,9 @@
             <span class="n">display_args</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;qemu </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">display_args</span><span class="p">)</span>
         <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-nographic&quot;</span><span class="p">,</span> <span class="s2">&quot;-monitor&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;-serial&quot;</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="s2">&quot;-display&quot;</span><span class="p">,</span> <span class="n">display_args</span> <span class="p">]</span>
+
+        <span class="c1"># Setup virtio networking</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-netdev&quot;</span><span class="p">,</span> <span class="s2">&quot;user,id=n1&quot;</span><span class="p">,</span> <span class="s2">&quot;-device&quot;</span><span class="p">,</span> <span class="s2">&quot;virtio-net-pci,netdev=n1&quot;</span><span class="p">]</span>
 
         <span class="c1"># Setup the virtio log port</span>
         <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-device&quot;</span><span class="p">,</span> <span class="s2">&quot;virtio-serial-pci,id=virtio-serial0&quot;</span><span class="p">]</span>
