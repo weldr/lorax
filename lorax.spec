@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.26
+Version:        34.9.27
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Mar 20 2025 Brian C. Lane <bcl@redhat.com> 34.9.27-1
+- New lorax documentation - 34.9.27 (bcl) (bcl)
+  Related: RHEL-83208
+- mkksiso: Update to newer version supporting rebuilding efiboot.img (bcl)
+  Resolves: RHEL-83208
+- livemedia-creator: Set 0755 permission on / cpio overlay (bcl) (bcl)
+  Resolves: RHEL-83519
+
 * Thu Jul 18 2024 Brian C. Lane <bcl@redhat.com> 34.9.26-1
 - monitor: Skip repo errors involving CDROM/file source (bcl) (bcl)
   Resolves: RHEL-4658
