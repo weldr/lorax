@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.11
+Version:        40.5.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Mar 20 2025 Brian C. Lane <bcl@redhat.com> 40.5.12-1
+- mkksiso: Fix rebuilding the efiboot.img on some systems (bcl)
+  Resolves: RHEL-83202
+- livemedia-creator: Set 0755 permission on / cpio overlay (bcl)
+  Resolves: RHEL-83519
+
 * Mon Jan 20 2025 Brian C. Lane <bcl@redhat.com> 40.5.11-1
 - erofs: Make smaller lzma erofs images by default (bcl)
   Related: RHEL-48606
