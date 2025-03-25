@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        43.1
+Version:        43.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -183,6 +183,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Mar 25 2025 Brian C. Lane <bcl@redhat.com> 43.2-1
+- spec: update lorax-lmc-virt dependencies (yselkowi@redhat.com)
+- livemedia-creator: Set 0755 permission on / cpio overlay (bcl@redhat.com)
+
 * Mon Mar 10 2025 Brian C. Lane <bcl@redhat.com> 43.1-1
 - runtime-postinstall: Remove systemd-gpt-auto-generator (bcl@redhat.com)
 
