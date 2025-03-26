@@ -31,11 +31,6 @@ installpkg grubby
     ## https://bugzilla.redhat.com/show_bug.cgi?id=2152202
     ## qcom-firmware we pull in again lower down but *only* on aarch64, it is
     ## no use on other arches - https://bugzilla.redhat.com/show_bug.cgi?id=2178852
-    ## various iwl package names were changed in linux-firmware-20230625-151
-    ## so need to be excluded or else dnf gets sad - see
-    ## https://pagure.io/releng/issue/11511 . These exclusions can
-    ## be dropped after F38 goes EOL . Ditto libertas separate packages
-    ## obsoleted in linux-firmware-20230804-152
     installpkg --optional *-firmware --except alsa* --except midisport-firmware \
                            --except crystalhd-firmware --except ivtv-firmware \
                            --except cx18-firmware --except iscan-firmware \
@@ -45,18 +40,6 @@ installpkg grubby
                            --except mrvlprestera-firmware --except mlxsw_spectrum-firmware \
                            --except hackrf-firmware --except python-virt-firmware \
                            --except python3-virt-firmware \
-                           --except iwl3945-firmware --except iwl4965-firmware \
-                           --except iwl100-firmware --except iwl105-firmware \
-                           --except iwl135-firmware --except iwl1000-firmware \
-                           --except iwl2000-firmware --except iwl2030-firmware \
-                           --except iwl5000-firmware --except iwl5150-firmware \
-                           --except iwl6000-firmware --except iwl6000g2a-firmware \
-                           --except iwl6000g2b-firmware --except iwl6050-firmware \
-                           --except iwl3160-firmware --except iwl7260-firmware \
-                           --except iwlax2xx-firmware \
-                           --except libertas-sd8686-firmware --except libertas-sd8787-firmware \
-                           --except libertas-usb8388-firmware \
-                           --except libertas-usb8388-olpc-firmware \
                            --except qcom-firmware
     installpkg b43-openfwwf
 %endif
