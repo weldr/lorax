@@ -31,6 +31,8 @@ installpkg grubby
     ## https://bugzilla.redhat.com/show_bug.cgi?id=2152202
     ## qcom-firmware we pull in again lower down but *only* on aarch64, it is
     ## no use on other arches - https://bugzilla.redhat.com/show_bug.cgi?id=2178852
+    ## similarly amd-ucode-firmware is *only* useful on x86_64 so we pull
+    ## it in there later
     ## python virt firmware packages obviously aren't 'real' firmware
     ## crust-firmware is arm uboot stuff; we don't need a copy at this
     ## level, it is built into the uboot firmware - see
@@ -46,7 +48,8 @@ installpkg grubby
                            --except mrvlprestera-firmware --except mlxsw_spectrum-firmware \
                            --except hackrf-firmware --except python-virt-firmware \
                            --except python3-virt-firmware --except crust-firmware \
-                           --except qcom-firmware
+                           --except qcom-firmware \
+                           --except amd-ucode-firmware
     installpkg b43-openfwwf
 %endif
 
@@ -73,6 +76,7 @@ installpkg glibc-all-langpacks
     installpkg grub2-tools>=${GRUB2VER} grub2-tools-minimal>=${GRUB2VER}
     installpkg grub2-tools-extra>=${GRUB2VER}
     installpkg grub2-pc-modules>=${GRUB2VER}
+    installpkg amd-ucode-firmware
 %endif
 %if basearch == "ppc64le":
     installpkg powerpc-utils lsvpd ppc64-diag
