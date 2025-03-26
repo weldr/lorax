@@ -31,6 +31,10 @@ installpkg grubby
     ## https://bugzilla.redhat.com/show_bug.cgi?id=2152202
     ## qcom-firmware we pull in again lower down but *only* on aarch64, it is
     ## no use on other arches - https://bugzilla.redhat.com/show_bug.cgi?id=2178852
+    ## python virt firmware packages obviously aren't 'real' firmware
+    ## crust-firmware is arm uboot stuff; we don't need a copy at this
+    ## level, it is built into the uboot firmware - see
+    ## https://bugzilla.redhat.com/show_bug.cgi?id=2352679#c13
     installpkg --optional *-firmware --except alsa* --except midisport-firmware \
                            --except crystalhd-firmware --except ivtv-firmware \
                            --except cx18-firmware --except iscan-firmware \
@@ -41,7 +45,7 @@ installpkg grubby
                            --except liquidio-firmware --except netronome-firmware \
                            --except mrvlprestera-firmware --except mlxsw_spectrum-firmware \
                            --except hackrf-firmware --except python-virt-firmware \
-                           --except python3-virt-firmware \
+                           --except python3-virt-firmware --except crust-firmware \
                            --except qcom-firmware
     installpkg b43-openfwwf
 %endif
