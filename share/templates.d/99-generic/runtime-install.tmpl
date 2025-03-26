@@ -31,33 +31,25 @@ installpkg grubby
     ## https://bugzilla.redhat.com/show_bug.cgi?id=2152202
     ## qcom-firmware we pull in again lower down but *only* on aarch64, it is
     ## no use on other arches - https://bugzilla.redhat.com/show_bug.cgi?id=2178852
-    ## various iwl package names were changed in linux-firmware-20230625-151
-    ## so need to be excluded or else dnf gets sad - see
-    ## https://pagure.io/releng/issue/11511 . These exclusions can
-    ## be dropped after F38 goes EOL . Ditto libertas separate packages
-    ## obsoleted in linux-firmware-20230804-152
+    ## similarly amd-ucode-firmware is *only* useful on x86_64 so we pull
+    ## it in there later
+    ## python virt firmware packages obviously aren't 'real' firmware
+    ## crust-firmware is arm uboot stuff; we don't need a copy at this
+    ## level, it is built into the uboot firmware - see
+    ## https://bugzilla.redhat.com/show_bug.cgi?id=2352679#c13
     installpkg --optional *-firmware --except alsa* --except midisport-firmware \
                            --except crystalhd-firmware --except ivtv-firmware \
                            --except cx18-firmware --except iscan-firmware \
+                           --except dvb-firmware --except cirrus-audio-firmware \
+                           --except intel-audio-firmware  --except intel-vsc-firmware \
                            --except uhd-firmware --except lulzbot-marlin-firmware \
                            --except gnome-firmware --except sigrok-firmware \
                            --except liquidio-firmware --except netronome-firmware \
                            --except mrvlprestera-firmware --except mlxsw_spectrum-firmware \
                            --except hackrf-firmware --except python-virt-firmware \
-                           --except python3-virt-firmware \
-                           --except iwl3945-firmware --except iwl4965-firmware \
-                           --except iwl100-firmware --except iwl105-firmware \
-                           --except iwl135-firmware --except iwl1000-firmware \
-                           --except iwl2000-firmware --except iwl2030-firmware \
-                           --except iwl5000-firmware --except iwl5150-firmware \
-                           --except iwl6000-firmware --except iwl6000g2a-firmware \
-                           --except iwl6000g2b-firmware --except iwl6050-firmware \
-                           --except iwl3160-firmware --except iwl7260-firmware \
-                           --except iwlax2xx-firmware \
-                           --except libertas-sd8686-firmware --except libertas-sd8787-firmware \
-                           --except libertas-usb8388-firmware \
-                           --except libertas-usb8388-olpc-firmware \
-                           --except qcom-firmware
+                           --except python3-virt-firmware --except crust-firmware \
+                           --except qcom-firmware \
+                           --except amd-ucode-firmware
     installpkg b43-openfwwf
 %endif
 
@@ -84,6 +76,7 @@ installpkg glibc-all-langpacks
     installpkg grub2-tools>=${GRUB2VER} grub2-tools-minimal>=${GRUB2VER}
     installpkg grub2-tools-extra>=${GRUB2VER}
     installpkg grub2-pc-modules>=${GRUB2VER}
+    installpkg amd-ucode-firmware
 %endif
 %if basearch == "ppc64le":
     installpkg powerpc-utils lsvpd ppc64-diag
