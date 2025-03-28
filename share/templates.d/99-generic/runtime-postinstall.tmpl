@@ -22,6 +22,13 @@ append etc/mdadm.conf "HOMEHOST <ignore>\n"
 remove etc/systemd/system/default.target
 symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
 
+## Allow pipewire.service and pipewire.socket to run as root
+## https://bugzilla.redhat.com/show_bug.cgi?id=2355207
+mkdir etc/systemd/user/pipewire.service.d/
+install ${configdir}/systemd-allowroot.conf etc/systemd/user/pipewire.service.d/allowroot.conf
+mkdir etc/systemd/user/pipewire.socket.d/
+install ${configdir}/systemd-allowroot.conf etc/systemd/user/pipewire.socket.d/allowroot.conf
+
 ## Make sure tmpfs is enabled
 mkdir etc/systemd/system/local-fs.target.wants/
 symlink /lib/systemd/system/tmp.mount etc/systemd/system/local-fs.target.wants/tmp.mount
