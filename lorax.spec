@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        43.2
+Version:        43.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -183,6 +183,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Mar 31 2025 Brian C. Lane <bcl@redhat.com> 43.3-1
+- config_files: Drop efi suffix from linuxefi and initrdefi in grub2-efi.cfg (bcl@redhat.com)
+- runtime-install: only install amd-ucode-firmware on x86_64 (awilliam@redhat.com)
+- runtime-install: exclude crust-firmware (awilliam@redhat.com)
+- runtime-cleanup: drop more video and audio firmwares (awilliam@redhat.com)
+- runtime-install: drop exceptions related to F38-era fw renames (awilliam@redhat.com)
+- runtime-postinstall: allow pipewire to run as root (awilliam@redhat.com)
+
 * Tue Mar 25 2025 Brian C. Lane <bcl@redhat.com> 43.2-1
 - spec: update lorax-lmc-virt dependencies (yselkowi@redhat.com)
 - livemedia-creator: Set 0755 permission on / cpio overlay (bcl@redhat.com)
