@@ -216,7 +216,8 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
 
     log.info("Fetching metadata...")
     try:
-        sack.update_and_load_enabled_repos(False)
+        # Only load available repos, not system repos
+        sack.load_repos(dnf5.repo.Repo.Type_AVAILABLE)
     except RuntimeError as e:
         log.error("Problem fetching metadata: %s", e)
         return None
