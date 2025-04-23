@@ -36,9 +36,8 @@ def get_file_magic(filename):
     """
     details = ""
     try:
-        ms = magic.open(magic.NONE)
-        ms.load()
-        details = ms.file(filename)
-    finally:
-        ms.close()
+        details = magic.from_file(filename)
+    except Exception:
+        pass
+
     return details
