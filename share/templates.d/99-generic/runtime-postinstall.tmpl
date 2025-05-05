@@ -97,7 +97,7 @@ append etc/shadow "install::14438:0:99999:7:::"
 append etc/passwd "install-user:x:1001:1001::/tmp/install-user:/usr/bin/bash"
 append etc/shadow "install-user::14438:0:99999:7:::"
 ## remove root password
-replace "root:\*:" "root::" etc/shadow
+replace "root:.*?:" "root::" etc/shadow
 
 ## gsettings settings
 install ${configdir}/org.gtk.Settings.Debug.gschema.override usr/share/glib-2.0/schemas

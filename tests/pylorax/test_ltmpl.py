@@ -284,6 +284,14 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
             data = f.read()
         self.assertEqual(data, "Running 1.2.3 for lorax\n")
 
+        # Check that replace on all 4 variations of a locked root result in an account with
+        # no password
+        for path in ["/etc/lorax-shadow-1", "/etc/lorax-shadow-2", "/etc/lorax-shadow-3",
+                     "/etc/lorax-shadow-1"]:
+            with open(joinpaths(self.root_dir, path)) as f:
+                data = f.read()
+            self.assertEqual(data, "root:::0:99999:7:::\n")
+
     def test_treeinfo(self):
         """Test treeinfo template command"""
         self.runner.run("treeinfo-cmd.tmpl")
