@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        43.3
+Version:        43.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -183,6 +183,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue May 06 2025 Brian C. Lane <bcl@redhat.com> 43.4-1
+- runtime-postinstall: Remove root password (bcl@redhat.com)
+  Resolves: rhbz#2364082
+- tests: Update magic module usage (bcl@redhat.com)
+- utils: Remove old filediff.py script (bcl@redhat.com)
+- dnfbase: Use load_repos instead of update_and_load_enabled_repos (bcl@redhat.com)
+  Fixes #1464
+
 * Mon Mar 31 2025 Brian C. Lane <bcl@redhat.com> 43.3-1
 - config_files: Drop efi suffix from linuxefi and initrdefi in grub2-efi.cfg (bcl@redhat.com)
 - runtime-install: only install amd-ucode-firmware on x86_64 (awilliam@redhat.com)
