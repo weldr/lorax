@@ -198,7 +198,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 - mkksiso: Update to newer version supporting rebuilding efiboot.img (bcl)
   Resolves: RHEL-83208
 - livemedia-creator: Set 0755 permission on / cpio overlay (bcl) (bcl)
-  Resolves: RHEL-83519
+  Resolves: RHEL-83986
 
 * Thu Jul 18 2024 Brian C. Lane <bcl@redhat.com> 34.9.26-1
 - monitor: Skip repo errors involving CDROM/file source (bcl) (bcl)
