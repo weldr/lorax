@@ -1,5 +1,5 @@
 ## lorax template file: cleanup for the ramdisk (runtime image)
-<%page args="libdir, branding, root"/>
+<%page args="branding, root"/>
 
 ## remove the sources
 remove usr/share/i18n
@@ -97,7 +97,7 @@ remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
 ## remove unused themes, theme engines, icons, etc.
-removefrom gtk3 /usr/${libdir}/gtk-3.0/*/printbackends/*
+removefrom gtk3 /usr/lib64/gtk-3.0/*/printbackends/*
 removefrom gtk3 /usr/share/themes/*
 
 ## filesystem tools
@@ -134,7 +134,7 @@ removefrom coreutils /usr/bin/who /usr/bin/whoami /usr/bin/yes
 removefrom coreutils-common /etc/* /usr/share/*
 removefrom cpio /usr/share/*
 removefrom cracklib /usr/*bin/*
-removefrom cracklib-dicts /usr/${libdir}/* /usr/*bin/*
+removefrom cracklib-dicts /usr/lib64/* /usr/*bin/*
 removefrom cryptsetup /usr/share/*
 removefrom cryptsetup-libs /usr/share/locale/*
 removefrom cyrus-sasl-lib /usr/*bin/*
@@ -157,9 +157,9 @@ removefrom gdisk /usr/share/*
 removefrom gdk-pixbuf2 /usr/share/locale*
 removefrom glib2 /usr/bin/* /usr/share/locale/*
 removefrom glibc /etc/gai.conf /etc/rpc
-removefrom glibc */${libdir}/libBrokenLocale*
-removefrom glibc */${libdir}/libanl*
-removefrom glibc */${libdir}/libnss_compat*
+removefrom glibc */lib64/libBrokenLocale*
+removefrom glibc */lib64/libanl*
+removefrom glibc */lib64/libnss_compat*
 # python-pyudev uses ctypes.util.find_library, which uses /sbin/ldconfig
 removefrom glibc /usr/libexec/* /usr/*bin/iconvconfig
 removefrom glibc-common /usr/bin/gencat
@@ -173,24 +173,24 @@ removefrom google-noto-sans-cjk-fonts /usr/share/fonts/google-noto-sans-cjk-font
 removefrom google-noto-sans-vf-fonts /usr/share/fonts/google-noto-vf/NotoSans-Italic*
 removefrom google-noto-serif-vf-fonts /usr/share/fonts/google-noto-vf/NotoSerif*
 removefrom grep /etc/* /usr/share/locale/*
-removefrom gtk3 /usr/${libdir}/gtk-3.0/*
-removefrom gtk4 /usr/${libdir}/gtk-4.0/*
-removefrom guile22 /usr/${libdir}/guile/2.2/ccache*
+removefrom gtk3 /usr/lib64/gtk-3.0/*
+removefrom gtk4 /usr/lib64/gtk-4.0/*
+removefrom guile22 /usr/lib64/guile/2.2/ccache*
 removefrom gzip /usr/bin/{gzexe,zcmp,zdiff,zegrep,zfgrep,zforce,zgrep,zless,zmore,znew}
 removefrom hwdata /usr/share/hwdata/oui.txt /usr/share/hwdata/pnp.ids
 removefrom iproute --allbut /usr/*bin/{ip,routef,routel,rtpr}
 removefrom kbd --allbut */bin/{dumpkeys,kbd_mode,loadkeys,setfont,unicode_*,chvt}
 removefrom less /etc/*
 removefrom libX11-common /usr/share/X11/XErrorDB
-removefrom libcanberra /usr/${libdir}/libcanberra-*
+removefrom libcanberra /usr/lib64/libcanberra-*
 removefrom libcanberra-gtk3 /usr/bin/*
 removefrom libcap /usr/*bin/*
-removefrom libconfig /usr/${libdir}/libconfig++*
+removefrom libconfig /usr/lib64/libconfig++*
 removefrom liberation-sans-fonts /usr/share/fonts/liberation-sans/LiberationSans-{Bold*,Italic}.ttf
 removefrom liberation-serif-fonts /usr/share/fonts/liberation-serif/*
 removefrom liberation-mono-fonts /usr/share/fonts/liberation-mono/LiberationMono-{Bold*,Italic}.ttf
 removefrom libgpg-error /usr/bin/* /usr/share/locale/*
-removefrom libibverbs /usr/${libdir}/libmlx4*
+removefrom libibverbs /usr/lib64/libmlx4*
 removefrom libidn2 /usr/share/locale/*
 removefrom libnotify /usr/bin/*
 removefrom libsemanage /etc/selinux/*
@@ -258,15 +258,15 @@ removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.7.3.0.b
 removefrom lldpad /etc/*
 removefrom mdadm /etc/* /usr/lib/systemd/system/mdmonitor*
 ## gallium-pipe stuff is for compute (opencl), not needed for video
-removefrom mesa-dri-drivers /usr/${libdir}/dri/*_video.so /usr/lib64/gallium-pipe/*
+removefrom mesa-dri-drivers /usr/lib64/dri/*_video.so /usr/lib64/gallium-pipe/*
 removefrom mt-st /usr/*bin/stinit
 removefrom mtools /etc/*
-removefrom ncurses-libs /usr/${libdir}/libform*
+removefrom ncurses-libs /usr/lib64/libform*
 ## libmenu.so is needed by lp_diag binary from ppc64-diag which is a PowerPC specific package
 %if basearch != "ppc64le":
-    removefrom ncurses-libs /usr/${libdir}/libmenu*
+    removefrom ncurses-libs /usr/lib64/libmenu*
 %endif
-removefrom ncurses-libs /usr/${libdir}/libpanel.* /usr/${libdir}/libtic*
+removefrom ncurses-libs /usr/lib64/libpanel.* /usr/lib64/libtic*
 removefrom net-tools */bin/netstat */*bin/ether-wake */*bin/ipmaddr
 removefrom net-tools */*bin/iptunnel */*bin/mii-diag */*bin/mii-tool
 removefrom net-tools */*bin/nameif */*bin/plipconfig */*bin/slattach
@@ -281,7 +281,7 @@ removefrom nfs-utils /usr/*bin/rpcdebug
 removefrom nfs-utils /usr/*bin/showmount /usr/*bin/sm-notify
 removefrom nfs-utils /usr/*bin/start-statd /var/lib/nfs/etab
 removefrom nfs-utils /var/lib/nfs/rmtab /var/lib/nfs/statd/state
-removefrom nss-softokn /usr/${libdir}/nss/*
+removefrom nss-softokn /usr/lib64/nss/*
 removefrom openldap /etc/openldap/*
 removefrom openssh /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/ssh-*
@@ -296,7 +296,7 @@ removefrom procps-ng /usr/bin/snice /usr/bin/tload /usr/bin/uptime
 removefrom procps-ng /usr/bin/vmstat /usr/bin/w /usr/bin/watch
 removefrom psmisc /usr/share/locale/*
 removefrom python3-kickstart /usr/lib/python*/site-packages/pykickstart/locale/*
-removefrom readline /usr/${libdir}/libhistory*
+removefrom readline /usr/lib64/libhistory*
 removefrom libreport /usr/share/locale/*
 removefrom rdma-core /etc/rdma/mlx4.conf
 removefrom rpm /usr/bin/* /usr/share/locale/*
@@ -352,10 +352,10 @@ runcmd find ${root} -name "*.pyc" -type f -delete
 ## Clean up some of the mess pulled in by webkitgtk via yelp
 ## libwebkit2gtk links to a handful of libraries in gstreamer and
 ## gstreamer-plugins-base. Remove the rest of them.
-removefrom gstreamer1 --allbut /usr/${libdir}/libgstbase-1.0.* \
-                               /usr/${libdir}/libgstreamer-1.0.*
+removefrom gstreamer1 --allbut /usr/lib64/libgstbase-1.0.* \
+                               /usr/lib64/libgstreamer-1.0.*
 removefrom gstreamer1-plugins-base --allbut \
-        /usr/${libdir}/libgst{allocators,app,audio,fft,gl,pbutils,tag,video}-1.0.*
+        /usr/lib64/libgst{allocators,app,audio,fft,gl,pbutils,tag,video}-1.0.*
 
 ## We have enough geoip libraries, thanks
 removepkg geoclue2

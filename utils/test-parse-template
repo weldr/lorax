@@ -23,7 +23,7 @@ from pylorax.ltmpl import LoraxTemplate
 from mako.exceptions import text_error_template
 
 data = DataHolder()
-data.arch = DataHolder(basearch='ARCH.BASEARCH', buildarch='ARCH.BUILDARCH', libdir='ARCH.LIBDIR')
+data.arch = DataHolder(basearch='ARCH.BASEARCH', buildarch='ARCH.BUILDARCH')
 data.product = DataHolder(name='PRODUCT.NAME', version='PRODUCT.VERSION')
 data.glob = lambda g: ['glob.1', 'glob.2']
 data.exists = lambda e: True
@@ -31,7 +31,6 @@ data.udev = lambda s: "UDEV_ESCAPE(%s)" % s.upper()
 data.removelocales = ['REMOVELOCALE1', 'REMOVELOCALE2']
 data.kernels = [DataHolder(path="/path/to/vmlinuz", initrd=DataHolder(path="/path/to/initrd.img"), flavor=None, arch=data.arch.basearch)]
 data.basearch = data.arch.basearch          # pylint: disable=no-member
-data.libdir = data.arch.libdir              # pylint: disable=no-member
 
 def get_args(template):
     sig = inspect.signature(template.module.render_body)

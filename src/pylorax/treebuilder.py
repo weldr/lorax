@@ -95,7 +95,7 @@ class RuntimeBuilder(object):
         product.name = product.name.lower()
         self._branding = self.get_branding(skip_branding, product)
         self.vars = DataHolder(arch=arch, product=product, dbo=dbo, root=root,
-                               basearch=arch.basearch, libdir=arch.libdir,
+                               basearch=arch.basearch,
                                branding=self._branding)
         self._runner.defaults = self.vars
 
@@ -304,7 +304,7 @@ class TreeBuilder(object):
         self.vars = DataHolder(arch=arch, product=product, runtime_img=runtime,
                                runtime_base=basename(runtime),
                                inroot=inroot, outroot=outroot,
-                               basearch=arch.basearch, libdir=arch.libdir,
+                               basearch=arch.basearch,
                                isolabel=isolabel, udev=udev_escape, domacboot=domacboot, doupgrade=doupgrade,
                                workdir=workdir, lower=string_lower,
                                extra_boot_args=extra_boot_args)

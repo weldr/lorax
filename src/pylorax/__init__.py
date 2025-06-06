@@ -111,7 +111,6 @@ class ArchData(DataHolder):
         super(ArchData, self).__init__()
         self.buildarch = buildarch
         self.basearch = self._basearch(buildarch)
-        self.libdir = "lib64"
         self.bcj = self.bcj_arch.get(self.basearch)
 
 class Lorax(BaseLoraxClass):
@@ -297,7 +296,7 @@ class Lorax(BaseLoraxClass):
 
         logger.info("setting up build architecture")
         self.arch = ArchData(buildarch)
-        for attr in ('buildarch', 'basearch', 'libdir'):
+        for attr in ('buildarch', 'basearch'):
             logger.debug("self.arch.%s = %s", attr, getattr(self.arch,attr))
 
         logger.info("setting up build parameters")
