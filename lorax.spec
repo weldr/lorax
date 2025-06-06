@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.27
+Version:        34.9.28
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Jun 06 2025 Brian C. Lane <bcl@redhat.com> 34.9.28-1
+- templates.d: Synchronize with lorax-templates-rhel (bcl)
+  Related: RHEL-54712
+  Resolves: RHEL-69019
+- lorax: Change default rootfs size to 4GiB (bcl)
+  Resolves: RHEL-95360
+
 * Thu Mar 20 2025 Brian C. Lane <bcl@redhat.com> 34.9.27-1
 - New lorax documentation - 34.9.27 (bcl) (bcl)
   Related: RHEL-83208
