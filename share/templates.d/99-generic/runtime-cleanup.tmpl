@@ -153,7 +153,7 @@ removefrom coreutils /usr/bin/pathchk
 removefrom coreutils /usr/bin/pinky /usr/bin/pr /usr/bin/printenv
 removefrom coreutils /usr/bin/printf /usr/bin/ptx /usr/bin/runcon
 removefrom coreutils /usr/bin/sha224sum /usr/bin/sha384sum
-removefrom coreutils /usr/bin/sha512sum /usr/bin/shuf /usr/bin/stat
+removefrom coreutils /usr/bin/sha512sum /usr/bin/shuf
 removefrom coreutils /usr/bin/stdbuf /usr/bin/sum /usr/bin/test
 removefrom coreutils /usr/bin/timeout /usr/bin/truncate /usr/bin/tsort
 removefrom coreutils /usr/bin/unexpand /usr/bin/users /usr/bin/vdir
@@ -185,19 +185,17 @@ removefrom gdisk /usr/share/*
 removefrom gdk-pixbuf2 /usr/share/locale*
 removefrom glib2 /etc/* /usr/bin/* /usr/share/locale/*
 removefrom glibc /etc/gai.conf /etc/localtime /etc/rpc
-removefrom glibc /lib/*/nosegneg/* /${libdir}/libBrokenLocale*
-removefrom glibc /${libdir}/libSegFault* /${libdir}/libanl*
-removefrom glibc /${libdir}/libcidn* /${libdir}/libnss_compat*
-removefrom glibc /${libdir}/libnss_hesiod* /${libdir}/libnss_nis*
+removefrom glibc */${libdir}/libBrokenLocale*
+removefrom glibc */${libdir}/libSegFault* */${libdir}/libanl*
+removefrom glibc */${libdir}/libnss_compat*
 # python-pyudev uses ctypes.util.find_library, which uses /sbin/ldconfig
-removefrom glibc /${libdir}/rtkaio* /sbin/sln
-removefrom glibc /usr/libexec/* /usr/sbin/*
+removefrom glibc /usr/libexec/* /usr/*bin/iconvconfig
 removefrom glibc-common /etc/* /usr/bin/catchsegv /usr/bin/gencat
 removefrom glibc-common /usr/bin/getent
-removefrom glibc-common /usr/bin/locale /usr/bin/rpcgen /usr/bin/sprof
+removefrom glibc-common /usr/bin/locale /usr/bin/sprof
 # NB: we keep /usr/bin/localedef so anaconda can inspect payload locale info
-removefrom glibc-common /usr/bin/tzselect
-removefrom glibc-common /usr/libexec/* /usr/sbin/*
+removefrom glibc-common pusr/bin/tzselect
+removefrom glibc-common /usr/*bin/zic
 removefrom gmp /usr/${libdir}/libgmpxx.* /usr/${libdir}/libmp.*
 removefrom gnome-bluetooth-libs /usr/${libdir}/libgnome-bluetooth*
 removefrom gnome-bluetooth-libs /usr/share/*
@@ -280,7 +278,6 @@ removefrom openssh /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/ssh-*
 removefrom openssh-clients /usr/libexec/*
 removefrom openssh-server /etc/ssh/* /usr/libexec/openssh/sftp-server
-removefrom openssl /etc/pki/* /usr/bin/* /usr/${libdir}/openssl/*
 removefrom pam /usr/sbin/* /usr/share/locale/*
 removefrom policycoreutils /etc/* /usr/bin/* /usr/share/locale/*
 removefrom polkit /usr/bin/*

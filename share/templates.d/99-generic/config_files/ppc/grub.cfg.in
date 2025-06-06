@@ -1,4 +1,4 @@
-set default=0
+set default=1
 set timeout=5
 
 echo -e "\nWelcome to the @PRODUCT@ @VERSION@ installer!\n\n"
@@ -10,6 +10,11 @@ menuentry "Install @PRODUCT@ @VERSION@ (64-bit kernel)" --class fedora --class g
 
 menuentry "Test this media & install @PRODUCT@ @VERSION@  (64-bit kernel)" --class fedora --class gnu-linux --class  gnu --class os {
       linux /ppc/ppc64/vmlinuz @ROOT@ rd.live.check ro
+      initrd /ppc/ppc64/initrd.img
+}
+
+menuentry "Install @PRODUCT@ @VERSION@ (64-bit kernel) in FIPS mode" --class fedora --class gnu-linux --class gnu --class os {
+      linux /ppc/ppc64/vmlinuz @ROOT@ ro fips=1
       initrd /ppc/ppc64/initrd.img
 }
 
