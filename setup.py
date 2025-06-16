@@ -17,7 +17,7 @@ data_files.append(("/usr/bin", ["src/bin/lorax", "src/bin/mkefiboot",
                                 "src/bin/image-minimizer", "src/bin/mkksiso"]))
 
 setup(name="lorax",
-      version="43.4",
+      version="43.5",
       description="Lorax",
       long_description="Tools for creating bootable images, including the Anaconda boot.iso",
       author="Martin Gracik, Will Woods <wwoods@redhat.com>, Brian C. Lane <bcl@redhat.com>",
