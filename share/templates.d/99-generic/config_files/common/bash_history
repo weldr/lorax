@@ -6,6 +6,6 @@ tail -f /tmp/storage.log
 echo b > /proc/sysrq-trigger
 dmsetup table
 multipath -d
-HOME=/root chroot /mnt/sysimage bash -l -i
+HOME=/root chroot /mnt/sysroot bash -l -i
 less /tmp/anaconda.log
 grep -v _yum_lock /tmp/packaging.log
