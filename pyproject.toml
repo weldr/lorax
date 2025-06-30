@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=77.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pylorax"
+version = "43.7"
+authors = [
+    {name = "Martin Gracik"},
+    {name = "Will Woods"},
+]
+maintainers = [
+    {name = "Brian C. Lane", email = "bcl@redhat.com"},
+]
+description = "Tools for creating bootable images, including the Anaconda boot.iso"
+readme = "README.md"
+license-files = ["COPYING"]
+requires-python = ">=3.6"
+
+[project.urls]
+"Homepage" = "http://www.github.com/weldr/lorax/"
+"Bug Tracker" = "http://www.github.com/weldr/lorax/issues"
