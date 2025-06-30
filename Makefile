@@ -2,6 +2,7 @@ PYTHON ?= /usr/bin/python3
 DESTDIR ?= /
 PREFIX ?= /usr
 mandir ?= $(PREFIX)/share/man
+sharedir ?= $(PREFIX)/share/lorax
 DOCKER ?= podman
 PODMAN ?= $(DOCKER)
 DOCS_VERSION ?= next
@@ -32,13 +33,19 @@ src/pylorax/version.py: lorax.spec
 	echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/version.py
 
 all: src/pylorax/version.py
-	$(PYTHON) setup.py build
+	$(PYTHON) -m build --no-isolation
 
 install: all
-	$(PYTHON) setup.py install --root=$(DESTDIR) --prefix=$(PREFIX)
+	$(PYTHON) -m pip install --no-build-isolation --root=$(DESTDIR) --prefix=$(PREFIX) .
 	mkdir -p $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/*.1 $(DESTDIR)/$(mandir)/man1
 	mkdir -p $(DESTDIR)/etc/bash_completion.d
+	mkdir -p $(DESTDIR)/etc/lorax
+	install -m 644 etc/lorax.conf $(DESTDIR)/etc/lorax/
+	mkdir -p $(DESTDIR)/usr/lib/tmpfiles.d/
+	install -m 644 systemd/lorax.conf $(DESTDIR)/usr/lib/tmpfiles.d/
+	mkdir -p $(DESTDIR)/$(sharedir)
+	cp -r share/* $(DESTDIR)/$(sharedir)/
 
 check:
 	@echo "*** Running pylint ***"
