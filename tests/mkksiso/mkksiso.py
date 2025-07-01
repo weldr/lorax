@@ -1,1 +1,1 @@
-../../src/bin/mkksiso
+../../src/pylorax/cmdline/mkksiso.py
