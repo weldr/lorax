@@ -14,7 +14,9 @@ License:        GPL-2.0-or-later
 Url:            %{forgeurl}
 Source0:        %{forgesource}
 
+BuildRequires:  python3-build
 BuildRequires:  python3-devel
+BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 BuildRequires:  make
 BuildRequires:  systemd-rpm-macros
@@ -154,7 +156,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %doc docs/lorax.rst docs/livemedia-creator.rst docs/product-images.rst
 %doc docs/*ks
 %{python3_sitelib}/pylorax
-%{python3_sitelib}/*.egg-info
+%{python3_sitelib}/pylorax-%{version}.dist-info
 %{_bindir}/lorax
 %{_bindir}/mkefiboot
 %{_bindir}/livemedia-creator
