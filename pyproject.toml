@@ -17,6 +17,13 @@ readme = "README.md"
 license-files = ["COPYING"]
 requires-python = ">=3.6"
 
+[project.scripts]
+lorax = "pylorax.cmdline.lorax:main"
+livemedia-creator = "pylorax.cmdline.livemedia:main"
+image-minimizer = "pylorax.cmdline.minimizer:main"
+mkefiboot = "pylorax.cmdline.mkefiboot:main"
+mkksiso = "pylorax.cmdline.mkksiso:main"
+
 [project.urls]
 "Homepage" = "http://www.github.com/weldr/lorax/"
 "Bug Tracker" = "http://www.github.com/weldr/lorax/issues"
