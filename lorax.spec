@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        43.5
+Version:        43.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -183,6 +183,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Jul 02 2025 Brian C. Lane <bcl@redhat.com> 43.6-1
+- config_files: Do not remove `chcon` in runtime cleanup (ppolawsk@redhat.com)
+- use /mnt/sysroot PATH in profile (butirsky@gmail.com)
+- fix chroot path in .bash_history (butirsky@gmail.com)
+
 * Mon Jun 16 2025 Brian C. Lane <bcl@redhat.com> 43.5-1
 - templates.d: Remove libdir variable from templates (bcl@redhat.com)
 - runtime-cleanup: Move rpm database cleanup to the end (bcl@redhat.com)
