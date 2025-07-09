@@ -133,7 +133,10 @@ class RuntimeBuilder(object):
         logger.info('got release: %s', release)
 
         # logos uses the basename from release (fedora, redhat, centos, ...)
-        logos, _suffix = release.split('-', 1)
+        if release == 'fedora-release-eln':
+            logos = 'fedora-eln'
+        else:
+            logos, _suffix = release.split('-', 1)
         return DataHolder(release=release, logos=logos+"-logos")
 
     def install(self):
