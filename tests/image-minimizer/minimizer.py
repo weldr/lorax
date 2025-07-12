@@ -1,1 +1,1 @@
-../../src/bin/image-minimizer
+../../src/pylorax/cmdline/minimizer.py

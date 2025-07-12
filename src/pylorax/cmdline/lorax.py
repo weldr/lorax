@@ -1,0 +1,214 @@
+#!/usr/bin/python3
+#
+# lorax
+#
+# Copyright (C) 2009-2015 Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
+#
+import logging
+log = logging.getLogger("lorax")
+dnf_log = logging.getLogger("dnf")
+
+
+import atexit
+import fcntl
+from glob import glob
+import sys
+import os
+import tempfile
+import shutil
+
+#import libdnf5 as dnf5
+#import dnf.logging
+#import librepo
+
+import pylorax
+from pylorax import DRACUT_DEFAULT, ROOTFSTYPES, log_selinux_state
+from pylorax.cmdline import lorax_parser
+from pylorax.dnfbase import get_dnf_base_object
+
+def exit_handler(tempdir):
+    """Handle cleanup of tmpdir, if it still exists
+    """
+    if not tempdir:
+        return
+    if os.path.exists(tempdir):
+        log.info("Cleaning up tempdir - %s", tempdir)
+        shutil.rmtree(tempdir)
+
+
+def remove_tempdirs():
+    """Delete all unlocked tempdirs under tempfile.gettempdir
+
+    When lorax crashes it can leave behind tempdirs, which cannot be cleaned up by
+    systemd-tmpfiles (SELinux restricts a complete cleanup).
+
+    So we lock them while in use and cleanup all the ones that are not locked
+    when lorax starts.
+    """
+    for d in glob(os.path.join(tempfile.gettempdir(), "lorax.*")):
+        if not os.path.isdir(d):
+            continue
+        try:
+            dir_fd = os.open(d, os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC)
+            fcntl.flock(dir_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            # lock failed, skip this directory
+            os.close(dir_fd)
+            continue
+
+        # Lock succeeded, remove the directory
+        log.info("Removing old tempdir %s", d)
+        shutil.rmtree(d)
+        os.close(dir_fd)
+
+
+def setup_logging(opts):
+    pylorax.setup_logging(opts.logfile, log)
+
+
+def main():
+    parser = lorax_parser(DRACUT_DEFAULT)
+    opts = parser.parse_args()
+
+    log.info("Lorax v%s", pylorax.vernum)
+
+    if not opts.source and not opts.repos:
+        parser.error("--source, --repo, or both are required.")
+
+    if not opts.force and os.path.exists(opts.outputdir):
+        parser.error("output directory %s should not exist." % opts.outputdir)
+
+    if not os.path.exists(os.path.dirname(opts.logfile)):
+        os.makedirs(os.path.dirname(opts.logfile))
+    if opts.sharedir and not os.path.isdir(opts.sharedir):
+        parser.error("sharedir %s doesn't exist." % opts.sharedir)
+    if opts.config and not os.path.exists(opts.config):
+        parser.error("config file %s doesn't exist." % opts.config)
+    if opts.dracut_args and opts.dracut_conf:
+        parser.error("argument --dracut-arg: not allowed with argument --dracut-conf")
+    if opts.dracut_conf and not os.path.exists(opts.dracut_conf):
+        parser.error("dracut config file %s doesn't exist." % opts.dracut_conf)
+
+    if opts.rootfs_type not in ROOTFSTYPES:
+        parser.error("--rootfs-type must be one of %s" % ",".join(ROOTFSTYPES))
+
+    setup_logging(opts)
+    log.debug(opts)
+
+    log_selinux_state()
+
+    if not opts.workdir:
+        if not os.path.exists(opts.tmp):
+            os.makedirs(opts.tmp)
+
+        tempfile.tempdir = opts.tmp
+
+        # Remove any orphaned lorax tempdirs
+        remove_tempdirs()
+
+        # create the temporary directory for lorax
+        tempdir = tempfile.mkdtemp(prefix="lorax.")
+
+        # register an exit handler to cleanup the temporary directory
+        atexit.register(exit_handler, tempdir)
+    else:
+        # NOTE: workdir is not cleaned up on exit
+        tempdir = opts.workdir
+        if not os.path.exists(tempdir):
+            os.makedirs(tempdir)
+
+        # Remove any orphaned lorax tempdirs
+        remove_tempdirs()
+
+    installtree = os.path.join(tempdir, "installtree")
+    if not os.path.exists(installtree):
+        os.mkdir(installtree)
+    dnftempdir = os.path.join(tempdir, "dnf")
+    if not os.path.exists(dnftempdir):
+        os.mkdir(dnftempdir)
+
+    # Obtain an exclusive lock on the tempdir
+    dir_fd = os.open(tempdir, os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC)
+    fcntl.flock(dir_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+    dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist, opts.repos,
+                                  opts.enablerepos, opts.disablerepos,
+                                  dnftempdir, opts.proxy, opts.version, opts.cachedir,
+                                  os.path.dirname(opts.logfile), not opts.noverifyssl,
+                                  opts.dnfplugins, basearch=opts.buildarch)
+
+    if dnfbase is None:
+        os.close(dir_fd)
+        print("error: unable to create the dnf base object", file=sys.stderr)
+        sys.exit(1)
+
+    parsed_add_template_vars = {}
+    for kv in opts.add_template_vars:
+        k, t, v = kv.partition('=')
+        if t == '':
+            raise ValueError("Missing '=' for key=value in %s" % kv)
+        parsed_add_template_vars[k] = v
+
+    parsed_add_arch_template_vars = {}
+    for kv in opts.add_arch_template_vars:
+        k, t, v = kv.partition('=')
+        if t == '':
+            raise ValueError("Missing '=' for key=value in %s" % kv)
+        parsed_add_arch_template_vars[k] = v
+
+    if 'SOURCE_DATE_EPOCH' in os.environ:
+        log.info("Using SOURCE_DATE_EPOCH=%s as the current time.", os.environ["SOURCE_DATE_EPOCH"])
+
+    # run lorax
+    lorax = pylorax.Lorax()
+    lorax.configure(conf_file=opts.config)
+    lorax.conf.set("lorax", "logdir", os.path.dirname(opts.logfile))
+
+    # Override the config file's template sharedir
+    if opts.sharedir:
+        lorax.conf.set("lorax", "sharedir", opts.sharedir)
+
+    with open(lorax.conf.get("lorax", "logdir") + '/lorax.conf', 'w') as f:
+        lorax.conf.write(f)
+
+    # Use a dracut config file instead of the default arguments
+    if opts.dracut_conf:
+        user_dracut_args = ["--conf %s" % opts.dracut_conf]
+    else:
+        user_dracut_args = opts.dracut_args
+
+    lorax.run(dnfbase, opts.product, opts.version, opts.release,
+              opts.variant, opts.bugurl, opts.isfinal,
+              workdir=tempdir, outputdir=opts.outputdir, buildarch=opts.buildarch,
+              volid=opts.volid, domacboot=opts.domacboot, doupgrade=opts.doupgrade,
+              installpkgs=opts.installpkgs, excludepkgs=opts.excludepkgs,
+              size=opts.rootfs_size,
+              add_templates=opts.add_templates,
+              add_template_vars=parsed_add_template_vars,
+              add_arch_templates=opts.add_arch_templates,
+              add_arch_template_vars=parsed_add_arch_template_vars,
+              remove_temp=True, verify=opts.verify,
+              user_dracut_args=user_dracut_args,
+              rootfs_type=opts.rootfs_type,
+              skip_branding=opts.skip_branding)
+
+    # Release the lock on the tempdir
+    os.close(dir_fd)
+
+if __name__ == "__main__":
+    main()

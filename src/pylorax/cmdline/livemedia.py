@@ -1,0 +1,230 @@
+#!/usr/bin/python3
+#
+# Live Media Creator
+#
+# Copyright (C) 2011-2018  Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+import logging
+log = logging.getLogger("livemedia-creator")
+
+import glob
+import os
+import shutil
+import sys
+import tempfile
+
+# Use the Lorax treebuilder branch for iso creation
+from pylorax import setup_logging, find_templates, vernum, log_selinux_state
+from pylorax.cmdline import lmc_parser
+from pylorax.creator import run_creator, DRACUT_DEFAULT
+from pylorax.imgutils import default_image_name
+from pylorax.sysutils import joinpaths
+
+
+def main():
+    parser = lmc_parser(DRACUT_DEFAULT)
+    opts = parser.parse_args()
+
+    setup_logging(opts.logfile, log)
+
+    log.debug( opts )
+
+    log.info("livemedia-creator v%s", vernum)
+    log_selinux_state()
+
+    # Find the lorax templates
+    opts.lorax_templates = find_templates(opts.lorax_templates or "/usr/share/lorax")
+
+    # Check for invalid combinations of options, print all the errors and exit.
+    errors = []
+    if opts.project != "Linux" and opts.product:
+        errors.append("Use one of --project or --product not both.")
+
+    if not opts.disk_image and not opts.fs_image and not opts.ks:
+        errors.append("Image creation requires a kickstart file")
+
+    if opts.ks and not os.path.exists(opts.ks[0]):
+        errors.append("kickstart file (%s) is missing." % opts.ks[0])
+
+    if opts.make_iso and not os.path.exists(opts.lorax_templates):
+        errors.append("The lorax templates directory (%s) doesn't "
+                      "exist." % opts.lorax_templates)
+
+    if opts.result_dir and os.path.exists(opts.result_dir):
+        errors.append("The results_dir (%s) should not exist, please delete or "
+                      "move its contents" % opts.result_dir)
+
+    # Default to putting results under tmp
+    if not opts.result_dir:
+        opts.result_dir = opts.tmp
+
+    if opts.iso and not os.path.exists(opts.iso):
+        errors.append("The iso %s is missing." % opts.iso)
+
+    if opts.disk_image and not os.path.exists(opts.disk_image):
+        errors.append("The disk image %s is missing." % opts.disk_image)
+
+    if opts.fs_image and not os.path.exists(opts.fs_image):
+        errors.append("The filesystem image %s is missing." % opts.fs_image)
+
+    is_install = not (opts.disk_image or opts.fs_image)
+    if is_install and not opts.no_virt and not opts.iso:
+        errors.append("virt install needs an install iso.")
+
+    if opts.volid and len(opts.volid) > 32:
+        errors.append("the volume id cannot be longer than 32 characters")
+
+    if is_install and not opts.no_virt \
+       and not any(glob.glob("/usr/bin/qemu-system-*")):
+        errors.append("qemu needs to be installed.")
+
+    if is_install and opts.no_virt \
+       and not shutil.which("anaconda"):
+        errors.append("no-virt requires anaconda to be installed.")
+
+    if opts.make_appliance and not opts.app_template:
+        opts.app_template = joinpaths(opts.lorax_templates,
+                                            "appliance/libvirt.tmpl")
+
+    if opts.make_appliance and not os.path.exists(opts.app_template):
+        errors.append("The appliance template (%s) doesn't "
+                      "exist" % opts.app_template)
+
+    if opts.make_tar_disk:
+        if opts.tar_disk_name and os.path.exists(joinpaths(opts.result_dir, opts.tar_disk_name)):
+            errors.append("The disk image to be created should not exist.")
+    else:
+        if opts.image_name and os.path.exists(joinpaths(opts.result_dir, opts.image_name)):
+            errors.append("The disk image to be created should not exist.")
+
+    # Vagrant creates a qcow2 inside a tar, turn on qcow2
+    if opts.make_vagrant:
+        opts.image_type = "qcow2"
+
+    # Alias --qcow2 to --image-type=qcow2
+    if opts.qcow2:
+        opts.image_type = "qcow2"
+
+    if opts.image_type and not os.path.exists("/usr/bin/qemu-img"):
+        errors.append("image-type option requires the qemu-img utility to be installed.")
+
+    if opts.image_type and opts.make_iso:
+        errors.append("image-type cannot be used to make a bootable iso.")
+
+    if opts.image_type and opts.make_fsimage:
+        errors.append("image-type cannot be used to make filesystem images.")
+
+    if opts.image_type and opts.make_tar:
+        errors.append("image-type cannot be used to make a tar.")
+
+    if opts.make_oci and not (opts.oci_config and opts.oci_runtime):
+        errors.append("--make-oci requires --oci-config and --oci-runtime")
+
+    if opts.make_oci and not os.path.exists(opts.oci_config):
+        errors.append("oci % file is missing" % opts.oci_config)
+
+    if opts.make_oci and not os.path.exists(opts.oci_runtime):
+        errors.append("oci % file is missing" % opts.oci_runtime)
+
+    if opts.make_vagrant and opts.vagrant_metadata and not os.path.exists(opts.vagrant_metadata):
+        errors.append("Vagrant metadata file %s is missing" % opts.vagrant_metadata)
+
+    if opts.virt_uefi and not os.path.isdir(opts.fw_path):
+        errors.append("The UEFI firmware directory is missing: %s" % opts.fw_path)
+
+    if opts.domacboot and not shutil.which("mkfs.hfsplus"):
+        errors.append("mkfs.hfsplus is missing. Install hfsplus-tools, or pass --nomacboot")
+
+    if os.getuid() != 0:
+        errors.append("You need to run this as root")
+
+    if opts.dracut_args and opts.dracut_conf:
+        errors.append("argument --dracut-arg: not allowed with argument --dracut-conf")
+
+    if errors:
+        list(log.error(e) for e in errors)
+        sys.exit(1)
+
+    if not os.path.exists(opts.result_dir):
+        os.makedirs(opts.result_dir)
+
+    # Alias --product to --project
+    if opts.product:
+        opts.project = opts.product
+
+    # AMI image is just a fsimage with an AMI label
+    if opts.make_ami:
+        opts.make_fsimage = True
+        if not opts.image_name:
+            opts.image_name = "ami-root.img"
+        if opts.fs_label == "Anaconda":
+            opts.fs_label = "AMI"
+    elif opts.make_tar:
+        if not opts.image_name:
+            opts.image_name = default_image_name(opts.compression, "root.tar")
+        if opts.compression == "xz" and not opts.compress_args:
+            opts.compress_args = ["-9"]
+    elif opts.make_oci:
+        if not opts.image_name:
+            opts.image_name = default_image_name(opts.compression, "bundle.tar")
+        if opts.compression == "xz" and not opts.compress_args:
+            opts.compress_args = ["-9"]
+    elif opts.make_vagrant:
+        if not opts.image_name:
+            opts.image_name = default_image_name(opts.compression, "vagrant.tar")
+        if opts.compression == "xz" and not opts.compress_args:
+            opts.compress_args = ["-9"]
+    elif opts.make_tar_disk:
+        opts.make_disk = True
+        if not opts.image_name:
+            opts.image_name = "root.img"
+        if not opts.tar_disk_name:
+            opts.tar_disk_name = default_image_name(opts.compression, "root.tar")
+        if opts.compression == "xz" and not opts.compress_args:
+            opts.compress_args = ["-9"]
+
+    if opts.app_file:
+        opts.app_file = joinpaths(opts.result_dir, opts.app_file)
+
+    if opts.make_ostree_live:
+        opts.make_pxe_live = True
+        opts.ostree = True
+    else:
+        opts.ostree = False
+
+    tempfile.tempdir = opts.tmp
+    disk_img = None
+
+    try:
+        # TODO - Better API than passing in opts
+        (result_dir, disk_img) = run_creator(opts)
+    except Exception as e:                                  # pylint: disable=broad-except
+        log.error(str(e))
+        sys.exit(1)
+
+    log.info("SUMMARY")
+    log.info("-------")
+    log.info("Logs are in %s", os.path.abspath(os.path.dirname(opts.logfile)))
+    if disk_img:
+        log.info("Disk image is at %s", disk_img)
+    if opts.make_appliance:
+        log.info("Appliance description is in %s", opts.app_file)
+    log.info("Results are in %s", result_dir or opts.result_dir)
+
+    sys.exit( 0 )
+
+if __name__ == '__main__':
+    main()
