@@ -12,14 +12,9 @@ class LoraxLintConfig(PocketLintConfig):
 
         self.falsePositives = [ FalsePositive(r"Module 'pylorax' has no 'version' member"),
                                 FalsePositive(r"Catching too general exception Exception"),
-                                # See https://bugzilla.redhat.com/show_bug.cgi?id=1739167
-                                FalsePositive(r"Module 'rpm' has no '.*' member"),
                                 FalsePositive(r"raise-missing-from"),
                                 FalsePositive(r"redundant-u-string-prefix"),
                                 FalsePositive(r"unspecified-encoding"),
-                                # Python 3.12 problems with pylint/astroid
-                                # see https://github.com/pylint-dev/pylint/issues/8852
-                                FalsePositive(r"Class 'datetime' has no '(now|utcfromtimestamp)' member"),
                               ]
 
     @property
@@ -33,7 +28,7 @@ class LoraxLintConfig(PocketLintConfig):
 
     @property
     def ignoreNames(self):
-        return { "bots", "rpmbuild" }
+        return { "bots", "rpmbuild", ".tito" }
 
     @property
     def extraArgs(self):
