@@ -29,9 +29,13 @@ install ${configdir}/systemd-allowroot.conf etc/systemd/user/pipewire.service.d/
 mkdir etc/systemd/user/pipewire.socket.d/
 install ${configdir}/systemd-allowroot.conf etc/systemd/user/pipewire.socket.d/allowroot.conf
 
-## Make sure tmpfs is enabled
+## Make sure tmpfs on /tmp and /var/tmp is enabled
 mkdir etc/systemd/system/local-fs.target.wants/
 symlink /lib/systemd/system/tmp.mount etc/systemd/system/local-fs.target.wants/tmp.mount
+install ${configdir}/var-tmp.mount etc/systemd/system/var-tmp.mount
+symlink /etc/systemd/system/var-tmp.mount etc/systemd/system/local-fs.target.wants/var-tmp.mount
+
+
 
 ## Disable unwanted systemd services
 systemctl disable systemd-readahead-collect.service \
