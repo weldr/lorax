@@ -14,7 +14,6 @@ License:        GPL-2.0-or-later
 Url:            %{forgeurl}
 Source0:        %{forgesource}
 
-BuildRequires:  python3-build
 BuildRequires:  python3-devel
 BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools

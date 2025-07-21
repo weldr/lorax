@@ -35,7 +35,7 @@ src/pylorax/version.py: lorax.spec
 all: src/pylorax/version.py
 	$(PYTHON) -m build --no-isolation
 
-install: all
+install: src/pylorax/version.py
 	$(PYTHON) -m pip install --no-build-isolation --root=$(DESTDIR) --prefix=$(PREFIX) .
 	mkdir -p $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/*.1 $(DESTDIR)/$(mandir)/man1
