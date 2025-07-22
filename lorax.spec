@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        43.8
+Version:        43.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -184,6 +184,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Jul 22 2025 Brian C. Lane <bcl@redhat.com> 43.9-1
+- Makefile: Separate install and all targets (bcl@redhat.com)
+
 * Tue Jul 15 2025 Brian C. Lane <bcl@redhat.com> 43.8-1
 - pylilnt: Drop old rules and ignore .tito (bcl@redhat.com)
 - tito: Add support for tagging the version in pyproject.toml (bcl@redhat.com)
