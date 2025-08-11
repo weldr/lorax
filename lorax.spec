@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.28
+Version:        34.9.29
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Aug 11 2025 Brian C. Lane <bcl@redhat.com> 34.9.29-1
+- templates: Synchronize with lorax-templates-rhel (bcl) (bcl)
+  Resolves: RHEL-54712
+- Fix tzselect path in runtime-cleanup.tmpl (jikortus) (jikortus)
+  Resolves: RHEL-100463
+- lorax.spec: Fix a wrong issue reference (bcl) (bcl)
+  Related: RHEL-83986
+
 * Fri Jun 06 2025 Brian C. Lane <bcl@redhat.com> 34.9.28-1
 - templates.d: Synchronize with lorax-templates-rhel (bcl)
   Related: RHEL-54712
