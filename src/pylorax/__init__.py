@@ -205,7 +205,7 @@ class Lorax(BaseLoraxClass):
         logger.addHandler(sh)
 
     def init_file_logging(self, logdir, logname="pylorax.log"):
-        fh = logging.FileHandler(filename=joinpaths(logdir, logname), mode="w")
+        fh = logging.FileHandler(filename=joinpaths(logdir, logname), mode="w", encoding="UTF-8")
         fh.setLevel(logging.DEBUG)
         logger.addHandler(fh)
 
@@ -476,7 +476,7 @@ def setup_logging(logfile, theLogger):
     logger.addHandler(sh)
     theLogger.addHandler(sh)
 
-    fh = logging.FileHandler(filename=logfile, mode="w")
+    fh = logging.FileHandler(filename=logfile, mode="w", encoding="UTF-8")
     fh.setLevel(logging.DEBUG)
     fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
     fh.setFormatter(fmt)
@@ -486,7 +486,7 @@ def setup_logging(logfile, theLogger):
     # External program output log
     program_log.setLevel(logging.DEBUG)
     f = os.path.abspath(os.path.dirname(logfile))+"/program.log"
-    fh = logging.FileHandler(filename=f, mode="w")
+    fh = logging.FileHandler(filename=f, mode="w", encoding="UTF-8")
     fh.setLevel(logging.DEBUG)
     fmt = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
     fh.setFormatter(fmt)
