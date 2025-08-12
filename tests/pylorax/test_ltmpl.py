@@ -352,6 +352,10 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         self.runner.run("runcmd-cmd.tmpl", root=self.root_dir)
         self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/lorax-runcmd")))
 
+    def test_runcmd_unicode(self):
+        """Test runcmd template command with unicode output"""
+        self.runner.run("runcmd-unicode.tmpl", root=self.root_dir)
+
     def test_removekmod(self):
         """Test removekmod template command"""
         self.runner.run("removekmod-cmd.tmpl")
