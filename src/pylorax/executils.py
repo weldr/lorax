@@ -155,6 +155,7 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
 
         proc = startProgram(argv, root=root, stdin=stdin, stdout=subprocess.PIPE, stderr=stderr,
                             env_prune=env_prune, universal_newlines=not binary_output,
+                            encoding="UTF-8",
                             env_add=env_add, reset_handlers=reset_handlers, reset_lang=reset_lang)
 
         output_string = None
