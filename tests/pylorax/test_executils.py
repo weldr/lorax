@@ -57,7 +57,7 @@ class ExecUtilsTest(unittest.TestCase):
         program_log.setLevel(logging.INFO)
 
         tmp_f = tempfile.NamedTemporaryFile(prefix="lorax.test.log.", delete=False)
-        fh = logging.FileHandler(filename=tmp_f.name, mode="w")
+        fh = logging.FileHandler(filename=tmp_f.name, mode="w", encoding="UTF-8")
         program_log.addHandler(fh)
 
         try:
@@ -66,7 +66,7 @@ class ExecUtilsTest(unittest.TestCase):
             self.assertEqual(rc, 1)
 
             fh.close()
-            with open(tmp_f.name, "r") as f:
+            with open(tmp_f.name, "r", encoding="UTF-8") as f:
                 logged_text = f.readlines()[-1].strip()
             self.assertEqual(logged_text, "The Once-ler was here.")
         finally:
