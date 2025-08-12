@@ -61,14 +61,14 @@ class ExecUtilsTest(unittest.TestCase):
         program_log.addHandler(fh)
 
         try:
-            cmd = ["python3", "-c", "import sys; print('The Once-ler was here.'); sys.exit(1)"]
+            cmd = ["python3", "-c", "import sys; print('The Once-ler was here. Gürzenichstraße'); sys.exit(1)"]
             rc = execWithRedirect(cmd[0], cmd[1:])
             self.assertEqual(rc, 1)
 
             fh.close()
             with open(tmp_f.name, "r") as f:
                 logged_text = f.readlines()[-1].strip()
-            self.assertEqual(logged_text, "The Once-ler was here.")
+            self.assertEqual(logged_text, "The Once-ler was here. Gürzenichstraße")
         finally:
             os.unlink(tmp_f.name)
             program_log.removeHandler(fh)
@@ -77,6 +77,11 @@ class ExecUtilsTest(unittest.TestCase):
         cmd = ["python3", "-c", "import sys; print('Truffula trees.', end=''); sys.exit(0)"]
         stdout = execWithCapture(cmd[0], cmd[1:], callback=lambda p: True)
         self.assertEqual(stdout.strip(), "Truffula trees.")
+
+    def test_execWithCapture_unicode(self):
+        cmd = ["python3", "-c", "import sys; print('Truffula trees. Gürzenichstraße', end=''); sys.exit(0)"]
+        stdout = execWithCapture(cmd[0], cmd[1:], callback=lambda p: True)
+        self.assertEqual(stdout.strip(), "Truffula trees. Gürzenichstraße")
 
     def test_returncode(self):
         cmd = ["python3", "-c", "import sys; print('Truffula trees.'); sys.exit(1)"]
@@ -89,9 +94,14 @@ class ExecUtilsTest(unittest.TestCase):
         self.assertEqual(stdout.strip(), "")
 
     def test_execReadlines(self):
-        cmd = ["python3", "-c", "import sys; print('Truffula trees.'); sys.exit(0)"]
+        cmd = ["python3", "-c", r"import sys; print('Truffula trees.\nEveryone needs Thneeds'); sys.exit(0)"]
         iterator = execReadlines(cmd[0], cmd[1:], callback=lambda p: True, filter_stderr=True)
-        self.assertEqual(list(iterator), ["Truffula trees."])
+        self.assertEqual(list(iterator), ["Truffula trees.", "Everyone needs Thneeds"])
+
+    def test_execReadlines_unicode(self):
+        cmd = ["python3", "-c", r"import sys; print('Truffula trees.\nGürzenichstraße'); sys.exit(0)"]
+        iterator = execReadlines(cmd[0], cmd[1:], callback=lambda p: True, filter_stderr=True)
+        self.assertEqual(list(iterator), ["Truffula trees.", "Gürzenichstraße"])
 
     def test_execReadlines_error(self):
         with self.assertRaises(OSError):
@@ -106,6 +116,11 @@ class ExecUtilsTest(unittest.TestCase):
         cmd = ["python3", "-c", "import sys; print('Everyone needs Thneeds'); sys.exit(0)"]
         stdout = runcmd_output(cmd)
         self.assertEqual(stdout.strip(), "Everyone needs Thneeds")
+
+    def test_runcmd_output_unicode(self):
+        cmd = ["python3", "-c", "import sys; print('Gürzenichstraße'); sys.exit(0)"]
+        stdout = runcmd_output(cmd)
+        self.assertEqual(stdout.strip(), "Gürzenichstraße")
 
     def test_chroot(self):
         """Test the preexec function"""
