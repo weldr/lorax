@@ -127,7 +127,7 @@ def startProgram(argv, root='/', stdin=None, stdout=subprocess.PIPE, stderr=subp
                             preexec_fn=preexec, cwd=root, env=env, **kwargs)
 
 def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_output=True,
-        binary_output=False, filter_stderr=False, raise_err=False, callback=None,
+        filter_stderr=False, raise_err=False, callback=None,
         env_add=None, reset_handlers=True, reset_lang=True):
     """ Run an external program, log the output and return it to the caller
 
@@ -137,7 +137,6 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
         :param stdout: Optional file object to write the output to.
         :param env_prune: environment variable to remove before execution
         :param log_output: whether to log the output of command
-        :param binary_output: whether to treat the output of command as binary data
         :param filter_stderr: whether to exclude the contents of stderr from the returned output
         :param raise_err: whether to raise a CalledProcessError if the returncode is non-zero
         :param callback: method to call while waiting for process to finish, passed Popen object
@@ -154,8 +153,7 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
             stderr = subprocess.STDOUT
 
         proc = startProgram(argv, root=root, stdin=stdin, stdout=subprocess.PIPE, stderr=stderr,
-                            env_prune=env_prune, universal_newlines=not binary_output,
-                            encoding="UTF-8",
+                            env_prune=env_prune, text=True, encoding="UTF-8",
                             env_add=env_add, reset_handlers=reset_handlers, reset_lang=reset_lang)
 
         output_string = None
@@ -170,12 +168,9 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
         else:
             (output_string, err_string) = proc.communicate()
         if output_string:
-            if binary_output:
-                output_lines = [output_string]
-            else:
-                if output_string[-1] != "\n":
-                    output_string = output_string + "\n"
-                output_lines = output_string.splitlines(True)
+            if output_string[-1] != "\n":
+                output_string = output_string + "\n"
+            output_lines = output_string.splitlines(True)
 
             if log_output:
                 with program_log_lock:
@@ -208,7 +203,7 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
     return (proc.returncode, output_string)
 
 def execWithRedirect(command, argv, stdin=None, stdout=None, root='/', env_prune=None,
-                     log_output=True, binary_output=False, raise_err=False, callback=None,
+                     log_output=True, raise_err=False, callback=None,
                      env_add=None, reset_handlers=True, reset_lang=True):
     """ Run an external program and redirect the output to a file.
 
@@ -219,7 +214,6 @@ def execWithRedirect(command, argv, stdin=None, stdout=None, root='/', env_prune
         :param root: The directory to chroot to before running command.
         :param env_prune: environment variable to remove before execution
         :param log_output: whether to log the output of command
-        :param binary_output: whether to treat the output of command as binary data
         :param raise_err: whether to raise a CalledProcessError if the returncode is non-zero
         :param callback: method to call while waiting for process to finish, passed Popen object
         :param env_add: environment variables to add before execution
@@ -229,7 +223,7 @@ def execWithRedirect(command, argv, stdin=None, stdout=None, root='/', env_prune
     """
     argv = [command] + list(argv)
     return _run_program(argv, stdin=stdin, stdout=stdout, root=root, env_prune=env_prune,
-            log_output=log_output, binary_output=binary_output, raise_err=raise_err, callback=callback,
+            log_output=log_output, raise_err=raise_err, callback=callback,
             env_add=env_add, reset_handlers=reset_handlers, reset_lang=reset_lang)[0]
 
 def execWithCapture(command, argv, stdin=None, root='/', log_output=True, filter_stderr=False,
