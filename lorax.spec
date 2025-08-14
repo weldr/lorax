@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        43.9
+Version:        43.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -184,6 +184,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Aug 14 2025 Brian C. Lane <bcl@redhat.com> 43.10-1
+- executils: Remove binary_output flag (bcl@redhat.com)
+- logging: Set encoding=UTF-8 on FileHandler (bcl@redhat.com)
+- executils: Set encoding to UTF-8 for _run_program (bcl@redhat.com)
+- tests: Add template runcmd unicode test (bcl@redhat.com)
+- tests: Add some unicode to the executils tests (bcl@redhat.com)
+- templates: Remove explicit installation of anaconda-widgets (k.koukiou@gmail.com)
+
 * Tue Jul 22 2025 Brian C. Lane <bcl@redhat.com> 43.9-1
 - Makefile: Separate install and all targets (bcl@redhat.com)
 
