@@ -43,7 +43,7 @@ mkdir ${KERNELDIR}
 ## configure grub2 config file
 mkdir ${GRUB2DIR}
 install ${configdir}/grub2-bios.cfg ${GRUB2DIR}/grub.cfg
-replace @VERSION@ ${product.version} ${GRUB2DIR}/grub.cfg
+replace @VERSION@ '${product.version}' ${GRUB2DIR}/grub.cfg
 replace @PRODUCT@ '${product.name}'  ${GRUB2DIR}/grub.cfg
 replace @KERNELPATH@ /${KERNELDIR}/vmlinuz ${GRUB2DIR}/grub.cfg
 replace @INITRDPATH@ /${KERNELDIR}/initrd.img ${GRUB2DIR}/grub.cfg

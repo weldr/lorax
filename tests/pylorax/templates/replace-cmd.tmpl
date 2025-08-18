@@ -1,6 +1,8 @@
 <%page />
-append /etc/lorax-replace "Running @VERSION@ for lorax"
-replace @VERSION@ 1.2.3 /etc/lorax-replace
+append /etc/lorax-replace-1 "Running @VERSION@ for lorax"
+append /etc/lorax-replace-2 "Running @VERSION@ for lorax"
+replace @VERSION@ 1.2.3 /etc/lorax-replace-1
+replace @VERSION@ '1.2.3 release' /etc/lorax-replace-2
 
 # Test 4 different ways to lock root account
 append /etc/lorax-shadow-1 "root:!::0:99999:7:::"

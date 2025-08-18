@@ -36,7 +36,7 @@ ${make_efiboot("images/efiboot.img")}
     %endif
     install ${configdir}/grub2-efi.cfg ${eficonf}
     replace @PRODUCT@ '${product.name}' ${eficonf}
-    replace @VERSION@ ${product.version} ${eficonf}
+    replace @VERSION@ '${product.version}' ${eficonf}
     replace @KERNELNAME@ vmlinuz ${eficonf}
     replace @KERNELPATH@ /${kdir}/vmlinuz ${eficonf}
     replace @INITRDPATH@ /${kdir}/initrd.img ${eficonf}

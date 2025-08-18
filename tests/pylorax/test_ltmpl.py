@@ -279,10 +279,15 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
     def test_replace(self):
         """Test append, and replace template command"""
         self.runner.run("replace-cmd.tmpl")
-        self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/etc/lorax-replace")))
-        with open(joinpaths(self.root_dir, "/etc/lorax-replace")) as f:
+        self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/etc/lorax-replace-1")))
+        with open(joinpaths(self.root_dir, "/etc/lorax-replace-1")) as f:
             data = f.read()
         self.assertEqual(data, "Running 1.2.3 for lorax\n")
+
+        self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/etc/lorax-replace-2")))
+        with open(joinpaths(self.root_dir, "/etc/lorax-replace-2")) as f:
+            data = f.read()
+        self.assertEqual(data, "Running 1.2.3 release for lorax\n")
 
         # Check that replace on all 4 variations of a locked root result in an account with
         # no password
