@@ -89,7 +89,6 @@ case $ARCH in
         echo "%packages" >> $PKGS
         echo "@^workstation-product-environment" >> $PKGS
         echo "shim" >> $PKGS
-        echo "shim-ia32" >> $PKGS
         echo "grub2" >> $PKGS
         echo "grub2-efi" >> $PKGS
         echo "grub2-efi-ia32" >> $PKGS
