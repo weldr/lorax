@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        43.10
+Version:        44.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -184,6 +184,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Sep 08 2025 Brian C. Lane <bcl@redhat.com> 44.0-1
+- maint: Switch default platform to F44 (bcl@redhat.com)
+- Drop all installs of shim-ia32 (it no longer exists) (awilliam@redhat.com)
+- templates: Support product version to contain blank character in
+  templates.d/99-generic (songmingliang@uniontech.com)
+
 * Thu Aug 14 2025 Brian C. Lane <bcl@redhat.com> 43.10-1
 - executils: Remove binary_output flag (bcl@redhat.com)
 - logging: Set encoding=UTF-8 on FileHandler (bcl@redhat.com)
