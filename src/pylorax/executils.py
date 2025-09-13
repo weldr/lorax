@@ -285,7 +285,7 @@ def execReadlines(command, argv, stdin=None, root='/', env_prune=None, filter_st
             self._proc = proc
             self._argv = argv
             self._callback = callback
-            self._data = ""
+            self._data = b""
 
         def __iter__(self):
             return self
@@ -306,12 +306,12 @@ def execReadlines(command, argv, stdin=None, root='/', env_prune=None, filter_st
                 if select.select([self._proc.stdout], [], [], 0)[0]:
                     size = len(self._proc.stdout.peek(1))
                     if size > 0:
-                        self._data += self._proc.stdout.read(size).decode("utf-8")
+                        self._data += self._proc.stdout.read(size)
 
-                if self._data.find("\n") >= 0:
-                    line = self._data.split("\n", 1)
+                if self._data.find(b"\n") >= 0:
+                    line = self._data.split(b"\n", 1)
                     self._data = line[1]
-                    return line[0]
+                    return line[0].decode("utf-8")
 
                 if self._proc.poll() is not None or not self._callback(self._proc):
                     # Output finished, wait 60s for the process to end
