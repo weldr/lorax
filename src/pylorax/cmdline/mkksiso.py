@@ -433,7 +433,7 @@ def CheckDiscinfo(path):
 
 def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=None,
                     cmdline="", rm_args="", new_volid="", replace_list=None, implantmd5=True,
-                    skip_efi=False):
+                    skip_efi=False, source_date_epoch=None):
     """
     Make a kickstart ISO from a boot.iso or dvd
     """
@@ -516,6 +516,11 @@ def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=N
         for p in add_paths:
             cmd.extend(["-map", p, os.path.basename(p)])
 
+        env={"LANG": "C"}
+        if source_date_epoch:
+            cmd.extend(["-alter_date_r", "b", "="+source_date_epoch, "/", "--"])
+            env["SOURCE_DATE_EPOCH"] = source_date_epoch
+
         check_paths = add_paths
         if CheckBigFiles(check_paths):
             if "-as" not in cmd:
@@ -531,7 +536,7 @@ def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=N
         ##       to be preceeded by an '--' entry to exit the '-as mkisofs' mode
 
         log.debug("Running: %s", " ".join(cmd))
-        subprocess.run(cmd, check=True, capture_output=False, env={"LANG": "C"})
+        subprocess.run(cmd, check=True, capture_output=False, env=env)
 
     if implantmd5:
         ImplantMD5(output_iso)
@@ -623,7 +628,7 @@ def main():
 
         MakeKickstartISO(args.input_iso, args.output_iso, args.ks or args.ks_pos, args.updates,
                          args.add_paths, args.cmdline, remove_args,
-                         args.volid, args.replace, args.no_md5sum, args.skip_efi)
+                         args.volid, args.replace, args.no_md5sum, args.skip_efi, os.getenv("SOURCE_DATE_EPOCH"))
     except RuntimeError as e:
         log.error(str(e))
         return 1
