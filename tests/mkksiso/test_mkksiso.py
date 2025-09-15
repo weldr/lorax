@@ -1,5 +1,7 @@
 from collections import OrderedDict
+import filecmp
 import os
+import random
 import shutil
 import subprocess
 import tempfile
@@ -268,3 +270,29 @@ class ISOTestCase(unittest.TestCase):
                 ExtractISOFiles(self.out_iso, [os.path.basename(mocked_updates.name)], tmpdir)
 
                 self.assertTrue(os.path.exists(os.path.join(tmpdir, os.path.basename(mocked_updates.name))))
+
+    def test_MakeKickstartISO_reproducible(self):
+        """
+        Test output ISO are reproducible when using SOURCE_DATE_EPOCH
+        """
+
+        with tempfile.TemporaryDirectory(prefix="mkksiso-dir-") as tmpdir:
+            for iso_num in [1,2]:
+                # create lots of files in random order to ensure xorriso actually sort by file name
+                # and properly force the files timestamps
+                extra_dir = os.path.join(tmpdir, str(iso_num), "extra")
+                os.makedirs(extra_dir)
+                extra_files = list(range(1,999))
+                random.shuffle(extra_files)
+                for i in extra_files:
+                    extra_file = os.path.join(extra_dir, str(i))
+                    with open(extra_file, "x") as f:
+                        f.write(str(i))
+                    os.utime(extra_file, (random.randint(1000, 2000), random.randint(1000, 2000)))
+
+                iso_file = os.path.join(tmpdir, str(iso_num), "test.iso")
+                MakeKickstartISO(self.test_iso, iso_file, cmdline="repro=1 repro=2", add_paths=[extra_dir], skip_efi=True, source_date_epoch="42")
+
+            self.assertTrue(filecmp.cmp(os.path.join(tmpdir, "1", "test.iso"),
+                                        os.path.join(tmpdir, "2", "test.iso"), shallow=False),
+                            "ISO are not identical")
