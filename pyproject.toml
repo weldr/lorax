@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pylorax"
-version = "43.10"
+version = "43.11"
 authors = [
     {name = "Martin Gracik"},
     {name = "Will Woods"},

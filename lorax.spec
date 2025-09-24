@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        43.10
+Version:        43.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -184,6 +184,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Sep 24 2025 Brian C. Lane <bcl@redhat.com> 43.11-1
+- runtime-install: skip qcom-accel-firmware (awilliam@redhat.com)
+
 * Thu Aug 14 2025 Brian C. Lane <bcl@redhat.com> 43.10-1
 - executils: Remove binary_output flag (bcl@redhat.com)
 - logging: Set encoding=UTF-8 on FileHandler (bcl@redhat.com)
