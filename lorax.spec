@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        44.0
+Version:        44.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -184,6 +184,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Sep 24 2025 Brian C. Lane <bcl@redhat.com> 44.1-1
+- runtime-install: skip qcom-accel-firmware (awilliam@redhat.com)
+- executils: decoding after deserialization (oleg.sviridov@red-soft.ru)
+- mkksiso: make ISO reproducible with SOURCE_DATE_EPOCH (e.champetier@ateme.com)
+
 * Mon Sep 08 2025 Brian C. Lane <bcl@redhat.com> 44.0-1
 - maint: Switch default platform to F44 (bcl@redhat.com)
 - Drop all installs of shim-ia32 (it no longer exists) (awilliam@redhat.com)
