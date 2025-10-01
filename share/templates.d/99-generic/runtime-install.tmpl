@@ -19,6 +19,8 @@ installpkg pigz
 ## NOTE: Without explicitly including kernel-modules-extra dnf will choose kernel-debuginfo-*
 ##       to satify a gfs2-utils kmod requirement
 installpkg kernel kernel-modules kernel-modules-extra
+## wireless testing - mac80211_hwsim
+installpkg kernel-modules-internal
 installpkg grubby
 %if basearch != "s390x":
     ## skip the firmware for sound, video, and scanners, none of which will

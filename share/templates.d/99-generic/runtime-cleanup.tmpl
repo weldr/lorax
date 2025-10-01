@@ -96,6 +96,13 @@ removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt fb
 remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
+## wireless testing in guest
+## Remove all internal modules except /internal/drivers/net/wireless/virtual/mac80211_hwsim.ko.xz
+## removekmod works only for modules in kernel subdir
+remove lib/modules/*/internal/{crypto,net,fs,kernel,lib,mm,sound}
+remove lib/modules/*/internal/drivers/{android,base,clk,firewire,firmware,gpu,hid,iio,input,leds,platform,ptp,rtc,scsi}
+remove lib/modules/*/internal/drivers/net/{ethernet,netdevsim,wwan}
+
 ## remove unused themes, theme engines, icons, etc.
 removefrom gtk3 /usr/lib64/gtk-3.0/*/printbackends/*
 removefrom gtk3 /usr/share/themes/*
