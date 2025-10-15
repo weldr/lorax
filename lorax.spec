@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        44.2
+Version:        44.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -184,6 +184,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Oct 15 2025 Brian C. Lane <bcl@redhat.com> 44.3-1
+- Do not remove SELinux from the runtime (ppolawsk@redhat.com)
+
 * Thu Oct 09 2025 Brian C. Lane <bcl@redhat.com> 44.2-1
 - Add mac80211_hwsim for wifi testing to installer image (rvykydal@redhat.com)
 - runtime-install: drop tigervnc (awilliam@redhat.com)
