@@ -255,8 +255,7 @@ removefrom linux-firmware /usr/lib/firmware/qed/qed_init_values_zipped-8.7.3.0.b
 %endif
 removefrom lldpad /etc/*
 removefrom mdadm /etc/* /usr/lib/systemd/system/mdmonitor*
-## gallium-pipe stuff is for compute (opencl), not needed for video
-removefrom mesa-dri-drivers /usr/lib64/dri/*_video.so /usr/lib64/gallium-pipe/*
+removefrom mesa-dri-drivers /usr/lib64/dri/*_video.so
 removefrom mt-st /usr/*bin/stinit
 removefrom mtools /etc/*
 removefrom ncurses-libs /usr/lib64/libform*
