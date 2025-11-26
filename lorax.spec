@@ -9,6 +9,9 @@ Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
 
+# qemu is no longer available on 32-bit
+ExcludeArch:    %{ix86}
+
 %global tag %{version}
 %forgemeta
 Url:            %{forgeurl}
@@ -184,6 +187,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Nov 26 2025 Daniel P. Berrangé <berrange@redhat.com> - 44.3-2
+- Add ExcludeArch for i686 to remove qemu dependency
+
 * Wed Oct 15 2025 Brian C. Lane <bcl@redhat.com> 44.3-1
 - Do not remove SELinux from the runtime (ppolawsk@redhat.com)
 
