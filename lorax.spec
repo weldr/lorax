@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        44.3
+Version:        44.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -187,6 +187,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Dec 01 2025 Brian C. Lane <bcl@redhat.com> 44.4-1
+- Exclude build on the i686 architecture (berrange@redhat.com)
+- runtime-cleanup: mesa no longer includes gallium-pipe drivers (yselkowi@redhat.com)
+
 * Wed Nov 26 2025 Daniel P. Berrangé <berrange@redhat.com> - 44.3-2
 - Add ExcludeArch for i686 to remove qemu dependency
 
