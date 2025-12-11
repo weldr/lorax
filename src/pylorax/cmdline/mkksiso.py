@@ -573,6 +573,8 @@ def setup_arg_parser():
                         help="Replace string in grub.cfg. Can be used multiple times")
     parser.add_argument("--skip-mkefiboot", action="store_true", dest="skip_efi",
                         help="Skip running mkefiboot")
+    parser.add_argument("--tmp", default=None, type=os.path.abspath,
+                        help="Top level temporary directory")
 
     parser.add_argument("ks_pos", nargs="?", type=os.path.abspath, metavar="KICKSTART",
                         help="Optional kickstart to add to the ISO")
@@ -617,6 +619,13 @@ def main():
         if not any([args.ks or args.ks_pos, args.updates, args.add_paths, args.cmdline, args.rm_args, args.volid, args.replace]):
             log.error("Nothing to do - pass one or more of --ks, --updates, --add, --cmdline, --rm-args, --volid, --replace")
             errors = True
+
+        if args.tmp:
+            if os.path.exists(args.tmp):
+                tempfile.tempdir = args.tmp
+            else:
+                log.error("--tmp directory %s is missing", args.tmp)
+                errors = True
 
         if errors:
             raise RuntimeError("Problems running %s" % sys.argv[0])
