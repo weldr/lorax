@@ -35,7 +35,7 @@ clearpart --all --initlabel
 rootpw rootme
 # Disk partitioning information
 reqpart
-part / --size=6656
+part / --size=10240
 
 %post
 # enable tmpfs for /tmp
