@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "MKKSISO" "1" "Aug 12, 2024" "40.5.6" "Lorax"
+.TH "MKKSISO" "1" "Jan 22, 2026" "40.5.14" "Lorax"
 .SH NAME
 mkksiso \- Make Kickstart ISO Utility Documentation
 .INDENT 0.0
@@ -60,7 +60,7 @@ Add a kickstart and files to an iso
 .nf
 .ft C
 usage: mkksiso [\-h] [\-a ADD_PATHS] [\-c CMDLINE] [\-r ARGS] [\-\-debug] [\-\-no\-md5sum] [\-\-ks KICKSTART]
-               [\-u IMAGE] [\-V VOLID] [\-\-skip\-mkefiboot]
+               [\-u IMAGE] [\-V VOLID] [\-R FROM TO] [\-\-skip\-mkefiboot]
                [KICKSTART] input_iso output_iso
 .ft P
 .fi
@@ -107,13 +107,16 @@ Do not run implantisomd5 on the ouput iso
 Default: True
 .TP
 .B \-\-ks
-Optional kickstart to add to the ISO
+Optional kickstart to add to the ISO (adding inst.ks automatically)
 .TP
 .B \-u, \-\-updates
-Optional updates image to add to the ISO
+Optional updates image to add to the ISO (adding inst.updates automatically)
 .TP
 .B \-V, \-\-volid
 Set the ISO volume id, defaults to input\(aqs
+.TP
+.B \-R, \-\-replace
+Replace string in grub.cfg. Can be used multiple times
 .TP
 .B \-\-skip\-mkefiboot
 Skip running mkefiboot

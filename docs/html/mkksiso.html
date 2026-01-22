@@ -4,13 +4,13 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mkksiso &mdash; Lorax 40.5.6 documentation</title>
+  <title>mkksiso &mdash; Lorax 40.5.14 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=330c1f8c" />
 
   
   
-        <script src="_static/documentation_options.js?v=be82357d"></script>
+        <script src="_static/documentation_options.js?v=4c5bead3"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
             Lorax
           </a>
               <div class="version">
-                40.5.6
+                40.5.14
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -117,7 +117,7 @@ you do not need this functionality you can still run it as a user by passing
 <p><p>Add a kickstart and files to an iso</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mkksiso</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ADD_PATHS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CMDLINE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">md5sum</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KICKSTART</span><span class="p">]</span>
-               <span class="p">[</span><span class="o">-</span><span class="n">u</span> <span class="n">IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">mkefiboot</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">-</span><span class="n">u</span> <span class="n">IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">R</span> <span class="n">FROM</span> <span class="n">TO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span><span class="o">-</span><span class="n">mkefiboot</span><span class="p">]</span>
                <span class="p">[</span><span class="n">KICKSTART</span><span class="p">]</span> <span class="n">input_iso</span> <span class="n">output_iso</span>
 </pre></div>
 </div>
@@ -159,13 +159,16 @@ you do not need this functionality you can still run it as a user by passing
 <p>Default: True</p>
 </dd>
 <dt><kbd>--ks</kbd></dt>
-<dd><p>Optional kickstart to add to the ISO</p>
+<dd><p>Optional kickstart to add to the ISO (adding inst.ks automatically)</p>
 </dd>
 <dt><kbd>-u, --updates</kbd></dt>
-<dd><p>Optional updates image to add to the ISO</p>
+<dd><p>Optional updates image to add to the ISO (adding inst.updates automatically)</p>
 </dd>
 <dt><kbd>-V, --volid</kbd></dt>
 <dd><p>Set the ISO volume id, defaults to input's</p>
+</dd>
+<dt><kbd>-R, --replace</kbd></dt>
+<dd><p>Replace string in grub.cfg. Can be used multiple times</p>
 </dd>
 <dt><kbd>--skip-mkefiboot</kbd></dt>
 <dd><p>Skip running mkefiboot</p>
