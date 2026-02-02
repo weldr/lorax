@@ -311,7 +311,7 @@ def execReadlines(command, argv, stdin=None, root='/', env_prune=None, filter_st
                 if self._data.find(b"\n") >= 0:
                     line = self._data.split(b"\n", 1)
                     self._data = line[1]
-                    return line[0].decode("utf-8")
+                    return line[0].decode("utf-8", "ignore")
 
                 if self._proc.poll() is not None or not self._callback(self._proc):
                     # Output finished, wait 60s for the process to end
