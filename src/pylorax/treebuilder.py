@@ -136,7 +136,7 @@ class RuntimeBuilder(object):
         if release == 'fedora-release-eln':
             logos = 'fedora-eln'
         else:
-            logos, _suffix = release.split('-', 1)
+            logos, _suffix = release.rsplit('-', 1)
         return DataHolder(release=release, logos=logos+"-logos")
 
     def install(self):
