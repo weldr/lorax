@@ -107,7 +107,7 @@ removefrom xfsdump --allbut /usr/*bin/*
 removefrom gsettings-desktop-schemas /usr/share/locale/*
 removefrom NetworkManager-libnm /usr/share/locale/*/NetworkManager.mo
 removefrom nm-connection-editor /usr/share/applications/*
-removefrom atk /usr/share/locale/*
+removefrom at-spi2-core /usr/share/locale/*
 removefrom bash /etc/* /usr/bin/bashbug* /usr/share/*
 removefrom bind-utils /usr/bin/host /usr/bin/nsupdate
 removefrom ca-certificates /etc/pki/java/*
@@ -137,7 +137,8 @@ removefrom cryptsetup /usr/share/*
 removefrom cryptsetup-libs /usr/share/locale/*
 removefrom cyrus-sasl-lib /usr/*bin/*
 removefrom dbus-x11 /etc/X11/*
-removefrom dnf /usr/share/locale/*
+removefrom dnf5 /usr/share/locale/*
+removefrom dnf5-plugins /usr/share/locale/*
 removefrom dump /etc/*
 removefrom elfutils-libelf /usr/share/locale/*
 removefrom expat /usr/bin/*
@@ -184,9 +185,11 @@ removefrom libcanberra /usr/lib64/libcanberra-*
 removefrom libcanberra-gtk3 /usr/bin/*
 removefrom libcap /usr/*bin/*
 removefrom libconfig /usr/lib64/libconfig++*
-removefrom liberation-sans-fonts /usr/share/fonts/liberation-sans/LiberationSans-{Bold*,Italic}.ttf
-removefrom liberation-serif-fonts /usr/share/fonts/liberation-serif/*
-removefrom liberation-mono-fonts /usr/share/fonts/liberation-mono/LiberationMono-{Bold*,Italic}.ttf
+removefrom libdnf5 /usr/share/locale/*
+removefrom libdnf5-cli /usr/share/locale/*
+removefrom liberation-sans-fonts /usr/share/fonts/liberation-sans-fonts/LiberationSans-{Bold*,Italic}.ttf
+removefrom liberation-serif-fonts /usr/share/fonts/liberation-serif-fonts/*
+removefrom liberation-mono-fonts /usr/share/fonts/liberation-mono-fonts/LiberationMono-{Bold*,Italic}.ttf
 removefrom libgpg-error /usr/bin/* /usr/share/locale/*
 removefrom libibverbs /usr/lib64/libmlx4*
 removefrom libidn2 /usr/share/locale/*
@@ -268,16 +271,16 @@ removefrom net-tools */bin/netstat */*bin/ether-wake */*bin/ipmaddr
 removefrom net-tools */*bin/iptunnel */*bin/mii-diag */*bin/mii-tool
 removefrom net-tools */*bin/nameif */*bin/plipconfig */*bin/slattach
 removefrom net-tools /usr/share/locale/*
-removefrom nfs-utils /etc/nfsmount.conf
-removefrom nfs-utils /usr/lib/systemd/system/*
-removefrom nfs-utils /*bin/rpc.statd /usr/*bin/exportfs
-removefrom nfs-utils /usr/*bin/mountstats /usr/*bin/nfsiostat
-removefrom nfs-utils /usr/*bin/nfsstat /usr/*bin/rpc.gssd /usr/*bin/rpc.idmapd
+removefrom nfs-common-utils /etc/nfsmount.conf
+removefrom nfs-common-utils /usr/lib/systemd/system/*
+removefrom nfs-common-utils /usr/*bin/nfsstat /usr/*bin/rpc.gssd
+removefrom nfs-common-utils /usr/*bin/rpcdebug /usr/*bin/showmount
+removefrom nfs-python-utils /usr/*bin/mountstats /usr/*bin/nfsiostat
+removefrom nfs-utils /usr/*bin/exportfs /usr/*bin/rpc.idmapd
 removefrom nfs-utils /usr/*bin/rpc.mountd /usr/*bin/rpc.nfsd
-removefrom nfs-utils /usr/*bin/rpcdebug
-removefrom nfs-utils /usr/*bin/showmount /usr/*bin/sm-notify
-removefrom nfs-utils /usr/*bin/start-statd /var/lib/nfs/etab
-removefrom nfs-utils /var/lib/nfs/rmtab /var/lib/nfs/statd/state
+removefrom nfs-utils /var/lib/nfs/etab /var/lib/nfs/rmtab
+removefrom nfsv3-client-utils /*bin/rpc.statd /usr/*bin/sm-notify
+removefrom nfsv3-client-utils /usr/*bin/start-statd /var/lib/nfs/statd/state
 removefrom nss-softokn /usr/lib64/nss/*
 removefrom openldap /etc/openldap/*
 removefrom openssh /usr/libexec/*
