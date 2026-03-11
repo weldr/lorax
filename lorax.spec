@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        44.5
+Version:        44.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -187,6 +187,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Mar 11 2026 Brian C. Lane <bcl@redhat.com> 44.6-1
+- Revert "Drop all installs of shim-ia32 (it no longer exists)" (bcl@redhat.com)
+
 * Tue Mar 10 2026 Brian C. Lane <bcl@redhat.com> 44.5-1
 - runtime-cleanup: don't strip /usr/share from gdb-headless (awilliam@redhat.com)
 - runtime-cleanup: keep policycoreutils /usr/bin for load_policy and setfiles (k.koukiou@gmail.com)
