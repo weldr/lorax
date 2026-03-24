@@ -47,7 +47,8 @@ def generate_module_info(moddir, outfile=None):
         output = runcmd_output(["modinfo", "-F", "description", mod])
         return output.strip()
     def read_module_set(name):
-        return set(l.strip() for l in open(joinpaths(moddir,name)) if ".ko" in l)
+        with open(joinpaths(moddir,name)) as f:
+            return set(l.strip() for l in f if ".ko" in l)
     modsets = {'scsi':read_module_set("modules.block"),
                'eth':read_module_set("modules.networking")}
 
@@ -59,10 +60,10 @@ def generate_module_info(moddir, outfile=None):
                 desc = module_desc(joinpaths(root,mod)) or "%s driver" % name
                 modinfo.append(dict(name=name, type=modtype, desc=desc))
 
-    out = open(outfile or joinpaths(moddir,"module-info"), "w")
-    out.write("Version 0\n")
-    for mod in sorted(modinfo, key=lambda m: m.get('name')):
-        out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
+    with open(outfile or joinpaths(moddir,"module-info"), "w") as out:
+        out.write("Version 0\n")
+        for mod in sorted(modinfo, key=lambda m: m.get('name')):
+            out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
 
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.
