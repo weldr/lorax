@@ -411,7 +411,7 @@ class TreeBuilder(object):
 
 def findkernels(root="/", kdir="boot"):
     # To find possible flavors, awk '/BuildKernel/ { print $4 }' kernel.spec
-    flavors = ('debug', 'PAE', 'PAEdebug', 'smp', 'xen', 'lpae')
+    flavors = ('debug', 'PAE', 'PAEdebug', 'smp', 'xen', 'lpae', '64k')
     kre = re.compile(r"vmlinuz-(?P<version>.+?\.(?P<arch>[a-z0-9_]+)"
                      r"(.(?P<flavor>{0}))?)$".format("|".join(flavors)))
     kernels = []
