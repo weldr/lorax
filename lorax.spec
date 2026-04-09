@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        45.1
+Version:        45.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -187,6 +187,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Apr 09 2026 Brian C. Lane <bcl@redhat.com> 45.2-1
+- findkernels: Enable support for 64k kernel flavor (bcl@redhat.com)
+- treebuilder: fix file resource leaks (yueyuankun@kylinos.cn)
+
 * Wed Mar 11 2026 Brian C. Lane <bcl@redhat.com> 45.1-1
 - Revert "Drop all installs of shim-ia32 (it no longer exists)" (bcl@redhat.com)
 - runtime-cleanup: don't strip /usr/share from gdb-headless (awilliam@redhat.com)
