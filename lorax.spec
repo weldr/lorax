@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.15
+Version:        40.5.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Apr 14 2026 Brian C. Lane <bcl@redhat.com> 40.5.16-1
+- findkernels: Enable support for 64k kernel flavor (bcl)
+  Resolves: RHEL-163728
+
 * Fri Feb 06 2026 Brian C. Lane <bcl@redhat.com> 40.5.15-1
 - executils: Ignore utf-8 decode errors (bcl)
   Resolves: RHEL-121650
