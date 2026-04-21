@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.29
+Version:        34.9.30
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,20 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Apr 21 2026 Brian C. Lane <bcl@redhat.com> 34.9.30-1
+- rel-eng: Update the tito LoraxRHELTagger for Jira (bcl)
+  Related: RHEL-121651
+- executils: Ignore utf-8 decode errors (bcl)
+  Resolves: RHEL-121651
+- executils: Remove binary_output flag (bcl)
+  Related: RHEL-121651
+- logging: Set encoding=UTF-8 on FileHandler (bcl)
+  Related: RHEL-121651
+- executils: Set encoding to UTF-8 for _run_program (bcl)
+  Related: RHEL-121651
+- executils: decoding after deserialization (oleg.sviridov)
+  Related: RHEL-121651
+
 * Mon Aug 11 2025 Brian C. Lane <bcl@redhat.com> 34.9.29-1
 - templates: Synchronize with lorax-templates-rhel (bcl) (bcl)
   Resolves: RHEL-54712
