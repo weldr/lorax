@@ -9,6 +9,7 @@ class LoraxRHELTagger(VersionTagger):
     format of Changelog:
     - description
       Resolves/Related: rhbz#1111
+      Resolves/Related: RHEL-1111
 
     Used for:
         - Red Hat Enterprise Linux
@@ -40,6 +41,7 @@ class LoraxRHELTagger(VersionTagger):
         use format:
         - description
           Resolves/Related: rhbz#1111
+          Resolves/Related: RHEL-1111
         """
         patch_command = "git log --pretty=oneline --relative %s..%s -- %s" % (last_tag, "HEAD", ".")
         output = filter(lambda x: x.find('l10n: ') != 41 and \
@@ -93,21 +95,18 @@ class LoraxRHELTagger(VersionTagger):
                 summary_bug = None
 
             for bodyline in body:
-                m = re.match(r"^(Resolves|Related|Conflicts):\ +rhbz#\d+.*$", bodyline)
+                m = re.match(r"^(Resolves|Related|Conflicts):\ +(rhbz#|RHEL-)(\d+)", bodyline)
                 if not m:
                     continue
 
-                actionre = re.search("(Resolves|Related|Conflicts)", bodyline)
-                bugre = re.search(r"\d+", bodyline)
-                if actionre and bugre:
-                    action = actionre.group()
-                    bug = bugre.group()
-                    rhbz.add("%s: rhbz#%s" % (action, bug))
+                if m.group(1) and m.group(2) and m.group(3):
+                    rhbz.add("%s: %s%s" % (m.group(1), m.group(2), m.group(3)))
 
                     # Remove the summary bug's Resolves action if it is for the same bug
-                    if action != 'Resolves':
+                    # because the summary bug doesn't actually have an action
+                    if m.group(1) != 'Resolves':
                         summary_str = "Resolves: rhbz#%s" % summary_bug
-                        if summary_bug and bug == summary_bug and summary_str in rhbz:
+                        if summary_bug and m.group(3) == summary_bug and summary_str in rhbz:
                             rhbz.remove(summary_str)
 
             if rhbz:
