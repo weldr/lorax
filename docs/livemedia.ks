@@ -30,7 +30,7 @@ clearpart --all --initlabel
 rootpw rootme
 # Disk partitioning information
 reqpart
-part / --size=8000
+part / --size=10240
 
 %post
 # FIXME: it'd be better to get this installed from a package
