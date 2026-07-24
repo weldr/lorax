@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.30
+Version:        34.9.31
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Jul 24 2026 Brian C. Lane <bcl@redhat.com> 34.9.31-1
+- Increase root partition to 10 GiB for a live medium (jikortus)
+  Resolves: RHEL-214304
+
 * Tue Apr 21 2026 Brian C. Lane <bcl@redhat.com> 34.9.30-1
 - rel-eng: Update the tito LoraxRHELTagger for Jira (bcl)
   Related: RHEL-121651
