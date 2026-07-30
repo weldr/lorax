@@ -19,6 +19,7 @@ import unittest
 import tempfile
 import os
 
+from pylorax.executils import execWithRedirect
 from pylorax.sysutils import joinpaths, touch, replace, chown_, chmod_, remove, linktree
 from pylorax.sysutils import _read_file_end
 
@@ -68,6 +69,20 @@ class SysUtilsTest(unittest.TestCase):
             f.write("test was here")
         remove(remove_file)
         self.assertFalse(os.path.exists(remove_file))
+
+    def test_remove_symlink_dir(self):
+        # Make sure remove doesn't removed symlinked directories
+        with tempfile.TemporaryDirectory() as tdname:
+            test_file = os.path.join(tdname, "lorax-test-file")
+            with open(test_file, "w", encoding="UTF-8") as f:
+                f.write("test was here")
+            rc = execWithRedirect("/bin/ln", ["-s", tdname, "/var/tmp/lorax-test-link"])
+            self.assertEqual(0, rc)
+
+            remove("/var/tmp/lorax-test-link")
+
+            self.assertTrue(os.path.exists(tdname))
+            self.assertFalse(os.path.exists("/var/tmp/lorax-test-link"))
 
     def test_linktree(self):
         with tempfile.TemporaryDirectory() as tdname:
