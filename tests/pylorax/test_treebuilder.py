@@ -23,7 +23,9 @@ import unittest
 
 from pylorax import ArchData, DataHolder
 from pylorax.dnfbase import get_dnf_base_object
-from pylorax.treebuilder import RuntimeBuilder
+from pylorax.executils import execWithRedirect
+from pylorax.sysutils import joinpaths
+from pylorax.treebuilder import RuntimeBuilder, findkernels
 
 # TODO Put these into a common test library location
 @contextmanager
@@ -147,3 +149,45 @@ class InstallBrandingTestCase(unittest.TestCase):
             branding = self.install_branding(repo_dir, skip_branding=True)
             self.assertEqual(branding.release, None)
             self.assertEqual(branding.logos, None)
+
+
+class FindkernelsTestCase(unittest.TestCase):
+    def test_findkernels(self):
+        with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as root_dir:
+            os.makedirs(joinpaths(root_dir, "boot"))
+
+            # Make some fake kernel files in the temporary boot dir
+            for n in ["vmlinuz-7.0.0-100.fc43.x86_64",
+                      "initramfs-7.0.0-100.fc43.x86_64.img",
+                      "vmlinuz-7.0.1-100.fc43.x86_64",
+                      "initramfs-7.0.0-100.fc43.x86_64.img"]:
+                with open(joinpaths(root_dir, "boot", n), "w", encoding="UTF-8") as f:
+                    f.write("lorax test fake file")
+
+            # Make a symlink to one of them that's relative
+            rc = execWithRedirect("/bin/ln",
+                                  ["-s", "./vmlinuz-7.0.1-100.fc43.x86_64",
+                                   joinpaths(root_dir, "boot", "vmlinuz-7.0.1-101.fc43.x86_64")])
+            self.assertEqual(0, rc)
+
+            # Make a symlink pointing outside root_dir
+            rc = execWithRedirect("/bin/ln",
+                                  ["-s", "../../../etc/fstab",
+                                   joinpaths(root_dir, "boot", "vmlinuz-7.0.1-102.fc43.x86_64")])
+            self.assertEqual(0, rc)
+
+            # Make an absolute symlink
+            rc = execWithRedirect("/bin/ln",
+                                  ["-s", "/etc/some-file",
+                                   joinpaths(root_dir, "boot", "vmlinuz-7.0.1-103.fc43.x86_64")])
+            self.assertEqual(0, rc)
+
+            # call findkernels on it
+            kernels = findkernels(root_dir, "boot")
+            kernel_versions = sorted([k.version for k in kernels])
+
+            # List includes kernel files plus symlink pointing inside the mount
+            # Does not include vmlinuz-7.0.1-102.fc43.x86_64 which points outside
+            self.assertEqual(["7.0.0-100.fc43.x86_64",
+                              "7.0.1-100.fc43.x86_64",
+                              "7.0.1-101.fc43.x86_64"], kernel_versions)
