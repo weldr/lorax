@@ -33,7 +33,7 @@ from pylorax.imgutils import get_loop_name, dm_detach, mount, umount
 from pylorax.imgutils import mkqemu_img, mktar, mkcpio, mkfsimage_from_disk
 from pylorax.monitor import LogMonitor
 from pylorax.mount import IsoMountpoint
-from pylorax.sysutils import joinpaths
+from pylorax.sysutils import joinpaths, remove
 from pylorax.treebuilder import udev_escape
 
 
@@ -356,8 +356,8 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None, tar_img=None):
 
     # Clean up /tmp/ from previous runs to prevent stale info from being used
     for path in ["/tmp/yum.repos.d/", "/tmp/yum.cache/"]:
-        if os.path.isdir(path):
-            shutil.rmtree(path)
+        if os.path.exists(path):
+            remove(path)
 
     args = ["--kickstart", opts.ks[0], "--cmdline"]
     if opts.anaconda_args:
@@ -379,7 +379,7 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None, tar_img=None):
     elif opts.make_tar or opts.make_oci:
         # Install under dirinstall_path, make sure it starts clean
         if os.path.exists(dirinstall_path):
-            shutil.rmtree(dirinstall_path)
+            remove(dirinstall_path)
 
         if opts.make_oci:
             # OCI installs under /rootfs/
