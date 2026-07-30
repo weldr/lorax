@@ -27,7 +27,7 @@ from subprocess import CalledProcessError
 from pathlib import Path
 import itertools
 
-from pylorax.sysutils import joinpaths, remove
+from pylorax.sysutils import joinpaths, safe_joinpaths, remove
 from pylorax.base import DataHolder
 from pylorax.ltmpl import LoraxTemplateRunner
 import pylorax.imgutils as imgutils
@@ -394,6 +394,11 @@ def findkernels(root="/", kdir="boot"):
     kernels = []
     bootfiles = os.listdir(joinpaths(root, kdir))
     for f in bootfiles:
+        # Exclude files that are symlinks pointing outside of root
+        try:
+            _ = safe_joinpaths(root, kdir, f)
+        except RuntimeError:
+            continue
         match = kre.match(f)
         if match:
             kernel = DataHolder(path=joinpaths(kdir, f))
