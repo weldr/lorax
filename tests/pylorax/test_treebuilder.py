@@ -25,7 +25,7 @@ from pylorax import ArchData, DataHolder
 from pylorax.dnfbase import get_dnf_base_object
 from pylorax.executils import execWithRedirect
 from pylorax.sysutils import joinpaths
-from pylorax.treebuilder import RuntimeBuilder, findkernels
+from pylorax.treebuilder import RuntimeBuilder, findkernels, _write_modinfo
 
 # TODO Put these into a common test library location
 @contextmanager
@@ -191,3 +191,22 @@ class FindkernelsTestCase(unittest.TestCase):
             self.assertEqual(["7.0.0-100.fc43.x86_64",
                               "7.0.1-100.fc43.x86_64",
                               "7.0.1-101.fc43.x86_64"], kernel_versions)
+
+class ModInfoTestCase(unittest.TestCase):
+    def test_write_modinfo(self):
+        modinfo = [{"name": "foo", "type": "scsi", "desc": "foo driver"}]
+
+        with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as moddir:
+            with open(joinpaths(moddir, "other-file"), "w", encoding="UTF-8") as f:
+                f.write("lorax test file")
+
+            rc = execWithRedirect("/bin/ln",
+                                  ["-s", joinpaths(moddir, "other-file"),
+                                   joinpaths(moddir, "module-info")])
+            self.assertEqual(0, rc)
+
+            _write_modinfo(modinfo, joinpaths(moddir, "module-info"))
+
+            # check symlinked file's content to make sure it is undisturbed
+            data = open(joinpaths(moddir, "other-file"), "r", encoding="UTF-8").read()
+            self.assertEqual("lorax test file", data)
