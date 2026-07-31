@@ -61,11 +61,15 @@ def generate_module_info(moddir, outfile=None):
                 (name, _ext) = os.path.splitext(mod) # foo.ko -> (foo, .ko)
                 desc = module_desc(joinpaths(root,mod)) or "%s driver" % name
                 modinfo.append(dict(name=name, type=modtype, desc=desc))
+    _write_modinfo(modinfo, outfile or joinpaths(moddir,"module-info"))
 
-    out = open(outfile or joinpaths(moddir,"module-info"), "w")
-    out.write("Version 0\n")
-    for mod in sorted(modinfo, key=lambda m: m.get('name')):
-        out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
+def _write_modinfo(modinfo, outfile):
+    if os.path.islink(outfile):
+        os.unlink(outfile)
+    with open(outfile, "w", encoding="UTF-8") as out:
+        out.write("Version 0\n")
+        for mod in sorted(modinfo, key=lambda m: m.get('name')):
+            out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
 
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
