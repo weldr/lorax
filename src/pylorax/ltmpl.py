@@ -28,7 +28,7 @@ from os.path import basename, isdir
 from subprocess import CalledProcessError
 import shutil
 
-from pylorax.sysutils import joinpaths, cpfile, mvfile, replace, remove
+from pylorax.sysutils import joinpaths, safe_joinpaths, cpfile, mvfile, replace, remove
 from pylorax.dnfhelper import LoraxDownloadCallback, LoraxRpmCallback
 from pylorax.base import DataHolder
 from pylorax.executils import runcmd, runcmd_output
@@ -231,8 +231,17 @@ class LoraxTemplateRunner(TemplateRunner):
 
     def _out(self, path):
         return joinpaths(self.outroot, path)
+
     def _in(self, path):
         return joinpaths(self.inroot, path)
+
+    def _insideout(self, path):
+        """ Return true if path is really inside outroot """
+        try:
+            _ = safe_joinpaths(self.outroot, path)
+        except RuntimeError:
+            return False
+        return True
 
     def _filelist(self, *pkgs):
         """ Return the list of files in the packages """
@@ -433,6 +442,13 @@ class LoraxTemplateRunner(TemplateRunner):
         '''
         if isdir(self._out(dest)):
             dest = joinpaths(dest, basename(src))
+
+        if not self._insideout(src):
+            raise RuntimeError(f"paths outside outroot not allowed on {src}")
+
+        if not self._insideout(dest):
+            raise RuntimeError(f"paths outside outroot not allowed on {dest}")
+
         os.link(self._out(src), self._out(dest))
 
     def symlink(self, target, dest):
@@ -440,6 +456,9 @@ class LoraxTemplateRunner(TemplateRunner):
         symlink SRC DEST
           Create a symlink at DEST which points to SRC.
         '''
+        if not self._insideout(dest):
+            raise RuntimeError(f"paths outside outroot not allowed on {dest}")
+
         if rexists(self._out(dest)):
             self.remove(dest)
         os.symlink(target, self._out(dest))
@@ -452,6 +471,12 @@ class LoraxTemplateRunner(TemplateRunner):
           If DEST doesn't exist, SRC will be copied to a file with
           that name, if the path leading to it exists.
         '''
+        if not self._insideout(src):
+            raise RuntimeError(f"paths outside outroot not allowed on {src}")
+
+        if not self._insideout(dest):
+            raise RuntimeError(f"paths outside outroot not allowed on {dest}")
+
         try:
             cpfile(self._out(src), self._out(dest))
         except shutil.Error as e:
@@ -462,6 +487,12 @@ class LoraxTemplateRunner(TemplateRunner):
         move SRC DEST
           Move SRC to DEST.
         '''
+        if not self._insideout(src):
+            raise RuntimeError(f"paths outside outroot not allowed on {src}")
+
+        if not self._insideout(dest):
+            raise RuntimeError(f"paths outside outroot not allowed on {dest}")
+
         mvfile(self._out(src), self._out(dest))
 
     def remove(self, *fileglobs):
