@@ -326,21 +326,44 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/linked-file")))
         self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/lorax-dir/lorax-file")))
 
+    def test_bad_hardlink(self):
+        """Test a hardlink template command pointing outside the outroot"""
+        with self.assertRaises(RuntimeError):
+            self.runner.run("bad-hardlink-cmd.tmpl")
+
     def test_symlink(self):
         """Test symlink template command"""
         self.runner.run("symlink-cmd.tmpl")
         self.assertTrue(os.path.islink(joinpaths(self.root_dir, "/symlinked-file")))
+
+    def test_bad_symlink(self):
+        """Test symlink template command pointing outside the outroot"""
+        with self.assertRaises(RuntimeError):
+            self.runner.run("bad-symlink-cmd.tmpl")
 
     def test_copy(self):
         """Test copy template command"""
         self.runner.run("copy-cmd.tmpl")
         self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/copied-file")))
 
+    def test_bad_copy(self):
+        """Test copy template command pointing outside the outroot"""
+        with self.assertRaises(RuntimeError):
+            self.runner.run("bad-copy-cmd.tmpl")
+
     def test_move(self):
         """Test move template command"""
         self.runner.run("move-cmd.tmpl")
         self.assertFalse(os.path.exists(joinpaths(self.root_dir, "/lorax-file")))
         self.assertTrue(os.path.exists(joinpaths(self.root_dir, "/moved-file")))
+
+    def test_bad_move(self):
+        """Test move template command pointing outside the outroot"""
+        with self.assertRaises(RuntimeError):
+            self.runner.run("bad-move-cmd.tmpl")
+
+        with self.assertRaises(RuntimeError):
+            self.runner.run("bad-move-symlink-cmd.tmpl")
 
     def test_remove(self):
         """Test remove template command"""
