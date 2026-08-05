@@ -44,7 +44,7 @@ from pylorax.imgutils import copytree
 from pylorax.installer import novirt_install, virt_install, InstallError
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder
 from pylorax.treebuilder import findkernels
-from pylorax.sysutils import joinpaths, remove
+from pylorax.sysutils import joinpaths, remove, safe_joinpaths
 
 
 # Default parameters for rebuilding initramfs, override with --dracut-arg or --dracut-conf
@@ -587,10 +587,10 @@ def make_live_images(opts, work_dir, disk_img):
     log.info("Rebuilding initramfs for live")
     with Mount(rootfs_img, opts="loop") as mnt_dir:
         try:
-            mount(joinpaths(mnt_dir, "boot"), opts="bind", mnt=joinpaths(mnt_dir, sys_root, "boot"))
-            rebuild_initrds_for_live(opts, joinpaths(mnt_dir, sys_root), work_dir)
+            mount(joinpaths(mnt_dir, "boot"), opts="bind", mnt=safe_joinpaths(mnt_dir, sys_root, "boot"))
+            rebuild_initrds_for_live(opts, safe_joinpaths(mnt_dir, sys_root), work_dir)
         finally:
-            umount(joinpaths(mnt_dir, sys_root, "boot"), delete=False)
+            umount(safe_joinpaths(mnt_dir, sys_root, "boot"), delete=False)
 
     remove(squashfs_root_dir)
 
