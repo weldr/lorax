@@ -21,7 +21,7 @@ import os
 
 from pylorax.executils import execWithRedirect
 from pylorax.sysutils import joinpaths, touch, replace, chown_, chmod_, remove, linktree
-from pylorax.sysutils import _read_file_end
+from pylorax.sysutils import safe_joinpaths, _read_file_end
 
 class SysUtilsTest(unittest.TestCase):
     def test_joinpaths(self):
@@ -34,6 +34,26 @@ class SysUtilsTest(unittest.TestCase):
 
             self.assertEqual(joinpaths(tdname, "link-file", follow_symlinks=True),
                              os.path.join(tdname, "real-file"))
+
+    def test_safe_joinpaths(self):
+        with tempfile.TemporaryDirectory() as tdname:
+            self.assertEqual(safe_joinpaths(tdname, "foo", "bar", "baz"), tdname+"/foo/bar/baz")
+
+            with open(os.path.join(tdname, "real-file"), "w") as f:
+                f.write("lorax test file")
+            os.symlink(os.path.join(tdname, "real-file"), os.path.join(tdname, "link-file"))
+
+            self.assertEqual(safe_joinpaths(tdname, "link-file"), os.path.join(tdname, "real-file"))
+
+    def test_safe_joinpaths_bad(self):
+        with tempfile.TemporaryDirectory() as tdname:
+            os.symlink("/var/tmp/some-file", os.path.join(tdname, "link-file"))
+
+            with self.assertRaises(RuntimeError):
+                _ = safe_joinpaths(tdname, "link-file")
+
+            with self.assertRaises(RuntimeError):
+                _ = safe_joinpaths(tdname, "../../", "link-file")
 
     def test_touch(self):
         touch_file="/var/tmp/lorax-test-touch-file"
