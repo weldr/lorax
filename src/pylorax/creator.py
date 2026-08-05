@@ -362,7 +362,7 @@ def make_livecd(opts, mount_dir, work_dir):
     # I think these should be release specific, not from lorax, but for now
     configdir = joinpaths(opts.lorax_templates,"live/config_files/")
     configdir_path = "tmp/config_files"
-    fullpath = joinpaths(mount_dir, configdir_path)
+    fullpath = safe_joinpaths(mount_dir, configdir_path)
     if os.path.exists(fullpath):
         remove(fullpath)
     copytree(configdir, fullpath)
