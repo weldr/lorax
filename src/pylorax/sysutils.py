@@ -44,6 +44,18 @@ def joinpaths(*args, **kwargs):
         return path
 
 
+def safe_joinpaths(*args, **kwargs):
+    """ safe_joinpaths joins paths and checks for an escape
+    and raises RuntimeError if the final path is not under the first.
+
+    NOTE: The path must exist in order to be properly evaluated
+    """
+    path = joinpaths(*args, follow_symlinks=True)
+    if not path.startswith(args[0]):
+        raise RuntimeError(f"path does not start with {args[0]}")
+    return path
+
+
 def touch(fname):
     with open(fname, "w") as f:
         f.write("")
