@@ -395,7 +395,7 @@ def mount_boot_part_over_root(img_mount):
             mount("/dev/mapper/"+dev, mnt=tmp_mount_dir)
             if is_boot_part(tmp_mount_dir):
                 umount(tmp_mount_dir)
-                sysroot_boot_dir = joinpaths(root_dir, "boot")
+                sysroot_boot_dir = safe_joinpaths(root_dir, "boot")
                 mount("/dev/mapper/"+dev, mnt=sysroot_boot_dir)
                 break
             else:
