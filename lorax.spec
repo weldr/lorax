@@ -42,7 +42,7 @@ Requires:       gzip
 Requires:       isomd5sum
 Requires:       module-init-tools
 Requires:       parted
-Requires:       squashfs-tools >= 4.2
+Recommends:     squashfs-tools >= 4.2
 Requires:       erofs-utils >= 1.8.2
 Requires:       util-linux
 Requires:       xz-lzma-compat
