@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        43.11
+Version:        43.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -184,6 +184,19 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Aug 12 2026 Brian C. Lane <bcl@redhat.com> 43.12-1
+- creator: Use safe_joinpaths in mount_boot_part_over_root (bcl@redhat.com)
+- creator: Use safe_joinpaths in make_livecd (bcl@redhat.com)
+- creator: Use safe_joinpaths in make_live_images (bcl@redhat.com)
+- ltmpl: Check for paths inside outroot on hardlink, symlink, copy, move (bcl@redhat.com)
+- sysutils: Add safe_joinpaths function (bcl@redhat.com)
+- ltmpl: Add tests for access outside outroot (bcl@redhat.com)
+- treebuilder: Check for symlink when writing module-info (bcl@redhat.com)
+- findkernels: Exclude kernel symlinks pointing outside root (bcl@redhat.com)
+- novirt_install: Use remove on /tmp paths and /mnt/sysimage (bcl@redhat.com)
+- sysutils: Add a test for remove and symlinked directories (bcl@redhat.com)
+- runtime-install: drop tigervnc (awilliam@redhat.com)
+
 * Wed Sep 24 2025 Brian C. Lane <bcl@redhat.com> 43.11-1
 - runtime-install: skip qcom-accel-firmware (awilliam@redhat.com)
 
