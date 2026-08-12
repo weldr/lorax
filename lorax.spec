@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.16
+Version:        40.5.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,28 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Aug 12 2026 Brian C. Lane <bcl@redhat.com> 40.5.17-1
+- creator: Use safe_joinpaths in mount_boot_part_over_root (bcl)
+  Resolves: RHEL-238020
+- creator: Use safe_joinpaths in make_livecd (bcl)
+  Related: RHEL-238020
+- creator: Use safe_joinpaths in make_live_images (bcl)
+  Related: RHEL-238020
+- ltmpl: Check for paths inside outroot on hardlink, symlink, copy, move (bcl)
+  Related: RHEL-238020
+- sysutils: Add safe_joinpaths function (bcl)
+  Related: RHEL-238020
+- ltmpl: Add tests for access outside outroot (bcl)
+  Related: RHEL-238020
+- treebuilder: Check for symlink when writing module-info (bcl)
+  Related: RHEL-238020
+- findkernels: Exclude kernel symlinks pointing outside root (bcl)
+  Related: RHEL-238020
+- novirt_install: Use remove on /tmp paths and /mnt/sysimage (bcl)
+  Related: RHEL-238020
+- sysutils: Add a test for remove and symlinked directories (bcl)
+  Related: RHEL-238020
+
 * Tue Apr 14 2026 Brian C. Lane <bcl@redhat.com> 40.5.16-1
 - findkernels: Enable support for 64k kernel flavor (bcl)
   Resolves: RHEL-163728
