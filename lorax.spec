@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.31
+Version:        34.9.32
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,30 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Aug 12 2026 Brian C. Lane <bcl@redhat.com> 34.9.32-1
+- tito: Use .tito instead of old ./rel-eng directory (bcl)
+  Related: RHEL-238021
+- creator: Use safe_joinpaths in mount_boot_part_over_root (bcl)
+  Resolves: RHEL-238021
+- creator: Use safe_joinpaths in make_livecd (bcl)
+  Related: RHEL-238021
+- creator: Use safe_joinpaths in make_live_images (bcl)
+  Related: RHEL-238021
+- ltmpl: Check for paths inside outroot on hardlink, symlink, copy, move (bcl)
+  Related: RHEL-238021
+- sysutils: Add safe_joinpaths function (bcl)
+  Related: RHEL-238021
+- ltmpl: Add tests for access outside outroot (bcl)
+  Related: RHEL-238021
+- treebuilder: Check for symlink when writing module-info (bcl)
+  Related: RHEL-238021
+- findkernels: Exclude kernel symlinks pointing outside root (bcl)
+  Related: RHEL-238021
+- novirt_install: Use remove on /tmp paths and /mnt/sysimage (bcl)
+  Related: RHEL-238021
+- sysutils: Add a test for remove and symlinked directories (bcl)
+  Related: RHEL-238021
+
 * Fri Jul 24 2026 Brian C. Lane <bcl@redhat.com> 34.9.31-1
 - Increase root partition to 10 GiB for a live medium (jikortus)
   Resolves: RHEL-214304
