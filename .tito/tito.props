@@ -1,5 +1,5 @@
 [buildconfig]
-lib_dir = ./rel-eng/
+lib_dir = .tito/
 builder = tito.builder.Builder
 #tagger = tito.tagger.VersionTagger
 tagger = lorax_tito.LoraxRHELTagger
