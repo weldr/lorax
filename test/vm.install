@@ -22,13 +22,13 @@ if ! rpm -q beakerlib; then
 fi
 
 # disable mirrors & re-enable direct download
-sed -i "s/metalink.*//" /etc/yum.repos.d/*.repo
-sed -i "s/#\(baseurl=.*\)/\1/" /etc/yum.repos.d/*.repo
-sed -i "s/download.fedoraproject/dl.fedoraproject/" /etc/yum.repos.d/*.repo
+sed -i "s/metalink.*//" /etc/yum.repos.d/*.repo /usr/share/dnf5/repos.d/*.repo
+sed -i "s/#\(baseurl=.*\)/\1/" /etc/yum.repos.d/*.repo /usr/share/dnf5/repos.d/*.repo
+sed -i "s/download.fedoraproject/dl.fedoraproject/" /etc/yum.repos.d/*.repo /usr/share/dnf5/repos.d/*.repo
 
 # HACK: Fedora ships baseurl with `example.com` as domain
 # Example: `#baseurl=http://download.example/pub/fedora/linux/updates/$releasever/Everything/$basearch/`
-sed -i "s/download.example/dl.fedoraproject.org/" /etc/yum.repos.d/*.repo
+sed -i "s/download.example/dl.fedoraproject.org/" /etc/yum.repos.d/*.repo /usr/share/dnf5/repos.d/*.repo
 
 # Grow root partition on LVM test images to make room for built images
 PVS=$(pvs --noheadings -opv_name)

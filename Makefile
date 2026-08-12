@@ -23,10 +23,6 @@ endif
 export TEST_OS
 VM_IMAGE=$(CURDIR)/test/images/$(TEST_OS)
 
-ifeq ($(REPOS_DIR),)
-REPOS_DIR = /etc/yum.repos.d
-endif
-
 default: all
 
 src/pylorax/version.py: lorax.spec
@@ -174,9 +170,7 @@ $(VM_IMAGE): srpm bots
 vm: $(VM_IMAGE)
 	echo $(VM_IMAGE)
 
-# grab all repositories from the host system, overwriting what's inside the VM
-# and update the image. Mostly used when testing downstream snapshots to make
-# sure VM_IMAGE is as close as possible to the host!
+# legacy compatibility, used to do different stuff with repos
 vm-local-repos: vm
 
 vm-reset:
