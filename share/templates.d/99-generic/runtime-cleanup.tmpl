@@ -87,7 +87,7 @@ removekmod drivers/char --allbut virtio_console hw_random \
 removekmod drivers/hid --allbut hid-logitech-dj hid-logitech-hidpp hid-multitouch
 
 ## As of 2020-09 most of this are built-in too, but again, keep them listed
-removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt fb_sys_fops
+removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt fb_sys_fops fb
 remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
