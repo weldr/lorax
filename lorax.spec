@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        45.3
+Version:        46.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -187,6 +187,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Mon Aug 17 2026 Brian C. Lane <bcl@redhat.com> 46.0-1
+- maint: Switch default platform to F46 (bcl@redhat.com)
+
 * Wed Aug 12 2026 Brian C. Lane <bcl@redhat.com> 45.3-1
 - Handle relocation of packaged repo configs to /usr/share/dnf5 (awilliam@redhat.com)
 - creator: Use safe_joinpaths in mount_boot_part_over_root (bcl@redhat.com)
