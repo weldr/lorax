@@ -361,7 +361,7 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
     def __init__(self, inroot, outroot, dbo=None, fatalerrors=True,
                                         templatedir=None, defaults=None):
         self.inroot = inroot
-        self.outroot = outroot
+        self.outroot = os.path.realpath(outroot)
         self.dbo = dbo
         builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
                               glob=lambda g: list(rglob(g, root=inroot)))
