@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        34.9.32
+Version:        34.9.33
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -185,6 +185,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Aug 21 2026 Brian C. Lane <bcl@redhat.com> 34.9.33-1
+- test-packages: Add tito so pylint can run (bcl)
+  Related: RHEL-246532
+- ltmpl: Use output directory's real path (bcl)
+  Resolves: RHEL-246532
+
 * Wed Aug 12 2026 Brian C. Lane <bcl@redhat.com> 34.9.32-1
 - tito: Use .tito instead of old ./rel-eng directory (bcl)
   Related: RHEL-238021
