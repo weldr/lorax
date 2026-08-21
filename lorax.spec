@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.18
+Version:        40.5.19
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -182,6 +182,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Fri Aug 21 2026 Brian C. Lane <bcl@redhat.com> 40.5.19-1
+- templates: Synchronize generic templates with lorax-templates-rhel (bcl)
+  Related: RHEL-245277
+  Resolves: RHEL-224409
+
 * Mon Aug 17 2026 Brian C. Lane <bcl@redhat.com> 40.5.18-1
 - templates: Synchronize generic templates with lorax-templates-rhel (bcl)
   Resolves: RHEL-224460
