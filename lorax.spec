@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        46.0
+Version:        46.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -187,6 +187,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Sep 22 2026 Brian C. Lane <bcl@redhat.com> 46.1-1
+- runtime-install: Install dnf5 cmdline tool (bcl@redhat.com)
+
 * Mon Aug 17 2026 Brian C. Lane <bcl@redhat.com> 46.0-1
 - maint: Switch default platform to F46 (bcl@redhat.com)
 
