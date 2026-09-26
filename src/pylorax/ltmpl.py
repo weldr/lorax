@@ -392,7 +392,7 @@ class LoraxTemplateRunner(TemplateRunner, InstallpkgMixin):
     def __init__(self, inroot, outroot, dbo=None, fatalerrors=True,
                                         templatedir=None, defaults=None, basearch=None):
         self.inroot = inroot
-        self.outroot = outroot
+        self.outroot = os.path.realpath(outroot)
         self.dbo = dbo
         self.transaction = None
         if dbo:
