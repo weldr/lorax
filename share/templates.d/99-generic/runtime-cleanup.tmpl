@@ -69,7 +69,7 @@ remove /dev/*
 remove /usr/share/icons/*/icon-theme.cache
 
 ## clean up kernel modules
-removekmod sound drivers/media drivers/hwmon drivers/iio \
+removekmod sound drivers/hwmon drivers/iio \
            net/atm net/bluetooth net/sched net/sctp \
            net/rds net/l2tp net/decnet net/netfilter net/ipv4 net/ipv6 \
            drivers/watchdog drivers/rtc drivers/input/joystick \
@@ -84,6 +84,9 @@ removekmod sound drivers/media drivers/hwmon drivers/iio \
 removekmod drivers/char --allbut virtio_console hw_random \
                                   virtio-rng ipmi hmcdrv
 removekmod drivers/hid --allbut hid-logitech-dj hid-logitech-hidpp
+## Need to keep cec media driver for drm_display_helper (a dependency of nouveau,
+## radeon, amdgpu)
+removekmod drivers/media --allbut cec
 
 ## As of 2020-09 most of this are built-in too, but again, keep them listed
 removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt fb_sys_fops fb
