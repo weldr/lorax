@@ -12,6 +12,7 @@ from mkksiso import AlterKernelArgs, JoinKernelArgs, SplitCmdline, quote, WrapKe
 from mkksiso import GetCmdline, ListKernelArgs, udev_escape
 from mkksiso import EditIsolinux, EditGrub2, EditS390
 from mkksiso import CheckDiscinfo, GetISODetails, ExtractISOFiles, MakeKickstartISO
+from pylorax.cmdline.mkefiboot import mkefiboot
 
 
 def check_cfg_results(self, tmpdir, configs):
@@ -107,6 +108,24 @@ console=tty1 quiet rhgb
             # Raises an error
             with self.assertRaises(RuntimeError):
                 CheckDiscinfo(tmpdir + "/.discinfo.bad")
+
+
+class MkefibootTestCase(unittest.TestCase):
+    def test_mkefiboot_uses_mtools_on_image_file(self):
+        with tempfile.TemporaryDirectory(prefix="mkefiboot-") as tmpdir:
+            bootdir = os.path.join(tmpdir, "BOOT")
+            os.mkdir(bootdir)
+            config = os.path.join(bootdir, "grub.cfg")
+            with open(config, "w") as f:
+                f.write("set timeout=1\n")
+
+            image = os.path.join(tmpdir, "efiboot.img")
+            mkefiboot(bootdir, image, "ANACONDA")
+
+            extracted = os.path.join(tmpdir, "grub.cfg")
+            subprocess.run(["mcopy", "-i", image, "::/EFI/BOOT/grub.cfg", extracted], check=True)
+            with open(extracted) as f:
+                self.assertEqual(f.read(), "set timeout=1\n")
 
 
 class EditConfigsTestCase(unittest.TestCase):
@@ -238,7 +257,7 @@ class ISOTestCase(unittest.TestCase):
         """
         Test the full process of editing the cmdline and adding a kickstart
 
-        NOTE: This does not run mkefiboot since it needs root and will not work in a container
+        This also rebuilds the EFI boot image using the rootless mtools path.
         """
         rm_args = "console quiet inst.cmdline"
         cmdline = "inst.ks=file:///installer.ks quoted=\"A longer string with spaces that is quoted should not be split\" console=ttyS0,115200n8 console=tty1"
@@ -246,7 +265,7 @@ class ISOTestCase(unittest.TestCase):
 
         self.out_iso = tempfile.mktemp(prefix="mkksiso-")
         MakeKickstartISO(self.test_iso, self.out_iso, cmdline=cmdline, rm_args=rm_args,
-                new_volid=new_volid, implantmd5=True, skip_efi=True)
+                new_volid=new_volid, implantmd5=True)
 
         with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpdir:
             ExtractISOFiles(self.out_iso, self.expected_files, tmpdir)

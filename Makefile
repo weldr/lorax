@@ -120,7 +120,7 @@ local-srpm: local $(PKGNAME).spec
 
 test-in-copy:
 	rsync -a --no-perms --exclude=.git /lorax-ro/ /lorax/
-	make -C /lorax/ $(RUN_TESTS)
+	PATH=/lorax/src/bin:$$PATH make -C /lorax/ $(RUN_TESTS)
 	cp /lorax/.coverage /test-results/
 
 test-in-docker: test-in-podman
