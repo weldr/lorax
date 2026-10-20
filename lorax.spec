@@ -37,6 +37,7 @@ Requires:       glibc
 Requires:       glibc-common
 Requires:       gzip
 Requires:       isomd5sum
+Requires:       mtools
 Requires:       module-init-tools
 Requires:       parted
 Requires:       squashfs-tools >= 4.2

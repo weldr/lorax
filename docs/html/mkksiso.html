@@ -107,11 +107,10 @@ kickstart boot.iso will include this support as well.</p>
 <p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> The host system architecture needs to match that of the iso.
 <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> will raise an error if it finds a .discinfo on the iso with a
 mismatched arch.</p>
-<p>As of version 38.4 <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> needs to be run as root to create a fully
-bootable iso. Booting on a UEFI system with the iso written to a flash drive
-requires updating the config files in the embedded efiboot image in the iso. If
-you do not need this functionality you can still run it as a user by passing
-<cite>--skip-mkefiboot</cite>.</p>
+<p>Starting with version 38.4, <code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> required root to update the embedded
+EFI boot image and create a fully bootable UEFI iso. It now uses <code class="docutils literal notranslate"><span class="pre">mkfs.fat</span></code>
+and <code class="docutils literal notranslate"><span class="pre">mtools</span></code> to update the image as a regular user. Pass <code class="docutils literal notranslate"><span class="pre">--skip-mkefiboot</span></code>
+to leave the embedded EFI boot image unchanged.</p>
 <section id="mkksiso-cmdline-arguments">
 <h2>mkksiso cmdline arguments<a class="headerlink" href="#mkksiso-cmdline-arguments" title="Link to this heading">¶</a></h2>
 <p><p>Add a kickstart and files to an iso</p>
@@ -268,9 +267,10 @@ then add the new console argument.</p>
 </section>
 <section id="how-it-works">
 <h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> only depends on <code class="docutils literal notranslate"><span class="pre">xorriso</span></code> and <code class="docutils literal notranslate"><span class="pre">isomd5sum</span></code>. It takes advantage of
-<code class="docutils literal notranslate"><span class="pre">xorriso</span></code>'s ability to extract files, replace files, and add files to the iso
-without need to mount it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> uses <code class="docutils literal notranslate"><span class="pre">xorriso</span></code> to extract files, replace files, and add files to
+the iso without mounting it. It uses <code class="docutils literal notranslate"><span class="pre">mkfs.fat</span></code> and <code class="docutils literal notranslate"><span class="pre">mtools</span></code> to update the
+embedded EFI boot image, and <code class="docutils literal notranslate"><span class="pre">implantisomd5</span></code> from <code class="docutils literal notranslate"><span class="pre">isomd5sum</span></code> to update the
+iso checksums.</p>
 <p><code class="docutils literal notranslate"><span class="pre">mkksiso</span></code> extracts all of the config files it knows about, and then modifies
 the boot configuration files to include the <code class="docutils literal notranslate"><span class="pre">inst.ks</span></code> command. It adds any
 extra command line arguments you specify, and then builds the new iso with the configuration
