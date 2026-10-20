@@ -1,10 +1,12 @@
 anaconda-tui
 beakerlib
+dosfstools
 e2fsprogs
 git
 isomd5sum
 libselinux-python3
 make
+mtools
 pbzip2
 pigz
 pykickstart
