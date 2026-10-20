@@ -13,11 +13,10 @@ kickstart boot.iso will include this support as well.
 ``mkksiso`` will raise an error if it finds a .discinfo on the iso with a
 mismatched arch.
 
-As of version 38.4 ``mkksiso`` needs to be run as root to create a fully
-bootable iso. Booting on a UEFI system with the iso written to a flash drive
-requires updating the config files in the embedded efiboot image in the iso. If
-you do not need this functionality you can still run it as a user by passing
-`--skip-mkefiboot`.
+Starting with version 38.4, ``mkksiso`` required root to update the embedded
+EFI boot image and create a fully bootable UEFI iso. It now uses ``mkfs.fat``
+and ``mtools`` to update the image as a regular user. Pass ``--skip-mkefiboot``
+to leave the embedded EFI boot image unchanged.
 
 
 mkksiso cmdline arguments
@@ -135,9 +134,10 @@ then add the new console argument.
 How it works
 ------------
 
-``mkksiso`` only depends on ``xorriso`` and ``isomd5sum``. It takes advantage of
-``xorriso``'s ability to extract files, replace files, and add files to the iso
-without need to mount it.
+``mkksiso`` uses ``xorriso`` to extract files, replace files, and add files to
+the iso without mounting it. It uses ``mkfs.fat`` and ``mtools`` to update the
+embedded EFI boot image, and ``implantisomd5`` from ``isomd5sum`` to update the
+iso checksums.
 
 ``mkksiso`` extracts all of the config files it knows about, and then modifies
 the boot configuration files to include the ``inst.ks`` command. It adds any
