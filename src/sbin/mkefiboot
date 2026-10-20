@@ -120,10 +120,10 @@ def main():
         dest="loglevel", default=log.getEffectiveLevel(),
         help="print debugging info")
     parser.add_argument("-d", "--disk", action="store_true",
-        help="make a full EFI disk image (including partition table)")
+        help="make a full EFI disk image (including partition table; requires root)")
     parser.add_argument("-a", "--apple", action="store_const", const="apple",
         dest="imgtype", default="default",
-        help="make an Apple EFI image (use hfs+, bless bootloader)")
+        help="make an Apple EFI image (use hfs+, bless bootloader; requires root)")
     parser.add_argument("-l", "--label", default="EFI",
         help="filesystem label to use (default: %(default)s)")
     parser.add_argument("-i", "--icon", metavar="ICONFILE",
@@ -143,7 +143,10 @@ def main():
     if not os.path.isdir(opt.bootdir):
         parser.error("%s is not a directory" % opt.bootdir)
     if os.getuid() > 0:
-        parser.error("need root permissions")
+        if opt.imgtype == "apple":
+            parser.error("--apple requires root permissions")
+        if opt.disk:
+            parser.error("--disk requires root permissions")
     if opt.icon and not opt.imgtype == "apple":
         print("Warning: --icon is only useful for Apple EFI images")
     if opt.diskname and not opt.imgtype == "apple":

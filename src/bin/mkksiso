@@ -492,9 +492,6 @@ def MakeKickstartISO(input_iso, output_iso, ks="", updates_image="", add_paths=N
         # If this is a UEFI iso, rebuild the efiboot.img file and put it in /efiboot.img
         efibootimg = None
         if not skip_efi and ("EFI/BOOT/grub.cfg" in files or "EFI/BOOT/BOOT.conf" in files):
-            if os.getuid() != 0:
-                raise RuntimeError("mkefiboot requires root privileges")
-
             efibootimg = RebuildEFIBoot(input_iso, tmpdir)
 
         # Build the command to rebuild the iso with the changes and additions
