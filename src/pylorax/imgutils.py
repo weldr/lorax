@@ -22,7 +22,7 @@ logger = logging.getLogger("pylorax.imgutils")
 
 import os, tempfile
 from os.path import join, dirname
-from subprocess import Popen, PIPE, CalledProcessError
+from subprocess import Popen, PIPE, DEVNULL, CalledProcessError
 import sys
 import time
 import traceback
@@ -578,14 +578,49 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=None, mountargs="", 
     runcmd(["sync"])
 
 # convenience functions with useful defaults
-def mkdosimg(rootdir, outfile, size=None, label="", mountargs="shortname=winnt,umask=0077", graft=None):
+def _mtools_mkdir(outfile, directory):
+    image_dir = "::"
+    for component in directory.strip("/").split("/"):
+        if not component:
+            continue
+        image_dir += "/" + component
+        if Popen(["mdir", "-i", outfile, image_dir], stdout=DEVNULL, stderr=DEVNULL).wait():
+            runcmd(["mmd", "-i", outfile, image_dir])
+
+def _mtools_copy_contents(outfile, source, destination):
+    sources = [join(source, name) for name in os.listdir(source)]
+    if sources:
+        runcmd(["mcopy", "-s", "-m", "-o", "-i", outfile] + sources + [destination])
+
+def mkdosimg(rootdir, outfile, size=None, label="", graft=None):
+    """Create a DOS filesystem image using mtools, without requiring root."""
     graft = graft or {}
     mkfsargs = ["-n", label]
     if 'SOURCE_DATE_EPOCH' in os.environ:
         mkfsargs.extend(["-i",
                 "{:x}".format(int(os.environ['SOURCE_DATE_EPOCH']))])
-    mkfsimage("msdos", rootdir, outfile, size, mountargs=mountargs,
-              mkfsargs=mkfsargs, graft=graft)
+
+    if not size:
+        size = estimate_size(rootdir, graft, "msdos")
+    mksparse(outfile, size)
+    runcmd(["mkfs.fat"] + mkfsargs + [outfile])
+
+    if rootdir:
+        _mtools_copy_contents(outfile, rootdir, "::/")
+
+    for image_path, source in graft.items():
+        copy_into_dir = image_path.endswith("/")
+        image_path = image_path.strip("/")
+        if os.path.isdir(source):
+            _mtools_mkdir(outfile, image_path)
+            destination = "::/" + image_path
+            _mtools_copy_contents(outfile, source, destination)
+        elif copy_into_dir:
+            _mtools_mkdir(outfile, image_path)
+            runcmd(["mcopy", "-m", "-o", "-i", outfile, source, "::/" + image_path])
+        else:
+            _mtools_mkdir(outfile, dirname(image_path))
+            runcmd(["mcopy", "-m", "-o", "-i", outfile, source, "::/" + image_path])
 
 def mkext4img(rootdir, outfile, size=None, label="", mountargs="", graft=None):
     graft = graft or {}

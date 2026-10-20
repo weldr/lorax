@@ -265,9 +265,8 @@ class ImgUtilsTest(unittest.TestCase):
                 with Mount(loopdev) as mnt:
                     self.assertTrue(mnt is not None)
 
-    @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
     def test_mkdosimg(self):
-        """Test mkdosimg function (requires loop)"""
+        """Test mkdosimg function (uses mtools without root)"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
                 mkfakerootdir(work_dir)
