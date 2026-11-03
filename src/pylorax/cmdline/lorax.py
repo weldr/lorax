@@ -112,6 +112,18 @@ def main():
 
     log_selinux_state()
 
+    # Check for required mksquashfs or mkfs.erofs tools
+    # If mksquashfs is missing fall back to erofs
+    if opts.rootfs_type.startswith("squashfs"):
+        if not shutil.which("mksquashfs"):
+            log.warning("mksquashfs not installed, falling back to --rootfs-type=erofs")
+            opts.rootfs_type = "erofs"
+
+    if opts.rootfs_type.startswith("erofs"):
+        if not shutil.which("mkfs.erofs"):
+            log.error("mkfs.erofs not installed, exiting")
+            sys.exit(1)
+
     if not opts.workdir:
         if not os.path.exists(opts.tmp):
             os.makedirs(opts.tmp)
