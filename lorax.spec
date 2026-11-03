@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        46.1
+Version:        46.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -188,6 +188,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Tue Nov 03 2026 Brian C. Lane <bcl@redhat.com> 46.2-1
+- ltmpl: Use output directory's real path (bcl@redhat.com)
+- runtime-cleanup: Keep the cec driver (bcl@redhat.com)
+- mkksiso: Document rootless EFI updates (lzap+git@redhat.com)
+- mkksiso: Rebuild EFI images without root (lzap+git@redhat.com)
+- imgutils: Create DOS images with mtools (lzap+git@redhat.com)
+
 * Tue Sep 22 2026 Brian C. Lane <bcl@redhat.com> 46.1-1
 - runtime-install: Install dnf5 cmdline tool (bcl@redhat.com)
 
