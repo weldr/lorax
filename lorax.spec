@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        40.5.19
+Version:        40.5.20
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -183,6 +183,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Wed Nov 11 2026 Brian C. Lane <bcl@redhat.com> 40.5.20-1
+- mkksiso: Document rootless EFI updates (lzap+git)
+  Related: RHEL-301266
+- mkksiso: Rebuild EFI images without root (lzap+git)
+  Resolves: RHEL-301266
+- imgutils: Move mkefiboot function into imgutils (bcl)
+  Related: RHEL-301266
+- imgutils: Create DOS images with mtools (lzap+git)
+  Related: RHEL-301266
+
 * Fri Aug 21 2026 Brian C. Lane <bcl@redhat.com> 40.5.19-1
 - templates: Synchronize generic templates with lorax-templates-rhel (bcl)
   Related: RHEL-245277
