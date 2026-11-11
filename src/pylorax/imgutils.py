@@ -670,3 +670,7 @@ def default_image_name(compression, basename):
     """
     SUFFIXES = {"xz": ".xz", "gzip": ".gz", "bzip2": ".bz2", "lzma": ".lzma"}
     return basename + SUFFIXES.get(compression, ".xz")
+
+def mkefiboot(bootdir, outfile, label):
+    '''Make an EFI boot image with the contents of bootdir in EFI/BOOT'''
+    mkdosimg(None, outfile, label=label, graft={'EFI/BOOT': bootdir})

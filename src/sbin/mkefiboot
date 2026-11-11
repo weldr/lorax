@@ -24,13 +24,9 @@ log = logging.getLogger()
 
 import os, tempfile, argparse
 from subprocess import check_call, PIPE
-from pylorax.imgutils import mkdosimg, round_to_blocks, LoopDev, DMDev, dm_detach
+from pylorax.imgutils import mkefiboot, round_to_blocks, LoopDev, DMDev, dm_detach
 from pylorax.imgutils import mkhfsimg, Mount, estimate_size
 import struct, shutil, glob
-
-def mkefiboot(bootdir, outfile, label):
-    '''Make an EFI boot image with the contents of bootdir in EFI/BOOT'''
-    mkdosimg(None, outfile, label=label, graft={'EFI/BOOT':bootdir})
 
 def mkmacboot(bootdir, outfile, label, icon=None, product='Generic',
               diskname=None):
