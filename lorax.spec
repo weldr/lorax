@@ -28,6 +28,25 @@ Requires:       lorax-templates
 Requires:       lorax-templates-rhel
 %endif
 
+Requires:       lorax-pylorax = %{version}-%{release}
+Requires:       lorax-mkefiboot = %{version}-%{release}
+Requires:       lorax-mkksiso = %{version}-%{release}
+
+# Moved image-minimizer tool to lorax
+Provides:       appliance-tools-minimizer = %{version}-%{release}
+Obsoletes:      appliance-tools-minimizer < 007.7-3
+
+%description
+Lorax is a tool for creating the anaconda install images.
+
+It also includes livemedia-creator which is used to create bootable livemedia,
+including live isos and disk images. It can use libvirtd for the install, or
+Anaconda's image install feature.
+
+%package pylorax
+Summary: pylorax provides the core libraries
+Provides: lorax-pylorax = %{version}-%{release}
+
 Requires:       cpio
 Requires:       device-mapper
 Requires:       dosfstools
@@ -42,7 +61,6 @@ Requires:       gzip
 Requires:       isomd5sum
 Requires:       mtools
 Requires:       module-init-tools
-Requires:       parted
 Requires:       squashfs-tools >= 4.2
 Requires:       erofs-utils >= 1.8.2
 Requires:       util-linux
@@ -79,16 +97,33 @@ Requires:       openssh
 Requires:       s390utils >= 2.15.0-2
 %endif
 
-# Moved image-minimizer tool to lorax
-Provides:       appliance-tools-minimizer = %{version}-%{release}
-Obsoletes:      appliance-tools-minimizer < 007.7-3
+%description pylorax
+lorax-pylorax contains the shared libraries used by lorax and associated tools.
 
-%description
-Lorax is a tool for creating the anaconda install images.
+%package mkefiboot
+Summary: mkefiboot is a tool used to create a bootable UEFI disk image
+Provides:       mkefiboot = %{version}-%{release}
+Requires:       lorax-pylorax = %{version}-%{release}
+Requires:       parted
 
-It also includes livemedia-creator which is used to create bootable livemedia,
-including live isos and disk images. It can use libvirtd for the install, or
-Anaconda's image install feature.
+%description mkefiboot
+mkefiboot is used by lorax and mkksiso to created the bootable UEFI disk image used
+to boot the ISO with grub2.
+
+%package mkksiso
+Summary: mkksiso is a tool used to modify existing iso images
+Provides:       mkksiso = %{version}-%{release}
+Requires:       lorax-mkefiboot = %{version}-%{release}
+Requires:       xorriso
+Requires:       isomd5sum
+
+%ifarch s390 s390x
+Requires:       s390utils >= 2.15.0-2
+%endif
+
+%description mkksiso
+mkksiso is a tool for creating kickstart boot isos. It can add a kickstart to the iso,
+update the kernel cmdline used when booting, and add other files and directories.
 
 %package docs
 Summary: Lorax html documentation
@@ -143,6 +178,7 @@ Provides: lorax-templates = %{version}-%{release}
 Lorax templates for creating the boot.iso and live isos are placed in
 /usr/share/lorax/templates.d/99-generic
 
+
 %prep
 %forgeautosetup
 
@@ -158,21 +194,27 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %doc AUTHORS
 %doc docs/lorax.rst docs/livemedia-creator.rst docs/product-images.rst
 %doc docs/*ks
-%{python3_sitelib}/pylorax
-%{python3_sitelib}/pylorax-%{version}.dist-info
 %{_bindir}/lorax
-%{_bindir}/mkefiboot
 %{_bindir}/livemedia-creator
-%{_bindir}/mkksiso
 %{_bindir}/image-minimizer
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
 %{_mandir}/man1/lorax.1*
 %{_mandir}/man1/livemedia-creator.1*
-%{_mandir}/man1/mkksiso.1*
 %{_mandir}/man1/image-minimizer.1*
 %{_tmpfilesdir}/lorax.conf
+
+%files pylorax
+%{python3_sitelib}/pylorax
+%{python3_sitelib}/pylorax-%{version}.dist-info
+
+%files mkksiso
+%{_bindir}/mkksiso
+%{_mandir}/man1/mkksiso.1*
+
+%files mkefiboot
+%{_bindir}/mkefiboot
 
 %files docs
 %doc docs/html/*
