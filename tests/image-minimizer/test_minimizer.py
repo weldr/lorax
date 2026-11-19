@@ -14,8 +14,8 @@ class MinimizerTestCase(unittest.TestCase):
             im = ImageMinimizer("./tests/image-minimizer/im-script.txt", rootdir, False, False)
             im.filter()
 
-            # /etc/pki/rpm-gpg/ should only have 2 files
-            self.assertEqual(sorted(os.listdir(f"{rootdir}/etc/pki/rpm-gpg/")), ["RPM-GPG-KEY-fedora-11-primary", "RPM-GPG-KEY-fedora-12-primary"])
+            # /usr/share/pki/rpm-gpg/ should only have 2 files
+            self.assertEqual(sorted(os.listdir(f"{rootdir}/usr/share/pki/rpm-gpg/")), ["RPM-GPG-KEY-fedora-44-primary", "RPM-GPG-KEY-fedora-45-primary"])
 
             # zoneinfo should have 2 directories and a file
             self.assertEqual(sorted(os.listdir(f"{rootdir}/usr/share/zoneinfo/")), ["America", "US", "UTC"])
