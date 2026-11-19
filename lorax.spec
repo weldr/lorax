@@ -4,7 +4,7 @@
 %global forgeurl https://github.com/weldr/lorax
 
 Name:           lorax
-Version:        46.2
+Version:        46.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 License:        GPL-2.0-or-later
@@ -230,6 +230,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_datadir}/lorax/templates.d/*
 
 %changelog
+* Thu Nov 19 2026 Brian C. Lane <bcl@redhat.com> 46.3-1
+- mkksiso: Allow x86_64 microarchitectures when checking discinfo (bcl@redhat.com)
+- tests: pki/rpm-gpg has moved from /etc/ to /usr/share/ (bcl@redhat.com)
+- lorax.spec: Split out pylorax, mkefiboot, mkksiso into subpackages (bcl@redhat.com)
+
 * Tue Nov 03 2026 Brian C. Lane <bcl@redhat.com> 46.2-1
 - ltmpl: Use output directory's real path (bcl@redhat.com)
 - runtime-cleanup: Keep the cec driver (bcl@redhat.com)
