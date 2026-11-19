@@ -109,6 +109,18 @@ console=tty1 quiet rhgb
             with self.assertRaises(RuntimeError):
                 CheckDiscinfo(tmpdir + "/.discinfo.bad")
 
+    @unittest.skipIf(os.uname().machine != "x86_64", "Not an x86_64 system")
+    def test_CheckDiscinfoX86(self):
+        # Write a fake microarchitecture and make sure it still passes
+        with tempfile.TemporaryDirectory(prefix="mkksiso-") as tmpdir:
+            with open(tmpdir + "/.discinfo.good", "wt") as f:
+                f.write(str(time.time()) + "\n")
+                f.write("Fedora mkksiso discinfo test\n")
+                f.write(os.uname().machine + "_v999\n")
+                f.close()
+
+            # Should not raise an error
+            CheckDiscinfo(tmpdir + "/.discinfo.good")
 
 class MkefibootTestCase(unittest.TestCase):
     def test_mkefiboot_uses_mtools_on_image_file(self):

@@ -427,6 +427,10 @@ def CheckDiscinfo(path):
             discinfo = [l.strip() for l in f.readlines()]
 
         log.info("iso arch = %s", discinfo[2])
+        log.info("host arch = %s", os.uname().machine)
+        # Allow x86_64 microarchitectures
+        if os.uname().machine == "x86_64" and discinfo[2].startswith(os.uname().machine):
+            return
         if os.uname().machine != discinfo[2]:
             raise RuntimeError("iso arch does not match the host arch.")
 
